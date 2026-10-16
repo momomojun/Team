@@ -34,10 +34,10 @@ export function ParkProfile({
       fill(t.establishedCanada, { year: canadian.established.slice(0, 4) }),
       canadianParks[0].code === code ? t.firstInCanada : undefined,
     ]);
-    rows.push([t.area, fill(dict.units.km2, { n: formatCount(canadian.areaKm2) })]);
+    rows.push([t.area, fill(dict.units.km2, { n: formatCount(canadian.areaKm2), sqmi: formatCount(Math.round(canadian.areaKm2 * 0.3861)) })]);
   } else if (units.length === 1) {
     rows.push([t.established, fill(t.establishedValue, { date: dateOf(units[0].established), n: ordinalOf(units[0].code) })]);
-    rows.push([t.area, fill(dict.units.km2, { n: formatCount(units[0].areaKm2) })]);
+    rows.push([t.area, fill(dict.units.km2, { n: formatCount(units[0].areaKm2), sqmi: formatCount(Math.round(units[0].areaKm2 * 0.3861)) })]);
   } else {
     const parts = units.map((unit) =>
       fill(t.establishedParts, {
@@ -46,9 +46,9 @@ export function ParkProfile({
         n: ordinalOf(unit.code),
       }),
     );
-    rows.push([t.established, parts.join("、")]);
+    rows.push([t.established, parts.join(dict.units.listSep)]);
     const area = units.reduce((sum, unit) => sum + unit.areaKm2, 0);
-    rows.push([t.area, fill(dict.units.km2, { n: formatCount(area) })]);
+    rows.push([t.area, fill(dict.units.km2, { n: formatCount(area), sqmi: formatCount(Math.round(area * 0.3861)) })]);
   }
   if (visits) {
     const label =
@@ -61,7 +61,7 @@ export function ParkProfile({
         : visits.parts.length > 0
           ? fill(t.rankList, {
               total: nationalParks.length,
-              list: visits.parts.map((part) => fill(t.rankParts, { name: localize(part.nameZh, locale), n: part.rank })).join("、"),
+              list: visits.parts.map((part) => fill(t.rankParts, { name: localize(part.nameZh, locale), n: part.rank })).join(dict.units.listSep),
             })
           : undefined;
     rows.push([label, fill(t.visitsValue, { n: formatBig(visits.latest, dict.units) }), rank]);

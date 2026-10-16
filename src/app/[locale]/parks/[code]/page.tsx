@@ -30,12 +30,11 @@ import { hasLocale } from "@/i18n/config";
 import { localizeActivity, localizeAttraction, localizeCelebrity, localizePark } from "@/i18n/content";
 import { localize } from "@/i18n/convert";
 import { getDictionary } from "@/i18n/dictionaries";
-import { fill, formatMonths } from "@/i18n/format";
+import { fill, formatMonths, formatWeekdays, otherName } from "@/i18n/format";
 import { isUsingDemoKey } from "@/lib/datagov";
 import { roadsOf } from "@/lib/roads";
 import { parkVisits } from "@/lib/visits";
 import { tempClosures } from "@/data/closures";
-import { weekdaysZh } from "@/lib/closures";
 
 // 不写 generateStaticParams：页面每次请求时渲染，接口数据由 fetch 缓存兜住，
 // 这样 build 不会一次性调几十次接口，接口失败也不会把错误页缓存下来。
@@ -93,7 +92,7 @@ export default async function ParkPage({ params }: PageProps<"/[locale]/parks/[c
       reason: localize(closure.reasonZh, locale),
       reopen: closure.reopen,
       checked: closure.checked,
-      ...(closure.weekdays ? { weekdays: weekdaysZh(closure.weekdays), from: closure.from } : {}),
+      ...(closure.weekdays ? { weekdays: formatWeekdays(closure.weekdays, dict.units), from: closure.from } : {}),
     }));
   const hasSeasonInfo =
     parkActivities.length > 0 ||
@@ -130,7 +129,7 @@ export default async function ParkPage({ params }: PageProps<"/[locale]/parks/[c
     .filter((a) => a.parking)
     .reduce<{ id: string; nameZh: string; rule: NonNullable<(typeof attractions)[number]["parking"]> }[]>((rows, a) => {
       const same = rows.find((row) => a.parking!.lot && row.rule.lot === a.parking!.lot);
-      if (same) same.nameZh += `、${a.nameZh}`;
+      if (same) same.nameZh += `${dict.units.listSep}${a.nameZh}`;
       else rows.push({ id: a.id, nameZh: a.nameZh, rule: a.parking! });
       return rows;
     }, []);
@@ -328,7 +327,7 @@ export default async function ParkPage({ params }: PageProps<"/[locale]/parks/[c
                       <span className="font-serif text-sm text-clay-600 tabular-nums">{String(i + 1).padStart(2, "0")}</span>
                       <span className="font-serif text-xl transition-colors duration-500 group-hover:text-clay-700">{a.nameZh}</span>
                     </p>
-                    <p className="eyebrow mt-1.5 text-mute">{a.nameEn}</p>
+                    <p className="eyebrow mt-1.5 text-mute">{otherName(a.nameZh, a.nameEn)}</p>
                   </a>
                 </li>
               ))}

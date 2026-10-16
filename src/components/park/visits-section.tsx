@@ -212,7 +212,7 @@ export function VisitsSection({
               {fill(t.parts, {
                 list: visits.parts
                   .map((part) => fill(t.part, { name: localize(part.nameZh, locale), n: formatBig(part.visits, units) }))
-                  .join("、"),
+                  .join(units.listSep),
               })}
             </p>
           )}

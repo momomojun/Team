@@ -4,7 +4,7 @@ import { useEffect, useState, useSyncExternalStore, type FormEvent } from "react
 import { IconArrowRight } from "@/components/icons";
 import { buttonLarge } from "@/components/ui";
 import type { Airport } from "@/data/airports";
-import { fill } from "@/i18n/format";
+import { fill, otherName } from "@/i18n/format";
 import type { LodgingPref, Pace } from "@/lib/generate-trip";
 import { searchPlaces, type PlaceResult } from "@/lib/geocode";
 import type { Party } from "@/lib/suitability";
@@ -62,9 +62,10 @@ const chip = (active: boolean) =>
     active ? "border-ink bg-ink text-paper" : "border-ink/20 text-ink hover:border-ink"
   }`;
 
-const airportPlace = (airport: Airport): WizardPlace => ({
+/** 机场当出发地：“盐湖城国际机场（SLC）”，括号按当前语言 */
+const airportPlace = (airport: Airport, paren: string): WizardPlace => ({
   id: airport.code,
-  name: `${airport.nameZh}（${airport.code}）`,
+  name: `${airport.nameZh}${fill(paren, { x: airport.code })}`,
   lat: airport.lat,
   lon: airport.lon,
 });
@@ -216,7 +217,7 @@ export function TripWizard({
   const quick = [...new Set(selectedParks.flatMap((p) => p.airports))]
     .map((code) => airports[code])
     .filter(Boolean)
-    .map(airportPlace);
+    .map((airport) => airportPlace(airport, text.units.paren));
   const toggleCompanion = (code: string) =>
     setExtraParks((current) => (current.includes(code) ? current.filter((c) => c !== code) : [...current, code]));
   // 换公园时，出发地默认成新公园的第一个常用机场
@@ -275,7 +276,7 @@ export function TripWizard({
               .filter((p) => !p.site)
               .map((p) => (
                 <option key={p.code} value={p.code}>
-                  {p.nameZh} {p.nameEn}
+                  {p.nameZh} {otherName(p.nameZh, p.nameEn)}
                 </option>
               ))}
             {parks.some((p) => p.site) && (
@@ -284,7 +285,7 @@ export function TripWizard({
                   .filter((p) => p.site)
                   .map((p) => (
                     <option key={p.code} value={p.code}>
-                      {p.nameZh} {p.nameEn}
+                      {p.nameZh} {otherName(p.nameZh, p.nameEn)}
                     </option>
                   ))}
               </optgroup>
@@ -351,7 +352,9 @@ export function TripWizard({
               <ul className="mt-2 space-y-2">
                 {otherUnavailable.map((stop) => (
                   <li key={stop.id}>
-                    <span className="text-ink">{stop.name}</span>：{stop.reason}
+                    <span className="text-ink">{stop.name}</span>
+                {text.units.colon}
+                {stop.reason}
                   </li>
                 ))}
               </ul>
@@ -372,7 +375,7 @@ export function TripWizard({
                 className={chip(extraParks.includes(p.code))}
                 onClick={() => toggleCompanion(p.code)}
               >
-                + {p.nameZh} {p.nameEn}
+                + {p.nameZh} {otherName(p.nameZh, p.nameEn)}
               </button>
             ))}
           </div>

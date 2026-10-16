@@ -366,6 +366,8 @@ const zhHans = {
     },
   },
   map: {
+    /** 行程地图上住处的小标记：出发地、回程地、住处 */
+    badges: { origin: "起", destination: "终", lodging: "住" },
     map: "地图",
     satellite: "卫星",
     terrain: "3D 地形",
@@ -397,7 +399,7 @@ const zhHans = {
         motion: "颠簸，容易晕机晕船",
       },
       source: "官方说明",
-      yourParty: "你们这次",
+      yourPartyLine: "你们这次：{reasons}",
       filters: { kids: "带小小孩能去", seniors: "老人轻松", wheelchair: "轮椅能到" },
     },
     mustSee: "必去",
@@ -485,8 +487,19 @@ const zhHans = {
     meters: "爬升 {m} 米",
     wan: "{n} 万",
     yi: "{n} 亿",
+    /** n 是平方公里，sqmi 是平方英里 */
     km2: "{n} 平方公里",
+    /** 温度：c 摄氏、f 华氏 */
+    degrees: "{c}°",
     listSep: "、",
+    /** 标签和内容之间、分句之间、一句话结束、括号：英文是“: ”“, ”“. ”“ (…)” */
+    colon: "：",
+    comma: "，",
+    clauseSep: "；",
+    sentenceSep: "。",
+    paren: "（{x}）",
+    /** 周日到周六 */
+    weekdays: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],
     /** 大数怎么写：中文按万、亿；英文按 million（formatBig） */
     numberStyle: "wan",
   },

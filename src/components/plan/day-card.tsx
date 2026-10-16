@@ -16,8 +16,8 @@ import {
 } from "@/components/icons";
 import type { AttractionWithPhoto } from "@/data/attractions";
 import type { ParkAlert } from "@/lib/alert-match";
-import { fill, formatDuration, formatMonths } from "@/i18n/format";
-import { closureOn, weekdaysZh } from "@/lib/closures";
+import { fill, formatDuration, formatMonths, formatWeekdays, otherName } from "@/i18n/format";
+import { closureOn } from "@/lib/closures";
 import { monthOf } from "@/lib/dates";
 import { moonNight } from "@/lib/moon";
 import { entryWindow, lodgingLeg, onlyAt, parkingOn, type TimelineEntry } from "@/lib/planner";
@@ -143,7 +143,7 @@ export function DayCard({
     }
     const until =
       closure.weekdays && closure.reopen
-        ? fill(t.warnings.weekly, { days: weekdaysZh(closure.weekdays), ...md(closure.reopen) })
+        ? fill(t.warnings.weekly, { days: formatWeekdays(closure.weekdays, text.units), ...md(closure.reopen) })
         : closure.reopen
           ? fill(t.warnings.reopenOn, md(closure.reopen))
           : t.warnings.reopenUnknown;
@@ -204,7 +204,7 @@ export function DayCard({
     if (schedule && departures) {
       const year = schedule.scheduleYear;
       if (departures.times.length > 0) {
-        const times = departures.times.map((time) => formatClock(time)).join("、");
+        const times = departures.times.map((time) => formatClock(time)).join(text.units.listSep);
         notes.push({ text: fill(t.warnings.tourTimes, { times, checkIn: departures.checkIn, year }), tone: "info" });
         // 定了日期的：只在某几天开的（比如 Diablo 湖游船周一周二不开）按星期提醒
         if (dateLabel && !runsOn(stop.id, view.date, true)) notes.push({ text: t.warnings.tourWeekday, tone: "warn" });
@@ -503,13 +503,13 @@ export function DayCard({
                           className="mr-2 inline-block size-1.5 rounded-full align-middle"
                           style={{ backgroundColor: KIND_COLORS[stop.kind] }}
                         />
-                        {stop.nameZh} <span className="ml-1 font-sans text-[11px] tracking-[0.12em] text-mute uppercase">{stop.nameEn}</span>
+                        {stop.nameZh} <span className="ml-1 font-sans text-[11px] tracking-[0.12em] text-mute uppercase">{otherName(stop.nameZh, stop.nameEn)}</span>
                       </p>
                       <p className="mt-0.5 flex flex-wrap items-center gap-x-1 text-xs text-mute">
                         {text.kinds[stop.kind]} · {duration(entry.end - entry.start)}
                         {/* 按学到的配速调整过的停留时间，附上原来的估算 */}
                         {entry.end - entry.start !== stop.durationMin && !finished && (
-                          <span>（{fill(t.pacedFrom, { d: duration(stop.durationMin) })}）</span>
+                          <span>{fill(text.units.paren, { x: fill(t.pacedFrom, { d: duration(stop.durationMin) }) })}</span>
                         )}
                         {stop.hotRank !== undefined && (
                           <span className="text-clay-700"> · {fill(text.attraction.hotRank, { n: stop.hotRank })}</span>

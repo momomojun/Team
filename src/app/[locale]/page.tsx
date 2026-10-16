@@ -16,7 +16,7 @@ import { hasLocale } from "@/i18n/config";
 import { localizePark } from "@/i18n/content";
 import { localize } from "@/i18n/convert";
 import { getDictionary } from "@/i18n/dictionaries";
-import { fill, formatMonths } from "@/i18n/format";
+import { fill, formatMonths, otherName } from "@/i18n/format";
 
 // “当季”按当前月份计算，页面每天重新生成一次
 export const revalidate = 86400;
@@ -192,7 +192,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
                       </Reveal>
                       <p className="mt-5 flex flex-wrap items-baseline gap-x-3">
                         <span className="font-serif text-2xl transition-colors duration-500 group-hover:text-clay-700">{site.nameZh}</span>
-                        <span className="eyebrow text-mute">{site.nameEn}</span>
+                        <span className="eyebrow text-mute">{otherName(site.nameZh, site.nameEn)}</span>
                       </p>
                       <p className="mt-2 text-sm text-ink-soft">{site.tagline}</p>
                       {site.agency && <p className="mt-3 text-xs leading-5 text-mute">{site.agency}</p>}
@@ -237,7 +237,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
                       <span className="font-serif text-2xl transition-colors duration-500 group-hover:text-clay-700">
                         {park.nameZh}
                       </span>
-                      <span className="eyebrow text-mute">{park.nameEn}</span>
+                      <span className="eyebrow text-mute">{otherName(park.nameZh, park.nameEn)}</span>
                     </p>
                     <p className="mt-3 text-sm leading-7 text-ink-soft">{park.seasonNote}</p>
                     <p className="eyebrow mt-5 inline-flex items-center gap-2 text-ink">

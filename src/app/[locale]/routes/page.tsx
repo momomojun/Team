@@ -77,7 +77,7 @@ export default async function RoutesPage({ params }: PageProps<"/[locale]/routes
                   parks={routeParks}
                   stopNames={stopNames}
                   locale={locale}
-                  text={t}
+                  text={{ ...t, colon: dict.units.colon }}
                 />
               ),
             },

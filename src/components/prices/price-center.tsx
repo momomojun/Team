@@ -77,7 +77,7 @@ export function PriceCenter({
   locale: string;
   text: PricesText;
 }) {
-  const hl = locale === "zh-Hant" ? "zh-TW" : "zh-CN";
+  const hl = locale === "zh-Hant" ? "zh-TW" : locale === "en" ? "en-US" : "zh-CN";
   const prefs = useTripPrefs();
   const store = useFlightStore();
   const today = useToday();
@@ -410,7 +410,7 @@ export function PriceCenter({
                       <span className="font-medium tabular-nums">{a.code}</span>
                       <span className="ml-2">{a.nameZh}</span>
                     </td>
-                    <td className="py-2.5 pr-4 text-xs text-ink-soft">{airportParks(a.code).join("、") || "—"}</td>
+                    <td className="py-2.5 pr-4 text-xs text-ink-soft">{airportParks(a.code).join(text.units.listSep) || "—"}</td>
                     <td className="py-2.5 pr-4 text-right tabular-nums">{r ? money(r.car) : "—"}</td>
                     <td className="py-2.5 text-right tabular-nums">{r?.suv ? money(r.suv) : "—"}</td>
                   </tr>
@@ -464,7 +464,7 @@ export function PriceCenter({
                         {fuel[grade] !== undefined ? cents(fuel[grade]) : "—"}
                       </td>
                     ))}
-                    <td className="py-2.5 text-xs text-ink-soft">{statesParks(state).join("、") || "—"}</td>
+                    <td className="py-2.5 text-xs text-ink-soft">{statesParks(state).join(text.units.listSep) || "—"}</td>
                   </tr>
                 );
               })}

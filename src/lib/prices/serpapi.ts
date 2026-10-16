@@ -41,7 +41,7 @@ function toQuote(option: SerpOption): FlightQuote | null {
 }
 
 export const serpApiFlights: FlightPriceProvider = {
-  name: "Google Flights（SerpApi）",
+  name: "Google Flights (SerpApi)",
   async search(query): Promise<FlightResult | null> {
     const key = process.env.SERPAPI_API_KEY;
     if (!key) return null;

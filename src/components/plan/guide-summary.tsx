@@ -2,7 +2,7 @@
 
 import { AddToTripButton } from "@/components/trip/add-to-trip-button";
 import type { ParkActivity } from "@/data/activities";
-import { fill, formatDuration, formatMonths } from "@/i18n/format";
+import { fill, formatDuration, formatMonths, otherName } from "@/i18n/format";
 import type { GuideInfo, GuideSkipped } from "@/lib/generate-trip";
 import type { LodgingRank } from "@/lib/planner";
 import type { PlannerPark, PlannerText, ResolvedLodging, StargazingInfo } from "./types";
@@ -140,7 +140,7 @@ export function GuideSummary({
                         )}
                         {alternatives.length > 0 && (
                           <span className="mt-0.5 block text-xs text-mute">
-                            {fill(g.alternatives, { names: alternatives.join("、") })}
+                            {fill(g.alternatives, { names: alternatives.join(text.units.listSep) })}
                           </span>
                         )}
                         {rental && (
@@ -172,7 +172,7 @@ export function GuideSummary({
                   <li key={`${activity.park}-${activity.nameEn}`} className="space-y-1 py-4">
                     <p className="flex flex-wrap items-baseline gap-x-3">
                       <span className="font-serif text-base">{activity.nameZh}</span>
-                      <span className="text-[11px] tracking-[0.12em] text-mute uppercase">{activity.nameEn}</span>
+                      <span className="text-[11px] tracking-[0.12em] text-mute uppercase">{otherName(activity.nameZh, activity.nameEn)}</span>
                       {multiPark && <span className="text-xs text-mute">{parks.find((p) => p.code === activity.park)?.nameZh}</span>}
                       <span className="text-xs text-mute">
                         {activity.months ? formatMonths(activity.months, text.units) : text.units.allYear}
@@ -232,7 +232,7 @@ export function GuideSummary({
                 {skippedGroups.map(({ key, label }) => (
                   <div key={key}>
                     <dt className="text-xs text-mute">{label}</dt>
-                    <dd className="mt-1 text-sm leading-6">{skippedOf(key).map(nameOf).join("、")}</dd>
+                    <dd className="mt-1 text-sm leading-6">{skippedOf(key).map(nameOf).join(text.units.listSep)}</dd>
                   </div>
                 ))}
               </dl>
@@ -244,7 +244,7 @@ export function GuideSummary({
               <div className="mt-4 space-y-5">
                 {stargazing.map(({ park, nights, lateDark, stops }) => {
                   const good = nights.filter((night) => night.fraction < 0.15 || !night.up);
-                  const days = (list: typeof nights) => list.map((night) => night.day + 1).join("、");
+                  const days = (list: typeof nights) => list.map((night) => night.day + 1).join(text.units.listSep);
                   return (
                     <div key={park.code} className="space-y-1.5 text-sm leading-6 text-ink-soft">
                       <p className="text-ink">

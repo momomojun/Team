@@ -1,7 +1,7 @@
 "use client";
 
 import { buttonPrimary, buttonSecondary } from "@/components/ui";
-import { fill, formatDuration } from "@/i18n/format";
+import { fill, formatDuration, otherName } from "@/i18n/format";
 import type { AttractionWithPhoto } from "@/data/attractions";
 import type { ParkAlert } from "@/lib/alert-match";
 import { paceAdjusts, type PersonalPace } from "@/lib/personal-pace";
@@ -46,7 +46,7 @@ export function paceParts(pace: PersonalPace, text: PlannerText): string {
     ...(pace.hike !== 1 ? [fill(t.paceHike, { x: times(pace.hike) })] : []),
     ...(pace.other !== 1 ? [fill(t.paceOther, { x: times(pace.other) })] : []),
     ...(pace.drive !== 1 ? [fill(t.paceDrive, { x: times(pace.drive) })] : []),
-  ].join("，");
+  ].join(text.units.comma);
 }
 
 /**
@@ -172,7 +172,7 @@ export function TodayPanel({
           <p className="eyebrow text-mute">{arrivedAt !== undefined ? t.here : t.next}</p>
           <p className="mt-2 font-serif text-xl">
             {next.stop.nameZh}
-            <span className="eyebrow ml-2 text-mute">{next.stop.nameEn}</span>
+            <span className="eyebrow ml-2 text-mute">{otherName(next.stop.nameZh, next.stop.nameEn)}</span>
           </p>
           {arrivedAt !== undefined ? (
             <p className="mt-2 text-sm text-ink-soft">

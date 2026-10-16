@@ -20,7 +20,7 @@ export function CelebritySpots({
   /** 景点 id → 名字 */
   stopNames: Record<string, string>;
   locale: string;
-  text: Pick<Dictionary, "attraction" | "routes">;
+  text: Pick<Dictionary, "attraction" | "routes" | "units">;
 }) {
   const t = text.routes;
   const [park, setPark] = useState<string | null>(null);

@@ -10,7 +10,8 @@ import type { Dictionary } from "@/i18n/dictionaries";
 import { fill } from "@/i18n/format";
 import { addToTrip, MAX_DAYS, tripIds, updateTrip, useTrip } from "@/lib/trip-store";
 
-export type RoutesText = Dictionary["routes"];
+/** 博主路线的文案，加上标签后面的冒号（中文“：”、英文“: ”） */
+export type RoutesText = Dictionary["routes"] & { colon: string };
 
 const noSubscribe = () => () => {};
 const useParkParam = () =>
@@ -220,7 +221,9 @@ export function CreatorRoutes({
                   <ul className="mt-3 space-y-2 text-sm leading-6 text-ink-soft">
                     {route.notes.map((note) => (
                       <li key={note.stop}>
-                        <span className="text-ink">{stopNames[note.stop]?.nameZh ?? note.stop}</span>：{note.text}
+                        <span className="text-ink">{stopNames[note.stop]?.nameZh ?? note.stop}</span>
+                          {text.colon}
+                          {note.text}
                       </li>
                     ))}
                   </ul>

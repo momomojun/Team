@@ -145,7 +145,7 @@ export function LodgingSelector({
         <div className="min-w-0">
           <p className="flex flex-wrap items-center gap-x-1">
             <IconBed className="mr-1 text-base text-mute" />
-            <span className="text-mute">{label}：</span>
+            <span className="text-mute">{label}{text.units.colon}</span>
             {current ? (
               <span className="font-serif text-base">
                 {current.name}

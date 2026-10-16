@@ -2,7 +2,7 @@ import type { AttractionWithPhoto } from "@/data/attractions";
 import type { MonthDay } from "@/data/bookings";
 import type { SeasonalRoad } from "@/data/roads";
 import type { Dictionary } from "@/i18n/dictionaries";
-import { fill } from "@/i18n/format";
+import { fill, otherName } from "@/i18n/format";
 import { medianOf, recentYears, recordYears, ROAD_MIN_KNOWN } from "@/lib/roads";
 
 /** 图上画最近几年 */
@@ -71,7 +71,7 @@ export function RoadsSection({
               .filter((id) => nameOf(id))
               .map((id, i) => (
                 <span key={id}>
-                  {i > 0 && "、"}
+                  {i > 0 && dict.units.listSep}
                   <a href={`#attraction-${id}`} className="hover:text-clay-700">
                     {nameOf(id)}
                   </a>
@@ -82,7 +82,7 @@ export function RoadsSection({
               <div className="lg:col-span-4">
                 <p className="flex flex-wrap items-baseline gap-x-3">
                   <span className="font-serif text-lg">{road.nameZh}</span>
-                  <span className="text-[11px] tracking-[0.12em] text-mute uppercase">{road.nameEn}</span>
+                  <span className="text-[11px] tracking-[0.12em] text-mute uppercase">{otherName(road.nameZh, road.nameEn)}</span>
                 </p>
                 {medianOpen && sorted.length > 0 && (
                   <p className="mt-3 text-sm leading-7 text-ink">
@@ -102,13 +102,13 @@ export function RoadsSection({
                 <p className="mt-2 text-xs leading-6 text-ink-soft">{road.noteZh}</p>
                 {road.attractions.some(nameOf) && (
                   <p className="mt-3 text-xs leading-6">
-                    <span className="text-mute">{t.attractions}：</span>
+                    <span className="text-mute">{t.attractions}{dict.units.colon}</span>
                     {links(road.attractions)}
                   </p>
                 )}
                 {road.afterRoad?.some(nameOf) && (
                   <p className="mt-1 text-xs leading-6">
-                    <span className="text-mute">{t.afterRoad}：</span>
+                    <span className="text-mute">{t.afterRoad}{dict.units.colon}</span>
                     {links(road.afterRoad)}
                   </p>
                 )}
@@ -161,7 +161,7 @@ export function RoadsSection({
                     const solid =
                       open && checked !== null && fadeTo > x(open) ? ((checked - x(open)) / (fadeTo - x(open))) * 100 : 60;
                     const label = !open
-                      ? fill(t.skippedYear, { year, reason: skip ? `（${skip}）` : "" })
+                      ? fill(t.skippedYear, { year, reason: skip ? fill(dict.units.paren, { x: skip }) : "" })
                       : end
                         ? fill(t.rowLabel, { year, open: day(open), close: day(close!) })
                         : fill(t.rowOpen, { year, open: day(open) });
@@ -189,7 +189,7 @@ export function RoadsSection({
                 {skipped.length > 0 && (
                   <p className="mt-3 ml-12 text-[11px] leading-5 text-mute">
                     {fill(t.skipped, {
-                      list: skipped.map(([year, , , skip]) => fill(t.skippedYear, { year, reason: `（${skip}）` })).join("、"),
+                      list: skipped.map(([year, , , skip]) => fill(t.skippedYear, { year, reason: fill(dict.units.paren, { x: skip ?? "" }) })).join(dict.units.listSep),
                     })}
                   </p>
                 )}

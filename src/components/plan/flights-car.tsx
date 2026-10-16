@@ -89,7 +89,7 @@ export function FlightsCar({
   const [homeDraft, setHomeDraft] = useState<string | null>(null);
   const [checking, setChecking] = useState(false);
   const [status, setStatus] = useState<"notConfigured" | "failed" | null>(null);
-  const hl = locale === "zh-Hant" ? "zh-TW" : "zh-CN";
+  const hl = locale === "zh-Hant" ? "zh-TW" : locale === "en" ? "en-US" : "zh-CN";
   const home = prefs.homeAirport;
   const adults = prefs.travelers;
   const fly = prefs.flyAndRent;

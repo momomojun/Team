@@ -11,7 +11,7 @@ import { canadaSourceUrl, systemVisits, visitsLastYear } from "@/data/visits.gen
 import { hasLocale } from "@/i18n/config";
 import { localize } from "@/i18n/convert";
 import { getDictionary } from "@/i18n/dictionaries";
-import { fill, formatBig } from "@/i18n/format";
+import { fill, formatBig, otherName } from "@/i18n/format";
 import { parkVisits, visitRanking } from "@/lib/visits";
 import { headerPhoto } from "@/components/site/header-photo";
 import { PageHeader } from "@/components/site/page-header";
@@ -149,7 +149,7 @@ export default async function RankingsPage({ params }: PageProps<"/[locale]/rank
                   <li key={park.code} className="flex items-baseline justify-between gap-4 border-b border-line py-2.5">
                     <Link href={`/${locale}/parks/${park.code}`} className="font-serif text-base hover:text-clay-700">
                       {text(park.nameZh)}
-                      <span className="ml-2 font-sans text-[10px] tracking-[0.12em] text-mute uppercase">{park.nameEn}</span>
+                      <span className="ml-2 font-sans text-[10px] tracking-[0.12em] text-mute uppercase">{otherName(park.nameZh, park.nameEn)}</span>
                     </Link>
                     <span className="text-sm tabular-nums">{formatBig(park.visits!.latest, dict.units)}</span>
                   </li>
@@ -172,6 +172,7 @@ export default async function RankingsPage({ params }: PageProps<"/[locale]/rank
           <p className="mt-5 max-w-3xl text-sm leading-7 text-ink-soft">{t.timeline.intro}</p>
           <div className="mt-12">
             <ParkTimeline
+              units={dict.units}
               parks={nationalParks.map((park) => ({
                 code: park.code,
                 nameZh: text(park.nameZh),
@@ -201,7 +202,7 @@ export default async function RankingsPage({ params }: PageProps<"/[locale]/rank
                 <li key={park.code} className="flex items-baseline justify-between gap-4 border-b border-line py-2.5">
                   <Link href={`/${locale}/parks/${park.code}`} className="font-serif text-base hover:text-clay-700">
                     {text(park.nameZh)}
-                    <span className="ml-2 font-sans text-[10px] tracking-[0.12em] text-mute uppercase">{park.nameEn}</span>
+                    <span className="ml-2 font-sans text-[10px] tracking-[0.12em] text-mute uppercase">{otherName(park.nameZh, park.nameEn)}</span>
                   </Link>
                   <span className="text-xs text-mute">
                     {dateOf(park.established)} · {text(park.provinceZh)}
@@ -223,6 +224,7 @@ export default async function RankingsPage({ params }: PageProps<"/[locale]/rank
             <p className="mt-5 max-w-3xl text-sm leading-7 text-ink-soft">{t.picks.intro}</p>
             <div className="mt-12">
               <PicksSection
+                units={dict.units}
                 picks={mediaPicks.map((pick) => ({ ...pick, reasonZh: text(pick.reasonZh) }))}
                 usNews={usNews}
                 names={names}
@@ -242,6 +244,7 @@ export default async function RankingsPage({ params }: PageProps<"/[locale]/rank
             <h2 className="mt-5 font-serif text-[clamp(2rem,3.5vw,3.2rem)] leading-tight">{t.honors.title}</h2>
             <div className="mt-12">
               <HonorsSection
+                units={dict.units}
                 heritage={Object.fromEntries(
                   Object.entries(worldHeritage).map(([code, site]) => [code, { ...site, nameZh: text(site.nameZh) }]),
                 )}

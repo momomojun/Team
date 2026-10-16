@@ -53,10 +53,10 @@ async function networkFirst(request, cacheName) {
     // 在所有缓存里找：离线地图包里也存着样式和瓦片索引
     const cached = (await caches.match(request)) || (await caches.match(request, { ignoreSearch: true }));
     if (cached) return cached;
-    // 主屏图标打开的是不带语言的 /plan（联网时会按浏览器语言跳转），没网时用存下的简体或繁体页面
+    // 主屏图标打开的是不带语言的 /plan（联网时会按浏览器语言跳转），没网时用存下的简体、繁体或英文页面
     const { pathname } = new URL(request.url);
-    if (request.mode === "navigate" && !/^\/zh-Han[st](\/|$)/.test(pathname)) {
-      for (const locale of ["zh-Hans", "zh-Hant"]) {
+    if (request.mode === "navigate" && !/^\/(?:zh-Han[st]|en)(\/|$)/.test(pathname)) {
+      for (const locale of ["zh-Hans", "zh-Hant", "en"]) {
         const localized = await cache.match(`/${locale}${pathname === "/" ? "" : pathname}`, { ignoreSearch: true });
         if (localized) return localized;
       }

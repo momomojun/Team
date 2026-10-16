@@ -73,7 +73,7 @@ export function weatherNotes(weather: DayWeather, text: PlannerText): string[] {
     const notes = forecastWarnings(weather.day).map((warning) => fill(t.warnings[warning], { low: degrees(weather.day.low) }));
     for (const alert of weather.alerts) {
       const name = t.nwsEvents[alert.event];
-      notes.push(fill(t.nws, { event: name ? `${name}（${alert.event}）` : alert.event }));
+      notes.push(fill(t.nws, { event: name && name !== alert.event ? `${name}${fill(text.units.paren, { x: alert.event })}` : alert.event }));
     }
     return notes;
   }

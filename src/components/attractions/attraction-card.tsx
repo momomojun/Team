@@ -5,7 +5,7 @@ import { AddToTripButton } from "@/components/trip/add-to-trip-button";
 import type { AttractionWithPhoto } from "@/data/attractions";
 import { googleMapsUrl, googleSnapshotDate } from "@/data/attractions/google";
 import type { Dictionary } from "@/i18n/dictionaries";
-import { fill, formatCount, formatDuration, formatKm, formatMeters, formatMonths } from "@/i18n/format";
+import { fill, formatCount, formatDuration, formatKm, formatMeters, formatMonths, otherName } from "@/i18n/format";
 import { CelebrityShots } from "./celebrity-shots";
 import { FamilyFit } from "./family-fit";
 import { KIND_COLORS } from "./kinds";
@@ -204,7 +204,7 @@ export function AttractionCard({
           >
             {a.nameZh}
           </h3>
-          <p className="eyebrow mt-2 text-mute">{a.nameEn}</p>
+          <p className="eyebrow mt-2 text-mute">{otherName(a.nameZh, a.nameEn)}</p>
         </header>
 
         <AttractionMeta attraction={a} text={text} />

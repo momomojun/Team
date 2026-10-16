@@ -60,6 +60,11 @@ export interface UnitText {
   meters: string;
   /** 几项并列时的分隔：中文“、”，英文“, ” */
   listSep: string;
+  colon: string;
+  comma: string;
+  clauseSep: string;
+  sentenceSep: string;
+  paren: string;
 }
 
 /** 分钟数 → "约 1 小时 30 分" 里的时长部分，按 5 分钟取整 */
@@ -89,6 +94,16 @@ export function formatMonths(months: number[], units: UnitText): string {
 
 export function formatKm(miles: number, units: UnitText): string {
   return fill(units.km, { km: (miles * 1.609).toFixed(1), mi: miles });
+}
+
+/** 每周哪几天（0 是周日）：“周三”“周三、周六”，英文“Wednesday” */
+export function formatWeekdays(weekdays: number[], units: { weekdays: string[]; listSep: string }): string {
+  return weekdays.map((day) => units.weekdays[day]).join(units.listSep);
+}
+
+/** 名字旁边附的英文名：英文版里主名已经是英文、两个一样时不再重复，返回空字符串 */
+export function otherName(primary: string, english: string): string {
+  return primary.trim().toLowerCase() === english.trim().toLowerCase() ? "" : english;
 }
 
 /** 几项并列：中文用顿号，英文用逗号 */
