@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Dictionary } from "@/i18n/dictionaries";
-import { fill } from "@/i18n/format";
+import { fill, otherName } from "@/i18n/format";
 
 export interface TimelinePark {
   code: string;
@@ -34,10 +34,12 @@ function tipPosition(x: number) {
 export function ParkTimeline({
   parks,
   locale,
+  units,
   text,
 }: {
   parks: TimelinePark[];
   locale: string;
+  units: Pick<Dictionary["units"], "paren" | "clauseSep">;
   text: Text;
 }) {
   const total = parks.length;
@@ -83,7 +85,7 @@ export function ParkTimeline({
         </p>
         <div
           role="img"
-          aria-label={milestones.map((m) => `${m.label}（${fill(text.count, { n: m.count })}）`).join("；")}
+          aria-label={milestones.map((m) => `${m.label}${fill(units.paren, { x: fill(text.count, { n: m.count }) })}`).join(units.clauseSep)}
           className="relative mt-8 ml-10 h-56 border-b border-l border-line sm:h-72"
         >
           {/* 横向网格线：20、40、60 座 */}
@@ -167,7 +169,7 @@ export function ParkTimeline({
                       ) : (
                         <span className="font-serif text-base text-ink-soft">{park.nameZh}</span>
                       )}
-                      <span className="ml-2 text-[10px] tracking-[0.12em] text-mute uppercase">{park.nameEn}</span>
+                      <span className="ml-2 text-[10px] tracking-[0.12em] text-mute uppercase">{otherName(park.nameZh, park.nameEn)}</span>
                       <span className="block text-[11px] text-mute">
                         {dateOf(park.established)} · {park.statesZh}
                       </span>

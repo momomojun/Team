@@ -17,6 +17,10 @@ export function headerPhoto(id: string, locale: Locale): HeaderPhoto | undefined
     src: photo.url.replace("/960px-", "/1280px-"),
     href: photo.page,
     credit: fill(getDictionary(locale).attraction.photoCredit, { author: photo.author, license: photo.license }),
-    caption: localize([park?.nameZh, attraction.nameZh].filter(Boolean).join(" · "), locale),
+    // 公园名、景点名分开转换（英文版按各自的原文查英文）
+    caption: [park?.nameZh, attraction.nameZh]
+      .filter((name): name is string => Boolean(name))
+      .map((name) => localize(name, locale))
+      .join(" · "),
   };
 }

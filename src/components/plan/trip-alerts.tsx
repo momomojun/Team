@@ -52,7 +52,7 @@ export function TripAlerts({
         {alert.titleZh && <p className="mt-0.5 text-[11px] text-mute">{alert.title}</p>}
         {names && (
           <p className="mt-1 text-xs text-clay-700">
-            {t.related}：{names.join("、")}
+            {t.related}{text.units.colon}{names.join(text.units.listSep)}
           </p>
         )}
         {alert.descriptionZh && <p className="mt-1 line-clamp-3 text-xs leading-5 text-ink-soft">{alert.descriptionZh}</p>}
@@ -96,7 +96,7 @@ export function TripAlerts({
         </>
       )}
       {failed.length > 0 && (
-        <p className="mt-3 text-xs text-clay-700">{fill(t.failed, { parks: failed.map(parkName).join("、") })}</p>
+        <p className="mt-3 text-xs text-clay-700">{fill(t.failed, { parks: failed.map(parkName).join(text.units.listSep) })}</p>
       )}
     </div>
   );

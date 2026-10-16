@@ -1,4 +1,5 @@
 import { celebrityShots, type CelebrityShot } from "../celebrities";
+import { filmShots, type FilmShot } from "../films";
 import { creatorRoutes, type CreatorLanguage } from "../creators";
 import { parkingRules } from "../parking";
 import { suitability } from "../suitability";
@@ -85,6 +86,8 @@ export interface AttractionWithPhoto extends Attraction {
   creatorRouteCount?: number;
   /** 明星在这里公开发过的照片（celebrities.ts） */
   celebrityShots?: CelebrityShot[];
+  /** 电影、电视剧在这里取过景（films.ts） */
+  filmShots?: FilmShot[];
   /** 旺季早上就停满的停车场（parking.ts） */
   parking?: ParkingRule;
   /** 带小孩、老人、轮椅能不能去（suitability/） */
@@ -202,6 +205,7 @@ export const attractions: AttractionWithPhoto[] = withData.map((attraction) => (
   creatorNotes: creatorNotes.get(attraction.id),
   creatorRouteCount: creatorRouteCounts.get(attraction.id),
   celebrityShots: celebrityShots.filter((shot) => shot.attraction === attraction.id),
+  filmShots: filmShots.filter((shot) => shot.attraction === attraction.id),
 }));
 
 export function getParkAttractions(parkCode: string): AttractionWithPhoto[] {

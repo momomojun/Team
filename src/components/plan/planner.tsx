@@ -159,7 +159,7 @@ export function Planner({
   const optionById = useMemo(() => new Map(lodgingOptions.map((o) => [o.id, o])), [lodgingOptions]);
   const dateFormat = useMemo(
     () =>
-      new Intl.DateTimeFormat(locale === "zh-Hant" ? "zh-TW" : "zh-CN", {
+      new Intl.DateTimeFormat(locale === "zh-Hant" ? "zh-TW" : locale === "en" ? "en-US" : "zh-CN", {
         month: "numeric",
         day: "numeric",
         weekday: "short",
@@ -169,7 +169,7 @@ export function Planner({
   );
   const fullDateFormat = useMemo(
     () =>
-      new Intl.DateTimeFormat(locale === "zh-Hant" ? "zh-TW" : "zh-CN", {
+      new Intl.DateTimeFormat(locale === "zh-Hant" ? "zh-TW" : locale === "en" ? "en-US" : "zh-CN", {
         year: "numeric",
         month: "long",
         day: "numeric",
@@ -219,7 +219,7 @@ export function Planner({
     const until = reopen
       ? fill(t.warnings.reopenOn, { m: Number(reopen.slice(5, 7)), d: Number(reopen.slice(8, 10)) })
       : t.warnings.reopenUnknown;
-    return `${until}：${text.closureReasons[id] ?? state.closure.reasonZh}`;
+    return `${until}${text.units.colon}${text.closureReasons[id] ?? state.closure.reasonZh}`;
   };
   // 实时公告管不管这趟：出发日期定了、而且在今天起两周内
   const liveWindow = (startDate: string) =>
@@ -274,7 +274,7 @@ export function Planner({
     if (lodging.kind === "custom") {
       // 出发 / 回程机场按当前语言显示名字（生成攻略时存下的是当时页面语言的名字）
       const airport = lodging.endpoint ? airports[lodging.id.replace(/^custom-(origin|destination)-/, "")] : undefined;
-      return { ...lodging, name: airport ? `${airport.nameZh}（${airport.code}）` : lodging.name, custom: true };
+      return { ...lodging, name: airport ? `${airport.nameZh}${fill(text.units.paren, { x: airport.code })}` : lodging.name, custom: true };
     }
     const option = optionById.get(lodging.id);
     return option
@@ -672,7 +672,7 @@ export function Planner({
     lon: lodging.lon,
     label: lodging.name,
     color: LODGING_COLOR,
-    badge: lodging.endpoint === "origin" ? "起" : lodging.endpoint === "destination" ? "终" : "住",
+    badge: text.map.badges[lodging.endpoint === "origin" ? "origin" : lodging.endpoint === "destination" ? "destination" : "lodging"],
   });
   const mapPoints: MapPoint[] = [];
   const mapTrails: MapTrail[] = [];
@@ -917,8 +917,8 @@ export function Planner({
     }
   }
   const alertStops = [...new Set([...affected.values()].flat())];
-  if (affectedSoon.size) liveNotes.push(fill(t.overview.alertStops, { names: [...affectedSoon].join("、") }));
-  else if (alertStops.length) liveNotes.push(fill(t.overview.alertStopsLater, { names: alertStops.join("、") }));
+  if (affectedSoon.size) liveNotes.push(fill(t.overview.alertStops, { names: [...affectedSoon].join(text.units.listSep) }));
+  else if (alertStops.length) liveNotes.push(fill(t.overview.alertStopsLater, { names: alertStops.join(text.units.listSep) }));
 
   // 补给点：按公园取，住处附近的超市、加油、快充、亚洲超市和餐厅
   const serviceUrls = stopParks.map((code) => `/api/services/${code}`);
@@ -1441,7 +1441,7 @@ export function Planner({
               outDate={outDate}
               backDate={backDate}
               sameDayReturn={sameDayReturn}
-              returnTime={lastReturn !== undefined ? formatClock(lastReturn) : undefined}
+              returnTime={lastReturn !== undefined ? formatClock(lastReturn, text.units.clock) : undefined}
               monthOnly={trip.startDate ? null : (trip.month ?? null)}
               formatDate={formatDate}
               store={flightStore}

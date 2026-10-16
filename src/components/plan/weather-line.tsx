@@ -70,14 +70,18 @@ export function WeatherLine({ weather, text }: { weather: DayWeather; text: Plan
 export function weatherNotes(weather: DayWeather, text: PlannerText): string[] {
   const t = text.plan.weather;
   if (weather.kind === "forecast") {
-    const notes = forecastWarnings(weather.day).map((warning) => fill(t.warnings[warning], { low: degrees(weather.day.low) }));
+    const notes = forecastWarnings(weather.day).map((warning) => fill(t.warnings[warning], { low: degrees(weather.day.low), lowF: degrees(fahrenheit(weather.day.low)) }));
     for (const alert of weather.alerts) {
       const name = t.nwsEvents[alert.event];
-      notes.push(fill(t.nws, { event: name ? `${name}（${alert.event}）` : alert.event }));
+      notes.push(fill(t.nws, { event: name && name !== alert.event ? `${name}${fill(text.units.paren, { x: alert.event })}` : alert.event }));
     }
     return notes;
   }
   return climateWarnings(weather.climate).map((warning) =>
-    fill(t.climateWarnings[warning], { low: degrees(Math.round(weather.climate.low)), n: Math.round(weather.climate.wetDays) }),
+    fill(t.climateWarnings[warning], {
+      low: degrees(Math.round(weather.climate.low)),
+      lowF: degrees(fahrenheit(weather.climate.low)),
+      n: Math.round(weather.climate.wetDays),
+    }),
   );
 }

@@ -115,7 +115,7 @@ export function BookingsSection({
                 )}
                 {rule.applies && (
                   <p className="text-xs leading-6 text-clay-700">
-                    {fill(t.applies, { ranges: rule.applies.map((r) => range(r.from, r.to)).join("、") })}
+                    {fill(t.applies, { ranges: rule.applies.map((r) => range(r.from, r.to)).join(dict.units.listSep) })}
                   </p>
                 )}
                 <ul className="text-sm leading-7 text-ink-soft">
@@ -164,7 +164,7 @@ export function BookingsSection({
                         return (
                           <li key={season.from}>
                             <span className="text-ink">{range(season.from, season.to)}</span>
-                            {"　"}
+                            {dict.units.clauseSep}
                             {[
                               season.firstBus ? fill(t.firstBus, { time: clock(season.firstBus) }) : null,
                               season.lastBusFromHub
@@ -181,7 +181,7 @@ export function BookingsSection({
                               season.days ? t.weekendsOnly : null,
                             ]
                               .filter(Boolean)
-                              .join("，")}
+                              .join(dict.units.comma)}
                           </li>
                         );
                       })}

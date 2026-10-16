@@ -9,7 +9,7 @@ import { AddManyButton } from "@/components/trip/add-many-button";
 import { AddToTripButton } from "@/components/trip/add-to-trip-button";
 import type { AttractionKind, AttractionWithPhoto } from "@/data/attractions";
 import { googleMapsUrl, googleSnapshotDate } from "@/data/attractions/google";
-import { fill, formatDuration } from "@/i18n/format";
+import { fill, formatDuration, otherName } from "@/i18n/format";
 import { AttractionCard, linkButton, PopularityBadge, type AttractionText } from "./attraction-card";
 import { KIND_COLORS } from "./kinds";
 
@@ -153,7 +153,7 @@ export function AttractionsExplorer({
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <p className="truncate font-serif text-xl leading-tight">{selected.nameZh}</p>
-                      <p className="eyebrow mt-1 truncate text-mute">{selected.nameEn}</p>
+                      <p className="eyebrow mt-1 truncate text-mute">{otherName(selected.nameZh, selected.nameEn)}</p>
                     </div>
                     <button
                       type="button"
@@ -174,6 +174,7 @@ export function AttractionsExplorer({
                         <IconTrail />
                         {fill(t.trailLength, {
                           km: selected.trailLine.km.toFixed(1),
+                          mi: (selected.trailLine.km / 1.609).toFixed(1),
                           type: selected.trailLine.loop ? t.loopTrail : t.oneWay,
                         })}
                       </p>

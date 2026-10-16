@@ -1,6 +1,7 @@
 import "server-only";
 import type { Locale } from "./config";
 import { localize } from "./convert";
+import { en } from "./en/dictionary";
 
 /** 博主视频的语言（景点卡片和博主路线页共用） */
 const creatorLanguages = {
@@ -25,7 +26,7 @@ const zhHans = {
     parks: "公园",
     plan: "行程",
     when: "什么时候去",
-    routes: "博主路线",
+    routes: "博主·明星·电影",
     prices: "价格",
     rankings: "榜单",
     start: "开始规划",
@@ -148,6 +149,12 @@ const zhHans = {
     attractionsTitle: "{n} 个精选景点",
     celebsEyebrow: "Celebrity Spots · 明星同款",
     celebsTitle: "明星在这里拍过的照片",
+    celebsAll: "看所有公园的明星同款",
+    filmsEyebrow: "Film Locations · 电影同款",
+    filmsTitle: "在这里拍过的电影",
+    filmsAll: "看所有公园的电影同款",
+    filmsText:
+      "电影、电视剧在这座公园取景的地方：拍的是哪场戏、站在哪、几点去光线最像。每条都有 NPS、电影委员会或可靠报道确认取景地，具体机位是推断的会注明；剧照版权归片方，这里只写我们的描述。",
     celebsText:
       "明星公开发过的照片：在哪拍的、怎么拍同款，点链接看原帖（照片版权归本人，这里只写我们的描述；Instagram 不登录有时打不开）。每条都有报道确认人和地点，只有一家报道、或者地点是按照片推断的会注明。站在崖边、船头这种危险的拍法，按提醒里安全的办法拍。",
     nav: {
@@ -158,6 +165,7 @@ const zhHans = {
       attractions: "景点",
       creators: "博主路线",
       celebs: "明星同款",
+      films: "电影同款",
       live: "实时信息",
       generate: "用这个公园生成攻略",
     },
@@ -364,6 +372,8 @@ const zhHans = {
     },
   },
   map: {
+    /** 行程地图上住处的小标记：出发地、回程地、住处 */
+    badges: { origin: "起", destination: "终", lodging: "住" },
     map: "地图",
     satellite: "卫星",
     terrain: "3D 地形",
@@ -395,7 +405,7 @@ const zhHans = {
         motion: "颠簸，容易晕机晕船",
       },
       source: "官方说明",
-      yourParty: "你们这次",
+      yourPartyLine: "你们这次：{reasons}",
       filters: { kids: "带小小孩能去", seniors: "老人轻松", wheelchair: "轮椅能到" },
     },
     mustSee: "必去",
@@ -441,6 +451,10 @@ const zhHans = {
     celebProfile: "本人主页",
     celebSource: "报道",
     celebHowTo: "怎么拍同款",
+    filmTitle: "电影同款",
+    filmKinds: { film: "电影", tv: "剧集" },
+    filmSource: "来源",
+    filmHowTo: "怎么拍同款",
     celebPlatforms: { instagram: "Instagram", x: "X", weibo: "微博", youtube: "YouTube" } as Record<string, string>,
     bilibili: "B 站",
     creatorLanguages,
@@ -483,7 +497,25 @@ const zhHans = {
     meters: "爬升 {m} 米",
     wan: "{n} 万",
     yi: "{n} 亿",
+    /** n 是平方公里，sqmi 是平方英里 */
     km2: "{n} 平方公里",
+    /** 温度：c 摄氏、f 华氏 */
+    degrees: "{c}°",
+    listSep: "、",
+    /** 几点几分：中文 24 小时制（8:30、17:00），英文 12 小时制（8:30 a.m.） */
+    clock: "24h",
+    /** 让用户输入距离时用公里还是英里 */
+    system: "metric",
+    /** 标签和内容之间、分句之间、一句话结束、括号：英文是“: ”“, ”“. ”“ (…)” */
+    colon: "：",
+    comma: "，",
+    clauseSep: "；",
+    sentenceSep: "。",
+    paren: "（{x}）",
+    /** 周日到周六 */
+    weekdays: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],
+    /** 大数怎么写：中文按万、亿；英文按 million（formatBig） */
+    numberStyle: "wan",
   },
   trip: {
     add: "加入行程",
@@ -1331,10 +1363,16 @@ const zhHans = {
     source: "机票：Google Flights（自用低频查询）或 SerpApi；租车：Kayak 快照加比价链接；油价：AAA。都只当参考，以预订时为准。",
   },
   routes: {
-    eyebrow: "Creators · 博主同款路线",
-    title: "博主同款路线",
+    eyebrow: "Creators, Celebrities & Films · 博主、明星和电影同款",
+    title: "博主路线、明星和电影同款",
+    tabsLabel: "博主路线、明星同款和电影同款",
+    tabs: { creators: "博主路线", celebs: "明星同款", films: "电影同款" },
+    filmsIntro:
+      "电影、电视剧在这些公园取景的地方：拍的是哪场戏、站在哪、几点去光线最像、要不要许可。每条都有 NPS、电影委员会或可靠报道确认取景地，具体机位是推断的会注明；剧照版权归片方，这里只写我们的描述。点公园和景点名可以跳到公园页上的这个景点。",
+    celebsIntro:
+      "明星在这些公园公开发过的照片：在哪拍的、照片里怎么拍的、怎么拍同款，点链接看原帖（照片版权归本人，这里只写我们的描述；Instagram 不登录有时打不开）。每条都有报道确认人和地点，只有一家报道、或者地点是按照片推断的会注明。站在崖边、船头这种危险的拍法，按提醒里安全的办法拍。点公园和景点名可以跳到公园页上的这个景点。",
     intro:
-      "从 YouTube、B 站挑了讲路线的视频和图文攻略，除了中文博主，也有美国本地、日本、韩国和欧洲的博主。按视频的文稿、简介、章节或博主写的图文整理出博主怎么走、什么时候去、觉得哪里值得、有什么坑（外语视频是我们翻译后转述的），每条都附原视频或原文。想照着走，可以一键排进你的行程。",
+      "博主路线：从 YouTube、B 站挑了讲路线的视频和图文攻略，除了中文博主，也有美国本地、日本、韩国和欧洲的博主。按视频的文稿、简介、章节或博主写的图文整理出博主怎么走、什么时候去、觉得哪里值得、有什么坑（外语视频是我们翻译后转述的），每条都附原视频或原文。想照着走，可以一键排进你的行程。明星同款：明星在公园里公开发过的照片，写明在哪拍、怎么拍同款。",
     filter: "按公园筛选",
     languageFilter: "按博主语言筛选",
     all: "全部",
@@ -1582,7 +1620,8 @@ const cache = new Map<Locale, Dictionary>();
 export function getDictionary(locale: Locale): Dictionary {
   let dict = cache.get(locale);
   if (!dict) {
-    dict = convertDeep(zhHans, locale);
+    // 英文版是另写的（src/i18n/en/dictionary.ts），不从中文转；还没写好时先用中文
+    dict = locale === "en" ? (en ?? zhHans) : convertDeep(zhHans, locale);
     cache.set(locale, dict);
   }
   return dict;

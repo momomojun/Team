@@ -2,12 +2,13 @@ import { NextResponse, type NextRequest } from "next/server";
 import { defaultLocale, locales, type Locale } from "@/i18n/config";
 import { AUTH_COOKIE, authToken, sameSecret, sitePassword } from "@/lib/site-auth";
 
-// 台湾、香港、澳门等繁体地区默认进繁体页面，其余进简体
+// 台湾、香港、澳门等繁体地区默认进繁体页面，其余中文进简体，英文进英文版；都不是的按浏览器语言列表往后找，没有就进简体
 function pickLocale(acceptLanguage: string | null): Locale {
   for (const part of acceptLanguage?.split(",") ?? []) {
     const tag = part.split(";")[0].trim().toLowerCase();
     if (/^zh-(hant|tw|hk|mo)/.test(tag)) return "zh-Hant";
     if (tag.startsWith("zh")) return "zh-Hans";
+    if (tag.startsWith("en")) return "en";
   }
   return defaultLocale;
 }
@@ -16,7 +17,7 @@ const localeOf = (pathname: string): Locale | undefined =>
   locales.find((locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`));
 
 /** 设了访问密码时，不用登录也能打开的：登录页和提交密码的接口 */
-const OPEN = /^\/(?:api\/login|zh-Han[st]\/login)$/;
+const OPEN = /^\/(?:api\/login|(?:zh-Han[st]|en)\/login)$/;
 
 export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;

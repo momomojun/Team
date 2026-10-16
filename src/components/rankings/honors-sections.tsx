@@ -1,21 +1,34 @@
 import Link from "next/link";
 import type { DarkSky, MediaPick, WorldHeritage } from "@/data/honors";
 import type { Dictionary } from "@/i18n/dictionaries";
-import { fill } from "@/i18n/format";
+import { fill, otherName } from "@/i18n/format";
 
 /** 公园代码 → 名字和网站上的公园页（没收录的没有 page） */
 export type ParkNames = Record<string, { nameZh: string; page?: string }>;
 
 type Text = Dictionary["rankings"];
+type Units = Pick<Dictionary["units"], "listSep" | "paren">;
 
-function ParkLinks({ codes, names, locale, notOnSite }: { codes: string[]; names: ParkNames; locale: string; notOnSite?: string }) {
+function ParkLinks({
+  codes,
+  names,
+  locale,
+  units,
+  notOnSite,
+}: {
+  codes: string[];
+  names: ParkNames;
+  locale: string;
+  units: Units;
+  notOnSite?: string;
+}) {
   return (
     <>
       {codes.map((code, i) => {
         const park = names[code];
         return (
           <span key={code}>
-            {i > 0 && "、"}
+            {i > 0 && units.listSep}
             {park?.page ? (
               <Link href={`/${locale}/parks/${park.page}`} className="hover:text-clay-700">
                 {park.nameZh}
@@ -23,7 +36,7 @@ function ParkLinks({ codes, names, locale, notOnSite }: { codes: string[]; names
             ) : (
               <span className="text-ink-soft">
                 {park?.nameZh ?? code}
-                {notOnSite && <span className="ml-1 text-[11px] text-mute">（{notOnSite}）</span>}
+                {notOnSite && <span className="ml-1 text-[11px] text-mute">{fill(units.paren, { x: notOnSite })}</span>}
               </span>
             )}
           </span>
@@ -39,6 +52,7 @@ export function PicksSection({
   usNews,
   names,
   locale,
+  units,
   text,
   checked,
 }: {
@@ -46,6 +60,7 @@ export function PicksSection({
   usNews?: { edition: number; url: string; parks: string[] };
   names: ParkNames;
   locale: string;
+  units: Units;
   text: Text;
   checked: string;
 }) {
@@ -66,7 +81,7 @@ export function PicksSection({
                       <span className="text-ink-soft">{t.outlets[pick.outlet]}</span> · {t.lists[pick.outlet]} · {t.kinds[pick.kind]}
                     </p>
                     <p className="mt-2 font-serif text-lg leading-snug">
-                      <ParkLinks codes={pick.parks} names={names} locale={locale} notOnSite={t.notOnSite} />
+                      <ParkLinks codes={pick.parks} names={names} locale={locale} units={units} notOnSite={t.notOnSite} />
                     </p>
                     <p className="mt-1 text-[11px] tracking-[0.06em] text-mute">{pick.title}</p>
                     <p className="mt-3 text-sm leading-7 text-ink-soft">{pick.reasonZh}</p>
@@ -86,7 +101,7 @@ export function PicksSection({
             {fill(t.usNewsIntro, { n: usNews.parks.length, ours: usNews.parks.filter((code) => names[code]?.page).length })}
           </p>
           <p className="mt-4 text-sm leading-8">
-            <ParkLinks codes={usNews.parks} names={names} locale={locale} />
+            <ParkLinks codes={usNews.parks} names={names} locale={locale} units={units} />
           </p>
           <a href={usNews.url} target="_blank" rel="noreferrer" className="link-line mt-3 inline-block text-xs tracking-[0.1em]">
             {t.original}
@@ -104,6 +119,7 @@ export function HonorsSection({
   darkSky,
   names,
   locale,
+  units,
   text,
   checked,
 }: {
@@ -111,6 +127,7 @@ export function HonorsSection({
   darkSky: Record<string, DarkSky>;
   names: ParkNames;
   locale: string;
+  units: Units;
   text: Text;
   checked: string;
 }) {
@@ -137,10 +154,11 @@ export function HonorsSection({
                 <span className="w-12 shrink-0 text-xs text-mute tabular-nums">{year}</span>
                 <div className="min-w-0 flex-1">
                   <p className="font-serif text-base">
-                    <ParkLinks codes={codes} names={names} locale={locale} />
+                    <ParkLinks codes={codes} names={names} locale={locale} units={units} />
                   </p>
                   <a href={site.url} target="_blank" rel="noreferrer" className="mt-0.5 block text-[11px] text-mute hover:text-ink">
-                    {site.nameZh} · {site.nameEn}
+                    {site.nameZh}
+                    {otherName(site.nameZh, site.nameEn) && ` · ${site.nameEn}`}
                   </a>
                 </div>
               </li>
@@ -155,7 +173,7 @@ export function HonorsSection({
               <li key={code} className="flex items-baseline gap-4 border-b border-line py-3">
                 <span className="w-12 shrink-0 text-xs text-mute tabular-nums">{sky.year}</span>
                 <p className="min-w-0 flex-1 font-serif text-base">
-                  <ParkLinks codes={[code]} names={names} locale={locale} />
+                  <ParkLinks codes={[code]} names={names} locale={locale} units={units} />
                   {sky.program === "rasc" && <span className="ml-2 font-sans text-[11px] text-mute">{t.rasc}</span>}
                 </p>
                 <a href={sky.url} target="_blank" rel="noreferrer" className="shrink-0 text-[11px] text-mute hover:text-ink">

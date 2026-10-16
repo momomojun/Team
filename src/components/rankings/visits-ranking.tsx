@@ -53,7 +53,7 @@ export function VisitsRanking({
       active ? "border-ink bg-ink text-paper" : "border-ink/20 text-ink hover:border-ink"
     }`;
   const display = (row: RankingRow) =>
-    metric === "visits" ? formatBig(row.visits, text.units) : fill(text.units.km2, { n: formatCount(row.areaKm2) });
+    metric === "visits" ? formatBig(row.visits, text.units) : fill(text.units.km2, { n: formatCount(row.areaKm2), sqmi: formatCount(Math.round(row.areaKm2 * 0.3861)) });
   /** 比前一年涨跌多少（“+0.8%”“−5.4%”）；按面积排时不显示 */
   const change = (row: RankingRow) => {
     if (metric !== "visits" || !row.previous) return "";

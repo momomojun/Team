@@ -51,14 +51,14 @@ export function TripBudget({
           ? [
               fees.usePass ? (fees.passKind === "resident" ? t.passResident : t.passNonresident) : fill(t.feesPay, { amount: money(fees.pay) }),
               fees.usePass
-                ? `${fill(t.feesPay, { amount: money(fees.pay) })}，${fill(t.passBetter, { save: money(fees.pay - fees.pass) })}`
-                : `${fill(t.feesPass, { amount: money(fees.pass) })}，${t.payBetter}`,
+                ? `${fill(t.feesPay, { amount: money(fees.pay) })}${text.units.comma}${fill(t.passBetter, { save: money(fees.pay - fees.pass) })}`
+                : `${fill(t.feesPass, { amount: money(fees.pass) })}${text.units.comma}${t.payBetter}`,
             ]
           : []),
         ...(fees.surchargeParks > 0 && !fees.usePass
           ? [fill(t.surcharge, { n: Math.min(prefs.nonresidents, prefs.travelers), parks: fees.surchargeParks })]
           : []),
-        ...(fees.freeParks.length > 0 ? [fill(t.free, { parks: fees.freeParks.map(parkName).join("、") })] : []),
+        ...(fees.freeParks.length > 0 ? [fill(t.free, { parks: fees.freeParks.map(parkName).join(text.units.listSep) })] : []),
         ...(fees.canada > 0 ? [fill(fees.canadaPass ? t.canadaPass : t.canadaDaily, { amount: money(fees.canada) })] : []),
         ...(fees.sites > 0 ? [fill(t.sites, { amount: money(fees.sites) })] : []),
       ],
@@ -87,7 +87,7 @@ export function TripBudget({
               mi: mi.toLocaleString("en-US"),
               mpg: MILES_PER_GALLON,
               price: `$${fuel.price.toFixed(2)}`,
-              states: fuel.states.map(stateName).join("、"),
+              states: fuel.states.map(stateName).join(text.units.listSep),
             })) + (distanceEstimated ? t.distanceEstimated : ""),
       ],
     },

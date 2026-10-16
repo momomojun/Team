@@ -155,7 +155,7 @@ export function TripBookings({
     const n = days.map((day) => day + 1);
     // 连续的几天写成“第 2–4 天”
     const consecutive = n.every((value, i) => i === 0 || value === n[i - 1] + 1);
-    return consecutive && n.length > 2 ? `${n[0]}–${n.at(-1)}` : n.join("、");
+    return consecutive && n.length > 2 ? `${n[0]}–${n.at(-1)}` : n.join(text.units.listSep);
   };
 
   return (
@@ -200,7 +200,7 @@ export function TripBookings({
                     </span>
                   )}
                   <p className="text-xs text-mute">
-                    {b.kinds[rule.kind]} · {fill(lodging ? b.nights : b.days, { n: dayList(item.days) })}
+                    {b.kinds[rule.kind]} · {fill(lodging ? b.nights : b.days, { n: dayList(item.days), count: item.days.length })}
                   </p>
                 </div>
                 <div className="min-w-0">
@@ -208,11 +208,11 @@ export function TripBookings({
                   <p className="mt-1 text-sm leading-6 text-ink-soft">{describe(main, rule.kind === "lottery")}</p>
                   {item.later.length > 0 && main.window.type !== "block" && (
                     <p className="text-xs leading-6 text-mute">
-                      {fill(b.later, { dates: item.later.slice(0, 4).map(date).join("、") })}
+                      {fill(b.later, { dates: item.later.slice(0, 4).map(date).join(text.units.listSep) })}
                     </p>
                   )}
                   {item.later.length > 0 && main.window.type === "block" && (
-                    <p className="text-xs leading-6 text-mute">{fill(b.laterBlock, { dates: item.later.map(date).join("、") })}</p>
+                    <p className="text-xs leading-6 text-mute">{fill(b.laterBlock, { dates: item.later.map(date).join(text.units.listSep) })}</p>
                   )}
                   {also.map((opening, i) => {
                     const next = today ? openingState(opening, today) : null;

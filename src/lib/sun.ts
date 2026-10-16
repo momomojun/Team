@@ -53,7 +53,16 @@ export function minutesOfDay(date: Date, timeZone: string): number {
 }
 
 /** 当天第几分钟 → "07:05" */
-export function formatClock(minutes: number): string {
+export function formatClock(minutes: number, style: string = "24h"): string {
   const m = ((Math.round(minutes) % 1440) + 1440) % 1440;
+  if (style === "12h") return clock12(Math.floor(m / 60), m % 60);
   return `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+}
+
+/** 英文的 12 小时制：8 a.m.、8:30 a.m.、noon、midnight */
+export function clock12(hours: number, minutes: number): string {
+  if (minutes === 0 && hours === 12) return "noon";
+  if (minutes === 0 && hours % 24 === 0) return "midnight";
+  const h = hours % 12 === 0 ? 12 : hours % 12;
+  return `${h}${minutes ? `:${String(minutes).padStart(2, "0")}` : ""} ${hours % 24 < 12 ? "a.m." : "p.m."}`;
 }

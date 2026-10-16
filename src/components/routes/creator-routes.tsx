@@ -7,10 +7,11 @@ import { IconArrowUpRight } from "@/components/icons";
 import { buttonPrimary, buttonSecondary } from "@/components/ui";
 import type { CreatorLanguage, CreatorRoute } from "@/data/creators";
 import type { Dictionary } from "@/i18n/dictionaries";
-import { fill } from "@/i18n/format";
+import { fill, formatCount } from "@/i18n/format";
 import { addToTrip, MAX_DAYS, tripIds, updateTrip, useTrip } from "@/lib/trip-store";
 
-export type RoutesText = Dictionary["routes"];
+/** 博主路线的文案，加上标签后面的冒号（中文“：”、英文“: ”） */
+export type RoutesText = Dictionary["routes"] & { colon: string };
 
 const noSubscribe = () => () => {};
 const useParkParam = () =>
@@ -56,7 +57,7 @@ export function CreatorRoutes({
   const views = (route: CreatorRoute) => {
     const article = route.format === "article";
     return route.views >= 10000
-      ? fill(article ? text.readsWan : text.viewsWan, { n: (route.views / 10000).toFixed(1) })
+      ? fill(article ? text.readsWan : text.viewsWan, { n: (route.views / 10000).toFixed(1), full: formatCount(route.views) })
       : fill(article ? text.reads : text.views, { n: route.views });
   };
   const known = (stop: string) => stop in stopNames;
@@ -220,7 +221,9 @@ export function CreatorRoutes({
                   <ul className="mt-3 space-y-2 text-sm leading-6 text-ink-soft">
                     {route.notes.map((note) => (
                       <li key={note.stop}>
-                        <span className="text-ink">{stopNames[note.stop]?.nameZh ?? note.stop}</span>：{note.text}
+                        <span className="text-ink">{stopNames[note.stop]?.nameZh ?? note.stop}</span>
+                          {text.colon}
+                          {note.text}
                       </li>
                     ))}
                   </ul>

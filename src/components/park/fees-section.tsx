@@ -1,5 +1,7 @@
 import { Section } from "@/components/section";
 import { manualFees } from "@/data/fees-manual";
+import type { Locale } from "@/i18n/config";
+import { localize } from "@/i18n/convert";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { getFees } from "@/lib/nps";
 import { settle } from "@/lib/settle";
@@ -22,7 +24,17 @@ const money = (currency: "USD" | "CAD", value: number) =>
     maximumFractionDigits: 2,
   }).format(value);
 
-export async function FeesSection({ parkCode, npsCode, dict }: { parkCode: string; npsCode: string | null; dict: Dictionary }) {
+export async function FeesSection({
+  parkCode,
+  npsCode,
+  dict,
+  locale,
+}: {
+  parkCode: string;
+  npsCode: string | null;
+  dict: Dictionary;
+  locale: Locale;
+}) {
   const t = dict.park.fees;
   const manual = manualFees[parkCode];
   // 加拿大公园、园外名胜：手动整理的门票
@@ -47,7 +59,7 @@ export async function FeesSection({ parkCode, npsCode, dict }: { parkCode: strin
                 </div>
               )}
             </dl>
-            <p className="mt-4 text-sm leading-7 text-ink-soft">{manual.note}</p>
+            <p className="mt-4 text-sm leading-7 text-ink-soft">{localize(manual.note, locale)}</p>
             <a href={manual.source} target="_blank" rel="noreferrer" className="link-line mt-3 inline-block text-xs text-mute">
               {t.officialFees}
             </a>

@@ -20,22 +20,23 @@ import { activities } from "@/data/activities";
 import { bookingRules } from "@/data/bookings";
 import { getParkAttractions } from "@/data/attractions";
 import { CelebrityShotItem } from "@/components/attractions/celebrity-shots";
+import { FilmShotItem } from "@/components/attractions/film-shots";
 import { celebrityShots } from "@/data/celebrities";
+import { filmShots } from "@/data/films";
 import { creatorRoutes, type CreatorRoute } from "@/data/creators";
 import { lodgingOptions } from "@/data/lodging";
 import { getPark, isSite, npsCodeOf } from "@/data/parks";
 import type { RoadYear } from "@/data/roads";
 import { shuttleSystems } from "@/data/shuttles";
 import { hasLocale } from "@/i18n/config";
-import { localizeActivity, localizeAttraction, localizeCelebrity, localizePark } from "@/i18n/content";
+import { localizeActivity, localizeAttraction, localizeCelebrity, localizeFilm, localizePark } from "@/i18n/content";
 import { localize } from "@/i18n/convert";
 import { getDictionary } from "@/i18n/dictionaries";
-import { fill, formatMonths } from "@/i18n/format";
+import { fill, formatCount, formatMonths, formatWeekdays, otherName } from "@/i18n/format";
 import { isUsingDemoKey } from "@/lib/datagov";
 import { roadsOf } from "@/lib/roads";
 import { parkVisits } from "@/lib/visits";
 import { tempClosures } from "@/data/closures";
-import { weekdaysZh } from "@/lib/closures";
 
 // 不写 generateStaticParams：页面每次请求时渲染，接口数据由 fetch 缓存兜住，
 // 这样 build 不会一次性调几十次接口，接口失败也不会把错误页缓存下来。
@@ -48,7 +49,10 @@ export async function generateMetadata({
   const { locale, code } = await params;
   const park = getPark(code);
   if (!park || !hasLocale(locale)) return {};
-  return { title: `${localize(park.nameZh, locale)} ${park.nameEn}` };
+  const name = localize(park.nameZh, locale);
+  // 英文版主名就是英文：写成“Zion National Park”，不重复
+  const english = park.kind === "site" ? park.nameEn : `${park.nameEn} National Park`;
+  return { title: otherName(name, park.nameEn) ? `${name} ${park.nameEn}` : english };
 }
 
 export default async function ParkPage({ params }: PageProps<"/[locale]/parks/[code]">) {
@@ -93,7 +97,7 @@ export default async function ParkPage({ params }: PageProps<"/[locale]/parks/[c
       reason: localize(closure.reasonZh, locale),
       reopen: closure.reopen,
       checked: closure.checked,
-      ...(closure.weekdays ? { weekdays: weekdaysZh(closure.weekdays), from: closure.from } : {}),
+      ...(closure.weekdays ? { weekdays: formatWeekdays(closure.weekdays, dict.units), from: closure.from } : {}),
     }));
   const hasSeasonInfo =
     parkActivities.length > 0 ||
@@ -110,7 +114,7 @@ export default async function ParkPage({ params }: PageProps<"/[locale]/parks/[c
       ...rule,
       titleZh: localize(rule.titleZh, locale),
       noteZh: localize(rule.noteZh, locale),
-      ...(rule.places?.length ? { places: [...rule.targets.map(targetName), ...rule.places] } : {}),
+      ...(rule.places?.length ? { places: [...rule.targets.map(targetName), ...rule.places.map((place) => localize(place, locale))] } : {}),
     }));
   const parkShuttles = shuttleSystems
     .filter((system) => system.park === park.code)
@@ -130,7 +134,7 @@ export default async function ParkPage({ params }: PageProps<"/[locale]/parks/[c
     .filter((a) => a.parking)
     .reduce<{ id: string; nameZh: string; rule: NonNullable<(typeof attractions)[number]["parking"]> }[]>((rows, a) => {
       const same = rows.find((row) => a.parking!.lot && row.rule.lot === a.parking!.lot);
-      if (same) same.nameZh += `、${a.nameZh}`;
+      if (same) same.nameZh += `${dict.units.listSep}${a.nameZh}`;
       else rows.push({ id: a.id, nameZh: a.nameZh, rule: a.parking! });
       return rows;
     }, []);
@@ -152,6 +156,11 @@ export default async function ParkPage({ params }: PageProps<"/[locale]/parks/[c
     .filter((shot) => shot.park === park.code)
     .map((shot) => localizeCelebrity(shot, locale))
     .sort((a, b) => Number(!a.attraction) - Number(!b.attraction) || b.date.localeCompare(a.date));
+  // 电影同款：能对上景点的排前面，新片在前
+  const parkFilms = filmShots
+    .filter((shot) => shot.park === park.code)
+    .map((shot) => localizeFilm(shot, locale))
+    .sort((a, b) => Number(!a.attraction) - Number(!b.attraction) || b.year - a.year);
   const parkCreators = creatorRoutes
     .filter((route) => route.parks.includes(park.code))
     .sort((a, b) => b.views - a.views);
@@ -169,7 +178,7 @@ export default async function ParkPage({ params }: PageProps<"/[locale]/parks/[c
   const viewsText = (route: CreatorRoute) => {
     const article = route.format === "article";
     return route.views >= 10000
-      ? fill(article ? r.readsWan : r.viewsWan, { n: (route.views / 10000).toFixed(1) })
+      ? fill(article ? r.readsWan : r.viewsWan, { n: (route.views / 10000).toFixed(1), full: formatCount(route.views) })
       : fill(article ? r.reads : r.views, { n: route.views });
   };
 
@@ -239,6 +248,7 @@ export default async function ParkPage({ params }: PageProps<"/[locale]/parks/[c
           { id: "attractions", label: t.nav.attractions },
           ...(parkCreators.length > 0 ? [{ id: "creators", label: t.nav.creators }] : []),
           ...(parkCelebs.length > 0 ? [{ id: "celebs", label: t.nav.celebs }] : []),
+          ...(parkFilms.length > 0 ? [{ id: "films", label: t.nav.films }] : []),
           { id: "live", label: t.nav.live },
         ]}
         actions={
@@ -328,7 +338,7 @@ export default async function ParkPage({ params }: PageProps<"/[locale]/parks/[c
                       <span className="font-serif text-sm text-clay-600 tabular-nums">{String(i + 1).padStart(2, "0")}</span>
                       <span className="font-serif text-xl transition-colors duration-500 group-hover:text-clay-700">{a.nameZh}</span>
                     </p>
-                    <p className="eyebrow mt-1.5 text-mute">{a.nameEn}</p>
+                    <p className="eyebrow mt-1.5 text-mute">{otherName(a.nameZh, a.nameEn)}</p>
                   </a>
                 </li>
               ))}
@@ -399,7 +409,7 @@ export default async function ParkPage({ params }: PageProps<"/[locale]/parks/[c
               {featuredCreators.map((route) => (
                 <li key={route.id} className="border-t border-ink pt-4">
                   <p className="text-xs text-mute">
-                    <span className="text-ink-soft">{route.creator}</span> · {r.platforms[route.platform]}
+                    <span className="text-ink-soft">{locale === "en" ? localize(route.creator, locale) : route.creator}</span> · {r.platforms[route.platform]}
                     {route.format === "article" && ` ${r.article}`} · {r.languages[route.language]} · {viewsText(route)}
                     {route.days ? ` · ${fill(r.days, { n: route.days })}` : ""}
                   </p>
@@ -426,6 +436,9 @@ export default async function ParkPage({ params }: PageProps<"/[locale]/parks/[c
             <p className="eyebrow text-mute">{t.celebsEyebrow}</p>
             <h2 className="mt-5 font-serif text-[clamp(2rem,3.5vw,3.2rem)] leading-tight">{t.celebsTitle}</h2>
             <p className="mt-5 max-w-2xl text-sm leading-7 text-ink-soft">{t.celebsText}</p>
+            <Link href={`/${locale}/routes#celebs`} className="link-line mt-4 inline-block text-xs tracking-[0.1em] text-clay-700">
+              {t.celebsAll}
+            </Link>
             <ul className="mt-12 grid gap-x-12 gap-y-10 md:grid-cols-2">
               {parkCelebs.map((shot) => {
                 const stop = shot.attraction ? attractions.find((a) => a.id === shot.attraction) : undefined;
@@ -437,6 +450,34 @@ export default async function ParkPage({ params }: PageProps<"/[locale]/parks/[c
                       </a>
                     )}
                     <CelebrityShotItem shot={shot} text={dict} />
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </section>
+      )}
+
+      {parkFilms.length > 0 && (
+        <section id="films" className="cv-auto [--cv-h:1500px] scroll-mt-28 border-t border-line">
+          <div className={`${container} py-20 lg:py-28`}>
+            <p className="eyebrow text-mute">{t.filmsEyebrow}</p>
+            <h2 className="mt-5 font-serif text-[clamp(2rem,3.5vw,3.2rem)] leading-tight">{t.filmsTitle}</h2>
+            <p className="mt-5 max-w-2xl text-sm leading-7 text-ink-soft">{t.filmsText}</p>
+            <Link href={`/${locale}/routes#films`} className="link-line mt-4 inline-block text-xs tracking-[0.1em] text-clay-700">
+              {t.filmsAll}
+            </Link>
+            <ul className="mt-12 grid gap-x-12 gap-y-10 md:grid-cols-2">
+              {parkFilms.map((shot) => {
+                const stop = shot.attraction ? attractions.find((a) => a.id === shot.attraction) : undefined;
+                return (
+                  <li key={shot.id} className="border-t border-ink pt-4">
+                    {stop && (
+                      <a href={`#attraction-${stop.id}`} className="eyebrow mb-2 block text-mute hover:text-clay-700">
+                        {stop.nameZh}
+                      </a>
+                    )}
+                    <FilmShotItem shot={shot} text={dict} />
                   </li>
                 );
               })}
@@ -464,7 +505,7 @@ export default async function ParkPage({ params }: PageProps<"/[locale]/parks/[c
             </div>
             <div className="lg:col-span-5">
               <Suspense fallback={<SectionSkeleton title={t.fees.title} />}>
-                <FeesSection parkCode={park.code} npsCode={npsCodeOf(park)} dict={dict} />
+                <FeesSection parkCode={park.code} npsCode={npsCodeOf(park)} dict={dict} locale={locale} />
               </Suspense>
             </div>
           </div>

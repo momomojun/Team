@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, ViewTransition } from "react";
 import { CommonsImage } from "@/components/commons-image";
 import { IconArrowRight } from "@/components/icons";
 import { usePastHero } from "./use-past-hero";
+import { otherName } from "@/i18n/format";
 
 export interface ParkIndexItem {
   code: string;
@@ -148,7 +149,7 @@ export function ParkIndex({ items, inSeasonLabel }: { items: ParkIndexItem[]; in
                         <span className="font-serif text-[1.75rem] leading-tight transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-2 sm:text-[2.4rem]">
                           {item.nameZh}
                         </span>
-                        <span className="eyebrow text-mute">{item.nameEn}</span>
+                        <span className="eyebrow text-mute">{otherName(item.nameZh, item.nameEn)}</span>
                         {item.inSeason && (
                           <span className="eyebrow inline-flex items-center gap-1.5 text-clay-700">
                             <span className="size-1.5 rounded-full bg-clay-600" aria-hidden />

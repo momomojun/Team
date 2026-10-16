@@ -16,8 +16,8 @@ import {
 } from "@/components/icons";
 import type { AttractionWithPhoto } from "@/data/attractions";
 import type { ParkAlert } from "@/lib/alert-match";
-import { fill, formatDuration, formatMonths } from "@/i18n/format";
-import { closureOn, weekdaysZh } from "@/lib/closures";
+import { fill, formatDuration, formatMonths, formatWeekdays, otherName } from "@/i18n/format";
+import { closureOn } from "@/lib/closures";
 import { monthOf } from "@/lib/dates";
 import { moonNight } from "@/lib/moon";
 import { entryWindow, lodgingLeg, onlyAt, parkingOn, type TimelineEntry } from "@/lib/planner";
@@ -143,7 +143,7 @@ export function DayCard({
     }
     const until =
       closure.weekdays && closure.reopen
-        ? fill(t.warnings.weekly, { days: weekdaysZh(closure.weekdays), ...md(closure.reopen) })
+        ? fill(t.warnings.weekly, { days: formatWeekdays(closure.weekdays, text.units), ...md(closure.reopen) })
         : closure.reopen
           ? fill(t.warnings.reopenOn, md(closure.reopen))
           : t.warnings.reopenUnknown;
@@ -204,7 +204,7 @@ export function DayCard({
     if (schedule && departures) {
       const year = schedule.scheduleYear;
       if (departures.times.length > 0) {
-        const times = departures.times.map((time) => formatClock(time)).join("、");
+        const times = departures.times.map((time) => formatClock(time, text.units.clock)).join(text.units.listSep);
         notes.push({ text: fill(t.warnings.tourTimes, { times, checkIn: departures.checkIn, year }), tone: "info" });
         // 定了日期的：只在某几天开的（比如 Diablo 湖游船周一周二不开）按星期提醒
         if (dateLabel && !runsOn(stop.id, view.date, true)) notes.push({ text: t.warnings.tourWeekday, tone: "warn" });
@@ -219,9 +219,9 @@ export function DayCard({
     const window = entryWindow(stop, view.date);
     if (window) {
       const values = {
-        open: formatClock(window.open),
-        last: window.lastEntry !== undefined ? formatClock(window.lastEntry) : "",
-        close: window.close !== undefined ? formatClock(window.close) : "",
+        open: formatClock(window.open, text.units.clock),
+        last: window.lastEntry !== undefined ? formatClock(window.lastEntry, text.units.clock) : "",
+        close: window.close !== undefined ? formatClock(window.close, text.units.clock) : "",
       };
       const template =
         window.lastEntry !== undefined && window.close !== undefined
@@ -248,8 +248,8 @@ export function DayCard({
     const lot = parkingAt.get(stop.id);
     if (!lot || !stop.parking) return null;
     const values = {
-      time: formatClock(lot.full),
-      free: formatClock(lot.free),
+      time: formatClock(lot.full, text.units.clock),
+      free: formatClock(lot.free, text.units.clock),
       note: stop.parking.noteZh,
       weekends: stop.parking.weekends ? t.warnings.parkingWeekends : "",
     };
@@ -258,7 +258,7 @@ export function DayCard({
       ? {
           text: fill(window ? t.warnings.parkingLateWindow : t.warnings.parkingLate, {
             ...values,
-            arrive: formatClock(entry.start),
+            arrive: formatClock(entry.start, text.units.clock),
           }),
           tone: "warn",
         }
@@ -271,15 +271,15 @@ export function DayCard({
     const pct = Math.round(night.fraction * 100);
     if (night.fraction < 0.15) return { text: fill(t.warnings.moonDark, { pct }), tone: "info" };
     if (night.upMin === 0 && night.set !== null && night.set <= entry.start) {
-      return { text: fill(t.warnings.moonSet, { pct, time: formatClock(night.set) }), tone: "info" };
+      return { text: fill(t.warnings.moonSet, { pct, time: formatClock(night.set, text.units.clock) }), tone: "info" };
     }
     if (night.upMin === 0 && night.rise !== null && night.rise >= entry.end) {
-      return { text: fill(t.warnings.moonRise, { pct, time: formatClock(night.rise) }), tone: "info" };
+      return { text: fill(t.warnings.moonRise, { pct, time: formatClock(night.rise, text.units.clock) }), tone: "info" };
     }
     if (night.upMin === 0) return { text: fill(t.warnings.moonDark, { pct }), tone: "info" };
     const until = night.set !== null && night.set > entry.start && night.set < entry.start + 6 * 60 ? night.set : null;
     return {
-      text: fill(t.warnings.moonUp, { pct, until: until !== null ? fill(t.warnings.moonUntil, { time: formatClock(until) }) : "" }),
+      text: fill(t.warnings.moonUp, { pct, until: until !== null ? fill(t.warnings.moonUntil, { time: formatClock(until, text.units.clock) }) : "" }),
       tone: night.fraction >= 0.5 ? "warn" : "info",
     };
   };
@@ -337,10 +337,10 @@ export function DayCard({
           {sun.kind === "normal" && (
             <p className="inline-flex items-center gap-3">
               <span className="inline-flex items-center gap-1">
-                <IconSunrise className="text-sm" /> {fill(t.sunrise, { time: formatClock(sun.window.sunrise) })}
+                <IconSunrise className="text-sm" /> {fill(t.sunrise, { time: formatClock(sun.window.sunrise, text.units.clock) })}
               </span>
               <span className="inline-flex items-center gap-1">
-                <IconSunset className="text-sm" /> {fill(t.sunset, { time: formatClock(sun.window.sunset) })}
+                <IconSunset className="text-sm" /> {fill(t.sunset, { time: formatClock(sun.window.sunset, text.units.clock) })}
               </span>
             </p>
           )}
@@ -375,7 +375,7 @@ export function DayCard({
           <div className="flex items-center gap-3 px-1.5">
             <span className={gripCol} aria-hidden />
             <span className={timeCol}>
-              <span className={clock}>{formatClock(timeline.departAt)}</span>
+              <span className={clock}>{formatClock(timeline.departAt, text.units.clock)}</span>
             </span>
             <span className="flex min-w-0 items-center gap-1.5 text-sm text-ink-soft">
               <IconBed className="shrink-0 text-base text-mute" />
@@ -489,8 +489,8 @@ export function DayCard({
                       <IconGrip />
                     </span>
                     <span className={timeCol}>
-                      <span className={`${clock} ${finished ? "text-mute" : ""}`}>{formatClock(entry.start)}</span>
-                      <span className="block text-[11px] leading-4 text-mute">{fill(t.until, { time: formatClock(entry.end) })}</span>
+                      <span className={`${clock} ${finished ? "text-mute" : ""}`}>{formatClock(entry.start, text.units.clock)}</span>
+                      <span className="block text-[11px] leading-4 text-mute">{fill(t.until, { time: formatClock(entry.end, text.units.clock) })}</span>
                     </span>
                     <button
                       type="button"
@@ -503,13 +503,13 @@ export function DayCard({
                           className="mr-2 inline-block size-1.5 rounded-full align-middle"
                           style={{ backgroundColor: KIND_COLORS[stop.kind] }}
                         />
-                        {stop.nameZh} <span className="ml-1 font-sans text-[11px] tracking-[0.12em] text-mute uppercase">{stop.nameEn}</span>
+                        {stop.nameZh} <span className="ml-1 font-sans text-[11px] tracking-[0.12em] text-mute uppercase">{otherName(stop.nameZh, stop.nameEn)}</span>
                       </p>
                       <p className="mt-0.5 flex flex-wrap items-center gap-x-1 text-xs text-mute">
                         {text.kinds[stop.kind]} · {duration(entry.end - entry.start)}
                         {/* 按学到的配速调整过的停留时间，附上原来的估算 */}
                         {entry.end - entry.start !== stop.durationMin && !finished && (
-                          <span>（{fill(t.pacedFrom, { d: duration(stop.durationMin) })}）</span>
+                          <span>{fill(text.units.paren, { x: fill(t.pacedFrom, { d: duration(stop.durationMin) }) })}</span>
                         )}
                         {stop.hotRank !== undefined && (
                           <span className="text-clay-700"> · {fill(text.attraction.hotRank, { n: stop.hotRank })}</span>
@@ -661,7 +661,7 @@ export function DayCard({
             <div className="flex items-center gap-3 px-1.5 pt-1">
               <span className={gripCol} aria-hidden />
               <span className={timeCol}>
-                <span className={`${clock} ${timeline.lateReturn ? "text-clay-700" : ""}`}>{formatClock(timeline.returnAt)}</span>
+                <span className={`${clock} ${timeline.lateReturn ? "text-clay-700" : ""}`}>{formatClock(timeline.returnAt, text.units.clock)}</span>
               </span>
               <span className="flex min-w-0 items-center gap-1.5 text-sm text-ink-soft">
                 <IconBed className="shrink-0 text-base text-mute" />

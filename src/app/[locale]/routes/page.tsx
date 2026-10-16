@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { CelebritySpots } from "@/components/routes/celebrity-spots";
 import { CreatorRoutes } from "@/components/routes/creator-routes";
+import { RoutesTabs } from "@/components/routes/routes-tabs";
 import { attractions } from "@/data/attractions";
+import { celebrityShots } from "@/data/celebrities";
+import { filmShots } from "@/data/films";
 import { creatorRoutes, creatorsUpdated, type CreatorRoute } from "@/data/creators";
 import { parks } from "@/data/parks";
 import { hasLocale, type Locale } from "@/i18n/config";
+import { localizeCelebrity, localizeFilm } from "@/i18n/content";
 import { localize } from "@/i18n/convert";
 import { getDictionary } from "@/i18n/dictionaries";
 import { fill } from "@/i18n/format";
@@ -23,6 +28,8 @@ function localizeRoute(route: CreatorRoute, locale: Locale): CreatorRoute {
   const t = (text: string) => localize(text, locale);
   return {
     ...route,
+    // 频道名：英文版用拼音或意译（带英文的只留英文），繁体保持博主自己的写法
+    creator: locale === "en" ? t(route.creator) : route.creator,
     summary: t(route.summary),
     origin: route.origin && t(route.origin),
     visited: route.visited && t(route.visited),
@@ -47,16 +54,52 @@ export default async function RoutesPage({ params }: PageProps<"/[locale]/routes
     .filter((park) => creatorRoutes.some((route) => route.parks.includes(park.code)))
     .map((park) => ({ code: park.code, nameZh: localize(park.nameZh, locale) }));
 
+  // 明星同款：新发的在前；公园按网站的公园顺序
+  const shots = celebrityShots.map((shot) => localizeCelebrity(shot, locale)).sort((a, b) => b.date.localeCompare(a.date));
+  const films = filmShots.map((shot) => localizeFilm(shot, locale)).sort((a, b) => b.year - a.year);
+  const parksWith = (list: { park: string }[]) =>
+    parks.filter((park) => list.some((item) => item.park === park.code)).map((park) => ({ code: park.code, nameZh: localize(park.nameZh, locale) }));
+  const stopsOf = (list: { attraction?: string }[]) =>
+    Object.fromEntries(attractions.filter((a) => list.some((item) => item.attraction === a.id)).map((a) => [a.id, localize(a.nameZh, locale)]));
+
   return (
     <div className="mx-auto max-w-[1600px] px-5 pt-14 pb-28 sm:px-10">
       <PageHeader eyebrow={t.eyebrow} title={t.title} intro={t.intro} photo={headerPhoto("mova-forrest-gump-point", locale)} />
       <div className="mt-10">
-        <CreatorRoutes
-          routes={creatorRoutes.map((route) => localizeRoute(route, locale))}
-          parks={routeParks}
-          stopNames={stopNames}
-          locale={locale}
-          text={t}
+        <RoutesTabs
+          label={t.tabsLabel}
+          tabs={[
+            {
+              id: "creators",
+              label: t.tabs.creators,
+              count: creatorRoutes.length,
+              panel: (
+                <CreatorRoutes
+                  routes={creatorRoutes.map((route) => localizeRoute(route, locale))}
+                  parks={routeParks}
+                  stopNames={stopNames}
+                  locale={locale}
+                  text={{ ...t, colon: dict.units.colon }}
+                />
+              ),
+            },
+            {
+              id: "celebs",
+              label: t.tabs.celebs,
+              count: shots.length,
+              panel: <CelebritySpots kind="celebs" shots={shots} parks={parksWith(shots)} stopNames={stopsOf(shots)} locale={locale} text={dict} />,
+            },
+            ...(films.length > 0
+              ? [
+                  {
+                    id: "films",
+                    label: t.tabs.films,
+                    count: films.length,
+                    panel: <CelebritySpots kind="films" shots={films} parks={parksWith(films)} stopNames={stopsOf(films)} locale={locale} text={dict} />,
+                  },
+                ]
+              : []),
+          ]}
         />
       </div>
       <p className="mt-16 text-[11px] leading-5 text-mute">{fill(t.source, { date: creatorsUpdated })}</p>

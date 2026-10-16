@@ -77,7 +77,7 @@ export function PriceCenter({
   locale: string;
   text: PricesText;
 }) {
-  const hl = locale === "zh-Hant" ? "zh-TW" : "zh-CN";
+  const hl = locale === "zh-Hant" ? "zh-TW" : locale === "en" ? "en-US" : "zh-CN";
   const prefs = useTripPrefs();
   const store = useFlightStore();
   const today = useToday();
@@ -163,6 +163,8 @@ export function PriceCenter({
   const [mpg, setMpg] = useState(MILES_PER_GALLON);
   const [fuelState, setFuelState] = useState("UT");
   const miles = km / KM_PER_MILE;
+  // 英文版按英里输入，内部照旧按公里存
+  const imperial = text.units.system === "imperial";
   const gasCost = (miles / Math.max(mpg, 1)) * (gas.states[fuelState]?.regular ?? 5);
   const evCost = (miles / MILES_PER_KWH) * DC_FAST_PRICE;
   const statesParks = (state: string) => parks.filter((p) => p.state === state).map((p) => p.nameZh);
@@ -410,7 +412,7 @@ export function PriceCenter({
                       <span className="font-medium tabular-nums">{a.code}</span>
                       <span className="ml-2">{a.nameZh}</span>
                     </td>
-                    <td className="py-2.5 pr-4 text-xs text-ink-soft">{airportParks(a.code).join("、") || "—"}</td>
+                    <td className="py-2.5 pr-4 text-xs text-ink-soft">{airportParks(a.code).join(text.units.listSep) || "—"}</td>
                     <td className="py-2.5 pr-4 text-right tabular-nums">{r ? money(r.car) : "—"}</td>
                     <td className="py-2.5 text-right tabular-nums">{r?.suv ? money(r.suv) : "—"}</td>
                   </tr>
@@ -464,7 +466,7 @@ export function PriceCenter({
                         {fuel[grade] !== undefined ? cents(fuel[grade]) : "—"}
                       </td>
                     ))}
-                    <td className="py-2.5 text-xs text-ink-soft">{statesParks(state).join("、") || "—"}</td>
+                    <td className="py-2.5 text-xs text-ink-soft">{statesParks(state).join(text.units.listSep) || "—"}</td>
                   </tr>
                 );
               })}
@@ -480,8 +482,11 @@ export function PriceCenter({
                 type="number"
                 min={0}
                 step={50}
-                value={km}
-                onChange={(event) => setKm(Math.max(0, Number(event.target.value)))}
+                value={imperial ? Math.round(km / KM_PER_MILE) : km}
+                onChange={(event) => {
+                  const value = Math.max(0, Number(event.target.value));
+                  setKm(imperial ? value * KM_PER_MILE : value);
+                }}
                 className={`${field} w-28 tabular-nums`}
               />
             </label>

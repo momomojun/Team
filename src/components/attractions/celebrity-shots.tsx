@@ -1,7 +1,7 @@
 import type { CelebrityShot } from "@/data/celebrities";
 import type { Dictionary } from "@/i18n/dictionaries";
 
-type CelebText = Pick<Dictionary, "attraction">;
+type CelebText = Pick<Dictionary, "attraction" | "units">;
 
 /** 发帖日期：2026-08-10 → 2026.08.10，只知道月份的 2026-05 → 2026.05 */
 const dateText = (date: string) => date.replaceAll("-", ".");
@@ -36,7 +36,9 @@ export function CelebrityShotItem({ shot, text, compact = false }: { shot: Celeb
       {!compact && (
         <>
           <p className="mt-2 text-ink-soft">
-            <span className="text-ink">{t.celebHowTo}：</span>
+            <span className="text-ink">{t.celebHowTo}
+              {text.units.colon}
+            </span>
             {shot.howToZh}
           </p>
           {shot.tipsZh.length > 0 && (

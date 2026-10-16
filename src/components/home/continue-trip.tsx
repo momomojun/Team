@@ -25,7 +25,7 @@ export function ContinueTrip({
   // 景点 id 统一以公园代码开头
   const parks = [...new Set(ids.map((id) => id.split("-")[0]))].map((code) => parkNames[code] ?? code);
   const start = trip.startDate
-    ? new Intl.DateTimeFormat(locale === "zh-Hant" ? "zh-TW" : "zh-CN", {
+    ? new Intl.DateTimeFormat(locale === "zh-Hant" ? "zh-TW" : locale === "en" ? "en-US" : "zh-CN", {
         month: "long",
         day: "numeric",
         timeZone: "UTC",

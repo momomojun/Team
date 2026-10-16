@@ -91,7 +91,7 @@ export const airports: Record<string, Airport> = {
   LWB: { code: "LWB", nameZh: "格林布赖尔谷机场", city: "刘易斯堡（西弗吉尼亚）", lat: 37.8579, lon: -80.4004 },
   BGR: { code: "BGR", nameZh: "班戈国际机场", city: "班戈", lat: 44.80726, lon: -68.81941 },
   BHB: { code: "BHB", nameZh: "汉考克县–巴尔港机场", city: "巴尔港（Trenton）", lat: 44.45001, lon: -68.36212 },
-  PWM: { code: "PWM", nameZh: "波特兰国际机场", city: "波特兰（缅因州）", lat: 43.64618, lon: -70.31441 },
+  PWM: { code: "PWM", nameZh: "波特兰国际航空港", city: "波特兰（缅因州）", lat: 43.64618, lon: -70.31441 },
   BOS: { code: "BOS", nameZh: "波士顿洛根国际机场", city: "波士顿", lat: 42.36318, lon: -71.01364 },
   MIA: { code: "MIA", nameZh: "迈阿密国际机场", city: "迈阿密", lat: 25.7959, lon: -80.287 },
   FLL: { code: "FLL", nameZh: "劳德代尔堡–好莱坞国际机场", city: "劳德代尔堡", lat: 26.0726, lon: -80.1527 },

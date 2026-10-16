@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useEffectEvent, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { IconArrowRight, IconChevronRight, IconClose, IconMenu } from "@/components/icons";
+import { otherName } from "@/i18n/format";
 
 export interface MenuRegion {
   id: string;
@@ -53,7 +54,7 @@ function ParkLink({
       {month !== null && park.bestMonths.includes(month) && (
         <span className="ml-2 align-middle text-[10px] tracking-[0.1em] text-clay-700">{inSeasonLabel}</span>
       )}
-      <span className="block text-[10px] tracking-[0.14em] text-mute uppercase">{park.nameEn}</span>
+      <span className="block text-[10px] tracking-[0.14em] text-mute uppercase">{otherName(park.nameZh, park.nameEn)}</span>
     </Link>
   );
 }

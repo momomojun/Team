@@ -140,6 +140,8 @@ const degrees = (value: number) => {
   const rounded = Math.round(value);
   return rounded < 0 ? `−${Math.abs(rounded)}` : String(rounded);
 };
+/** 摄氏度 → 华氏度（英文版用） */
+const degreesF = (celsius: number) => degrees((celsius * 9) / 5 + 32);
 
 function reasonsOf(item: ParkWindow, text: SeasonText): Reason[] {
   const t = text.reasons;
@@ -149,7 +151,7 @@ function reasonsOf(item: ParkWindow, text: SeasonText): Reason[] {
       ? { text: t.best, good: true }
       : { text: fill(t.notBest, { months: formatMonths(item.park.bestMonths, text.units) }), good: false },
   );
-  const names = (list: string[]) => (list.length > 3 ? fill(t.andMore, { names: list.slice(0, 3).join("、"), n: list.length }) : list.join("、"));
+  const names = (list: string[]) => (list.length > 3 ? fill(t.andMore, { names: list.slice(0, 3).join(text.units.listSep), n: list.length }) : list.join(text.units.listSep));
   if (item.closedMustSee.length === 0) reasons.push({ text: item.open >= 0.9 ? t.allOpen : t.mustSeeOpen, good: true });
   else if (item.open >= 0.6) reasons.push({ text: fill(t.someClosed, { names: names(item.closedMustSee) }), good: false });
   else reasons.push({ text: fill(t.mostClosed, { names: names(item.closedMustSee) }), good: false });
@@ -172,22 +174,22 @@ function reasonsOf(item: ParkWindow, text: SeasonText): Reason[] {
   }
   const climate = item.climate;
   if (climate) {
-    if (climate.hottest >= 33) reasons.push({ text: fill(t.hot, { high: degrees(climate.hottest) }), good: false });
-    else if (climate.high < 5) reasons.push({ text: fill(t.cold, { high: degrees(climate.high) }), good: false });
+    if (climate.hottest >= 33) reasons.push({ text: fill(t.hot, { high: degrees(climate.hottest), highF: degreesF(climate.hottest) }), good: false });
+    else if (climate.high < 5) reasons.push({ text: fill(t.cold, { high: degrees(climate.high), highF: degreesF(climate.high) }), good: false });
     else if (climate.high >= 15) reasons.push({ text: t.comfortable, good: true });
-    else reasons.push({ text: fill(t.cool, { low: degrees(climate.low) }), good: false });
+    else reasons.push({ text: fill(t.cool, { low: degrees(climate.low), lowF: degreesF(climate.low) }), good: false });
     if (climate.snowDays >= 4) reasons.push({ text: fill(t.snowy, { n: Math.round(climate.snowDays) }), good: false });
     else if (climate.wetDays >= 10) reasons.push({ text: fill(t.rainy, { n: Math.round(climate.wetDays) }), good: false });
   }
-  if (item.events.length) reasons.push({ text: fill(t.events, { names: item.events.slice(0, 3).join("、") }), good: true });
+  if (item.events.length) reasons.push({ text: fill(t.events, { names: item.events.slice(0, 3).join(text.units.listSep) }), good: true });
   const crowd = item.crowd;
   if (crowd) {
     // 往下取整：0.79 是“人比较多”，不能说成“8 成”（八成以上算最挤）
     const p = Math.floor(crowd.ratio * 10);
     const n = formatBig(crowd.perDay, text.units);
     if (crowd.level === "peak") reasons.push({ text: fill(t.crowdPeak, { n }), good: false });
-    else if (crowd.level === "busy") reasons.push({ text: fill(t.crowdBusy, { p }), good: false });
-    else if (crowd.level === "moderate") reasons.push({ text: fill(t.crowdModerate, { p }), good: true });
+    else if (crowd.level === "busy") reasons.push({ text: fill(t.crowdBusy, { p, pct: p * 10 }), good: false });
+    else if (crowd.level === "moderate") reasons.push({ text: fill(t.crowdModerate, { p, pct: p * 10 }), good: true });
     else reasons.push({ text: t.crowdQuiet, good: true });
   }
   return reasons;
@@ -322,6 +324,8 @@ export function SeasonGuide({ parks, locale, text }: { parks: ParkSeason[]; loca
                           aria-label={fill(text.climate, {
                             high: degrees(item.climate.high),
                             low: degrees(item.climate.low),
+                            highF: degreesF(item.climate.high),
+                            lowF: degreesF(item.climate.low),
                             n: Math.round(item.climate.wetDays),
                           })}
                         >
@@ -329,8 +333,8 @@ export function SeasonGuide({ parks, locale, text }: { parks: ParkSeason[]; loca
                             {text.climateTitle}
                           </div>
                           {[
-                            [text.climateHigh, `${degrees(item.climate.high)}°`],
-                            [text.climateLow, `${degrees(item.climate.low)}°`],
+                            [text.climateHigh, fill(text.units.degrees, { c: degrees(item.climate.high), f: degreesF(item.climate.high) })],
+                            [text.climateLow, fill(text.units.degrees, { c: degrees(item.climate.low), f: degreesF(item.climate.low) })],
                             [text.climateWet, fill(text.climateDays, { n: Math.round(item.climate.wetDays) })],
                           ].map(([label, value]) => (
                             <div key={label} className="flex flex-col-reverse" aria-hidden>

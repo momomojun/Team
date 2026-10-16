@@ -31,11 +31,13 @@ async function mapLimit<T, R>(items: T[], limit: number, task: (item: T) => Prom
   return results;
 }
 
-/** 公告的标题和正文翻成中文（繁体页面再用 OpenCC 转），原文也留着 */
+/** 公告的标题和正文翻成中文（繁体页面再用 OpenCC 转），原文也留着；英文版不翻 */
 export async function translateAlerts(alerts: NpsAlert[], locale: Locale, maxChars = 900): Promise<TranslatedAlert[]> {
   return mapLimit(alerts, CONCURRENCY, async (alert) => {
     const title = stripHtml(alert.title);
     const description = stripHtml(alert.description).slice(0, maxChars);
+    // 英文版直接看 NPS 的原文，不用翻译
+    if (locale === "en") return { title, description };
     const [titleZh, descriptionZh] = await Promise.all([translateToChinese(title), translateToChinese(description)]);
     const zh = (text: string | undefined) => (text && locale !== "zh-Hans" ? localize(text, locale) : text);
     return {

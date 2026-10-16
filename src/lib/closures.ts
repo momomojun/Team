@@ -39,4 +39,4 @@ export function closedAllDays(id: string, dates: (string | null | undefined)[]):
 export const closuresOf = (id: string) => byAttraction.get(id) ?? [];
 
 /** 每周关的那几天，写成“周三”“周六、周日” */
-export const weekdaysZh = (weekdays: number[]) => weekdays.map((day) => `周${"日一二三四五六"[day]}`).join("、");
+

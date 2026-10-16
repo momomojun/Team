@@ -5,8 +5,8 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "NPS Guide · 美国国家公园行程规划",
     short_name: "NPS Guide",
-    description: "美国国家公园的景点地图、行程规划和实时公告，没信号时也能看行程。",
-    // 不带语言前缀：联网时按浏览器语言跳到简体或繁体，离线时 sw.js 找存下的那个
+    description: "美国国家公园的景点地图、行程规划和实时公告，没信号时也能看行程。Maps, trip plans and live alerts for U.S. national parks — your itinerary works offline.",
+    // 不带语言前缀：联网时按浏览器语言跳到简体、繁体或英文，离线时 sw.js 找存下的那个
     start_url: "/plan",
     scope: "/",
     display: "standalone",

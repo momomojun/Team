@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { localize } from "../src/i18n/convert";
-import { fill, tidyChinese } from "../src/i18n/format";
+import { fill, joinAnd, tidyChinese } from "../src/i18n/format";
 
 test("汉字紧挨着英文、数字开头或结尾的值补空格", () => {
   assert.equal(
@@ -50,4 +50,40 @@ test("繁体：台湾用语别换过头（窗口、分区），十几分钟、�
   assert.equal(localize("坐 Roam 6 路公交", "zh-Hant"), "坐 Roam 6 路公車");
   // 该换的照样换：视频→影片、信息→資訊
   assert.equal(localize("视频里的信息", "zh-Hant"), "影片裡的資訊");
+});
+
+test("英文模板：单复数、月份名、星期几", () => {
+  assert.equal(fill("{n} {n|day|days}", { n: 1 }), "1 day");
+  assert.equal(fill("{n} {n|day|days}", { n: 3 }), "3 days");
+  assert.equal(fill("{from:month}–{to:month}", { from: 6, to: 10 }), "June–October");
+  assert.equal(fill("{m:mon} {d}", { m: 9, d: 5 }), "Sept. 5");
+  assert.equal(fill("closed {w:weekday}s", { w: 3 }), "closed Wednesdays");
+  // 中文模板照旧
+  assert.equal(fill("{m} 月", { m: 6 }), "6 月");
+});
+
+test("英文模板里的时间写成 12 小时制，中文照旧", () => {
+  assert.equal(fill("Opens at {time}", { time: "17:30" }), "Opens at 5:30 p.m.");
+  assert.equal(fill("Opens at {time}", { time: "08:00" }), "Opens at 8 a.m.");
+  assert.equal(fill("Opens at {time}", { time: "12:00" }), "Opens at noon");
+  assert.equal(fill("{time} 开门", { time: "17:30" }), "17:30 开门");
+});
+
+test("几项并列加“和”：中文“A、B和C”，英文用牛津逗号", () => {
+  assert.equal(joinAnd(["黄石", "大提顿", "冰川"], "和", { listSep: "、" }), "黄石、大提顿和冰川");
+  assert.equal(joinAnd(["Yellowstone", "Grand Teton"], " and ", { listSep: ", " }), "Yellowstone and Grand Teton");
+  assert.equal(joinAnd(["Yellowstone", "Grand Teton", "Glacier"], " and ", { listSep: ", " }), "Yellowstone, Grand Teton, and Glacier");
+});
+
+test("英文模板：序数和 ISO 日期", () => {
+  assert.equal(fill("on the {d:ordinal}", { d: 1 }), "on the 1st");
+  assert.equal(fill("on the {d:ordinal}", { d: 12 }), "on the 12th");
+  assert.equal(fill("on the {d:ordinal}", { d: 23 }), "on the 23rd");
+  assert.equal(fill("Checked {date:date}", { date: "2026-12-01" }), "Checked December 1, 2026");
+  assert.equal(fill("Checked {date:date}", { date: "soon" }), "Checked soon");
+});
+
+test("英文句末的 a.m. 不重复句点", () => {
+  assert.equal(fill("The lot fills by {time}.", { time: "08:00" }), "The lot fills by 8 a.m.");
+  assert.equal(fill("Opens {time}, daily", { time: "08:00" }), "Opens 8 a.m., daily");
 });
