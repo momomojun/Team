@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { CelebritySpots } from "@/components/routes/celebrity-spots";
 import { CreatorRoutes } from "@/components/routes/creator-routes";
+import { RoutesTabs } from "@/components/routes/routes-tabs";
 import { attractions } from "@/data/attractions";
+import { celebrityShots } from "@/data/celebrities";
 import { creatorRoutes, creatorsUpdated, type CreatorRoute } from "@/data/creators";
 import { parks } from "@/data/parks";
 import { hasLocale, type Locale } from "@/i18n/config";
+import { localizeCelebrity } from "@/i18n/content";
 import { localize } from "@/i18n/convert";
 import { getDictionary } from "@/i18n/dictionaries";
 import { fill } from "@/i18n/format";
@@ -47,16 +51,43 @@ export default async function RoutesPage({ params }: PageProps<"/[locale]/routes
     .filter((park) => creatorRoutes.some((route) => route.parks.includes(park.code)))
     .map((park) => ({ code: park.code, nameZh: localize(park.nameZh, locale) }));
 
+  // 明星同款：新发的在前；公园按网站的公园顺序
+  const shots = celebrityShots.map((shot) => localizeCelebrity(shot, locale)).sort((a, b) => b.date.localeCompare(a.date));
+  const celebParks = parks
+    .filter((park) => shots.some((shot) => shot.park === park.code))
+    .map((park) => ({ code: park.code, nameZh: localize(park.nameZh, locale) }));
+  const celebStops = Object.fromEntries(
+    attractions.filter((a) => shots.some((shot) => shot.attraction === a.id)).map((a) => [a.id, localize(a.nameZh, locale)]),
+  );
+
   return (
     <div className="mx-auto max-w-[1600px] px-5 pt-14 pb-28 sm:px-10">
       <PageHeader eyebrow={t.eyebrow} title={t.title} intro={t.intro} photo={headerPhoto("mova-forrest-gump-point", locale)} />
       <div className="mt-10">
-        <CreatorRoutes
-          routes={creatorRoutes.map((route) => localizeRoute(route, locale))}
-          parks={routeParks}
-          stopNames={stopNames}
-          locale={locale}
-          text={t}
+        <RoutesTabs
+          label={t.tabsLabel}
+          tabs={[
+            {
+              id: "creators",
+              label: t.tabs.creators,
+              count: creatorRoutes.length,
+              panel: (
+                <CreatorRoutes
+                  routes={creatorRoutes.map((route) => localizeRoute(route, locale))}
+                  parks={routeParks}
+                  stopNames={stopNames}
+                  locale={locale}
+                  text={t}
+                />
+              ),
+            },
+            {
+              id: "celebs",
+              label: t.tabs.celebs,
+              count: shots.length,
+              panel: <CelebritySpots shots={shots} parks={celebParks} stopNames={celebStops} locale={locale} text={dict} />,
+            },
+          ]}
         />
       </div>
       <p className="mt-16 text-[11px] leading-5 text-mute">{fill(t.source, { date: creatorsUpdated })}</p>

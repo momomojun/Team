@@ -426,6 +426,9 @@ export default async function ParkPage({ params }: PageProps<"/[locale]/parks/[c
             <p className="eyebrow text-mute">{t.celebsEyebrow}</p>
             <h2 className="mt-5 font-serif text-[clamp(2rem,3.5vw,3.2rem)] leading-tight">{t.celebsTitle}</h2>
             <p className="mt-5 max-w-2xl text-sm leading-7 text-ink-soft">{t.celebsText}</p>
+            <Link href={`/${locale}/routes#celebs`} className="link-line mt-4 inline-block text-xs tracking-[0.1em] text-clay-700">
+              {t.celebsAll}
+            </Link>
             <ul className="mt-12 grid gap-x-12 gap-y-10 md:grid-cols-2">
               {parkCelebs.map((shot) => {
                 const stop = shot.attraction ? attractions.find((a) => a.id === shot.attraction) : undefined;
