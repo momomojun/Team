@@ -108,17 +108,17 @@ export function TodayPanel({
     const line = (id: string) => text.shuttleNames[id] ?? id;
     if (now < plannedDepart) {
       timing = nextPlanned.shuttle
-        ? fill(t.plannedShuttle, { time: formatClock(plannedDepart), drive: duration(nextPlanned.driveMin), line: line(nextPlanned.shuttle.line) })
-        : fill(t.plannedDepart, { time: formatClock(plannedDepart), drive: duration(nextPlanned.driveMin) });
+        ? fill(t.plannedShuttle, { time: formatClock(plannedDepart, text.units.clock), drive: duration(nextPlanned.driveMin), line: line(nextPlanned.shuttle.line) })
+        : fill(t.plannedDepart, { time: formatClock(plannedDepart, text.units.clock), drive: duration(nextPlanned.driveMin) });
     } else {
       delay = arrivalOf(nextLive) - arrivalOf(nextPlanned);
       timing = nextLive.shuttle
-        ? fill(t.etaShuttle, { time: formatClock(arrivalOf(nextLive)), drive: duration(nextLive.driveMin), line: line(nextLive.shuttle.line) })
-        : fill(t.eta, { time: formatClock(arrivalOf(nextLive)), drive: duration(nextLive.driveMin) });
+        ? fill(t.etaShuttle, { time: formatClock(arrivalOf(nextLive), text.units.clock), drive: duration(nextLive.driveMin), line: line(nextLive.shuttle.line) })
+        : fill(t.eta, { time: formatClock(arrivalOf(nextLive), text.units.clock), drive: duration(nextLive.driveMin) });
     }
     // 有固定班次的游船、导览团：说赶哪一班
     const entry = now < plannedDepart ? nextPlanned : nextLive;
-    if (departuresOn(next.item.id, view.date)?.times.includes(entry.start)) timing += fill(t.tourCatch, { time: formatClock(entry.start) });
+    if (departuresOn(next.item.id, view.date)?.times.includes(entry.start)) timing += fill(t.tourCatch, { time: formatClock(entry.start, text.units.clock) });
   }
   const delayLabel = delay > SLACK_MIN ? fill(t.late, { d: duration(delay) }) : delay < -SLACK_MIN ? fill(t.early, { d: duration(-delay) }) : null;
 
@@ -134,7 +134,7 @@ export function TodayPanel({
       ...(entry.warnings.includes("parkingFull") ? [fill(t.warnParking, { name })] : []),
     ];
   });
-  if (live.lateReturn && live.returnAt !== undefined) warnings.push(fill(t.warnLate, { time: formatClock(live.returnAt) }));
+  if (live.lateReturn && live.returnAt !== undefined) warnings.push(fill(t.warnLate, { time: formatClock(live.returnAt, text.units.clock) }));
 
   const sun = view.sun.kind === "normal" ? view.sun.window : null;
   const nextAlerts = next ? alertsFor(next.stop) : [];
@@ -160,8 +160,8 @@ export function TodayPanel({
         {sun && (
           <span>
             {now < sun.sunset
-              ? fill(t.sunset, { time: formatClock(sun.sunset), left: duration(sun.sunset - now) })
-              : fill(t.sunsetPassed, { time: formatClock(sun.sunset) })}
+              ? fill(t.sunset, { time: formatClock(sun.sunset, text.units.clock), left: duration(sun.sunset - now) })
+              : fill(t.sunsetPassed, { time: formatClock(sun.sunset, text.units.clock) })}
           </span>
         )}
         {weather && <WeatherLine weather={weather} text={text} />}
@@ -177,8 +177,8 @@ export function TodayPanel({
           {arrivedAt !== undefined ? (
             <p className="mt-2 text-sm text-ink-soft">
               {stayed > plannedStay + SLACK_MIN
-                ? fill(t.overstay, { time: formatClock(arrivedAt), stayed: duration(stayed), over: duration(stayed - plannedStay) })
-                : fill(t.hereSince, { time: formatClock(arrivedAt), stay: duration(plannedStay), leave: formatClock(nextLive.end) })}
+                ? fill(t.overstay, { time: formatClock(arrivedAt, text.units.clock), stayed: duration(stayed), over: duration(stayed - plannedStay) })
+                : fill(t.hereSince, { time: formatClock(arrivedAt, text.units.clock), stay: duration(plannedStay), leave: formatClock(nextLive.end, text.units.clock) })}
             </p>
           ) : (
             timing && (
@@ -238,7 +238,7 @@ export function TodayPanel({
           {tomorrow && (
             <p className="mt-2">
               {tomorrow.departAt !== undefined
-                ? fill(t.tomorrow, { time: formatClock(tomorrow.departAt), name: tomorrow.name })
+                ? fill(t.tomorrow, { time: formatClock(tomorrow.departAt, text.units.clock), name: tomorrow.name })
                 : fill(t.tomorrowNoTime, { name: tomorrow.name })}
             </p>
           )}
@@ -253,7 +253,7 @@ export function TodayPanel({
               const entry = live.entries[k + 1];
               return (
                 <li key={row.item.id} className="grid grid-cols-[3.5rem_1fr] gap-3">
-                  <span className="text-ink-soft tabular-nums">{entry ? formatClock(arrivalOf(entry)) : ""}</span>
+                  <span className="text-ink-soft tabular-nums">{entry ? formatClock(arrivalOf(entry), text.units.clock) : ""}</span>
                   <span>{row.stop.nameZh}</span>
                 </li>
               );
@@ -266,7 +266,7 @@ export function TodayPanel({
         <p className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink-soft">
           <span>
             {remaining.length > 0 && live.returnAt !== undefined
-              ? fill(t.back, { time: formatClock(live.returnAt), name: lodging.name })
+              ? fill(t.back, { time: formatClock(live.returnAt, text.units.clock), name: lodging.name })
               : fill(t.backNoTime, { name: lodging.name })}
           </span>
           <NavLinks place={lodging} text={text} />

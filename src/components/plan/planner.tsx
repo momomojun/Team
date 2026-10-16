@@ -1441,7 +1441,7 @@ export function Planner({
               outDate={outDate}
               backDate={backDate}
               sameDayReturn={sameDayReturn}
-              returnTime={lastReturn !== undefined ? formatClock(lastReturn) : undefined}
+              returnTime={lastReturn !== undefined ? formatClock(lastReturn, text.units.clock) : undefined}
               monthOnly={trip.startDate ? null : (trip.month ?? null)}
               formatDate={formatDate}
               store={flightStore}

@@ -101,7 +101,7 @@ export function TripSupplies({
           {!hit ? (
             t.none
           ) : hit.km > NEAR_KM[kind] ? (
-            <span className="text-mute">{fill(t.far, { km: Math.round(hit.km) })}</span>
+            <span className="text-mute">{fill(t.far, { km: Math.round(hit.km), mi: Math.round(hit.km / 1.609) })}</span>
           ) : (
             <>
               <a href={mapsUrl(hit.point)} target="_blank" rel="noreferrer" className="link-line">
@@ -109,7 +109,7 @@ export function TripSupplies({
               </a>
               {kind === "dcFast" && hit.point.tesla && <span className="ml-1.5 text-mute">{t.tesla}</span>}
               {kind === "dcFast" && hit.point.ports ? <span className="ml-1.5 text-mute">{fill(t.ports, { n: hit.point.ports })}</span> : null}
-              <span className="ml-1.5 text-mute tabular-nums">{fill(t.km, { km: kmText(hit.km) })}</span>
+              <span className="ml-1.5 text-mute tabular-nums">{fill(t.km, { km: kmText(hit.km), mi: kmText(hit.km / 1.609) })}</span>
             </>
           )}
           {hit && kind === "asianGrocery" && hit.km > NEAR_KM[kind] && (

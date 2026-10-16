@@ -1,23 +1,33 @@
+import { clock12 } from "@/lib/sun";
+
 const HAN = /[\u3400-\u9fff\uf900-\ufaff]/;
 const LATIN = /[A-Za-z0-9]/;
 
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const MONS = ["Jan.", "Feb.", "March", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."];
+const ordinalSuffix = (n: number) => (n % 100 >= 11 && n % 100 <= 13 ? "th" : (["th", "st", "nd", "rd"][n % 10] ?? "th"));
 const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 /**
  * 英文模板的两种写法（中文模板用不到）：
  * {n|day|days} 按 n 是不是 1 选单数或复数的词（只出词，数字另写 {n}）；
- * {m:month} 把月份数字写成英文月份名（{m:mon} 是缩写），{d:weekday} 把 0–6 写成星期几
+ * {m:month} 把月份数字写成英文月份名（{m:mon} 是缩写），{d:weekday} 把 0–6 写成星期几，
+ * {d:ordinal} 写成 1st、2nd、15th，{date:date} 把“2026-12-01”写成 December 1, 2026（不是这种格式的照原样）
  */
 function englishForms(template: string, values: Record<string, string | number>): string {
+  if (HAN.test(template)) return template;
   return template
     .replace(/\{(\w+)\|([^|{}]*)\|([^{}]*)\}/g, (match, key: string, one: string, many: string) =>
       key in values ? (Number(values[key]) === 1 ? one : many) : match,
     )
-    .replace(/\{(\w+):(month|mon|weekday)\}/g, (match, key: string, form: string) => {
+    .replace(/\{(\w+):(month|mon|weekday|ordinal|date)\}/g, (match, key: string, form: string) => {
       if (!(key in values)) return match;
+      if (form === "date") {
+        const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(values[key]));
+        return iso ? `${MONTHS[Number(iso[2]) - 1]} ${Number(iso[3])}, ${iso[1]}` : String(values[key]);
+      }
       const n = Number(values[key]);
+      if (form === "ordinal") return `${n}${ordinalSuffix(n)}`;
       return form === "weekday" ? (WEEKDAYS[n] ?? match) : ((form === "month" ? MONTHS : MONS)[n - 1] ?? match);
     });
 }
@@ -28,9 +38,13 @@ function englishForms(template: string, values: Record<string, string | number>)
  * （“要走{road}” + “Stevens Canyon Road” → “要走 Stevens Canyon Road”）；以后加日语界面要另外处理
  */
 export function fill(template: string, values: Record<string, string | number>): string {
+  const english = !HAN.test(template);
   return englishForms(template, values).replace(/\{(\w+)\}/g, (match, key: string, offset: number) => {
     if (!(key in values)) return match;
     let value = String(values[key]);
+    // 英文模板里填进来的“17:30”这种时间（数据里存的开门、停满时间）写成 12 小时制
+    const time = english ? /^([01]?\d|2[0-3]):([0-5]\d)$/.exec(value) : null;
+    if (time) value = clock12(Number(time[1]), Number(time[2]));
     if (value === "") return value;
     if (HAN.test(template[offset - 1] ?? "") && LATIN.test(value[0])) value = ` ${value}`;
     if (HAN.test(template[offset + match.length] ?? "") && LATIN.test(value.at(-1)!)) value = `${value} `;
@@ -104,6 +118,13 @@ export function formatWeekdays(weekdays: number[], units: { weekdays: string[]; 
 /** 名字旁边附的英文名：英文版里主名已经是英文、两个一样时不再重复，返回空字符串 */
 export function otherName(primary: string, english: string): string {
   return primary.trim().toLowerCase() === english.trim().toLowerCase() ? "" : english;
+}
+
+/** 几项并列、最后一项前加“和”：“A、B和C”，英文“A, B, and C”（两项是“A and B”） */
+export function joinAnd(items: string[], and: string, units: Pick<UnitText, "listSep">): string {
+  if (items.length < 2) return items.join("");
+  const serial = items.length > 2 && units.listSep === ", " ? "," : "";
+  return `${items.slice(0, -1).join(units.listSep)}${serial}${and}${items.at(-1)}`;
 }
 
 /** 几项并列：中文用顿号，英文用逗号 */

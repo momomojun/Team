@@ -174,6 +174,7 @@ export function AttractionsExplorer({
                         <IconTrail />
                         {fill(t.trailLength, {
                           km: selected.trailLine.km.toFixed(1),
+                          mi: (selected.trailLine.km / 1.609).toFixed(1),
                           type: selected.trailLine.loop ? t.loopTrail : t.oneWay,
                         })}
                       </p>

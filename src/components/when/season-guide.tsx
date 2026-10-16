@@ -188,8 +188,8 @@ function reasonsOf(item: ParkWindow, text: SeasonText): Reason[] {
     const p = Math.floor(crowd.ratio * 10);
     const n = formatBig(crowd.perDay, text.units);
     if (crowd.level === "peak") reasons.push({ text: fill(t.crowdPeak, { n }), good: false });
-    else if (crowd.level === "busy") reasons.push({ text: fill(t.crowdBusy, { p }), good: false });
-    else if (crowd.level === "moderate") reasons.push({ text: fill(t.crowdModerate, { p }), good: true });
+    else if (crowd.level === "busy") reasons.push({ text: fill(t.crowdBusy, { p, pct: p * 10 }), good: false });
+    else if (crowd.level === "moderate") reasons.push({ text: fill(t.crowdModerate, { p, pct: p * 10 }), good: true });
     else reasons.push({ text: t.crowdQuiet, good: true });
   }
   return reasons;

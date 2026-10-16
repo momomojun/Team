@@ -26,7 +26,7 @@ const zhHans = {
     parks: "公园",
     plan: "行程",
     when: "什么时候去",
-    routes: "博主·明星同款",
+    routes: "博主·明星·电影",
     prices: "价格",
     rankings: "榜单",
     start: "开始规划",
@@ -150,6 +150,11 @@ const zhHans = {
     celebsEyebrow: "Celebrity Spots · 明星同款",
     celebsTitle: "明星在这里拍过的照片",
     celebsAll: "看所有公园的明星同款",
+    filmsEyebrow: "Film Locations · 电影同款",
+    filmsTitle: "在这里拍过的电影",
+    filmsAll: "看所有公园的电影同款",
+    filmsText:
+      "电影、电视剧在这座公园取景的地方：拍的是哪场戏、站在哪、几点去光线最像。每条都有 NPS、电影委员会或可靠报道确认取景地，具体机位是推断的会注明；剧照版权归片方，这里只写我们的描述。",
     celebsText:
       "明星公开发过的照片：在哪拍的、怎么拍同款，点链接看原帖（照片版权归本人，这里只写我们的描述；Instagram 不登录有时打不开）。每条都有报道确认人和地点，只有一家报道、或者地点是按照片推断的会注明。站在崖边、船头这种危险的拍法，按提醒里安全的办法拍。",
     nav: {
@@ -160,6 +165,7 @@ const zhHans = {
       attractions: "景点",
       creators: "博主路线",
       celebs: "明星同款",
+      films: "电影同款",
       live: "实时信息",
       generate: "用这个公园生成攻略",
     },
@@ -445,6 +451,10 @@ const zhHans = {
     celebProfile: "本人主页",
     celebSource: "报道",
     celebHowTo: "怎么拍同款",
+    filmTitle: "电影同款",
+    filmKinds: { film: "电影", tv: "剧集" },
+    filmSource: "来源",
+    filmHowTo: "怎么拍同款",
     celebPlatforms: { instagram: "Instagram", x: "X", weibo: "微博", youtube: "YouTube" } as Record<string, string>,
     bilibili: "B 站",
     creatorLanguages,
@@ -492,6 +502,10 @@ const zhHans = {
     /** 温度：c 摄氏、f 华氏 */
     degrees: "{c}°",
     listSep: "、",
+    /** 几点几分：中文 24 小时制（8:30、17:00），英文 12 小时制（8:30 a.m.） */
+    clock: "24h",
+    /** 让用户输入距离时用公里还是英里 */
+    system: "metric",
     /** 标签和内容之间、分句之间、一句话结束、括号：英文是“: ”“, ”“. ”“ (…)” */
     colon: "：",
     comma: "，",
@@ -1349,10 +1363,12 @@ const zhHans = {
     source: "机票：Google Flights（自用低频查询）或 SerpApi；租车：Kayak 快照加比价链接；油价：AAA。都只当参考，以预订时为准。",
   },
   routes: {
-    eyebrow: "Creators & Celebrities · 博主和明星同款",
-    title: "博主路线和明星同款",
-    tabsLabel: "博主路线和明星同款",
-    tabs: { creators: "博主路线", celebs: "明星同款" },
+    eyebrow: "Creators, Celebrities & Films · 博主、明星和电影同款",
+    title: "博主路线、明星和电影同款",
+    tabsLabel: "博主路线、明星同款和电影同款",
+    tabs: { creators: "博主路线", celebs: "明星同款", films: "电影同款" },
+    filmsIntro:
+      "电影、电视剧在这些公园取景的地方：拍的是哪场戏、站在哪、几点去光线最像、要不要许可。每条都有 NPS、电影委员会或可靠报道确认取景地，具体机位是推断的会注明；剧照版权归片方，这里只写我们的描述。点公园和景点名可以跳到公园页上的这个景点。",
     celebsIntro:
       "明星在这些公园公开发过的照片：在哪拍的、照片里怎么拍的、怎么拍同款，点链接看原帖（照片版权归本人，这里只写我们的描述；Instagram 不登录有时打不开）。每条都有报道确认人和地点，只有一家报道、或者地点是按照片推断的会注明。站在崖边、船头这种危险的拍法，按提醒里安全的办法拍。点公园和景点名可以跳到公园页上的这个景点。",
     intro:

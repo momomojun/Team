@@ -163,6 +163,8 @@ export function PriceCenter({
   const [mpg, setMpg] = useState(MILES_PER_GALLON);
   const [fuelState, setFuelState] = useState("UT");
   const miles = km / KM_PER_MILE;
+  // 英文版按英里输入，内部照旧按公里存
+  const imperial = text.units.system === "imperial";
   const gasCost = (miles / Math.max(mpg, 1)) * (gas.states[fuelState]?.regular ?? 5);
   const evCost = (miles / MILES_PER_KWH) * DC_FAST_PRICE;
   const statesParks = (state: string) => parks.filter((p) => p.state === state).map((p) => p.nameZh);
@@ -480,8 +482,11 @@ export function PriceCenter({
                 type="number"
                 min={0}
                 step={50}
-                value={km}
-                onChange={(event) => setKm(Math.max(0, Number(event.target.value)))}
+                value={imperial ? Math.round(km / KM_PER_MILE) : km}
+                onChange={(event) => {
+                  const value = Math.max(0, Number(event.target.value));
+                  setKm(imperial ? value * KM_PER_MILE : value);
+                }}
                 className={`${field} w-28 tabular-nums`}
               />
             </label>

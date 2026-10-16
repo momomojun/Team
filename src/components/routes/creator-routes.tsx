@@ -7,7 +7,7 @@ import { IconArrowUpRight } from "@/components/icons";
 import { buttonPrimary, buttonSecondary } from "@/components/ui";
 import type { CreatorLanguage, CreatorRoute } from "@/data/creators";
 import type { Dictionary } from "@/i18n/dictionaries";
-import { fill } from "@/i18n/format";
+import { fill, formatCount } from "@/i18n/format";
 import { addToTrip, MAX_DAYS, tripIds, updateTrip, useTrip } from "@/lib/trip-store";
 
 /** 博主路线的文案，加上标签后面的冒号（中文“：”、英文“: ”） */
@@ -57,7 +57,7 @@ export function CreatorRoutes({
   const views = (route: CreatorRoute) => {
     const article = route.format === "article";
     return route.views >= 10000
-      ? fill(article ? text.readsWan : text.viewsWan, { n: (route.views / 10000).toFixed(1) })
+      ? fill(article ? text.readsWan : text.viewsWan, { n: (route.views / 10000).toFixed(1), full: formatCount(route.views) })
       : fill(article ? text.reads : text.views, { n: route.views });
   };
   const known = (stop: string) => stop in stopNames;

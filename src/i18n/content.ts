@@ -2,6 +2,7 @@ import "server-only";
 import type { ParkActivity } from "@/data/activities";
 import type { AttractionWithPhoto } from "@/data/attractions";
 import type { CelebrityShot } from "@/data/celebrities";
+import type { FilmShot } from "@/data/films";
 import type { LodgingOption } from "@/data/lodging";
 import type { Park } from "@/data/parks";
 import type { Locale } from "./config";
@@ -22,6 +23,7 @@ export function localizeAttraction(attraction: AttractionWithPhoto, locale: Loca
     start: attraction.start && { ...attraction.start, nameZh: t(attraction.start.nameZh) },
     creatorNotes: attraction.creatorNotes?.map((note) => ({ ...note, text: t(note.text) })),
     celebrityShots: attraction.celebrityShots?.map((shot) => localizeCelebrity(shot, locale)),
+    filmShots: attraction.filmShots?.map((shot) => localizeFilm(shot, locale)),
     parking: attraction.parking && {
       ...attraction.parking,
       noteZh: t(attraction.parking.noteZh),
@@ -41,6 +43,22 @@ export function localizeCelebrity(shot: CelebrityShot, locale: Locale): Celebrit
     countryZh: t(shot.countryZh),
     placeZh: t(shot.placeZh),
     shotZh: t(shot.shotZh),
+    howToZh: t(shot.howToZh),
+    tipsZh: shot.tipsZh.map(t),
+    noteZh: shot.noteZh && t(shot.noteZh),
+  };
+}
+
+/** 电影同款：片名的中文译名、地点、场景、拍法换成当前语言（英文版片名用 titleEn） */
+export function localizeFilm(shot: FilmShot, locale: Locale): FilmShot {
+  if (locale === "zh-Hans") return shot;
+  const t = (text: string) => localize(text, locale);
+  return {
+    ...shot,
+    titleZh: locale === "en" ? shot.titleEn : t(shot.titleZh),
+    creditsZh: shot.creditsZh && t(shot.creditsZh),
+    placeZh: t(shot.placeZh),
+    sceneZh: t(shot.sceneZh),
     howToZh: t(shot.howToZh),
     tipsZh: shot.tipsZh.map(t),
     noteZh: shot.noteZh && t(shot.noteZh),

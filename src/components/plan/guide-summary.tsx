@@ -251,8 +251,8 @@ export function GuideSummary({
                         {fill(park.darkSky!.rasc ? g.darkSkyPreserve : g.darkSkyPark, { park: park.nameZh, year: park.darkSky!.year })}
                       </p>
                       {!dated && <p>{g.undated}</p>}
-                      {nights.length > 0 && good.length > 0 && <p>{fill(g.goodNights, { days: days(good) })}</p>}
-                      {nights.length > 0 && good.length === 0 && <p>{fill(g.brightNights, { days: days(nights) })}</p>}
+                      {nights.length > 0 && good.length > 0 && <p>{fill(g.goodNights, { days: days(good), count: good.length })}</p>}
+                      {nights.length > 0 && good.length === 0 && <p>{fill(g.brightNights, { days: days(nights), count: nights.length })}</p>}
                       {lateDark && <p className="text-xs text-mute">{g.lateDark}</p>}
                       {stops.some((stop) => !inTrip.has(stop.id)) && (
                         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1">

@@ -20,17 +20,19 @@ import { activities } from "@/data/activities";
 import { bookingRules } from "@/data/bookings";
 import { getParkAttractions } from "@/data/attractions";
 import { CelebrityShotItem } from "@/components/attractions/celebrity-shots";
+import { FilmShotItem } from "@/components/attractions/film-shots";
 import { celebrityShots } from "@/data/celebrities";
+import { filmShots } from "@/data/films";
 import { creatorRoutes, type CreatorRoute } from "@/data/creators";
 import { lodgingOptions } from "@/data/lodging";
 import { getPark, isSite, npsCodeOf } from "@/data/parks";
 import type { RoadYear } from "@/data/roads";
 import { shuttleSystems } from "@/data/shuttles";
 import { hasLocale } from "@/i18n/config";
-import { localizeActivity, localizeAttraction, localizeCelebrity, localizePark } from "@/i18n/content";
+import { localizeActivity, localizeAttraction, localizeCelebrity, localizeFilm, localizePark } from "@/i18n/content";
 import { localize } from "@/i18n/convert";
 import { getDictionary } from "@/i18n/dictionaries";
-import { fill, formatMonths, formatWeekdays, otherName } from "@/i18n/format";
+import { fill, formatCount, formatMonths, formatWeekdays, otherName } from "@/i18n/format";
 import { isUsingDemoKey } from "@/lib/datagov";
 import { roadsOf } from "@/lib/roads";
 import { parkVisits } from "@/lib/visits";
@@ -151,6 +153,11 @@ export default async function ParkPage({ params }: PageProps<"/[locale]/parks/[c
     .filter((shot) => shot.park === park.code)
     .map((shot) => localizeCelebrity(shot, locale))
     .sort((a, b) => Number(!a.attraction) - Number(!b.attraction) || b.date.localeCompare(a.date));
+  // 电影同款：能对上景点的排前面，新片在前
+  const parkFilms = filmShots
+    .filter((shot) => shot.park === park.code)
+    .map((shot) => localizeFilm(shot, locale))
+    .sort((a, b) => Number(!a.attraction) - Number(!b.attraction) || b.year - a.year);
   const parkCreators = creatorRoutes
     .filter((route) => route.parks.includes(park.code))
     .sort((a, b) => b.views - a.views);
@@ -168,7 +175,7 @@ export default async function ParkPage({ params }: PageProps<"/[locale]/parks/[c
   const viewsText = (route: CreatorRoute) => {
     const article = route.format === "article";
     return route.views >= 10000
-      ? fill(article ? r.readsWan : r.viewsWan, { n: (route.views / 10000).toFixed(1) })
+      ? fill(article ? r.readsWan : r.viewsWan, { n: (route.views / 10000).toFixed(1), full: formatCount(route.views) })
       : fill(article ? r.reads : r.views, { n: route.views });
   };
 
@@ -238,6 +245,7 @@ export default async function ParkPage({ params }: PageProps<"/[locale]/parks/[c
           { id: "attractions", label: t.nav.attractions },
           ...(parkCreators.length > 0 ? [{ id: "creators", label: t.nav.creators }] : []),
           ...(parkCelebs.length > 0 ? [{ id: "celebs", label: t.nav.celebs }] : []),
+          ...(parkFilms.length > 0 ? [{ id: "films", label: t.nav.films }] : []),
           { id: "live", label: t.nav.live },
         ]}
         actions={
@@ -439,6 +447,34 @@ export default async function ParkPage({ params }: PageProps<"/[locale]/parks/[c
                       </a>
                     )}
                     <CelebrityShotItem shot={shot} text={dict} />
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </section>
+      )}
+
+      {parkFilms.length > 0 && (
+        <section id="films" className="cv-auto [--cv-h:1500px] scroll-mt-28 border-t border-line">
+          <div className={`${container} py-20 lg:py-28`}>
+            <p className="eyebrow text-mute">{t.filmsEyebrow}</p>
+            <h2 className="mt-5 font-serif text-[clamp(2rem,3.5vw,3.2rem)] leading-tight">{t.filmsTitle}</h2>
+            <p className="mt-5 max-w-2xl text-sm leading-7 text-ink-soft">{t.filmsText}</p>
+            <Link href={`/${locale}/routes#films`} className="link-line mt-4 inline-block text-xs tracking-[0.1em] text-clay-700">
+              {t.filmsAll}
+            </Link>
+            <ul className="mt-12 grid gap-x-12 gap-y-10 md:grid-cols-2">
+              {parkFilms.map((shot) => {
+                const stop = shot.attraction ? attractions.find((a) => a.id === shot.attraction) : undefined;
+                return (
+                  <li key={shot.id} className="border-t border-ink pt-4">
+                    {stop && (
+                      <a href={`#attraction-${stop.id}`} className="eyebrow mb-2 block text-mute hover:text-clay-700">
+                        {stop.nameZh}
+                      </a>
+                    )}
+                    <FilmShotItem shot={shot} text={dict} />
                   </li>
                 );
               })}

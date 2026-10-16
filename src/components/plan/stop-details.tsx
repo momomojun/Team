@@ -12,6 +12,7 @@ import {
 } from "@/components/attractions/attraction-card";
 import { CelebrityShots } from "@/components/attractions/celebrity-shots";
 import { FamilyFit } from "@/components/attractions/family-fit";
+import { FilmShots } from "@/components/attractions/film-shots";
 import { PhotoGallery } from "@/components/attractions/photo-gallery";
 import { IconTrail } from "@/components/icons";
 import type { AttractionWithPhoto } from "@/data/attractions";
@@ -84,11 +85,12 @@ export function StopDetails({
         {stop.trailLine && (
           <p className="inline-flex items-center gap-2 text-xs text-clay-700">
             <IconTrail className="text-base" />
-            {fill(t.trailLength, { km: stop.trailLine.km.toFixed(1), type: stop.trailLine.loop ? t.loopTrail : t.oneWay })}
+            {fill(t.trailLength, { km: stop.trailLine.km.toFixed(1), mi: (stop.trailLine.km / 1.609).toFixed(1), type: stop.trailLine.loop ? t.loopTrail : t.oneWay })}
           </p>
         )}
         <CreatorNotes attraction={stop} text={text} routesHref={routesHref} compact />
         <CelebrityShots shots={stop.celebrityShots} text={text} compact />
+        <FilmShots shots={stop.filmShots} text={text} compact />
         <FamilyFit attraction={stop} party={party} text={text} />
         {tips.length > 0 && (
           <div className="border-t border-line pt-3">

@@ -3,18 +3,25 @@
 import Link from "next/link";
 import { useState } from "react";
 import { CelebrityShotItem } from "@/components/attractions/celebrity-shots";
+import { FilmShotItem } from "@/components/attractions/film-shots";
 import type { CelebrityShot } from "@/data/celebrities";
+import type { FilmShot } from "@/data/films";
 import type { Dictionary } from "@/i18n/dictionaries";
 
-/** 博主路线页的“明星同款”：全部明星同款按公园筛选，每条链到公园页上的那个景点（对不上景点的链到公园页的明星同款一节） */
+/**
+ * 博主路线页的“明星同款”“电影同款”：全部按公园筛选，每条链到公园页上的那个景点
+ * （对不上景点的链到公园页的明星同款 / 电影同款一节）
+ */
 export function CelebritySpots({
+  kind,
   shots,
   parks,
   stopNames,
   locale,
   text,
 }: {
-  shots: CelebrityShot[];
+  kind: "celebs" | "films";
+  shots: (CelebrityShot | FilmShot)[];
   /** 有明星同款的公园：代码 → 名字 */
   parks: { code: string; nameZh: string }[];
   /** 景点 id → 名字 */
@@ -31,7 +38,7 @@ export function CelebritySpots({
 
   return (
     <div>
-      <p className="max-w-3xl text-sm leading-7 text-ink-soft">{t.celebsIntro}</p>
+      <p className="max-w-3xl text-sm leading-7 text-ink-soft">{kind === "films" ? t.filmsIntro : t.celebsIntro}</p>
       <p className="eyebrow mt-8 text-mute">{t.filter}</p>
       <div className="mt-3 flex flex-wrap gap-2">
         <button type="button" className={chip(park === null)} onClick={() => setPark(null)}>
@@ -47,13 +54,13 @@ export function CelebritySpots({
         {visible.map((shot) => (
           <li key={shot.id} className="border-t border-ink pt-4">
             <Link
-              href={`/${locale}/parks/${shot.park}#${shot.attraction ? `attraction-${shot.attraction}` : "celebs"}`}
+              href={`/${locale}/parks/${shot.park}#${shot.attraction ? `attraction-${shot.attraction}` : kind}`}
               className="eyebrow mb-2 block text-mute hover:text-clay-700"
             >
               {parkName(shot.park)}
               {shot.attraction && stopNames[shot.attraction] ? ` · ${stopNames[shot.attraction]}` : ""}
             </Link>
-            <CelebrityShotItem shot={shot} text={text} />
+            {"titleEn" in shot ? <FilmShotItem shot={shot} text={text} /> : <CelebrityShotItem shot={shot} text={text} />}
           </li>
         ))}
       </ul>

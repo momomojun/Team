@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { closedIn } from "@/components/attractions/attraction-card";
 import type { AttractionWithPhoto } from "@/data/attractions";
-import { fill, formatDuration } from "@/i18n/format";
+import { fill, formatDuration, joinAnd } from "@/i18n/format";
 import { formatClock } from "@/lib/sun";
 import { recordYears, ROAD_LIKELY, roadStatus } from "@/lib/roads";
 import { dayColor } from "./day-colors";
@@ -78,7 +78,7 @@ export function TripOverview({
   const destination = views.at(-1)?.to;
   const parkCodes = [...new Set(stops.map((stop) => stop.park))];
   const parkList = parkCodes.map(parkName).join(" · ");
-  const parkJoined = parkCodes.map(parkName).join(t.and);
+  const parkJoined = joinAnd(parkCodes.map(parkName), t.and, text.units);
   const mustSee = stops.filter((stop) => stop.mustSee).length;
   // 没安排景点、但要换住处的一天（比如最后一天开回机场）也是开车的一天
   const moving = (view: DayView) => view.rows.length === 0 && view.timeline.returnAt !== undefined;
@@ -157,13 +157,13 @@ export function TripOverview({
       notes.push(
         fill(first?.slot === "sunrise" ? t.earlySunrise : t.early, {
           day: view.day + 1,
-          time: formatClock(view.timeline.departAt),
+          time: formatClock(view.timeline.departAt, text.units.clock),
           name: view.rows[0]?.stop.nameZh ?? "",
         }),
       );
     }
     if (view.timeline.returnAt !== undefined && view.timeline.returnAt > LATE_RETURN) {
-      notes.push(fill(t.late, { day: view.day + 1, time: formatClock(view.timeline.returnAt) }));
+      notes.push(fill(t.late, { day: view.day + 1, time: formatClock(view.timeline.returnAt, text.units.clock) }));
     }
     if (view.timeline.overloaded) notes.push(fill(t.overloaded, { day: view.day + 1 }));
     const fullLots = view.timeline.entries.flatMap((entry, k) =>
@@ -182,7 +182,7 @@ export function TripOverview({
     for (const line of lines) shuttleDays.set(line, [...(shuttleDays.get(line) ?? []), view.day + 1]);
   }
   for (const [line, days] of shuttleDays) {
-    notes.push(fill(t.shuttle, { line: text.shuttleNames[line] ?? line, days: days.join(text.units.listSep) }));
+    notes.push(fill(t.shuttle, { line: text.shuttleNames[line] ?? line, days: days.join(text.units.listSep), count: days.length }));
   }
   const booking = stops.filter((stop) => stop.permit);
   if (booking.length) notes.push(fill(t.booking, { n: booking.length, names: booking.map((s) => s.nameZh).join(text.units.listSep) }));
@@ -227,7 +227,7 @@ export function TripOverview({
     month !== null ? stops.filter((stop) => closedIn(stop, month) === "month" && !byRoad.has(stop.id)) : [];
   if (closedMonth.length) notes.push(fill(t.closed, { names: closedMonth.map((s) => s.nameZh).join(text.units.listSep), month: month! }));
   const emptyDays = views.filter((view) => view.rows.length === 0 && !moving(view)).map((view) => view.day + 1);
-  if (emptyDays.length) notes.push(fill(t.emptyDays, { days: emptyDays.join(text.units.listSep) }));
+  if (emptyDays.length) notes.push(fill(t.emptyDays, { days: emptyDays.join(text.units.listSep), count: emptyDays.length }));
   notes.push(...extraNotes);
 
   const dateRange =
@@ -239,9 +239,9 @@ export function TripOverview({
   const stats: [string, string, string?][] = [
     [t.stops, fill(t.stopsValue, { n: stops.length }), mustSee ? fill(t.mustSee, { n: mustSee }) : undefined],
     [t.drive, duration(totalDrive), fill(t.perDay, { d: duration(averageDrive) })],
-    ...(hikeKm >= 1 ? ([[t.hike, fill(t.kmValue, { km: Math.round(hikeKm) })]] as [string, string][]) : []),
+    ...(hikeKm >= 1 ? ([[t.hike, fill(t.kmValue, { km: Math.round(hikeKm), mi: Math.round(hikeKm / 1.609) })]] as [string, string][]) : []),
     ...(stayCount ? ([[t.lodging, fill(t.lodgingValue, { n: stayCount })]] as [string, string][]) : []),
-    ...(earliest !== undefined ? ([[t.earliest, formatClock(earliest)]] as [string, string][]) : []),
+    ...(earliest !== undefined ? ([[t.earliest, formatClock(earliest, text.units.clock)]] as [string, string][]) : []),
     ...(budget
       ? ([[t.budget, money(budget.total), fill(t.budgetSub, { amount: money(budget.perPerson) })]] as [string, string, string][])
       : []),
@@ -324,10 +324,10 @@ export function TripOverview({
                   {active && (
                     <span className="text-xs text-mute tabular-nums">
                       {view.rows.length > 0 && view.timeline.entries.length > 0
-                        ? `${formatClock(view.timeline.departAt ?? view.timeline.entries[0].start)}–${formatClock(
-                            view.timeline.returnAt ?? view.timeline.entries.at(-1)!.end,
+                        ? `${formatClock(view.timeline.departAt ?? view.timeline.entries[0].start, text.units.clock)}–${formatClock(
+                            view.timeline.returnAt ?? view.timeline.entries.at(-1)!.end, text.units.clock,
                           )}`
-                        : `${formatClock(view.timeline.departAt!)}–${formatClock(view.timeline.returnAt!)}`}
+                        : `${formatClock(view.timeline.departAt!, text.units.clock)}–${formatClock(view.timeline.returnAt!, text.units.clock)}`}
                       {" · "}
                       {duration(view.timeline.driveMin)}
                     </span>
@@ -387,11 +387,11 @@ export function TripOverview({
                   </td>
                   <td className="py-3 pr-4 whitespace-nowrap tabular-nums">
                     {view.rows.length > 0 && view.timeline.entries.length > 0
-                      ? `${formatClock(view.timeline.departAt ?? view.timeline.entries[0].start)}–${formatClock(
-                          view.timeline.returnAt ?? view.timeline.entries.at(-1)!.end,
+                      ? `${formatClock(view.timeline.departAt ?? view.timeline.entries[0].start, text.units.clock)}–${formatClock(
+                          view.timeline.returnAt ?? view.timeline.entries.at(-1)!.end, text.units.clock,
                         )}`
                       : moving(view)
-                        ? `${formatClock(view.timeline.departAt!)}–${formatClock(view.timeline.returnAt!)}`
+                        ? `${formatClock(view.timeline.departAt!, text.units.clock)}–${formatClock(view.timeline.returnAt!, text.units.clock)}`
                         : "—"}
                   </td>
                   <td className="py-3 pr-4 whitespace-nowrap">

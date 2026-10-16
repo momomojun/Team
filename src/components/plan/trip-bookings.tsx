@@ -200,7 +200,7 @@ export function TripBookings({
                     </span>
                   )}
                   <p className="text-xs text-mute">
-                    {b.kinds[rule.kind]} · {fill(lodging ? b.nights : b.days, { n: dayList(item.days) })}
+                    {b.kinds[rule.kind]} · {fill(lodging ? b.nights : b.days, { n: dayList(item.days), count: item.days.length })}
                   </p>
                 </div>
                 <div className="min-w-0">

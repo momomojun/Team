@@ -8,6 +8,7 @@ import type { Dictionary } from "@/i18n/dictionaries";
 import { fill, formatCount, formatDuration, formatKm, formatMeters, formatMonths, otherName } from "@/i18n/format";
 import { CelebrityShots } from "./celebrity-shots";
 import { FamilyFit } from "./family-fit";
+import { FilmShots } from "./film-shots";
 import { KIND_COLORS } from "./kinds";
 import { PhotoGallery } from "./photo-gallery";
 
@@ -216,12 +217,13 @@ export function AttractionCard({
         {a.trailLine && (
           <p className="inline-flex items-center gap-2 text-xs text-clay-700">
             <IconTrail className="text-base" />
-            {fill(t.trailLength, { km: a.trailLine.km.toFixed(1), type: a.trailLine.loop ? t.loopTrail : t.oneWay })}
+            {fill(t.trailLength, { km: a.trailLine.km.toFixed(1), mi: (a.trailLine.km / 1.609).toFixed(1), type: a.trailLine.loop ? t.loopTrail : t.oneWay })}
           </p>
         )}
 
         <CreatorNotes attraction={a} text={text} routesHref={routesHref} />
         <CelebrityShots shots={a.celebrityShots} text={text} />
+        <FilmShots shots={a.filmShots} text={text} />
         <FamilyFit attraction={a} text={text} />
 
         {tips.length > 0 && (
