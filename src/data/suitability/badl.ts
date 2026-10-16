@@ -100,7 +100,7 @@ export const suitability: Record<string, Suitability> = {
     wheelchair: "yes",
     seniors: "ok",
     hazards: ["wildlife"],
-    noteZh: "在车上就能看野牛和草原犬鼠；野牛常在路边，留在车里看，下车拍照至少隔 25 米。",
+    noteZh: "在车上就能看野牛和草原犬鼠；野牛常在路边，留在车里看，下车拍照至少隔 25 码（约 23 米）。",
   },
   "badl-sheep-mountain-table": {
     kidsFromAge: 0,

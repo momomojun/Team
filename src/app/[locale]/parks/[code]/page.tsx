@@ -49,7 +49,10 @@ export async function generateMetadata({
   const { locale, code } = await params;
   const park = getPark(code);
   if (!park || !hasLocale(locale)) return {};
-  return { title: `${localize(park.nameZh, locale)} ${park.nameEn}` };
+  const name = localize(park.nameZh, locale);
+  // 英文版主名就是英文：写成“Zion National Park”，不重复
+  const english = park.kind === "site" ? park.nameEn : `${park.nameEn} National Park`;
+  return { title: otherName(name, park.nameEn) ? `${name} ${park.nameEn}` : english };
 }
 
 export default async function ParkPage({ params }: PageProps<"/[locale]/parks/[code]">) {

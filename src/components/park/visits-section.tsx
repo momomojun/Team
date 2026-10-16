@@ -59,8 +59,9 @@ function MonthlyChart({ daily, text, units }: { daily: number[]; text: Text; uni
         })}
       </div>
       <div aria-hidden className="mt-1.5 flex gap-[2px] text-[10px] text-mute tabular-nums">
-        {text.monthLabels.map((label) => (
-          <span key={label} className="flex-1 text-center">
+        {text.monthLabels.map((label, i) => (
+          // 英文的月份缩写会重复（J、M、A），按月份序号作 key
+          <span key={i} className="flex-1 text-center">
             {label}
           </span>
         ))}

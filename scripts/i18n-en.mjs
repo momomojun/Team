@@ -38,6 +38,8 @@ export const GROUPS = [
   { id: "bookings", batch: 2, files: ["src/data/bookings.ts"] },
   { id: "creators", batch: 3, files: ["src/data/creators.ts"], skipKeys: ["title"] },
   { id: "celebrities", batch: 3, files: ["src/data/celebrities.ts"] },
+  // 英文版片名直接用 titleEn
+  { id: "films", batch: 3, files: ["src/data/films.ts"], skipKeys: ["titleZh"] },
   { id: "rankings", batch: 3, files: ["src/data/honors.ts", "src/data/national-parks.ts"] },
 ];
 

@@ -153,6 +153,7 @@ export const content: Record<string, string> = {
   "班戈": "Bangor",
   "汉考克县–巴尔港机场": "Hancock County–Bar Harbor Airport",
   "巴尔港（Trenton）": "Bar Harbor (Trenton)",
+  "波特兰国际航空港": "Portland International Jetport",
   "波特兰（缅因州）": "Portland, Maine",
   "波士顿洛根国际机场": "Boston Logan International Airport",
   "波士顿": "Boston",
@@ -192,6 +193,5 @@ export const content: Record<string, string> = {
   "埃尔帕索": "El Paso",
   "New Comback International 新東記": "New Comback International",
   "大統華超市": "T&T Supermarket",
-  "金都": "Kam Do",
-  "波特兰国际航空港": "Portland International Jetport"
+  "金都": "Kam Do"
 };
