@@ -21,7 +21,11 @@ export function localizeAttraction(attraction: AttractionWithPhoto, locale: Loca
     permit: attraction.permit && t(attraction.permit),
     closedNote: attraction.closedNote && t(attraction.closedNote),
     start: attraction.start && { ...attraction.start, nameZh: t(attraction.start.nameZh) },
-    creatorNotes: attraction.creatorNotes?.map((note) => ({ ...note, text: t(note.text) })),
+    creatorNotes: attraction.creatorNotes?.map((note) => ({
+      ...note,
+      creator: locale === "en" ? t(note.creator) : note.creator,
+      text: t(note.text),
+    })),
     celebrityShots: attraction.celebrityShots?.map((shot) => localizeCelebrity(shot, locale)),
     filmShots: attraction.filmShots?.map((shot) => localizeFilm(shot, locale)),
     parking: attraction.parking && {

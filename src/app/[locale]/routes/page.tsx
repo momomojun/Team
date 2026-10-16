@@ -28,6 +28,8 @@ function localizeRoute(route: CreatorRoute, locale: Locale): CreatorRoute {
   const t = (text: string) => localize(text, locale);
   return {
     ...route,
+    // 频道名：英文版用拼音或意译（带英文的只留英文），繁体保持博主自己的写法
+    creator: locale === "en" ? t(route.creator) : route.creator,
     summary: t(route.summary),
     origin: route.origin && t(route.origin),
     visited: route.visited && t(route.visited),

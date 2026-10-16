@@ -409,7 +409,7 @@ export default async function ParkPage({ params }: PageProps<"/[locale]/parks/[c
               {featuredCreators.map((route) => (
                 <li key={route.id} className="border-t border-ink pt-4">
                   <p className="text-xs text-mute">
-                    <span className="text-ink-soft">{route.creator}</span> · {r.platforms[route.platform]}
+                    <span className="text-ink-soft">{locale === "en" ? localize(route.creator, locale) : route.creator}</span> · {r.platforms[route.platform]}
                     {route.format === "article" && ` ${r.article}`} · {r.languages[route.language]} · {viewsText(route)}
                     {route.days ? ` · ${fill(r.days, { n: route.days })}` : ""}
                   </p>
