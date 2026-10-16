@@ -11,12 +11,14 @@ import {
   PopularityBadge,
 } from "@/components/attractions/attraction-card";
 import { CelebrityShots } from "@/components/attractions/celebrity-shots";
+import { FamilyFit } from "@/components/attractions/family-fit";
 import { PhotoGallery } from "@/components/attractions/photo-gallery";
 import { IconTrail } from "@/components/icons";
 import type { AttractionWithPhoto } from "@/data/attractions";
 import { googleMapsUrl } from "@/data/attractions/google";
 import type { Photo } from "@/data/attractions/types";
 import { fill } from "@/i18n/format";
+import type { Party } from "@/lib/suitability";
 import type { PlannerText } from "./types";
 
 /**
@@ -30,6 +32,7 @@ export function StopDetails({
   parkNameEn,
   parkHref,
   routesHref,
+  party,
   text,
   actions,
   onClose,
@@ -44,6 +47,8 @@ export function StopDetails({
   parkHref: string;
   /** 博主路线专区（这个公园） */
   routesHref: string;
+  /** 自动生成攻略时填的同行的人：先说这次要注意什么 */
+  party?: Party;
   text: PlannerText;
   /** 放在链接前面的按钮，比如加入行程 */
   actions?: ReactNode;
@@ -84,6 +89,7 @@ export function StopDetails({
         )}
         <CreatorNotes attraction={stop} text={text} routesHref={routesHref} compact />
         <CelebrityShots shots={stop.celebrityShots} text={text} compact />
+        <FamilyFit attraction={stop} party={party} text={text} />
         {tips.length > 0 && (
           <div className="border-t border-line pt-3">
             <p className="text-xs tracking-[0.1em] text-mute">{t.tips}</p>

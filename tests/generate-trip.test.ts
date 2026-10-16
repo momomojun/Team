@@ -10,6 +10,7 @@ import { addDays, nominalDate } from "../src/lib/dates";
 import { openChance, roadFor, roadStatus } from "../src/lib/roads";
 import { generateTrip, type LiveClosures, type Pace } from "../src/lib/generate-trip";
 import { buildTimeline, NOMINAL_SUN, type LodgingPoint, type PlanStop } from "../src/lib/planner";
+import { fitFor, type Party } from "../src/lib/suitability";
 import { minutesOfDay, sunTimes } from "../src/lib/sun";
 import { departuresOn } from "../src/lib/tours";
 import type { Trip, TripLodging } from "../src/lib/trip-store";
@@ -31,13 +32,14 @@ interface Options {
   days: number;
   airport: string;
   pace?: Pace;
+  party?: Party;
 }
 
 function generate(options: Options) {
   return generateWith(options);
 }
 
-function generateWith({ parks: codes, start = "", month, days, airport, pace = "normal" }: Options, live?: LiveClosures) {
+function generateWith({ parks: codes, start = "", month, days, airport, pace = "normal", party }: Options, live?: LiveClosures) {
   const park = parks.find((p) => p.code === codes[0])!;
   const stops = attractions.filter((a) => codes.includes(a.park));
   const minutes = MINUTES[`${codes.join()}|${airport}`] ?? {};
@@ -56,7 +58,7 @@ function generateWith({ parks: codes, start = "", month, days, airport, pace = "
     .filter((option) => codes.includes(option.park))
     .map((option) => ({ id: option.id, lat: option.lat, lon: option.lon, inPark: option.inPark, rental: option.rental, airbnb: option.airbnb }));
   const result = generateTrip(
-    { parks: codes, month: tripMonth, startDate: start, days, origin: endpoint("origin"), destination: endpoint("destination"), pace, lodgingPref: "any" },
+    { parks: codes, month: tripMonth, startDate: start, days, origin: endpoint("origin"), destination: endpoint("destination"), pace, lodgingPref: "any", party },
     { stops, lodging, sunFor, dateFor, live },
   );
   return { ...result, timelines: timelinesOf(result.trip, stops, sunFor, dateFor) };
@@ -302,4 +304,21 @@ test("近期出发：实时公告说关了的景点（下雪封了 Trail Ridge R
   // 出发那天已经过了公告管的两周：照常排
   const later = generateWith({ parks: ["romo"], start: "2027-07-01", days: 3, airport: "DEN" }, { ids, until: "2027-06-20" });
   assert.ok(planned(later.trip).some((id) => ids.has(id)));
+});
+
+test("带 5 岁的孩子和老人去优胜美地：不适合的不排、写进攻略说明，排进去的都不是不适合的", () => {
+  const party = { youngestKid: 5, seniors: true };
+  const { trip, guide } = generate({ parks: ["yose"], start: "2027-06-01", days: 4, airport: "FAT", party });
+  const byId = new Map(attractions.map((a) => [a.id, a]));
+  const ids = planned(trip);
+  assert.ok(ids.length > 0);
+  for (const id of ids) assert.notEqual(fitFor(party, byId.get(id)!.family).level, "no", id);
+  const unsuitable = guide.skipped.unsuitable ?? [];
+  assert.ok(unsuitable.length > 0);
+  for (const id of unsuitable) assert.equal(fitFor(party, byId.get(id)!.family).level, "no", id);
+  assert.deepEqual(guide.party, party);
+  // 全是成年人时不记同行的人，也不因为这个去掉景点
+  const adults = generate({ parks: ["yose"], start: "2027-06-01", days: 4, airport: "FAT" }).guide;
+  assert.equal(adults.party, undefined);
+  assert.deepEqual(adults.skipped.unsuitable, []);
 });

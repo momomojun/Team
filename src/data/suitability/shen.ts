@@ -1,0 +1,134 @@
+import type { Suitability } from "../attractions/types";
+
+// 仙纳度 · 同行适合度。2026-10-16 按 NPS 无障碍页面整理：官方只把 Limberlost 算作全程无障碍的步道；
+// 天际线公路大部分观景点有无障碍车位，在车上就能看；园内大部分建筑和洗手间“无障碍或有人协助能进”。
+// Rapidan 营地按 Recreation.gov 的导览说明，Luray 溶洞按溶洞官网的常见问题
+const ACCESS = "https://www.nps.gov/shen/planyourvisit/accessibility.htm";
+
+export const suitability: Record<string, Suitability> = {
+  "shen-dickey-ridge-vc": {
+    kidsFromAge: 0,
+    stroller: "yes",
+    wheelchair: "assisted",
+    seniors: "ok",
+    noteZh: "官方只说园内大部分建筑无障碍或有人协助能进，没单独写这座；能借助听设备。后院草坪对着河谷，轮椅在露台看就好。",
+    source: ACCESS,
+  },
+  "shen-overall-run-falls": {
+    kidsFromAge: 6,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "caution",
+    hazards: ["dropoff"],
+    noteZh: "往返约 8 公里，去程一路下坡，回程爬升约 390 米；观景岩台没有护栏。带孩子、老人改走短的 Dark Hollow 瀑布，或只在天际线公路的观景点看山。",
+  },
+  "shen-marys-rock": {
+    kidsFromAge: 6,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "caution",
+    hazards: ["dropoff"],
+    noteZh: "爬升约 250 米，山顶是对着悬崖的光岩石，没有护栏，孩子别靠边；看日落下山天黑，带头灯。",
+  },
+  "shen-stony-man": {
+    kidsFromAge: 3,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "ok",
+    hazards: ["dropoff"],
+    noteZh: "路宽、坡缓，适合全家；山顶是悬崖边的岩石，没有护栏，孩子要牵着。",
+  },
+  "shen-limberlost": {
+    kidsFromAge: 0,
+    stroller: "yes",
+    wheelchair: "yes",
+    seniors: "ok",
+    noteZh: "官方说是全程无障碍的环线，压实的碎石路面加木桥；停车场有无障碍车位和厕所。",
+    source: ACCESS,
+  },
+  "shen-whiteoak-canyon": {
+    kidsFromAge: 6,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "caution",
+    hazards: ["dropoff"],
+    noteZh: "往返约 7.4 公里，回程一路上坡约 320 米；瀑布边的岩石湿滑，有人从这里坠落过，别爬到水边。体力一般的走到和 Limberlost 交叉的地方就回。",
+  },
+  "shen-hawksbill": {
+    kidsFromAge: 5,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "caution",
+    noteZh: "Lower Hawksbill 这条短但很陡；带孩子、老人从 Upper Hawksbill 停车场上去，路长一点但爬升只有约 160 米。山顶风大、冷，带外套。",
+  },
+  "shen-old-rag": {
+    kidsFromAge: 10,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "no",
+    hazards: ["scramble", "dropoff"],
+    noteZh:
+      "一圈约 15 公里、7–8 小时，最后一段在巨石间手脚并用地攀爬、钻缝，要靠手臂把身体撑上去，是公园救援最多的步道。不适合小孩和体力一般的；想体验攀岩可以改走短很多的 Bearfence。",
+  },
+  "shen-byrd-vc": {
+    kidsFromAge: 0,
+    stroller: "yes",
+    wheelchair: "assisted",
+    seniors: "ok",
+    noteZh: "官方只说园内大部分建筑无障碍或有人协助能进；能借助听设备，Rapidan 营地导览也从这里出发。",
+    source: ACCESS,
+  },
+  "shen-big-meadows": {
+    kidsFromAge: 0,
+    stroller: "partial",
+    wheelchair: "partial",
+    seniors: "ok",
+    hazards: ["wildlife"],
+    noteZh: "从公路边、游客中心旁就能看到草甸和鹿，草甸里的小路是土路；常有黑熊，别喂，孩子别往草甸深处跑。",
+  },
+  "shen-dark-hollow-falls": {
+    kidsFromAge: 4,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "caution",
+    noteZh: "下去很快，回程是一路陡坡、石头多，爬升约 130 米；膝盖不好的慢慢走，多歇几次。",
+  },
+  "shen-rapidan-camp": {
+    kidsFromAge: 0,
+    stroller: "partial",
+    wheelchair: "yes",
+    seniors: "ok",
+    noteZh: "面包车能上轮椅，要订专门的轮椅位（每车两个，自带轮椅）；营地要在平地上走一走、站着听讲，总统小屋后门廊有无障碍入口。",
+    source: "https://www.recreation.gov/ticket/facility/251745",
+  },
+  "shen-bearfence": {
+    kidsFromAge: 8,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "caution",
+    hazards: ["scramble", "dropoff"],
+    noteZh: "环线短，但山脊上有一段在巨石上手脚并用地爬，下雨结冰时很滑。怕高的、带小孩的走阿巴拉契亚步道绕到观景点，避开攀爬段。",
+  },
+  "shen-doyles-river-falls": {
+    kidsFromAge: 6,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "caution",
+    noteZh: "往返约 5.3 公里，回程爬升约 360 米，中途踩石头过溪。带孩子、老人走到上瀑布就回头，能少爬一半。",
+  },
+  "shen-blackrock-summit": {
+    kidsFromAge: 3,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "ok",
+    noteZh: "环线很缓，但终点是一大片会松动的碎石坡，孩子坐在边上看，别往坡下爬。",
+  },
+  "shen-luray-caverns": {
+    kidsFromAge: 0,
+    stroller: "yes",
+    wheelchair: "assisted",
+    seniors: "ok",
+    noteZh: "官网说铺装步道一般不太陡，推小婴儿车可以；入口没有台阶，但溶洞不算无障碍，约 2 公里里有几段中等坡度，坐轮椅要有人帮。洞里没有厕所。",
+    source: "https://luraycaverns.com/faqs/",
+  },
+};

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { unsuitableNote } from "@/components/attractions/family-fit";
 import { KIND_COLORS } from "@/components/attractions/kinds";
 import { IconBed, IconClose, IconGrip } from "@/components/icons";
 import { ParkMap, type MapLeg, type MapPoint, type MapTrail } from "@/components/map/park-map";
@@ -652,6 +653,7 @@ export function Planner({
       parkNameEn={parkNameEn(stop.park)}
       parkHref={parkHref(stop)}
       routesHref={`/${locale}/routes?park=${stop.park}`}
+      party={trip.guide?.party}
       text={text}
       actions={actions}
       onClose={onClose}
@@ -1284,6 +1286,10 @@ export function Planner({
           closedNoteOf={(id) =>
             closureNote(id) ?? liveNote(id) ?? roadClosedNote(id) ?? tourClosedNote(id) ?? byId.get(id)?.closedNote
           }
+          unsuitableNoteOf={(id) => {
+            const stop = byId.get(id);
+            return stop && unsuitableNote(trip.guide?.party, stop, text);
+          }}
           activities={activities.filter((activity) => guideParkList.some((p) => p.code === activity.park))}
           attractionExists={(id) => byId.has(id)}
           stargazing={stargazing}
@@ -1337,6 +1343,7 @@ export function Planner({
                 dateLabel={trip.startDate ? dateFormat.format(new Date(`${dateOf(view.day)}T00:00:00Z`)) : null}
                 exactDate={dateOf(view.day)}
                 parkNames={parkNames}
+                party={trip.guide?.party}
                 text={text}
                 selectedId={selectedId}
                 openId={openId}

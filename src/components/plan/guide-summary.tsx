@@ -21,6 +21,7 @@ export function GuideSummary({
   nameOf,
   dated,
   closedNoteOf,
+  unsuitableNoteOf,
   activities,
   attractionExists,
   stargazing = [],
@@ -47,6 +48,8 @@ export function GuideSummary({
   /** 定了出发日期（不开放的景点按这几天说，不按月份） */
   dated: boolean;
   closedNoteOf: (id: string) => string | undefined;
+  /** 不适合同行的人的原因（几岁以上、轮椅去不了……） */
+  unsuitableNoteOf: (id: string) => string | null | undefined;
   /** 这些公园的特别活动（全部月份），这里按行程月份筛 */
   activities: ParkActivity[];
   attractionExists: (id: string) => boolean;
@@ -67,6 +70,7 @@ export function GuideSummary({
   const skippedOf = (key: keyof GuideSkipped) => (guide.skipped[key] ?? []).filter((id) => !inTrip.has(id));
   const skippedGroups = reasons.filter(({ key }) => skippedOf(key).length > 0);
   const closed = skippedOf("closed");
+  const unsuitable = skippedOf("unsuitable");
   const monthActivities = activities.filter((activity) => !activity.months || (month !== null && activity.months.includes(month)));
   const multiPark = parks.length > 1;
   const surcharge = parks.some((park) => park.nonresidentSurcharge);
@@ -203,6 +207,19 @@ export function GuideSummary({
                   <li key={id} className="text-sm leading-6">
                     {nameOf(id)}
                     {closedNoteOf(id) && <span className="block text-xs leading-6 text-mute">{closedNoteOf(id)}</span>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {unsuitable.length > 0 && (
+            <div>
+              <h3 className="font-serif text-xl">{g.unsuitable}</h3>
+              <ul className="mt-4 space-y-3">
+                {unsuitable.map((id) => (
+                  <li key={id} className="text-sm leading-6">
+                    {nameOf(id)}
+                    {unsuitableNoteOf(id) && <span className="block text-xs leading-6 text-mute">{unsuitableNoteOf(id)}</span>}
                   </li>
                 ))}
               </ul>

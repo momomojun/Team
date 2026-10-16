@@ -27,6 +27,7 @@ export function localizeAttraction(attraction: AttractionWithPhoto, locale: Loca
       noteZh: t(attraction.parking.noteZh),
       ...(attraction.parking.lot ? { lot: t(attraction.parking.lot) } : {}),
     },
+    family: attraction.family?.noteZh ? { ...attraction.family, noteZh: t(attraction.family.noteZh) } : attraction.family,
   };
 }
 

@@ -1,0 +1,162 @@
+import type { Suitability } from "../attractions/types";
+
+// 约书亚树 · 同行适合度。2026-10-16 按 NPS 无障碍页面和“行动不便”页面整理：官方列出的轮椅能用的路线有
+// Cap Rock 环线（压实沙土）、泰迪熊仙人掌园（压实沙土加栈道）、马拉绿洲的铺装小环线、Keys View 下观景点的铺装人行道；
+// 三个游客中心都有无障碍车位和放低的咨询台。加州不认外州的残障停车证，要用加州的临时证。
+// 6–9 月白天常超过 38°C，几条长一点的步道都标了高温
+const MOBILITY = "https://www.nps.gov/jotr/planyourvisit/physical-mobility.htm";
+
+export const suitability: Record<string, Suitability> = {
+  "jotr-joshua-tree-visitor-center": {
+    kidsFromAge: 0,
+    stroller: "yes",
+    wheelchair: "yes",
+    seniors: "ok",
+    noteZh: "有无障碍车位，咨询台有放低的一段；进园前在这里装满水。",
+    source: MOBILITY,
+  },
+  "jotr-oasis-visitor-center": {
+    kidsFromAge: 0,
+    stroller: "yes",
+    wheelchair: "yes",
+    seniors: "ok",
+    noteZh: "门口的马拉绿洲是约 0.8 公里的铺装小环线，几乎不爬升，有带靠背和扶手的长椅，轮椅、婴儿车都能走（2026 年洪水后北边一段关闭，走到绿洲旁折返）。",
+    source: MOBILITY,
+  },
+  "jotr-cottonwood-visitor-center": {
+    kidsFromAge: 0,
+    stroller: "yes",
+    wheelchair: "yes",
+    seniors: "ok",
+    noteZh: "有无障碍车位和放低的咨询台；室内洗手间关闭，只有流动厕所，还有紧急电话。",
+    source: MOBILITY,
+  },
+  "jotr-hidden-valley": {
+    kidsFromAge: 3,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "ok",
+    noteZh: "入口要跨石阶、钻石缝，之后是沙土路，婴儿车、轮椅进不去；步道口有无障碍车位，旁边的 Cap Rock 环线轮椅能走。",
+  },
+  "jotr-barker-dam": {
+    kidsFromAge: 2,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "ok",
+    noteZh: "大部分是平坦沙土路，水坝附近有几段石阶和巨石，婴儿车推不过去。",
+  },
+  "jotr-keys-ranch": {
+    kidsFromAge: 0,
+    stroller: "partial",
+    wheelchair: "partial",
+    seniors: "ok",
+    noteZh: "跟护林员走约 0.8 公里，院子里是土路和碎石，有坡，轮椅、婴儿车推起来费劲；坐轮椅的订票前先问公园。",
+  },
+  "jotr-cap-rock": {
+    kidsFromAge: 0,
+    stroller: "yes",
+    wheelchair: "assisted",
+    seniors: "ok",
+    noteZh: "官方说是平均约 90 厘米宽的压实沙土环线，只爬升约 6 米，有两个无障碍车位；天气不同沙子会变松变深，有几处头顶有巨石，轮椅最好有人协助。",
+    source: MOBILITY,
+  },
+  "jotr-keys-view": {
+    kidsFromAge: 0,
+    stroller: "yes",
+    wheelchair: "yes",
+    seniors: "ok",
+    noteZh: "官方建议行动不便的去下观景点：约 160 米铺装人行道，几乎平的，下停车场有两个无障碍车位；上观景点的铺装小路很陡。",
+    source: MOBILITY,
+  },
+  "jotr-ryan-mountain": {
+    kidsFromAge: 7,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "caution",
+    hazards: ["heat"],
+    noteZh: "往返约 4.8 公里、爬升约 320 米，大部分是石阶和陡坡，全程没有遮阴；夏天只能天亮出发，带孩子、老人可以只走开头一段看看 Queen Valley 就回头。",
+  },
+  "jotr-lost-horse-mine": {
+    kidsFromAge: 6,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "caution",
+    hazards: ["heat"],
+    noteZh: "往返约 6.4 公里、一路沿老矿路上坡，没有遮阴；矿井和捣矿机有栅栏，孩子别翻进去。夏天 8 点前出发。",
+  },
+  "jotr-night-sky": {
+    kidsFromAge: 0,
+    stroller: "yes",
+    wheelchair: "yes",
+    seniors: "ok",
+    noteZh: "在指定观星点的停车场或路边停车处就能看，不用走路；沙漠夜里降温很快，冬天常到 0°C 以下，给老人小孩带厚外套。",
+  },
+  "jotr-skull-rock": {
+    kidsFromAge: 0,
+    stroller: "partial",
+    wheelchair: "partial",
+    seniors: "ok",
+    noteZh: "路边就能看到骷髅岩；走到石头跟前是沙土路，轮椅在路边看就好。",
+  },
+  "jotr-jumbo-rocks": {
+    kidsFromAge: 3,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "ok",
+    noteZh: "沙地和碎石多，婴儿车推不动；孩子爱爬巨石，只让他们爬矮的，大人在下面接着。",
+  },
+  "jotr-arch-rock": {
+    kidsFromAge: 3,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "ok",
+    noteZh: "沙地和岩石路面，没有遮阴；石拱禁止攀爬，孩子在石拱附近爬石头容易摔。",
+  },
+  "jotr-cholla-garden": {
+    kidsFromAge: 0,
+    stroller: "partial",
+    wheelchair: "assisted",
+    seniors: "ok",
+    noteZh:
+      "官方说是压实沙土加窄栈道的小环线，几乎平的，栈道和地面之间常有几厘米的落差；仙人掌的刺会挂在衣服、皮肤和轮椅轮子上，会走路的小孩抱着或牵紧，别让他们伸手摸。",
+    source: MOBILITY,
+  },
+  "jotr-cottonwood-spring": {
+    kidsFromAge: 0,
+    stroller: "partial",
+    wheelchair: "partial",
+    seniors: "ok",
+    noteZh: "从停车场走几分钟土路下到绿洲，有坡；轮椅在停车场边能看到棉白杨和棕榈。",
+  },
+  "jotr-mastodon-peak": {
+    kidsFromAge: 6,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "caution",
+    hazards: ["heat", "scramble"],
+    noteZh: "约 4.8 公里环线、没有遮阴，峰顶最后一段要手脚并用爬花岗岩；带孩子、老人走到猛犸金矿或峰下就折返，夏天 9 点前出发。",
+  },
+  "jotr-lost-palms-oasis": {
+    kidsFromAge: 8,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "caution",
+    hazards: ["heat", "scramble"],
+    noteZh: "往返约 12 公里，全程没有水和遮阴，最后下到绿洲的一段又陡又要攀石，回程上坡最累；只在 11–3 月走，带孩子、老人改走猛犸峰环线的前半段或棉白杨泉。",
+  },
+  "jotr-49-palms-oasis": {
+    kidsFromAge: 6,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "caution",
+    hazards: ["heat"],
+    noteZh: "往返约 4.8 公里，去程、回程都要翻一道约 90 米的山脊，石头路、没有遮阴；6–9 月封闭，其他月份也要早上走、带足水。",
+  },
+  "jotr-pioneertown": {
+    kidsFromAge: 0,
+    stroller: "partial",
+    wheelchair: "partial",
+    seniors: "ok",
+    noteZh: "主街是土路，两边木板走廊有台阶，轮椅、婴儿车只能在街上走。",
+  },
+};

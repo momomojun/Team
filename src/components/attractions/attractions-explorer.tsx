@@ -13,7 +13,16 @@ import { fill, formatDuration } from "@/i18n/format";
 import { AttractionCard, linkButton, PopularityBadge, type AttractionText } from "./attraction-card";
 import { KIND_COLORS } from "./kinds";
 
-type Filter = "all" | "mustSee" | AttractionKind;
+type FamilyFilter = "kids" | "seniors" | "wheelchair";
+type Filter = "all" | "mustSee" | FamilyFilter | AttractionKind;
+
+/** 适合全家的筛选：3 岁以下的孩子也能去 / 老人没问题 / 轮椅能到（含有人协助） */
+const FAMILY_FILTERS: Record<FamilyFilter, (a: AttractionWithPhoto) => boolean> = {
+  kids: (a) => a.family !== undefined && a.family.kidsFromAge <= 3 && a.family.minAge === undefined,
+  seniors: (a) => a.family?.seniors === "ok",
+  wheelchair: (a) => a.family?.wheelchair === "yes" || a.family?.wheelchair === "assisted",
+};
+const isFamilyFilter = (filter: Filter): filter is FamilyFilter => filter in FAMILY_FILTERS;
 type Sort = "rank" | "area";
 
 /**
@@ -56,7 +65,13 @@ export function AttractionsExplorer({
   const visible = useMemo(
     () =>
       attractions.filter((a) =>
-        filter === "all" ? true : filter === "mustSee" ? a.mustSee : a.kind === filter,
+        filter === "all"
+          ? true
+          : filter === "mustSee"
+            ? a.mustSee
+            : isFamilyFilter(filter)
+              ? FAMILY_FILTERS[filter](a)
+              : a.kind === filter,
       ),
     [attractions, filter],
   );
@@ -207,6 +222,12 @@ export function AttractionsExplorer({
               {t.mustSee}
               <span className="text-[11px] tabular-nums opacity-70">{mustSeeIds.length}</span>
             </button>
+            {(Object.keys(FAMILY_FILTERS) as FamilyFilter[]).map((key) => (
+              <button key={key} type="button" className={filterClass(filter === key)} onClick={() => setFilter(key)}>
+                {t.family.filters[key]}
+                <span className="text-[11px] tabular-nums opacity-70">{attractions.filter(FAMILY_FILTERS[key]).length}</span>
+              </button>
+            ))}
             {kinds.map((kind) => (
               <button key={kind} type="button" className={filterClass(filter === kind)} onClick={() => setFilter(kind)}>
                 <span className="size-1.5 rounded-full" style={{ backgroundColor: KIND_COLORS[kind] }} />

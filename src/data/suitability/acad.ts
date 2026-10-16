@@ -1,0 +1,157 @@
+import type { Suitability } from "../attractions/types";
+
+// 阿卡迪亚 · 同行适合度。2026-10-16 按 NPS 无障碍页面和行动不便页面整理：Hulls Cove 游客中心从后门有电梯；
+// 卡迪拉克山顶环线是铺装路、有几段较陡；Ship Harbor 第一圈符合 ADA；马车道“可能适合行动不便的人”；
+// Echo Lake 夏天能约沙滩轮椅；Island Explorer 班车都能上轮椅。铁梯步道（蜂巢、绝壁）按步道说明
+const ACCESS = "https://www.nps.gov/acad/planyourvisit/accessibility.htm";
+const MOBILITY = "https://www.nps.gov/acad/planyourvisit/physical-mobility.htm";
+
+export const suitability: Record<string, Suitability> = {
+  "acad-hulls-cove-visitor-center": {
+    kidsFromAge: 0,
+    stroller: "yes",
+    wheelchair: "yes",
+    seniors: "ok",
+    noteZh: "正门要爬 52 级台阶；后门有无障碍车位、自动门和电梯，婴儿车、轮椅、膝盖不好的都从后门进。",
+    source: ACCESS,
+  },
+  "acad-cadillac-summit": {
+    kidsFromAge: 0,
+    stroller: "yes",
+    wheelchair: "assisted",
+    seniors: "ok",
+    noteZh: "山顶约 0.8 公里的环线是铺装路，有几段较陡，坐轮椅最好有人推；停车场有无障碍车位，礼品店旁有无障碍洗手间。日出时风大很冷，给孩子多穿。",
+    source: ACCESS,
+  },
+  "acad-sand-beach": {
+    kidsFromAge: 0,
+    stroller: "partial",
+    wheelchair: "partial",
+    seniors: "ok",
+    hazards: ["water"],
+    noteZh: "下层停车场有无障碍车位和洗手间，下到沙滩要走台阶、沙地推不了车；夏天水温只有 10–15°C，有离岸流，孩子在救生员看得到的地方玩水。",
+    source: ACCESS,
+  },
+  "acad-beehive": {
+    kidsFromAge: 12,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "no",
+    hazards: ["scramble", "dropoff"],
+    noteZh:
+      "沿约 140 米高的崖壁攀铁钉、踩窄石阶，最后一段近乎垂直，没有护栏，有人坠落过。不适合小孩和恐高、体力一般的；全家可以从背面的 Bowl 步道上山顶，同样的风景、没有铁梯。",
+  },
+  "acad-thunder-hole": {
+    kidsFromAge: 0,
+    stroller: "partial",
+    wheelchair: "partial",
+    seniors: "ok",
+    hazards: ["water"],
+    noteZh: "官方说这里是 Ocean Path 最好进的入口：无障碍车位有坡道、人行横道和一小段铺装路；下到缝边要走台阶。有人被浪卷进海里过，大浪时别翻栏杆，孩子抱紧。",
+    source: ACCESS,
+  },
+  "acad-otter-cliff": {
+    kidsFromAge: 0,
+    stroller: "partial",
+    wheelchair: "partial",
+    seniors: "ok",
+    hazards: ["dropoff"],
+    noteZh: "Otter Point 停车场有一个无障碍车位，往崖边的 Ocean Path 路面不平、还有花岗岩台阶；崖边没有护栏，雾天青苔很滑，孩子一直牵着。",
+    source: ACCESS,
+  },
+  "acad-precipice": {
+    kidsFromAge: 14,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "no",
+    hazards: ["scramble", "dropoff"],
+    noteZh:
+      "阿卡迪亚最难的铁梯步道，不到 1.5 公里爬升约 300 米，全靠铁钉、铁梯和窄岩架，崖边没有护栏，有人坠亡过。不适合小孩、恐高和体力一般的；想走铁梯先试短很多的蜂巢山，全家可以去南泡泡山。",
+  },
+  "acad-jordan-pond": {
+    kidsFromAge: 4,
+    stroller: "partial",
+    wheelchair: "partial",
+    seniors: "caution",
+    noteZh: "东岸是平整的碎石路，婴儿车能推；西岸是木栈道和一长段乱石。带孩子、老人走东岸到北头看泡泡山就原路回，不用绕完一圈。",
+  },
+  "acad-jordan-pond-house": {
+    kidsFromAge: 0,
+    stroller: "yes",
+    wheelchair: "yes",
+    seniors: "ok",
+    noteZh: "停车场有 6 个无障碍车位，铺装平整；从餐厅草坪到湖边是短下坡，官方页面有游客照片说轮椅能推到水边。",
+    source: MOBILITY,
+  },
+  "acad-bubbles": {
+    kidsFromAge: 5,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "caution",
+    hazards: ["dropoff"],
+    noteZh: "路短但有陡石阶和光滑的岩面，平衡石就在崖边，孩子别靠近；千万别从朝乔丹池那面的崖壁直接下去。",
+  },
+  "acad-carriage-roads": {
+    kidsFromAge: 0,
+    stroller: "yes",
+    wheelchair: "assisted",
+    seniors: "ok",
+    noteZh: "碎石马车道宽而平整，没有汽车，官方说可能适合行动不便的人；鹰湖环线约 10 公里有起伏，带孩子可以用拖车或儿童座，体力一般的骑或走一段就回头。",
+    source: ACCESS,
+  },
+  "acad-bar-island": {
+    kidsFromAge: 3,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "ok",
+    hazards: ["water"],
+    noteZh: "沙坝只在低潮前后约 1.5 小时露出来，回晚了要等约 9 小时；路上是湿滑的海藻和碎石。一定先查潮汐表，带孩子留足回程时间。",
+  },
+  "acad-bar-harbor": {
+    kidsFromAge: 0,
+    stroller: "yes",
+    wheelchair: "partial",
+    seniors: "ok",
+    noteZh: "镇中心是平整的人行道；海滨步道有碎石、树根和台阶的路段，坐轮椅在 Agamont 公园和码头一带看海就好。",
+  },
+  "acad-bass-harbor-light": {
+    kidsFromAge: 0,
+    stroller: "partial",
+    wheelchair: "partial",
+    seniors: "ok",
+    hazards: ["water"],
+    noteZh: "停车场有无障碍车位，到灯塔旁的路很短；拍全景要从左边的小路和木台阶下到海边礁石，石头湿滑，涨潮时别站在靠海的湿石头上，轮椅、婴儿车在上面看就好。",
+  },
+  "acad-ship-harbor": {
+    kidsFromAge: 0,
+    stroller: "partial",
+    wheelchair: "assisted",
+    seniors: "ok",
+    noteZh: "官方说第一圈符合 ADA；停车场到步道入口有约 5 厘米的落差，坐轮椅可能要人帮一下。第二圈到外海礁石是土路。",
+    source: ACCESS,
+  },
+  "acad-echo-lake": {
+    kidsFromAge: 0,
+    stroller: "partial",
+    wheelchair: "assisted",
+    seniors: "ok",
+    hazards: ["water"],
+    noteZh: "夏天能免费借大轮胎的沙滩轮椅，要提前至少 5 天发邮件约工作人员；不一定有救生员，孩子玩水大人要跟着。",
+    source: MOBILITY,
+  },
+  "acad-schoodic-point": {
+    kidsFromAge: 0,
+    stroller: "partial",
+    wheelchair: "partial",
+    seniors: "ok",
+    hazards: ["water"],
+    noteZh: "停车场旁就能看海；到水边是大片花岗岩，湿的岩石和海藻极滑，有人被浪卷走过，大浪天离水边远一点。",
+  },
+  "acad-schoodic-loop": {
+    kidsFromAge: 0,
+    stroller: "partial",
+    wheelchair: "yes",
+    seniors: "ok",
+    noteZh: "开车绕半岛一圈，路边停车处在车上就能看海；Schoodic Woods 一带的铺装自行车道能推婴儿车。",
+  },
+};

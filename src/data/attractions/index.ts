@@ -1,6 +1,7 @@
 import { celebrityShots, type CelebrityShot } from "../celebrities";
 import { creatorRoutes, type CreatorLanguage } from "../creators";
 import { parkingRules } from "../parking";
+import { suitability } from "../suitability";
 import { bryceCanyon } from "./brca";
 import { channelIslands } from "./chis";
 import { craterLake } from "./crla";
@@ -60,12 +61,12 @@ import { biscayne } from "./bisc";
 import { dryTortugas } from "./drto";
 import { greatSmokyMountains } from "./grsm";
 import { trails, type TrailPath } from "./trails.generated";
-import type { Attraction, GooglePlace, ParkingRule, Photo } from "./types";
+import type { Attraction, GooglePlace, ParkingRule, Photo, Suitability } from "./types";
 import { yellowstone } from "./yell";
 import { yosemite } from "./yose";
 import { zion } from "./zion";
 
-export type { Attraction, AttractionKind, GooglePlace, Hike, ParkingRule, Photo, TimeOfDay } from "./types";
+export type { Attraction, AttractionKind, GooglePlace, Hazard, Hike, ParkingRule, Photo, Suitability, TimeOfDay } from "./types";
 export type { TrailPath } from "./trails.generated";
 
 export interface AttractionWithPhoto extends Attraction {
@@ -86,6 +87,8 @@ export interface AttractionWithPhoto extends Attraction {
   celebrityShots?: CelebrityShot[];
   /** 旺季早上就停满的停车场（parking.ts） */
   parking?: ParkingRule;
+  /** 带小孩、老人、轮椅能不能去（suitability/） */
+  family?: Suitability;
 }
 
 export interface CreatorNote {
@@ -178,6 +181,7 @@ const withData: AttractionWithPhoto[] = [
   google: googlePlaces[attraction.id],
   trailLine: trails[attraction.id],
   parking: parkingRules[attraction.id],
+  family: suitability[attraction.id],
 }));
 
 // 游客中心人人都会路过，评论多不代表值得专门去；园外的镇子、景点（比如 Jackson 镇广场）也不算公园的热度，都不参与排名
