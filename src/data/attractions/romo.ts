@@ -159,7 +159,7 @@ export const rockyMountain: Attraction[] = [
     permit: BEAR_LAKE_ROAD_PERMIT,
     mustSee: true,
     summary:
-      "Bear Lake 路尽头海拔约 2,880 米的高山湖，约 1 公里的环湖步道平缓好走，正对 Hallett Peak 和 Longs Peak，也是去宁芙湖、梦湖、翡翠湖这一串高山湖泊的起点。",
+      "Bear Lake 路尽头海拔约 2,880 米的高山湖，约 1 公里的环湖步道大部分平缓，西南侧有一段原木台阶和陡坡，正对 Hallett Peak 和 Longs Peak，也是去宁芙湖、梦湖、翡翠湖这一串高山湖泊的起点。",
     tips: [
       "旺季停车场清晨就满，可以停在 Park & Ride 坐免费的 Bear Lake 线班车（2026 年 5 月 22 日–10 月 18 日每天 6:30–19:30，10–15 分钟一班）",
       "日出时 Hallett Peak 被照成金红色，没风时湖面有倒影",

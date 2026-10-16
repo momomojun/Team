@@ -32,6 +32,15 @@ export const UNKNOWN_REOPEN_DAYS = 90;
 
 export const tempClosures: TempClosure[] = [
   {
+    attractions: ["grca-lipan-point"],
+    from: "2026-06-22",
+    reopen: "2026-12-24",
+    reasonZh:
+      "利潘点和进去的支路 2026 年 6 月 22 日到 12 月 23 日翻修（重铺路面、重修步道），整段不开放；Desert View Drive 上的莫兰点、沙漠景观点照常开。走 Tanner 步道的停在西边约 300 米的 No Name Point 走过去，64 号公路路边不能停车。",
+    source: "https://home.nps.gov/grca/learn/news/lipan-point-closure-2026.htm",
+    checked: "2026-10-16",
+  },
+  {
     attractions: ["zion-watchman-trail"],
     from: "2026-08-31",
     reopen: null,
