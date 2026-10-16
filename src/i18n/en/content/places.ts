@@ -192,5 +192,6 @@ export const content: Record<string, string> = {
   "埃尔帕索": "El Paso",
   "New Comback International 新東記": "New Comback International",
   "大統華超市": "T&T Supermarket",
-  "金都": "Kam Do"
+  "金都": "Kam Do",
+  "波特兰国际航空港": "Portland International Jetport"
 };

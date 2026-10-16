@@ -3,10 +3,10 @@ import { readdirSync, readFileSync } from "node:fs";
 import { test } from "node:test";
 
 // 英文版内容（src/i18n/en/content/）：按批写，写完一批把 DONE_BATCH 加一，这一批以前的组都要写完。
-// 第 1 批：每座公园的景点和同行适合度、公园介绍、封路班车游船停车场、机场门票等；第 2 批：住宿、特别活动、预约规则；第 3 批：博主路线、明星同款、榜单
-const DONE_BATCH = 0;
+// 第 1 批：每座公园的景点和同行适合度、公园介绍、封路班车游船停车场、机场门票等；第 2 批：住宿、特别活动、预约规则；第 3 批：博主路线、明星同款、电影同款、榜单
+const DONE_BATCH = 1;
 const batchOf = (id: string) =>
-  ["lodging", "activities", "bookings"].includes(id) ? 2 : ["creators", "celebrities", "rankings"].includes(id) ? 3 : 1;
+  ["lodging", "activities", "bookings"].includes(id) ? 2 : ["creators", "celebrities", "films", "rankings"].includes(id) ? 3 : 1;
 
 const HAN = /[㐀-鿿]/;
 const dir = new URL("../src/i18n/en/content/", import.meta.url);
