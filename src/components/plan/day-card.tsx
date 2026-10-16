@@ -1,0 +1,671 @@
+"use client";
+
+import type { DragEvent, ReactNode } from "react";
+import { KIND_COLORS } from "@/components/attractions/kinds";
+import {
+  IconAlert,
+  IconBed,
+  IconCar,
+  IconCheck,
+  IconChevronRight,
+  IconGrip,
+  IconPause,
+  IconSunrise,
+  IconSunset,
+} from "@/components/icons";
+import type { AttractionWithPhoto } from "@/data/attractions";
+import type { ParkAlert } from "@/lib/alert-match";
+import { fill, formatDuration, formatMonths } from "@/i18n/format";
+import { closureOn, weekdaysZh } from "@/lib/closures";
+import { monthOf } from "@/lib/dates";
+import { moonNight } from "@/lib/moon";
+import { entryWindow, lodgingLeg, onlyAt, parkingOn, type TimelineEntry } from "@/lib/planner";
+import { formatClock } from "@/lib/sun";
+import { datedSchedule, departuresOn, runsOn, tourScheduleOf, tourSeason } from "@/lib/tours";
+import { moveItem, removeItem, setItemStatus } from "@/lib/trip-edit";
+import type { Trip } from "@/lib/trip-store";
+import { ActionMenu } from "./action-menu";
+import { roadNoteFor, roadWarn } from "./road-note";
+import type { DayView, DragSpot, PlannerText } from "./types";
+import type { DayWeather } from "./weather";
+import { WeatherLine, weatherNotes } from "./weather-line";
+
+export interface DragHandlers {
+  source: DragSpot | null;
+  target: DragSpot | null;
+  start: (spot: DragSpot) => void;
+  over: (spot: DragSpot) => void;
+  drop: () => void;
+  end: () => void;
+}
+
+type Tone = "warn" | "info";
+
+/** Google 地图一条路线最多这么多个途经点 */
+const MAX_WAYPOINTS = 9;
+const latLon = (place: { lat: number; lon: number }) => `${place.lat.toFixed(5)},${place.lon.toFixed(5)}`;
+
+/** 这天的整条路线：从前一晚住处出发，依次经过还没去的景点（有步道口、停车场用那里），到当晚住处 */
+function dayRouteUrl(
+  from: { lat: number; lon: number } | undefined,
+  stops: { lat: number; lon: number }[],
+  to: { lat: number; lon: number } | undefined,
+): string | null {
+  const origin = from ?? stops[0];
+  const destination = to ?? stops.at(-1);
+  const waypoints = stops.slice(from ? 0 : 1, to ? undefined : -1);
+  if (stops.length === 0 || !origin || !destination || waypoints.length > MAX_WAYPOINTS) return null;
+  const params = new URLSearchParams({ api: "1", origin: latLon(origin), destination: latLon(destination), travelmode: "driving" });
+  if (waypoints.length > 0) params.set("waypoints", waypoints.map(latLon).join("|"));
+  return `https://www.google.com/maps/dir/?${params}`;
+}
+
+/** 等日落、等天黑空出来这么久，住处又在这么近的地方，就提一句可以先回去休息（来回之外至少歇这么久） */
+const REST_WAIT_MIN = 90;
+const REST_MAX_DRIVE = 40;
+const REST_MIN_STAY = 45;
+
+/** 时间线三列：拖动把手、时间、内容；出发 / 开车 / 回住处的行也用同样的列宽，才能对齐 */
+const gripCol = "w-4 shrink-0";
+const timeCol = "w-[3.75rem] shrink-0 text-right tabular-nums";
+/** 开始时间：大号等宽数字（衬线字体的数字高低不齐，不好认） */
+const clock = "block text-[17px] leading-6 font-medium text-ink";
+
+export function DayCard({
+  view,
+  color,
+  dayCount,
+  itemCount,
+  dateLabel,
+  exactDate,
+  parkNames,
+  text,
+  selectedId,
+  openId,
+  details,
+  onSelect,
+  onEdit,
+  mapsUrl,
+  drag,
+  header,
+  footer,
+  weather,
+  alertsFor,
+}: {
+  view: DayView;
+  /** 这天在整个行程地图上的颜色 */
+  color: string;
+  dayCount: number;
+  /** trip.days[day].length，拖到末尾时用 */
+  itemCount: number;
+  dateLabel: string | null;
+  /** 定了出发日期时这天的日期（只定了月份时没有）：季节性道路按这天算往年通不通 */
+  exactDate: string | null;
+  parkNames: string[];
+  text: PlannerText;
+  selectedId: string | null;
+  /** 展开详情的景点 */
+  openId: string | null;
+  /** 景点详情：照片、评分、简介、提示 */
+  details: (stop: AttractionWithPhoto) => ReactNode;
+  /** 点景点：展开 / 收起详情，并在地图上选中 */
+  onSelect: (id: string) => void;
+  onEdit: (change: (trip: Trip) => Trip) => void;
+  /** 景点在 Google Maps 上的搜索链接 */
+  mapsUrl: (stop: AttractionWithPhoto) => string;
+  drag: DragHandlers;
+  /** 卡片顶部的内容，比如第 1 天的出发地 */
+  header?: ReactNode;
+  /** 卡片底部的内容：今晚住哪 */
+  footer: ReactNode;
+  /** 这天的天气：16 天内是预报，更远是往年同期 */
+  weather?: DayWeather;
+  /** NPS 实时公告里提到这个景点的 */
+  alertsFor: (stop: AttractionWithPhoto) => ParkAlert[];
+}) {
+  const t = text.plan;
+  const { day, rows, sun, timeline, from } = view;
+  const duration = (minutes: number) => formatDuration(minutes, text.units);
+  const month = view.date ? monthOf(view.date) : null;
+  // 临时关闭（施工、山洪……）：说为什么、什么时候重开
+  const closureText = (id: string, warning: "tempClosed" | "maybeClosed") => {
+    const state = closureOn(id, view.date);
+    if (!state) return "";
+    const { closure } = state;
+    const md = (date: string) => ({ m: Number(date.slice(5, 7)), d: Number(date.slice(8, 10)) });
+    if (warning === "maybeClosed") {
+      return fill(t.warnings.maybeClosed, { checked: fill(t.roads.monthDay, md(closure.checked)), reason: text.closureReasons[id] ?? closure.reasonZh });
+    }
+    const until =
+      closure.weekdays && closure.reopen
+        ? fill(t.warnings.weekly, { days: weekdaysZh(closure.weekdays), ...md(closure.reopen) })
+        : closure.reopen
+          ? fill(t.warnings.reopenOn, md(closure.reopen))
+          : t.warnings.reopenUnknown;
+    return fill(t.warnings.tempClosed, { until, reason: text.closureReasons[id] ?? closure.reasonZh });
+  };
+  const isTarget = (index: number) => drag.target?.day === day && drag.target.index === index;
+  const isSource = (index: number) => drag.source?.day === day && drag.source.index === index;
+
+  // 季节性道路：这天第一个还没去的、要走这条路的景点下面说一次往年这天通不通
+  const roadNotes = new Map(exactDate ? rows.map(({ stop }) => [stop.id, roadNoteFor(stop.id, exactDate, text)]) : []);
+  const roadNoteAt = new Map<string, string>();
+  for (const { item, stop } of rows) {
+    const road = roadNotes.get(stop.id);
+    if (road?.note && item.status === "planned" && !roadNoteAt.has(road.road.id)) roadNoteAt.set(road.road.id, stop.id);
+  }
+
+  const routeUrl = dayRouteUrl(
+    from,
+    rows.filter((row) => row.item.status === "planned").map((row) => row.stop.start ?? row.stop),
+    view.to,
+  );
+
+  // 空出来很久、当晚住处不远：可以先回住处休息，单程多久
+  const restBack = (k: number) => {
+    const entry = timeline.entries[k];
+    const previous = rows[k - 1]?.stop;
+    if (!entry || entry.waitMin < REST_WAIT_MIN || !previous || !view.to || view.to.endpoint) return null;
+    const back = lodgingLeg(view.to, previous, "back");
+    return back <= REST_MAX_DRIVE && 2 * back + REST_MIN_STAY <= entry.waitMin ? back : null;
+  };
+
+  const monthDay = (md: string) => fill(t.roads.monthDay, { m: Number(md.slice(0, 2)), d: Number(md.slice(3, 5)) });
+  const notesFor = (stop: AttractionWithPhoto) => {
+    const notes: { text: string; tone: Tone }[] = [];
+    const road = roadNotes.get(stop.id);
+    // 路通了就能去的景点，开放月份只是粗算，定了日期就只按这条路说
+    const byMonth = !road?.decides || stop.openMonths?.length === 0;
+    if (byMonth && month !== null && stop.openMonths && !stop.openMonths.includes(month)) {
+      notes.push({
+        text:
+          stop.openMonths.length === 0
+            ? t.warnings.closedNow
+            : fill(t.warnings.closed, { months: formatMonths(stop.openMonths, text.units) }),
+        tone: "warn",
+      });
+    } else if (month !== null && stop.bestMonths && !stop.bestMonths.includes(month)) {
+      notes.push({ text: fill(t.warnings.notBest, { months: formatMonths(stop.bestMonths, text.units) }), tone: "info" });
+    }
+    if (road?.note && roadNoteAt.get(road.road.id) === stop.id) {
+      notes.push({ text: fill(t.roads.stop, { road: road.name, note: road.note }), tone: roadWarn(road) ? "warn" : "info" });
+    }
+    if (stop.permit) notes.push({ text: t.warnings.permit, tone: "warn" });
+    // 有固定班次的游船、导览团：列出这天的班次（这天不开就说几号到几号才开），不是每天都开的提醒一下
+    const schedule = tourScheduleOf(stop.id);
+    const departures = departuresOn(stop.id, view.date);
+    if (schedule && departures) {
+      const year = schedule.scheduleYear;
+      if (departures.times.length > 0) {
+        const times = departures.times.map((time) => formatClock(time)).join("、");
+        notes.push({ text: fill(t.warnings.tourTimes, { times, checkIn: departures.checkIn, year }), tone: "info" });
+        // 定了日期的：只在某几天开的（比如 Diablo 湖游船周一周二不开）按星期提醒
+        if (dateLabel && !runsOn(stop.id, view.date, true)) notes.push({ text: t.warnings.tourWeekday, tone: "warn" });
+      } else if (!datedSchedule(schedule)) {
+        const season = tourSeason(schedule);
+        const range = fill(t.warnings.tourSeason, { year, from: monthDay(season.from), to: monthDay(season.to) });
+        notes.push({ text: range, tone: "info" });
+      }
+      if (schedule.daysZh) notes.push({ text: fill(t.warnings.tourDays, { days: schedule.daysZh }), tone: "warn" });
+    }
+    // 进去的时间有限制的（洞穴入场、公园大门）
+    const window = entryWindow(stop, view.date);
+    if (window) {
+      const values = {
+        open: formatClock(window.open),
+        last: window.lastEntry !== undefined ? formatClock(window.lastEntry) : "",
+        close: window.close !== undefined ? formatClock(window.close) : "",
+      };
+      const template =
+        window.lastEntry !== undefined && window.close !== undefined
+          ? t.warnings.entryBoth
+          : window.lastEntry !== undefined
+            ? t.warnings.entryLast
+            : t.warnings.entryClose;
+      notes.push({ text: fill(template, values), tone: "info" });
+    }
+    return notes;
+  };
+
+  // 停车场旺季一早就满的：到得早说一下几点满、满了怎么办，到得晚提醒；同一个停车场的几个景点只在第一个下面说
+  const parkedLots = new Set<string>();
+  const parkingAt = new Map<string, NonNullable<ReturnType<typeof parkingOn>>>();
+  for (const { stop } of rows) {
+    const lot = parkingOn(stop, view.date);
+    if (lot && !parkedLots.has(lot.lot)) {
+      parkedLots.add(lot.lot);
+      parkingAt.set(stop.id, lot);
+    }
+  }
+  const parkingNote = (stop: AttractionWithPhoto, entry: TimelineEntry): { text: string; tone: Tone } | null => {
+    const lot = parkingAt.get(stop.id);
+    if (!lot || !stop.parking) return null;
+    const values = {
+      time: formatClock(lot.full),
+      free: formatClock(lot.free),
+      note: stop.parking.noteZh,
+      weekends: stop.parking.weekends ? t.warnings.parkingWeekends : "",
+    };
+    const window = lot.freeStated;
+    return entry.warnings.includes("parkingFull")
+      ? {
+          text: fill(window ? t.warnings.parkingLateWindow : t.warnings.parkingLate, {
+            ...values,
+            arrive: formatClock(entry.start),
+          }),
+          tone: "warn",
+        }
+      : { text: fill(window ? t.warnings.parkingEarlyWindow : t.warnings.parkingEarly, values), tone: "info" };
+  };
+  // 晚上看星空：定了日期就说这晚月亮在不在天上、有多亮（满月前后整晚都亮，星星少很多）
+  const moonNote = (stop: AttractionWithPhoto, entry: TimelineEntry): { text: string; tone: Tone } | null => {
+    if (entry.slot !== "night" || !exactDate || !view.timeZone) return null;
+    const night = moonNight(exactDate, entry.start, entry.end, stop.lat, stop.lon, view.timeZone);
+    const pct = Math.round(night.fraction * 100);
+    if (night.fraction < 0.15) return { text: fill(t.warnings.moonDark, { pct }), tone: "info" };
+    if (night.upMin === 0 && night.set !== null && night.set <= entry.start) {
+      return { text: fill(t.warnings.moonSet, { pct, time: formatClock(night.set) }), tone: "info" };
+    }
+    if (night.upMin === 0 && night.rise !== null && night.rise >= entry.end) {
+      return { text: fill(t.warnings.moonRise, { pct, time: formatClock(night.rise) }), tone: "info" };
+    }
+    if (night.upMin === 0) return { text: fill(t.warnings.moonDark, { pct }), tone: "info" };
+    const until = night.set !== null && night.set > entry.start && night.set < entry.start + 6 * 60 ? night.set : null;
+    return {
+      text: fill(t.warnings.moonUp, { pct, until: until !== null ? fill(t.warnings.moonUntil, { time: formatClock(until) }) : "" }),
+      tone: night.fraction >= 0.5 ? "warn" : "info",
+    };
+  };
+  // 这天第一次开到班车换乘点、坐车进去的地方：说一下换乘点怎么停车
+  const hubParkingAt = new Map<number, string>();
+  timeline.entries.forEach((entry, k) => {
+    const line = entry.shuttle?.mode === "in" ? entry.shuttle.line : undefined;
+    const note = line ? text.shuttleParking[line] : undefined;
+    if (line && note && ![...hubParkingAt.values()].includes(note)) hubParkingAt.set(k, note);
+  });
+
+  // 拖拽：放在某一行上 = 插到这一行前面；放在列表末尾的空白 = 加到最后
+  const dropHere = (spot: DragSpot) => ({
+    onDragOver: (event: DragEvent) => {
+      if (!drag.source) return;
+      event.preventDefault();
+      event.stopPropagation();
+      drag.over(spot);
+    },
+    onDrop: (event: DragEvent) => {
+      event.preventDefault();
+      event.stopPropagation();
+      drag.drop();
+    },
+  });
+
+  const dayWarnings = [
+    timeline.overloaded ? t.warnings.overloaded : null,
+    timeline.lateReturn ? t.warnings.lateReturn : null,
+    ...(weather ? weatherNotes(weather, text) : []),
+  ].filter((warning): warning is string => warning !== null);
+
+  return (
+    <section id={`plan-day-${day}`} className="scroll-mt-32 border-t border-ink">
+      <header className="flex flex-wrap items-start justify-between gap-4 py-5">
+        <div className="flex items-baseline gap-4">
+          <span className="font-serif text-4xl leading-none text-clay-700 tabular-nums">
+            {String(day + 1).padStart(2, "0")}
+          </span>
+          <div>
+            <h2 className="flex items-center gap-2 font-serif text-xl">
+              <span aria-hidden className="inline-block h-[3px] w-5" style={{ backgroundColor: color }} />
+              {fill(t.day, { n: day + 1 })}{" "}
+              {dateLabel && <span className="ml-1 font-sans text-sm text-mute">{dateLabel}</span>}
+            </h2>
+            {parkNames.length > 0 && <p className="eyebrow mt-1.5 text-mute">{parkNames.join(" · ")}</p>}
+          </div>
+        </div>
+        <div className="space-y-1 text-right text-xs text-mute">
+          {weather && (
+            <p className="text-ink-soft">
+              <WeatherLine weather={weather} text={text} />
+            </p>
+          )}
+          {sun.kind === "normal" && (
+            <p className="inline-flex items-center gap-3">
+              <span className="inline-flex items-center gap-1">
+                <IconSunrise className="text-sm" /> {fill(t.sunrise, { time: formatClock(sun.window.sunrise) })}
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <IconSunset className="text-sm" /> {fill(t.sunset, { time: formatClock(sun.window.sunset) })}
+              </span>
+            </p>
+          )}
+          {sun.kind === "polar-day" && <p>{t.polarDay}</p>}
+          {sun.kind === "polar-night" && <p>{t.polarNight}</p>}
+          {rows.length > 0 && (
+            <p>{fill(t.summary, { active: duration(timeline.activeMin), drive: duration(timeline.driveMin) })}</p>
+          )}
+          {routeUrl && (
+            <p className="print:hidden">
+              <a href={routeUrl} target="_blank" rel="noreferrer" className="link-line text-ink-soft">
+                {t.dayRoute}
+              </a>
+            </p>
+          )}
+        </div>
+      </header>
+
+      {dayWarnings.length > 0 && (
+        <ul className="mb-4 space-y-1 border-l border-clay-600 pl-4 text-xs text-clay-800">
+          {dayWarnings.map((warning) => (
+            <li key={warning} className="flex items-center gap-1.5">
+              <IconAlert /> {warning}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <div className="space-y-4 pb-8">
+        {header}
+        {from && timeline.departAt !== undefined && (
+          <div className="flex items-center gap-3 px-1.5">
+            <span className={gripCol} aria-hidden />
+            <span className={timeCol}>
+              <span className={clock}>{formatClock(timeline.departAt)}</span>
+            </span>
+            <span className="flex min-w-0 items-center gap-1.5 text-sm text-ink-soft">
+              <IconBed className="shrink-0 text-base text-mute" />
+              {fill(t.lodging.departFrom, { name: from.name })}
+            </span>
+          </div>
+        )}
+
+        {rows.length === 0 ? (
+          <div
+            {...dropHere({ day, index: 0 })}
+            className={`border border-dashed py-6 text-center text-sm text-mute ${
+              isTarget(0) ? "border-clay-600 bg-clay-50" : "border-line"
+            }`}
+          >
+            {/* 换住处的一天（比如最后一天开回机场）：写清楚从哪到哪、要多久 */}
+            {timeline.returnAt !== undefined && view.from && view.to
+              ? fill(t.transferDay, {
+                  from: view.from.name,
+                  to: view.to.name,
+                  leg: timeline.returnShuttle
+                    ? fill(t.shuttleModes[timeline.returnShuttle.mode], {
+                        d: duration(timeline.returnDriveMin),
+                        line: text.shuttleNames[timeline.returnShuttle.line] ?? timeline.returnShuttle.line,
+                      })
+                    : fill(t.drive, { d: duration(timeline.returnDriveMin) }),
+                })
+              : t.empty_day}
+          </div>
+        ) : (
+          <ol>
+            {rows.map(({ item, index, stop }, k) => {
+              const entry = timeline.entries[k];
+              const finished = item.status !== "planned";
+              const parking = parkingNote(stop, entry);
+              const moon = moonNote(stop, entry);
+              const hub = hubParkingAt.get(k);
+              const notes = finished
+                ? []
+                : [
+                    ...notesFor(stop),
+                    ...(hub ? [{ text: fill(t.warnings.hubParking, { note: hub }), tone: "info" as Tone }] : []),
+                    ...(parking ? [parking] : []),
+                    ...(moon ? [moon] : []),
+                    ...entry.warnings
+                      .filter((w) => w !== "parkingFull" || !parking)
+                      .map((w) => ({
+                        text:
+                          w === "tempClosed" || w === "maybeClosed"
+                            ? closureText(stop.id, w)
+                            : w === "offTime" && onlyAt(stop) === "sunrise"
+                              ? t.warnings.offTimeSunrise
+                              : t.warnings[w],
+                        tone: "warn" as Tone,
+                      })),
+                  ];
+              const alerts = finished ? [] : alertsFor(stop);
+              return (
+                <li
+                  key={item.id}
+                  id={`plan-item-${item.id}`}
+                  draggable
+                  onDragStart={(event) => {
+                    event.dataTransfer.effectAllowed = "move";
+                    event.dataTransfer.setData("text/plain", item.id);
+                    drag.start({ day, index });
+                  }}
+                  onDragEnd={drag.end}
+                  {...dropHere({ day, index })}
+                  className={`group scroll-mt-32 border-t-2 ${isTarget(index) ? "border-clay-600" : "border-transparent"} ${
+                    isSource(index) ? "opacity-40" : ""
+                  }`}
+                >
+                  {entry.driveMin > 0 && (
+                    <p className="flex items-center gap-3 px-1.5 py-1 text-xs text-mute">
+                      <span className={gripCol} aria-hidden />
+                      <span className={timeCol} aria-hidden />
+                      <span className="inline-flex items-center gap-1.5">
+                        <IconCar className="text-sm" />{" "}
+                        {entry.shuttle
+                          ? fill(t.shuttleModes[entry.shuttle.mode], {
+                              d: duration(entry.driveMin),
+                              line: text.shuttleNames[entry.shuttle.line] ?? entry.shuttle.line,
+                            })
+                          : fill(t.drive, { d: duration(entry.driveMin) })}
+                      </span>
+                    </p>
+                  )}
+                  {entry.waitMin >= 30 && (
+                    <p className="flex items-center gap-3 px-1.5 py-1 text-xs text-mute">
+                      <span className={gripCol} aria-hidden />
+                      <span className={timeCol} aria-hidden />
+                      <span className="inline-flex items-center gap-1.5">
+                        <IconPause className="text-sm" />{" "}
+                        {restBack(k) !== null && view.to
+                          ? fill(t.freeRest, { d: duration(entry.waitMin), name: view.to.name, back: duration(restBack(k)!) })
+                          : fill(t.free, { d: duration(entry.waitMin) })}
+                      </span>
+                    </p>
+                  )}
+                  <div
+                    className={`flex items-start gap-3 px-1.5 py-2.5 transition-colors ${
+                      stop.id === selectedId ? "bg-paper-deep" : "hover:bg-paper-deep/60"
+                    }`}
+                  >
+                    <span
+                      aria-hidden
+                      title={t.dragHint}
+                      className={`${gripCol} cursor-grab pt-1 text-line select-none group-hover:text-mute active:cursor-grabbing`}
+                    >
+                      <IconGrip />
+                    </span>
+                    <span className={timeCol}>
+                      <span className={`${clock} ${finished ? "text-mute" : ""}`}>{formatClock(entry.start)}</span>
+                      <span className="block text-[11px] leading-4 text-mute">{fill(t.until, { time: formatClock(entry.end) })}</span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => onSelect(stop.id)}
+                      aria-expanded={openId === stop.id}
+                      className="group/stop min-w-0 flex-1 text-left"
+                    >
+                      <p className={`font-serif text-base ${finished ? "text-mute" : ""} ${item.status === "done" ? "line-through" : ""}`}>
+                        <span
+                          className="mr-2 inline-block size-1.5 rounded-full align-middle"
+                          style={{ backgroundColor: KIND_COLORS[stop.kind] }}
+                        />
+                        {stop.nameZh} <span className="ml-1 font-sans text-[11px] tracking-[0.12em] text-mute uppercase">{stop.nameEn}</span>
+                      </p>
+                      <p className="mt-0.5 flex flex-wrap items-center gap-x-1 text-xs text-mute">
+                        {text.kinds[stop.kind]} · {duration(entry.end - entry.start)}
+                        {/* 按学到的配速调整过的停留时间，附上原来的估算 */}
+                        {entry.end - entry.start !== stop.durationMin && !finished && (
+                          <span>（{fill(t.pacedFrom, { d: duration(stop.durationMin) })}）</span>
+                        )}
+                        {stop.hotRank !== undefined && (
+                          <span className="text-clay-700"> · {fill(text.attraction.hotRank, { n: stop.hotRank })}</span>
+                        )}
+                        {stop.google && <span> · ★{stop.google.rating.toFixed(1)}</span>}
+                        {stop.mustSee && <span className="text-clay-700"> · {text.attraction.mustSee}</span>}
+                        {finished && ` · ${t.status[item.status as "done" | "skipped"]}`}
+                        <span className="ml-2 inline-flex items-center gap-0.5 text-ink-soft group-hover/stop:text-clay-700">
+                          {openId === stop.id ? t.hideDetails : t.showDetails}
+                          <IconChevronRight
+                            className={`text-[11px] transition-transform ${openId === stop.id ? "-rotate-90" : "rotate-90"}`}
+                          />
+                        </span>
+                      </p>
+                      {notes.length > 0 && (
+                        <span className="mt-2 flex flex-wrap gap-1.5">
+                          {notes.map((note) => (
+                            <span
+                              key={note.text}
+                              className={`border px-1.5 py-0.5 text-[11px] ${
+                                note.tone === "warn" ? "border-clay-600/40 text-clay-700" : "border-line text-ink-soft"
+                              }`}
+                            >
+                              {note.text}
+                            </span>
+                          ))}
+                        </span>
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      role="checkbox"
+                      aria-checked={item.status === "done"}
+                      aria-label={t.status.done}
+                      title={item.status === "planned" ? t.status.done : t.status.undo}
+                      onClick={() =>
+                        onEdit((trip) => setItemStatus(trip, day, index, item.status === "planned" ? "done" : "planned"))
+                      }
+                      className={`mt-0.5 flex size-6 shrink-0 items-center justify-center border text-sm transition-colors ${
+                        item.status === "done"
+                          ? "border-pine-600 bg-pine-600 text-paper"
+                          : item.status === "skipped"
+                            ? "border-line bg-paper-deep text-mute"
+                            : "border-ink/25 hover:border-pine-600"
+                      }`}
+                    >
+                      {item.status === "done" ? <IconCheck /> : item.status === "skipped" ? "–" : ""}
+                    </button>
+                    <ActionMenu
+                      label={t.more}
+                      actions={[
+                        {
+                          label: t.actions.up,
+                          disabled: index === 0,
+                          onSelect: () => onEdit((trip) => moveItem(trip, day, index, day, index - 1)),
+                        },
+                        {
+                          label: t.actions.down,
+                          disabled: index === itemCount - 1,
+                          onSelect: () => onEdit((trip) => moveItem(trip, day, index, day, index + 2)),
+                        },
+                        ...Array.from({ length: dayCount }, (_, target) => target)
+                          .filter((target) => target !== day)
+                          .map((target) => ({
+                            label: fill(t.moveTo, { n: target + 1 }),
+                            onSelect: () => onEdit((trip) => moveItem(trip, day, index, target, trip.days[target].length)),
+                          })),
+                        {
+                          label: item.status === "skipped" ? t.status.undo : t.status.skipped,
+                          onSelect: () =>
+                            onEdit((trip) =>
+                              setItemStatus(trip, day, index, item.status === "skipped" ? "planned" : "skipped"),
+                            ),
+                        },
+                        {
+                          label: t.openGoogleMaps,
+                          onSelect: () => window.open(mapsUrl(stop), "_blank", "noopener"),
+                        },
+                        {
+                          label: t.actions.remove,
+                          danger: true,
+                          onSelect: () => onEdit((trip) => removeItem(trip, day, index)),
+                        },
+                      ]}
+                    />
+                  </div>
+                  {alerts.length > 0 && (
+                    <ul className="space-y-1 pb-2 pl-[6.625rem] pr-10 text-xs leading-5">
+                      {alerts.map((alert) => (
+                        <li key={alert.id}>
+                          <a
+                            href={alert.url || undefined}
+                            target="_blank"
+                            rel="noreferrer"
+                            title={alert.title}
+                            className="inline-flex items-start gap-1.5 text-clay-700 hover:text-clay-800"
+                          >
+                            <IconAlert className="mt-0.5 shrink-0" />
+                            <span>
+                              {fill(t.alerts.stop, { category: t.alerts.categories[alert.category] ?? alert.category })}
+                              <span className="ml-1 text-ink-soft">{alert.titleZh ?? alert.title}</span>
+                              {alert.titleZh && <span className="ml-1.5 text-[11px] text-mute">{alert.title}</span>}
+                            </span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {openId === stop.id && (
+                    <div
+                      className="pt-1 pb-3 pl-0 sm:pl-[6.625rem]"
+                      draggable
+                      onDragStart={(event) => {
+                        // 详情里选文字、点照片时不要拖动整行
+                        event.preventDefault();
+                        event.stopPropagation();
+                      }}
+                    >
+                      {details(stop)}
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+            <li
+              aria-hidden
+              {...dropHere({ day, index: itemCount })}
+              className={`h-3 border-t-2 ${isTarget(itemCount) ? "border-clay-600" : "border-transparent"}`}
+            />
+          </ol>
+        )}
+        {view.to && timeline.returnAt !== undefined && rows.length > 0 && (
+          <div>
+            {timeline.returnDriveMin > 0 && (
+              <p className="flex items-center gap-3 px-1.5 py-1 text-xs text-mute">
+                <span className={gripCol} aria-hidden />
+                <span className={timeCol} aria-hidden />
+                <span className="inline-flex items-center gap-1.5">
+                  <IconCar className="text-sm" />{" "}
+                  {timeline.returnShuttle
+                    ? fill(t.shuttleModes[timeline.returnShuttle.mode], {
+                        d: duration(timeline.returnDriveMin),
+                        line: text.shuttleNames[timeline.returnShuttle.line] ?? timeline.returnShuttle.line,
+                      })
+                    : fill(t.drive, { d: duration(timeline.returnDriveMin) })}
+                </span>
+              </p>
+            )}
+            <div className="flex items-center gap-3 px-1.5 pt-1">
+              <span className={gripCol} aria-hidden />
+              <span className={timeCol}>
+                <span className={`${clock} ${timeline.lateReturn ? "text-clay-700" : ""}`}>{formatClock(timeline.returnAt)}</span>
+              </span>
+              <span className="flex min-w-0 items-center gap-1.5 text-sm text-ink-soft">
+                <IconBed className="shrink-0 text-base text-mute" />
+                {fill(t.lodging.arriveAt, { name: view.to.name })}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {footer}
+      </div>
+    </section>
+  );
+}

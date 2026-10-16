@@ -1,0 +1,506 @@
+"use client";
+
+import "maplibre-gl/dist/maplibre-gl.css";
+import type { GeoJSONSource, Map as MapLibreMap } from "maplibre-gl";
+import { useEffect, useEffectEvent, useRef, useState, type ReactNode } from "react";
+import { EOX_ATTRIBUTION, EOX_IMAGERY_TILES, IMAGERY_TILES, STYLE_URL, TERRAIN_TILES, type Imagery } from "./sources";
+
+export interface MapPoint {
+  id: string;
+  lat: number;
+  lon: number;
+  label: string;
+  /** 第二行小字，一般是英文名，方便对照 Google Maps */
+  sublabel?: string;
+  color: string;
+  /** 必去景点画大一点，标签优先显示 */
+  emphasis?: boolean;
+  /** 圆点里显示的字：行程序号，或住处的“住” */
+  badge?: string;
+  /** 小白点（步道口），不显示标签、不能点 */
+  small?: boolean;
+}
+
+export interface MapTrail {
+  id: string;
+  /** [经度, 纬度] */
+  path: [number, number][];
+}
+
+/** 一段开车路线：拿到真实道路就画实线，还没拿到时按游览顺序用虚线连起来 */
+export interface MapLeg {
+  id: string;
+  color: string;
+  /** [经度, 纬度] */
+  path: [number, number][];
+  /** 只是按顺序连起来的直线，不是实际道路 */
+  straight?: boolean;
+}
+
+export interface MapText {
+  map: string;
+  satellite: string;
+  terrain: string;
+  routeNote: string;
+  loading: string;
+  trailLegend: string;
+  roadLegend: string;
+}
+
+// worker 文件由 scripts/copy-maplibre-worker.mjs 复制到 public/
+const WORKER_URL = "/maplibre/maplibre-gl-worker.mjs";
+
+// 步道用砂岩红，选中的步道加深加粗；开车路线用深石板蓝
+const TRAIL_COLOR = "#b85f3c";
+const TRAIL_HIGHLIGHT = "#6b2a16";
+export const ROAD_COLOR = "#2f4a5a";
+
+const EMPTY: GeoJSON.FeatureCollection = { type: "FeatureCollection", features: [] };
+
+function pointsToGeoJSON(points: MapPoint[]): GeoJSON.FeatureCollection {
+  return {
+    type: "FeatureCollection",
+    features: points.map((point) => ({
+      type: "Feature",
+      geometry: { type: "Point", coordinates: [point.lon, point.lat] },
+      properties: {
+        id: point.id,
+        label: point.label,
+        color: point.color,
+        emphasis: point.emphasis ?? false,
+        small: point.small ?? false,
+        ...(point.sublabel ? { sublabel: point.sublabel } : {}),
+        ...(point.badge === undefined ? {} : { badge: point.badge }),
+      },
+    })),
+  };
+}
+
+function linesToGeoJSON(
+  lines: { id: string; coordinates: [number, number][]; color?: string; straight?: boolean }[],
+): GeoJSON.FeatureCollection {
+  return {
+    type: "FeatureCollection",
+    features: lines
+      .filter((line) => line.coordinates.length > 1)
+      .map((line) => ({
+        type: "Feature",
+        geometry: { type: "LineString", coordinates: line.coordinates },
+        properties: { id: line.id, color: line.color ?? ROAD_COLOR, straight: line.straight ?? false },
+      })),
+  };
+}
+
+function fitToPoints(map: MapLibreMap, points: MapPoint[], animate: boolean) {
+  if (points.length === 0) return;
+  const duration = animate ? 600 : 0;
+  if (points.length === 1) {
+    map.easeTo({ center: [points[0].lon, points[0].lat], zoom: 11, duration });
+    return;
+  }
+  const lons = points.map((p) => p.lon);
+  const lats = points.map((p) => p.lat);
+  map.fitBounds(
+    [
+      [Math.min(...lons), Math.min(...lats)],
+      [Math.max(...lons), Math.max(...lats)],
+    ],
+    { padding: 64, maxZoom: 13, duration },
+  );
+}
+
+export function ParkMap({
+  points,
+  selectedId = null,
+  onSelect,
+  trails,
+  highlightTrailId = null,
+  legs,
+  legend,
+  fitKey = "",
+  extras,
+  extrasLegend,
+  imagery = "usgs",
+  text,
+  className = "",
+  children,
+}: {
+  points: MapPoint[];
+  selectedId?: string | null;
+  onSelect?: (id: string) => void;
+  /** 徒步路线 */
+  trails?: MapTrail[];
+  /** 高亮哪条步道（一般是选中的景点） */
+  highlightTrailId?: string | null;
+  /** 开车路线（行程模式），整个行程时每天一段、各用一种颜色 */
+  legs?: MapLeg[];
+  /** 图例：每天的颜色；不填时有实线路线就显示“开车路线” */
+  legend?: { color: string; label: string }[];
+  /** 变了就重新缩放到全部点（比如切换显示哪一天），点的集合变了也会重新缩放 */
+  fitKey?: string;
+  /** 额外叠加的一层小点（比如补给点）：不参与缩放、不能点，放大后才显示名字 */
+  extras?: MapPoint[];
+  /** 这层小点的图例 */
+  extrasLegend?: { color: string; label: string }[];
+  /** 卫星图：美国用 USGS，加拿大的公园用 EOX（USGS 不覆盖加拿大） */
+  imagery?: Imagery;
+  text: MapText;
+  className?: string;
+  /** 叠在地图上的内容，比如选中景点的卡片 */
+  children?: ReactNode;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<MapLibreMap | null>(null);
+  // 只有点的集合变了才重新缩放，改状态、切选中不会让地图乱跳
+  const fittedKeyRef = useRef("");
+  const [ready, setReady] = useState(false);
+  const [satellite, setSatellite] = useState(false);
+  const [terrain, setTerrain] = useState(false);
+
+  const handleSelect = useEffectEvent((id: string) => onSelect?.(id));
+
+  // 地图快滚到屏幕里（上下 800 像素以内）才加载：maplibre-gl 有 1 MB，公园页的地图在很下面，一打开就加载手机上要卡好几秒
+  const [near, setNear] = useState(false);
+  useEffect(() => {
+    const element = containerRef.current;
+    if (!element) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setNear(true);
+        observer.disconnect();
+      },
+      { rootMargin: "800px 0px" },
+    );
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  // 地图只初始化一次；maplibre-gl 依赖浏览器环境，动态加载
+  useEffect(() => {
+    if (!near) return;
+    let cancelled = false;
+    let map: MapLibreMap | undefined;
+
+    import("maplibre-gl").then(({ Map, NavigationControl, ScaleControl, AttributionControl, setWorkerUrl }) => {
+      if (cancelled || !containerRef.current) return;
+      setWorkerUrl(WORKER_URL);
+      const instance = new Map({
+        container: containerRef.current,
+        style: STYLE_URL,
+        center: [-116, 37.5],
+        zoom: 5,
+        attributionControl: false,
+      });
+      map = instance;
+      instance.addControl(new NavigationControl({ visualizePitch: true }), "top-right");
+      instance.addControl(new ScaleControl({ unit: "metric" }), "bottom-left");
+      instance.addControl(new AttributionControl({ compact: true }), "bottom-right");
+
+      instance.on("load", () => {
+        // 地形阴影和卫星图插在文字标注下面
+        const firstLabel = instance.getStyle().layers.find((layer) => layer.type === "symbol")?.id;
+        const dem = {
+          type: "raster-dem" as const,
+          tiles: [TERRAIN_TILES],
+          encoding: "terrarium" as const,
+          tileSize: 256,
+          maxzoom: 14,
+          attribution: "Terrain: Mapzen / AWS Open Data",
+        };
+        instance.addSource("hillshade-dem", dem);
+        instance.addSource("terrain-dem", dem);
+        instance.addLayer(
+          {
+            id: "hillshade",
+            type: "hillshade",
+            source: "hillshade-dem",
+            paint: { "hillshade-exaggeration": 0.35, "hillshade-shadow-color": "#473b24" },
+          },
+          firstLabel,
+        );
+        instance.addSource("imagery", {
+          type: "raster",
+          tiles: [IMAGERY_TILES],
+          tileSize: 256,
+          maxzoom: 16,
+          attribution: "USGS The National Map",
+        });
+        instance.addLayer(
+          { id: "imagery", type: "raster", source: "imagery", layout: { visibility: "none" } },
+          firstLabel,
+        );
+        instance.addSource("imagery-eox", {
+          type: "raster",
+          tiles: [EOX_IMAGERY_TILES],
+          tileSize: 256,
+          maxzoom: 14,
+          attribution: EOX_ATTRIBUTION,
+        });
+        instance.addLayer(
+          { id: "imagery-eox", type: "raster", source: "imagery-eox", layout: { visibility: "none" } },
+          firstLabel,
+        );
+
+        instance.addSource("legs", { type: "geojson", data: EMPTY });
+        instance.addLayer({
+          id: "legs",
+          type: "line",
+          source: "legs",
+          filter: ["==", ["get", "straight"], false],
+          layout: { "line-join": "round", "line-cap": "round" },
+          paint: { "line-color": ["get", "color"], "line-width": 4, "line-opacity": 0.8 },
+        });
+        instance.addLayer({
+          id: "legs-straight",
+          type: "line",
+          source: "legs",
+          filter: ["==", ["get", "straight"], true],
+          paint: { "line-color": ["get", "color"], "line-width": 2, "line-dasharray": [2, 2] },
+        });
+        instance.addSource("trails", { type: "geojson", data: EMPTY });
+        instance.addLayer({
+          id: "trails",
+          type: "line",
+          source: "trails",
+          layout: { "line-join": "round", "line-cap": "round" },
+          paint: { "line-color": TRAIL_COLOR, "line-width": 2.5, "line-dasharray": [2, 1.2] },
+        });
+        instance.addLayer({
+          id: "trails-highlight",
+          type: "line",
+          source: "trails",
+          filter: ["==", ["get", "id"], ""],
+          layout: { "line-join": "round", "line-cap": "round" },
+          paint: { "line-color": TRAIL_HIGHLIGHT, "line-width": 4.5 },
+        });
+        instance.addSource("extras", { type: "geojson", data: EMPTY });
+        instance.addLayer({
+          id: "extras",
+          type: "circle",
+          source: "extras",
+          paint: {
+            "circle-radius": 4.5,
+            "circle-color": ["get", "color"],
+            "circle-stroke-width": 1.5,
+            "circle-stroke-color": "#ffffff",
+          },
+        });
+        instance.addLayer({
+          id: "extras-label",
+          type: "symbol",
+          source: "extras",
+          minzoom: 11,
+          layout: {
+            "text-field": ["get", "label"],
+            "text-font": ["Noto Sans Regular"],
+            "text-size": 11,
+            "text-offset": [0, 0.8],
+            "text-anchor": "top",
+            "text-optional": true,
+          },
+          paint: { "text-color": "#44403c", "text-halo-color": "#f4efe7", "text-halo-width": 1.4 },
+        });
+        instance.addSource("points", { type: "geojson", data: EMPTY });
+        instance.addLayer({
+          id: "points-selected",
+          type: "circle",
+          source: "points",
+          filter: ["==", ["get", "id"], ""],
+          paint: {
+            "circle-radius": 15,
+            "circle-color": "rgba(0,0,0,0)",
+            "circle-stroke-width": 3,
+            "circle-stroke-color": "#1c1b18",
+          },
+        });
+        instance.addLayer({
+          id: "points",
+          type: "circle",
+          source: "points",
+          paint: {
+            "circle-radius": [
+              "case",
+              ["==", ["get", "small"], true],
+              3.5,
+              ["has", "badge"],
+              10,
+              ["==", ["get", "emphasis"], true],
+              8,
+              6,
+            ],
+            "circle-color": ["get", "color"],
+            "circle-stroke-width": ["case", ["==", ["get", "small"], true], 1.5, 2],
+            "circle-stroke-color": ["case", ["==", ["get", "small"], true], "#57534e", "#ffffff"],
+          },
+        });
+        instance.addLayer({
+          id: "points-badge",
+          type: "symbol",
+          source: "points",
+          filter: ["has", "badge"],
+          layout: {
+            "text-field": ["get", "badge"],
+            "text-font": ["Noto Sans Bold"],
+            "text-size": 11,
+            "text-allow-overlap": true,
+          },
+          paint: { "text-color": "#ffffff" },
+        });
+        instance.addLayer({
+          id: "points-label",
+          type: "symbol",
+          source: "points",
+          filter: ["!=", ["get", "small"], true],
+          layout: {
+            // 中文名一行，英文名小一号放第二行
+            "text-field": [
+              "case",
+              ["has", "sublabel"],
+              ["format", ["get", "label"], {}, "\n", {}, ["get", "sublabel"], { "font-scale": 0.8 }],
+              ["get", "label"],
+            ],
+            "text-font": ["Noto Sans Regular"],
+            "text-size": 12,
+            "text-offset": [0, 1.1],
+            "text-anchor": "top",
+            "text-optional": true,
+            "symbol-sort-key": ["case", ["==", ["get", "emphasis"], true], 0, 1],
+          },
+          paint: { "text-color": "#1c1b18", "text-halo-color": "#f4efe7", "text-halo-width": 1.6 },
+        });
+
+        instance.on("click", "points", (event) => {
+          const feature = event.features?.[0];
+          const id = feature?.properties?.id;
+          if (typeof id === "string" && feature?.properties?.small !== true) handleSelect(id);
+        });
+        instance.on("mouseenter", "points", () => {
+          instance.getCanvas().style.cursor = "pointer";
+        });
+        instance.on("mouseleave", "points", () => {
+          instance.getCanvas().style.cursor = "";
+        });
+
+        mapRef.current = instance;
+        setReady(true);
+      });
+    });
+
+    return () => {
+      cancelled = true;
+      map?.remove();
+      mapRef.current = null;
+    };
+  }, [near]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!ready || !map) return;
+    (map.getSource("points") as GeoJSONSource).setData(pointsToGeoJSON(points));
+    (map.getSource("trails") as GeoJSONSource).setData(
+      linesToGeoJSON((trails ?? []).map((trail) => ({ id: trail.id, coordinates: trail.path }))),
+    );
+    (map.getSource("legs") as GeoJSONSource).setData(
+      linesToGeoJSON((legs ?? []).map((leg) => ({ id: leg.id, coordinates: leg.path, color: leg.color, straight: leg.straight }))),
+    );
+    const key = `${fitKey}#${points.map((p) => p.id).join("|")}`;
+    if (key !== fittedKeyRef.current) {
+      // 第一次直接跳过去，之后换点集再用动画
+      fitToPoints(map, points, fittedKeyRef.current !== "");
+      fittedKeyRef.current = key;
+    }
+  }, [ready, points, trails, legs, fitKey]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!ready || !map) return;
+    (map.getSource("extras") as GeoJSONSource).setData(pointsToGeoJSON(extras ?? []));
+  }, [ready, extras]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!ready || !map) return;
+    map.setFilter("points-selected", ["==", ["get", "id"], selectedId ?? ""]);
+    map.setFilter("trails-highlight", ["==", ["get", "id"], highlightTrailId ?? ""]);
+    const point = points.find((p) => p.id === selectedId);
+    if (point) map.easeTo({ center: [point.lon, point.lat], zoom: Math.max(map.getZoom(), 12), duration: 800 });
+  }, [ready, points, selectedId, highlightTrailId]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!ready || !map) return;
+    map.setLayoutProperty("imagery", "visibility", satellite && imagery === "usgs" ? "visible" : "none");
+    map.setLayoutProperty("imagery-eox", "visibility", satellite && imagery === "eox" ? "visible" : "none");
+  }, [ready, satellite, imagery]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    // 只在开关真正变化时动，免得打断刚开始的缩放动画
+    if (!ready || !map || terrain === (map.getTerrain() !== null)) return;
+    map.setTerrain(terrain ? { source: "terrain-dem", exaggeration: 1.3 } : null);
+    map.easeTo({ pitch: terrain ? 60 : 0, duration: 800 });
+  }, [ready, terrain]);
+
+  const toggle = (active: boolean) =>
+    `px-3 py-1.5 transition-colors ${active ? "bg-ink text-paper" : "text-ink hover:bg-paper-deep"}`;
+  const hasTrails = (trails?.length ?? 0) > 0;
+  const hasRoad = legs?.some((leg) => !leg.straight && leg.path.length > 1) ?? false;
+  const showStraightRoute = legs?.some((leg) => leg.straight && leg.path.length > 1) ?? false;
+  const legendItems = legend ?? (hasRoad ? [{ color: legs?.find((leg) => !leg.straight)?.color ?? ROAD_COLOR, label: text.roadLegend }] : []);
+
+  return (
+    <div className={`relative overflow-hidden bg-paper-deep ${className}`}>
+      {/* maplibre 的 CSS 会把容器设成 position: relative，所以用 h-full 而不是 inset-0 撑满 */}
+      <div ref={containerRef} className={`h-full w-full transition-opacity duration-500 ${ready ? "opacity-100" : "opacity-0"}`} />
+      {!ready && (
+        <div className="eyebrow absolute inset-0 flex items-center justify-center text-ink-soft">
+          {text.loading}
+        </div>
+      )}
+      <div className="absolute top-3 left-3 space-y-2">
+        <div className="flex bg-paper/95 text-[11px] tracking-[0.12em] shadow-sm">
+          <button type="button" className={toggle(!satellite)} onClick={() => setSatellite(false)}>
+            {text.map}
+          </button>
+          <button type="button" className={toggle(satellite)} onClick={() => setSatellite(true)}>
+            {text.satellite}
+          </button>
+          <button
+            type="button"
+            className={toggle(terrain)}
+            aria-pressed={terrain}
+            onClick={() => setTerrain((value) => !value)}
+          >
+            {text.terrain}
+          </button>
+        </div>
+        {(hasTrails || legendItems.length > 0 || showStraightRoute || (extras?.length ?? 0) > 0) && (
+          <div className="flex w-fit max-w-[14rem] flex-col gap-1 bg-paper/90 px-3 py-2 text-[11px] text-ink-soft shadow-sm">
+            {legendItems.map((item) => (
+              <span key={item.label} className="flex items-center gap-1.5">
+                <span className="inline-block h-[3px] w-5 shrink-0" style={{ backgroundColor: item.color }} />
+                {item.label}
+              </span>
+            ))}
+            {hasTrails && (
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block w-5 border-t-2 border-dashed" style={{ borderColor: TRAIL_COLOR }} />
+                {text.trailLegend}
+              </span>
+            )}
+            {(extras?.length ?? 0) > 0 &&
+              extrasLegend?.map((item) => (
+                <span key={item.label} className="flex items-center gap-1.5">
+                  <span className="ml-1.5 inline-block size-2 shrink-0 rounded-full" style={{ backgroundColor: item.color }} />
+                  <span className="ml-1.5">{item.label}</span>
+                </span>
+              ))}
+            {showStraightRoute && <span>{text.routeNote}</span>}
+          </div>
+        )}
+      </div>
+      {children}
+    </div>
+  );
+}

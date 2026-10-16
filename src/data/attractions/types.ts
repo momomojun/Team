@@ -1,0 +1,123 @@
+export type AttractionKind =
+  | "viewpoint"
+  | "hike"
+  | "waterfall"
+  | "grove"
+  | "landmark"
+  | "drive"
+  | "experience"
+  | "visitor";
+
+export type TimeOfDay = "sunrise" | "morning" | "afternoon" | "sunset" | "night";
+
+export interface Hike {
+  /** 往返距离（英里）；环线就是一圈的长度 */
+  distanceMi?: number;
+  /** 累计爬升（英尺） */
+  gainFt?: number;
+  difficulty: "easy" | "moderate" | "hard";
+  loop?: boolean;
+}
+
+/** 步道路线怎么画：从出发点（没有就用景点位置）按顺序经过 via，环线最后回到出发点 */
+export interface TrailPlan {
+  /** 途经点，最后一个是终点；不填就直接走到景点位置 */
+  via?: { lat: number; lon: number }[];
+  loop?: boolean;
+}
+
+/**
+ * 每天能进去的时间（当地时间 "HH:MM"）：open 之前到了等开门；lastEntry 以后到就进不去了（卡尔斯巴德洞窟 14:30 以后不能再进洞），
+ * close 是几点前要出来（石化林傍晚关大门）
+ */
+export interface EntryHours {
+  open: string;
+  lastEntry?: string;
+  close?: string;
+  /** 只在这几个月是这个时间；不填是全年 */
+  months?: number[];
+}
+
+/** 旺季早上就停满的停车场（src/data/parking.ts）：这几个月一般几点前停满，停满了怎么办 */
+export interface ParkingRule {
+  /** 一般几点前停满（当地时间 "HH:MM"） */
+  fullBy: string;
+  /** 几点以后又陆续有空位（官方说“下午 3 点以后来”这类）；不填是一直满到傍晚 */
+  freeAfter?: string;
+  /** 停车场的名字：几个景点共用一个停车场（优胜美地山谷、拱门的 Windows 一带），一天只看第一个，后面的已经停好车了 */
+  lot?: string;
+  months: number[];
+  /** 只在周末、节假日停满 */
+  weekends?: boolean;
+  /** 停满了怎么办（我们自己的话） */
+  noteZh: string;
+  source: string;
+}
+
+export interface Attraction {
+  id: string;
+  /** NPS parkCode */
+  park: string;
+  /** 简体中文名，繁体由 OpenCC 转换 */
+  nameZh: string;
+  nameEn: string;
+  kind: AttractionKind;
+  /** 园内片区，对应 parks.ts 里的 areas */
+  area: string;
+  /** 景点本身的位置，用于地图显示 */
+  lat: number;
+  lon: number;
+  /** 停车 / 出发点，和景点位置不同时才填；导航和车程按这里算 */
+  start?: { lat: number; lon: number; nameZh: string };
+  /** 建议停留时间（分钟），不含开车过去的时间 */
+  durationMin: number;
+  hike?: Hike;
+  bestTime?: TimeOfDay[];
+  /** 通常能去的月份，不填表示全年；每年随天气变化。空数组表示目前整年关闭（比如施工） */
+  openMonths?: number[];
+  /** 不开放时的说明：为什么关、大概什么时候开、有什么替代；所选月份不在 openMonths 里（或整年关闭）时显示 */
+  closedNote?: string;
+  /** 最佳月份 */
+  bestMonths?: number[];
+  /** 需要的许可证 / 预约 */
+  permit?: string;
+  /** 许可证要抽签，抽不中就去不了（自动生成攻略时不排）；不填表示提前订就行 */
+  lottery?: boolean;
+  /** 进去的时间有限制的（洞穴入场时间、公园大门开关）；游客中心、游船这类没写的按一般的开放时间算 */
+  hours?: EntryHours[];
+  mustSee?: boolean;
+  /**
+   * 和这个景点是同一件事的另一种去法、一般只选一个（干龟的水上飞机和渡轮）：自动生成攻略里那个景点能去时不排这个，
+   * 那个去不了（这几天不开、太累）才排这个
+   */
+  alternativeTo?: string;
+  /** 不在国家公园范围内，但常和公园一起玩 */
+  outsidePark?: boolean;
+  /** 一两句话：为什么值得去 */
+  summary: string;
+  tips?: string[];
+  /** 手选的 Wikimedia Commons 文件名，作为图集第一张；图集由 scripts/build-gallery.mjs 生成 */
+  photoFile?: string;
+  /** 步道路线，由 scripts/build-trails.mjs 按 OpenStreetMap 步道生成 */
+  trail?: TrailPlan;
+}
+
+/** Google Maps 上对应条目的评分快照，见 google.ts */
+export interface GooglePlace {
+  /** Google Maps 上的条目名，可能是步道口、观景台 */
+  name: string;
+  rating: number;
+  reviews: number;
+}
+
+export interface Photo {
+  url: string;
+  /** 灯箱用的大图 */
+  large?: string;
+  width: number;
+  height: number;
+  /** Commons 文件页，用于署名链接 */
+  page: string;
+  author: string;
+  license: string;
+}

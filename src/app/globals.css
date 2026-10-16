@@ -1,0 +1,404 @@
+@import "tailwindcss";
+
+/*
+ * 设计基调参考 Aman、Explora 这类高端旅行网站：纸色底、墨色字、照片说话；
+ * 标题用衬线（英文 Cormorant Garamond + 中文思源宋体），正文用 Jost + 系统黑体；
+ * 细线代替卡片边框，直角按钮，小号大写字母标签。
+ * 只做浅色主题，深色区块（开场、页脚）单独设计，所以 dark: 只在 .dark 容器里生效。
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --font-sans: var(--font-jost), var(--font-sans-cjk);
+  --font-serif: var(--font-cormorant), var(--font-serif-cjk), serif;
+}
+
+@theme {
+  --color-paper: #f4efe7;
+  --color-paper-deep: #ebe4d8;
+  --color-ink: #1c1b18;
+  --color-ink-soft: #45413a;
+  /* 浅灰字在纸色底、深一点的纸色底上对比度都要到 4.5:1（WCAG AA） */
+  --color-mute: #68615a;
+  --color-line: #d9cfbf;
+
+  /* 砂岩红：强调色（热度、选中、步道） */
+  --color-clay-50: #fbf4f0;
+  --color-clay-100: #f5e4da;
+  --color-clay-200: #eac6b3;
+  --color-clay-300: #dca186;
+  --color-clay-400: #cb7a58;
+  --color-clay-500: #b85f3c;
+  --color-clay-600: #a04c2e;
+  --color-clay-700: #833d26;
+  --color-clay-800: #683222;
+  --color-clay-900: #532a1e;
+
+  /* 松绿：完成、可用 */
+  --color-pine-50: #f1f5f2;
+  --color-pine-100: #dde8e0;
+  --color-pine-200: #bcd1c2;
+  --color-pine-300: #8fb29a;
+  --color-pine-400: #5f8b6d;
+  --color-pine-500: #436f53;
+  --color-pine-600: #345a42;
+  --color-pine-700: #2a4836;
+  --color-pine-800: #233a2d;
+  --color-pine-900: #1d3026;
+
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-kenburns: kenburns 11s cubic-bezier(0.25, 0.6, 0.3, 1) both;
+}
+
+html {
+  --font-sans-cjk:
+    ui-sans-serif, system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+    "Noto Sans SC", sans-serif;
+  --font-serif-cjk: var(--font-serif-sc), "Songti SC", "STSong", serif;
+  scroll-behavior: smooth;
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+/* 繁体页面用繁体字形的字体 */
+html:lang(zh-Hant) {
+  --font-sans-cjk:
+    ui-sans-serif, system-ui, -apple-system, "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+  --font-serif-cjk: var(--font-serif-tc), "Songti TC", serif;
+}
+
+body {
+  font-family: var(--font-jost), var(--font-sans-cjk);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: var(--color-clay-200);
+  color: var(--color-ink);
+}
+
+/* 小号大写标签，比如 “DESTINATIONS” */
+/* 手机上 12px（再小在户外看不清），宽屏 11px */
+@utility eyebrow {
+  font-family: var(--font-jost), var(--font-sans-cjk);
+  font-size: 12px;
+  @media (width >= 40rem) {
+    font-size: 11px;
+  }
+  line-height: 1.4;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+/* 文字链接：常驻细下划线，悬停时从右往左收起再从左边长出来 */
+@utility link-line {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 1px;
+  padding-bottom: 3px;
+  transition: background-size 0.6s var(--ease-expo);
+  &:hover {
+    background-size: 0 1px;
+    background-position: 100% 100%;
+  }
+}
+
+/* 横向滚动的导航条：能滑动，但不显示滚动条 */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/*
+ * 屏幕外的大区块先不排版（content-visibility），滚到附近再排：中文字体按字符分片，每加载一片整页都要重排一次，
+ * 首页、公园页几十个区块全排一遍很慢。--cv-h 是没排版时占的估计高度，排过一次以后记住真实高度。
+ */
+@utility cv-auto {
+  content-visibility: auto;
+  /* 只估高度：写成 contain-intrinsic-size 的话宽度也会按这个数撑开，手机上网格一列被撑到 1000px 宽 */
+  contain-intrinsic-block-size: auto var(--cv-h, 900px);
+}
+
+/* 竖排中文，做装饰性的标题 */
+@utility vertical {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+@keyframes kenburns {
+  from {
+    transform: scale(1.12);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes rise {
+  from {
+    transform: translateY(105%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes grow-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* ── 开场动画 ── */
+/* 公园名：从下面滚上来，停一下，再往上滚走；下一个紧跟着滚上来 */
+@keyframes intro-roll {
+  0% {
+    opacity: 0;
+    transform: translateY(75%);
+  }
+  30%,
+  62% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-75%);
+  }
+}
+
+/* 站名：淡入，字距慢慢收紧 */
+@keyframes intro-track {
+  from {
+    opacity: 0;
+    letter-spacing: 0.72em;
+  }
+  to {
+    opacity: 1;
+    letter-spacing: 0.5em;
+  }
+}
+
+@keyframes intro-open-up {
+  to {
+    transform: translateY(-100%);
+  }
+}
+
+@keyframes intro-open-down {
+  to {
+    transform: translateY(100%);
+  }
+}
+
+/* 中线：先向两边亮开，幕布分开时淡掉 */
+@keyframes intro-seam-open {
+  0% {
+    width: 16rem;
+    opacity: 1;
+  }
+  35% {
+    width: 100vw;
+    opacity: 1;
+  }
+  100% {
+    width: 100vw;
+    opacity: 0;
+  }
+}
+
+.intro-wordmark {
+  letter-spacing: 0.5em;
+  /* 字距加在每个字后面，末尾多出来的一截用负边距抵掉，看起来才居中 */
+  margin-right: -0.5em;
+  animation: intro-track 1.4s var(--ease-expo) both;
+}
+/* 公园名上下两头渐隐，像从一道缝里进出 */
+.intro-words {
+  mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+}
+
+/*
+ * 拉开：首屏大图加载好（或者最晚 2.6 秒、用户跳过）时由 Intro 组件加上 intro-lift。
+ * 中线先向两边亮开，上下两半再从中线分开（只动 transform），文字跟着淡掉。
+ */
+.intro-lift .intro-half {
+  will-change: transform;
+}
+.intro-lift .intro-top {
+  animation: intro-open-up 1s var(--ease-expo) 0.15s forwards;
+}
+.intro-lift .intro-bottom {
+  animation: intro-open-down 1s var(--ease-expo) 0.15s forwards;
+}
+.intro-lift .intro-seam {
+  animation: intro-seam-open 0.75s var(--ease-expo) forwards;
+}
+.intro-lift .intro-seam > span {
+  background-color: color-mix(in oklab, var(--color-paper) 85%, transparent);
+  transition: background-color 0.2s ease;
+}
+.intro-lift .intro-text {
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+.intro-seen .intro {
+  display: none;
+}
+
+/*
+ * 首屏文字：开场动画播放时（html 带 intro-playing）先停在起点，幕布拉开时一起出来；
+ * 本次会话看过开场就直接出来。--i 是同一组里的顺序，用来错开。
+ */
+:root {
+  --intro-delay: 0.15s;
+}
+.intro-playing .hero-rise,
+.intro-playing .hero-fade {
+  animation-play-state: paused;
+}
+.hero-rise {
+  animation: rise 1.3s var(--ease-expo) both;
+  animation-delay: calc(var(--intro-delay) + var(--i, 0) * 0.12s);
+}
+.hero-fade {
+  animation: fade 1.6s var(--ease-expo) both;
+  animation-delay: calc(var(--intro-delay) + 0.4s + var(--i, 0) * 0.12s);
+}
+
+/* ── 滚动渐显：只在 JS 可用时先藏起来，进入视野后显示 ── */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 1.2s var(--ease-expo),
+    transform 1.2s var(--ease-expo);
+}
+.js .reveal[data-shown] {
+  opacity: 1;
+  transform: none;
+}
+/* 图片从下往上揭开 */
+.js .reveal-image {
+  clip-path: inset(100% 0 0 0);
+  transition: clip-path 1.4s var(--ease-expo);
+}
+.js .reveal-image img {
+  transform: scale(1.15);
+  /* scale 留给悬停放大（Tailwind 的 scale-105 用的是 scale 属性，和这里的 transform 互不干扰） */
+  transition:
+    transform 1.8s var(--ease-expo),
+    scale 0.7s var(--ease-expo);
+}
+.js .reveal-image[data-shown] {
+  clip-path: inset(0 0 0 0);
+}
+.js .reveal-image[data-shown] img {
+  transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .intro {
+    display: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.01ms !important;
+  }
+  .js .reveal,
+  .js .reveal-image,
+  .js .reveal-image img {
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+  }
+}
+
+/*
+ * 换页过渡（View Transitions）：整页淡入淡出；从首页公园目录点进公园页时，目录的大图放大成公园页首图。
+ * 照片两头比例不同（4:5 → 全屏），新旧快照都按 cover 裁切，不拉伸。页头固定不动，压在放大的照片上面。
+ */
+::view-transition {
+  pointer-events: none;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.45s;
+  animation-timing-function: ease;
+}
+/* 换页的标记点（page-transition.tsx）本身不画出来 */
+::view-transition-group(.page-marker) {
+  display: none;
+}
+::view-transition-group(.park-morph) {
+  animation-duration: 0.9s;
+  animation-timing-function: var(--ease-expo);
+  overflow: clip;
+}
+::view-transition-old(.park-morph),
+::view-transition-new(.park-morph) {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  animation-duration: 0.9s;
+}
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-header) {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
+
+/* 键盘操作时的焦点框：细线、和文字同色，鼠标点击时不出现 */
+:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: 3px;
+}
+
+/* MapLibre 自带控件：直角、纸色底，和页面一致 */
+.maplibregl-ctrl-group {
+  border-radius: 0 !important;
+  background: var(--color-paper) !important;
+  box-shadow: 0 1px 2px rgb(28 27 24 / 0.12) !important;
+}
+.maplibregl-ctrl-group button + button {
+  border-top-color: var(--color-line) !important;
+}
+.maplibregl-ctrl-attrib {
+  background: rgb(244 239 231 / 0.85) !important;
+  font-size: 10px;
+}

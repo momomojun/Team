@@ -1,0 +1,1340 @@
+// 给每个景点挑一组照片（Wikimedia Commons）：按名字搜 + 景点附近带坐标的照片，
+// 精选图（Featured / Quality / Valued）、分辨率高、横图优先，去掉地图、标牌、示意图、老照片。
+// 景点数据里手选的 photoFile 固定排第一；同一张照片只给一个景点用。
+// 输出 src/data/attractions/gallery.generated.ts。重新跑：npm run data:gallery
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { attractions, parks, sleep, USER_AGENT } from "./load-data.mjs";
+
+const OUTPUT = new URL("../src/data/attractions/gallery.generated.ts", import.meta.url);
+const API = "https://commons.wikimedia.org/w/api.php";
+const THUMB_WIDTH = 960;
+const PER_ATTRACTION = 6;
+const MAX_PER_AUTHOR = 2;
+const GEO_RADIUS_M = 500;
+/** 候选太少时，附近照片放宽到这个半径 */
+const WIDE_RADIUS_M = 1500;
+const FEW_CANDIDATES = 12;
+
+/** 人工看过、不合适的照片（按文件名开头匹配）。"*" 对所有景点生效，其余只对该景点生效 */
+const EXCLUDE = {
+  "*": [
+    // 一组“人名, 地点”的游客合影，在犹他几个公园反复出现
+    "Ken, ",
+    "Ken and Alicia",
+    "Alicia, ",
+    "Alicia and Abby",
+    "Path to Taft Point IMG 4333",
+    "Bridalveil Fall, Yosemite Park, California 04",
+    "MRNP — The original 1906 National Park Inn",
+    "Milky Way Arc over Yosemite",
+    "A late afternoon in Tuolumne Grove",
+    "Tuolumne Grove Trailhead",
+    "Hetch-Hetchy-dam-site",
+    "Hetch Hetchy Reservoir, Yosemite National Park, California (21546718026)",
+    "Hetch Hetchy Reservoir, Yosemite National Park, California (21572917035)",
+    "Entering Yosemite from Mono Lake",
+    "May Lake, Yosemite National Park (19442457775)",
+    "Red Tree Among Green Trees",
+    "NPS pioneer-yosemite-history-center",
+    "The giant General Sherman tree with Foundation members",
+    "Pentagramma pallida",
+    "Larrea tridentata",
+    "Slow Pedestrian Traffic",
+    "Metepeira arizonica",
+    "-conservationlands15",
+    "Ranger at Zion Canyon Visitor Center with junior rangers",
+    "Zion Canyon Line",
+    "Construction of new trail, Watchman Housing Area",
+    "Highway Bridge over North Fork of Virgin River",
+    "Clearing of right-of-way for new Highway 1",
+    "General location of the new road",
+    "Me at Observation Point",
+    "Shuttle buses at Zion Human History Museum",
+    "Bryce Canyon at Night (153100",
+    "Flickr - brewbooks - Life in the Alpine Zone - Wheeler Peak",
+    "Yavapai Geology Museum Ronnie Covlin",
+    "Grand Canyon, Moran Point, Wikiekspedycja",
+    "Snow Removal at Tusayan",
+    "NPS Rangers Cinimin and Mariah",
+    "Denali Depot",
+    "Welcome to beautiful downtown Talkeetna",
+    // 马里兰、纽约的 Point Lookout（灯塔、海滩、海岸），不是梅萨维德
+    "Point Lookout, lighthouse",
+    "Point Lookout 19-10-16",
+    "Point-lookout-2023",
+    "Sunset at Point Lookout",
+    // 别处的沙丘、日落、河流（法国皮拉沙丘、菲律宾、佛罗伦萨、印度、阿拉斯加），BLM 的社交媒体合集，古罗马钱币，蛾子
+    "Dune du pyla",
+    "Paoay Ilocos Norte",
+    "Sunset view from Ponte Vecchio",
+    "Sunset view from Gokulam Resort",
+    "Delta Wild and Scenic River",
+    "February -conservationlands15",
+    "Roman coin",
+    "Republican Coin",
+    "M. Aemilius Scaurus",
+    "COIN (FindID",
+    "Breakdown (Giant's Coffin",
+    "Erebinae",
+    "CALLE EN TALKEETNA",
+    "Talkeetna, AK 99676",
+    "PARADA EN LA PARKER HIGHWAY",
+    "Denali Princess Wilderness Lodge",
+    "Path to Taft Point IMG 4339",
+    "Yosemite National park.",
+    "Yosemite Valley - Flickr - Harold Litwiler",
+    "2013-09-19 18 55 05 Cathedral Spires near sunset",
+    "Yosemite National Park, California, USA (27672492842)",
+    "Erythranthe montioides",
+    "General Grant National Memorial New York",
+    "CalaverasBigTrees",
+    "Big Sur Oakgrove View",
+    "Quercus chrysolepis",
+    "People standing in front of the visitor center in Death Valley",
+    "Display of Books on Death Valley",
+    "Europe - Roumanie",
+    "Springdale Line to Zion Canyon Visitor Center",
+    "Zion NP bus facility",
+    "Zion NP HQ and museum",
+    "Poa fendleriana",
+    "Sunset Point at Bryce Canyon - panoramio",
+    "Sleeping Cowgirl Drover",
+    "Grand Canyon. July 2012",
+    "NPS Ranger Cinimin",
+    "SummerFest SM",
+    "Scenes from the Denali South Viewpoint",
+    "American Flag in Zion Canyon",
+    "Zion NP EOC",
+    "Alaska Railroad EMD",
+    "Reading an Interpretive Panel",
+    "Calocedrus decurrens",
+    "Dawn Patrol, 1969",
+    "Kings Canyon National Park, Shaver Lake",
+    "Sarcodes sanguinea",
+    "Neotamias alpinus",
+    "Uta stansburiana",
+    "Dusky horkelia",
+    // Furnace Creek 的高尔夫球场，不是魔鬼高尔夫球场
+    "Death Valley Golf Course",
+    // 新加的 8 个公园：动植物、人物活动、老照片、别处的同名地点
+    "Leucosticte tephrocotis",
+    "Campanula prenanthoides",
+    "C angustifolium",
+    "Santa Rosa Island, Ford Point, March 18, 2003",
+    "Ventura, CA, The Pier and Santa Rosa Island",
+    "ICE PLANTS ON ANACAPA",
+    "Island fox, San Miguel Island, oct 1971",
+    "Start of Skyline Trail - Comes Well Recommended",
+    "National Park Service 2016 Centennial",
+    "Curt Jacquot",
+    "Roger Andrasick",
+    "Christine Falls Bridge under construction in 1927",
+    "Longmire Museum during move",
+    "People loading pulp wood",
+    "First Christian Church, Port Angeles",
+    "The hotel at Sol Duc, 1912",
+    "Cape Flattery Cape York Peninsula",
+    "Animals mammal river otters",
+    "Animals mountain beaver",
+    "(View) Plate",
+    "(Text Page)",
+    "Tent for workers at Newhalem, 1935",
+    "Tourists boarding Skagit tour boat, circa 1970s",
+    "Couple with fish, 1952",
+    "Diablo Dam, 1931",
+    "Reflector Bar (1930)",
+    "Cascadian Farms",
+    "Morning Glory Pool 1956",
+    "Vice President Mike Pence",
+    "Road Clearing from Southwest Area",
+    "Crescent City skyline",
+    "Crescent City, CA, USA - panoramio",
+    "Caffee in the Prairie Creek",
+    "Forest at Pinnacles Overlook-Fremont Winema",
+    "PINNACLES AT WINTER RIDGE",
+    "Lyndon Baines Johnson Memorial Grove",
+    "LBJ Memorial Grove",
+    "Blue Heron at LBJ Memorial Grove",
+    "Sequoia sempervirens LBJ",
+    "Hemitomes congestum",
+    "Pearly everlasting",
+    "Rhytisma arbuti",
+    "Coast Silk Tassel",
+    "When the weather sucks, take macros",
+    "Anything playing at the theater in Orick",
+    "San Miguel Rescue",
+    "Crater Lake NP, OR, North Rim",
+    "Rebecca Lofgren",
+    "Our group at Meany Rock Bench",
+    "Animals elk female face",
+    "Wildlife bear forest Hoh",
+    "Plate LXXXVIII",
+    "Flag raising at Golden West",
+    "Rangers working at Golden West",
+    "Ross Dam control room, 1970s",
+    "Ruby Inn, 1926",
+    "Workers at Diablo Dam site",
+    "Mt. Washington & Big Lake",
+    "BLM Winter Bucket List",
+    "(L-R)",
+    "David Baszucki",
+    "Sunset near the Boy Scout Trail",
+    "CERRO ALTO",
+    "Car-Barrel Scenic Road",
+    "Wing Lake ski tour",
+    "Southeast slide path",
+    "Pouzarella",
+    "SpottedTowhee",
+    "Three park rangers",
+    "Lady Liberty of Orick",
+    "Diplacus",
+    "Rana aurora",
+    "Buzonium",
+    "Linnaea borealis",
+    "Penstemon",
+    "WTA on the",
+    "Pumice and plants",
+    "Ranger ",
+    "Rangers ",
+    "REYP ranger",
+    "T E D D Y",
+  ],
+  "noca-rainy-lake": ["Point 7509 ft", "Whistler Mountain"],
+  "noca-blue-lake": ["A Floatplane lifts off from Lake Chelan"],
+  "olym-lake-quinault": [
+    "Lake Quinault Lodge",
+    "2803 Lake Quinault Lodge",
+    "2825 Lake Quinault Lodge",
+    "Hotel Quinault",
+    "No. 5 Quinault",
+    "Historic Lake Quinault Lodge",
+    "Lake Quinault tribal",
+    "The Original Lake Quinault Lodge",
+  ],
+  "grte-teton-park-road": [
+    "Winter Recreation on the Teton Park Road",
+    "ALF in Grand Teton",
+    "Views along Grand Loop Road",
+    "East Entrance Road",
+  ],
+  "grte-snake-river-overlook": ["Unvieling of Ansel Adams stamps"],
+  "grte-craig-thomas-vc": ["Donor Recognition Wall"],
+  "grte-lsr-preserve": ["Laurance S Rockefeller Porch Roof Collapse", "Claw marks of a Black Bear"],
+  "grte-moose-wilson-road": ["YCP work on Moose-Wilson Road", "Accessible Horse Mounting"],
+  "grte-signal-mountain": ["Artemisia", "Signal Mountain Lodge"],
+  "grte-colter-bay": ["Coyote (", "U.S. Park Ranger", "Marshmallows", "Female Brewers Blackbird"],
+  "grte-aerial-tram": ["START Bus", "Construction crane", "Greg Garza"],
+  "grte-elk-refuge": [
+    "Elk antler arch",
+    "Bridger-Teton NF HQ",
+    "Eclipse Viewing",
+    "Million Dollar Cowboy Bar",
+    "Jackson Hole Museum",
+  ],
+  "grte-jackson-town-square": ["Blueberries, Farmers Market", "Wort Hotel"],
+  "grte-taggart-lake": ["Taggart Lake Trailhead"],
+  "noca-trail-of-the-cedars": ["Seattle City Light Number 6"],
+  "noca-diablo-lake-cruise": ["Skagit Tours bus", "My bike above", "Diablo Incline Railway"],
+  "yell-mystic-falls": ["Cliff Geyser"],
+  "yell-upper-geyser-basin": [
+    "Morning Glory Pool 0",
+    "Morning Glory Pool, Yellowstone",
+    "Morning Glory Pool (",
+    "Morning Glory Pool &",
+    "Yellowstone N.P., Morning Glory Pool",
+    "Yellowstone National Park (WY, USA), Lower Geyser Basin",
+  ],
+  "yell-lake-yellowstone": [
+    "Lake Yellowstone Hotel",
+    "Lake Hotel",
+    "Ford bus at Lake Yellowstone Hotel",
+    "Lake Hotel Yellowstone NP. 02",
+    "Lake Hotel Yellowstone NP. 05",
+    "Lake Hotel Yellowstone NP. 08",
+    "Lake Yellowstone Hotel Sunroom",
+    "Lake Yellowstone Hotel Exterior",
+    "Lake Yellowstone Hotel Bar",
+    "Lake Yellowstone Hotel 1 ",
+    "Lake Yellowstone Hotel 2 ",
+  ],
+  "yell-tower-fall": ["Skiing away from Tower Fall", "Tower Fall General Store"],
+  "yell-fairy-falls": ["Fairy Falls (HD)"],
+  "yell-canyon-visitor-center": ["Program at Canyon Visitor", "Canyon Visitor Education Center Openeing Day"],
+  "yell-old-faithful-visitor-center": ["Tribal games"],
+  // 山顶游客中心 2023 年烧毁，不放旧楼的照片
+  "olym-hurricane-ridge": [
+    "Hurricane Ridge Visitor Center",
+    "Hurricane Ridge visitorcenter",
+    "Hurricane Ridge VC",
+    "Hurricane Ridge Day Lodge",
+    "Crosscountry skiing hurricane ridge visitor center",
+    "Hurricane Ridge - Olympic National Park - Washington State (",
+  ],
+  "olym-mount-storm-king": ["Storm King Ranger Station"],
+  "olym-hoh-visitor-center": ["Hoh Rain Forest - 54019463021"],
+  "olym-largest-sitka-spruce": ["Lk Quinault", "Willaby Creek Trail"],
+  "mora-sunrise-visitor-center": ["Waterfall near the peak of Mt Rainier"],
+  "mora-burroughs-mountain": ["Evan and Adrie Redman"],
+  "crla-mount-scott": ["Mount Scott trail.jpg", "Crater Lake from Mount Scott in 2011 (2) (cropped)"],
+  "lavo-brokeoff-mountain": ["Moon set over Brokeoff"],
+  "lavo-loomis-museum": ["Loomis Museum Seismographic Building", "Loomis Museum (PB5)"],
+  "lavo-summit-lake": ["Summit Lake Fun"],
+  "redw-klamath-river-overlook": ["Visitors at Klamath River Overlook"],
+  "chis-anacapa-island": ["20170505 NPRW"],
+  "redw-grove-of-titans": ["Stout", "Boy Scout", "Redwood trees on the Boy Scout", "US 199"],
+  "redw-fern-canyon": ["Van Damme"],
+  "chis-prisoners-harbor": ["Approaching Scorpion Harbor", "Scorpion Harbor", "Between "],
+  "lavo-kings-creek-falls": ["Bumpass Hell, Lassen NP 2006"],
+  "crla-phantom-ship-overlook": ["Wizard Island in Crater Lake National Park - Oregon 2008", "Sun Notch Viewpoint"],
+  "crla-plaikni-falls": ["Crater Lake NP, OR, North Rim"],
+  "olym-visitor-center": ["Crosscountry skiing hurricane ridge visitor center", "Crossroads in Port Angeles"],
+  "noca-visitor-center": ["Ranger talk in Stehekin", "Golden West Visitor Center", "North Cascades Visitor Center in Marblemount"],
+  "yell-firehole-canyon-drive": [
+    "Yellowstone, Grand Prismatic Spring",
+    "Blue Geyser in Yellowstone",
+    "Yellowstone Geyser",
+    "Gibbon Falls",
+  ],
+  "yell-lookout-point": ["Lower Fall - viewed from Artist's Point"],
+  "yell-inspiration-point": ["Inspiration Point Bryce Canyon November 2018 panorama"],
+  "deva-visitor-center": ["Harmony Borax Works", "Stovepipe Wells, Death Valley National Park"],
+  "yose-yosemite-falls": ["Yosemite Falls Trail May 2011 001"],
+  // 这几张其实是优胜美地瀑布或者别的瀑布
+  "yose-horsetail-fall": [
+    "Yosemite Valley, Horsetail Fall",
+    "Horsetail Fall Yosemite National Park (231895797)",
+    "Half Dome and Bridalveil Falls from Tunnel View",
+    "Waterfall (179372089)",
+  ],
+  "yose-cathedral-lakes": ["Cathedral Beach in Yosemite"],
+  "yose-may-lake": [
+    "Yosemite National Park (California, USA), Yosemite Valley, Mirror Lake",
+    "Yosemite National Park (CA, USA), Yosemite Valley, Mirror Lake",
+    "Lake Tenaya in Yosemite NP",
+  ],
+  "yose-valley-view": [
+    "Panoramic Overview from Glacier Point",
+    "Yosemite National Park (California, USA), Yosemite Valley (Yosemite Tunnel)",
+  ],
+  "zion-canyon-junction": ["Museum, Zion NP"],
+  "seki-big-trees-trail": ["Resurrection Tree Sequoia, Big Stump Grove", "Trail up to Moro Rock"],
+  // 别处也有叫 Mist Falls 的瀑布（俄勒冈、华盛顿）
+  "seki-mist-falls": ["Mist Falls, Oregon", "Mist falls over the park", "Mist Falls.jpg", "Mist falls.jpg"],
+  "zion-visitor-center": ["Kolob Canyons Visitor Center"],
+  "zion-scout-lookout": ["Zion National Park Kayenta Trail"],
+  "brca-paria-view": ["Randonnée sur Fairyland Loop"],
+  "brca-bryce-point": [
+    "Inspiration Point Bryce Canyon November 2018 panorama",
+    "Trail junction near Sunrise Point",
+    "Sunrise Point Bryce Canyon November 2018",
+  ],
+  "brca-night-sky": ["Grand Canyon Village, AZ 86023", "Bryce Natural Bridge"],
+  "dena-visitor-center": ["View of Alaska Range from the Eielson Visitor Center"],
+  "dena-mountain-vista": ["Denali bound train vista", "Denali vista (28957517334)"],
+  // 犹他：工作人员和游客的肖像、名字撞车的别处照片、放错景点的
+  "arch-visitor-center": [
+    "Chris Stefanides - Arches Visitor Center",
+    "Victoria Allen - Arches Visitor Center",
+    "Gateway Arch visitors center",
+    "Luther Ely Smith Square",
+  ],
+  "arch-delicate-arch-viewpoint": ["Alicia, Delicate Arch from Viewpoint", "Ken, Delicate Arch from Viewpoint", "Ken and Alicia"],
+  "arch-tower-arch": [
+    "Sompting, St. Mary's Church",
+    "Tower arch capital",
+    "Caythorpe St Vincent",
+    "The Organ at Arches National Park",
+    "Eiffel Tower arch",
+    "Nave Organ and tower arch",
+    "Tower arch Holton le Clay",
+  ],
+  "cany-island-visitor-center": [
+    "Nathaniel Clark - Island in the Sky Visitor Center",
+    "Bloedel Reserve",
+    "Hubble Helps Find Smallest Known Galaxy",
+    "Comet C-2025 A6",
+  ],
+  "cany-shafer-canyon-overlook": ["Alicia and Abby, Shafer Canyon Overlook", "Canyonlands National Park - Big Spring Canyon Overlook"],
+  "cany-white-rim-overlook": ["Green River Overlook", "Near Green River Overlook", "Shafer Canyon Overlook", "Shafer Trail, Shafer Canyon"],
+  "cany-whale-rock": [
+    "Whale Rock Reservoir",
+    "Whale Rock on Mapleville Road",
+    "Whale of a Rock",
+    "Spring at Whale Rock",
+    "Driftwood at the Ten Mile Beach",
+    "Whale Rock Eye Hawkesbury",
+    // 没有坐标、看不出是哪块 Whale Rock 的
+    "Whale Rock (24642670922)",
+    "Whale Rock (52850512847)",
+    "(1)Whale Rock formation",
+    "The Witness (28614649747)",
+    "False Kiva",
+  ],
+  "cany-dead-horse-point": ["Eagle Release at Dead Horse Point"],
+  "cany-needles-visitor-center": ["Alicia, Elephant Hill", "Ken, Elephant Hill", "Redmond Caves", "Picket Range from Sterling Munro Trail"],
+  "cany-cave-spring": ["Erica (Thorp) de Berry to Thorp family", "Geology of Utah"],
+  "cany-slickrock-trail": ["Our group at Big Spring canyon Overlook"],
+  "care-visitor-center": ["Visitor Center under construction", "Visitor center theater"],
+  "care-panorama-point": ["2013-09-23 15 51 19 Pinus edulis", "2013-09-23 15 52 33 Pinus edulis", "2013-09-23 15 52 10 Pinus edulis"],
+  "care-grand-wash": ["Capitol Reef NP Tanks off the Gorge Trail"],
+  // 园外名胜：名字太常见，搜到了画作、别处的同名地方
+  "wave-the-wave": [
+    "The Great Wave off Kanagawa",
+    "Great Wave off Kanagawa",
+    "Big wave breaking",
+    "Great Wave unrestored",
+    "Fjordn surface wave",
+    "Aivazovsky",
+    "La horde - Surfers",
+  ],
+  "wave-wire-pass": ["Linge pass", "Passer italiae"],
+  "ante-waterholes-canyon": ["Glen Helen Gorge", "Ormiston Gorge"],
+  "ante-antelope-canyon-x": ["Lower Antelope Canyon", "Antelope Canyon Mittags", "Antilope Canyon 1"],
+  // 阿拉巴马州的 Horseshoe Bend 国家军事公园、怀俄明州 Seedskadee 保护区里的同名河湾
+  "hsbd-horseshoe-bend": ["Overlook and battlefield, Horseshoe Bend", "Overlook shelter", "Horseshoe Bend overlook at Seedskadee"],
+  "mova-valley-drive": ["39 Doon Valley Drive", "Valley of the Gods"],
+  "mova-guided-tour": ["Don Mose Navajo Elder", "Valley of the Gods", "Shigar Valley"],
+  // 加拿大落基山：游客合影、放错景点的、搜词撞车（阳光草甸的 Rock Isle 搜到了美国五大湖的岛和一辆英国公交车）
+  "banf-mistaya-canyon": ["A Cruise Canada rental RV"],
+  "banf-upper-hot-springs": ["Banff National Park (AB, Canada), Bankhead", "Canada - Alberta, Banff"],
+  "banf-sunshine-meadows": [
+    "Three Sisters, Rock Harbor",
+    "Stand Rock, Hemlock Island",
+    "Rock of Ages Light",
+    "Southern Vectis",
+    "Windermere, Brathay Rock",
+    "Isle Royale Queen",
+    "Copper and silver",
+    // 叫 Sunshine Village 的地方很多，没坐标的看不出是不是班夫这个
+    "Sunshine Village",
+  ],
+  "jasp-jasper-town": ["Jasper Dwayne Reilander", "Maligne Lake Tour Boat"],
+  "jasp-mount-edith-cavell": ["Mount Edith Cavell - Flickr - Graham Grinner Lewis"],
+  "jasp-valley-of-five-lakes": ["By ovedc - 5 lakes"],
+  "yoho-burgess-shale": ["Diorama of the Burgess Shale"],
+  // 约书亚树：游客照、烤架、垃圾桶、GPS、节目单、歌手
+  "jotr-joshua-tree-visitor-center": [
+    "Joshua tree friends walking",
+    "Joshua Tree, United States (Unsplash",
+    "A weekend away in Joshua Tree",
+    "Joshua Tree hikers resting",
+  ],
+  "jotr-oasis-visitor-center": ["Flickr - DVIDSHUB"],
+  "jotr-cottonwood-visitor-center": [
+    "Youth Conservation Corp",
+    "No service to take trash out",
+    "Joshua Tree - Cholla Cactus Garden",
+    "Cylindropuntia",
+    "GOV'T SHUTDOWN",
+  ],
+  "jotr-mastodon-peak": ["Garmin GPSMAP"],
+  "jotr-night-sky": ["2015 Joshua Tree National Park Night Sky Festival program"],
+  "jotr-pioneertown": ["Paul Cauthen"],
+  // 落基山：别处同名的 Alberta Falls、Au Sable Chasm、Selway-Bitterroot……还有旧书扫描、历史施工照片
+  "romo-sheep-lakes": [
+    "Excavation for Horseshoe Pond",
+    "Horseshoe Pond partially completed",
+    "Sierra Nevada bighorn sheep",
+    "North and East embankments",
+    "Completed Horseshoe Park Pond",
+  ],
+  "romo-deer-mountain": [
+    "Deer at Rocky Mountain Arsenal",
+    "Gezicht op",
+    "Centennial Mountains WSA",
+    "Supermoon setting in Centennial",
+    "Mule deer",
+    "Mule Deer First Snow",
+    "Puma concolor",
+  ],
+  "romo-moraine-park": [
+    "Cabin near Moraine Park Museum",
+    "Cutting sod for Moraine Park Museum",
+    "CCC shovel operator",
+    "Moraine Lodge obliteration",
+    "Moraine Lake at evening",
+    "Moraine Park Truck Trail",
+  ],
+  "romo-alberta-falls": [
+    "Ram Falls Alberta",
+    "AthabascaFalls",
+    "Barefoot Man Climbing",
+    "Barefoot Woman",
+    "Picea engelmannii",
+    "Four Lakes and a Waterfall",
+    "Fort Collins-Loveland",
+  ],
+  "romo-sky-pond": [
+    "Windmill displays human impacts",
+    "Independence Pass alpine tundra",
+    "Loch Katrine",
+    "Carbost and Loch Harport",
+    "A small loch in the saddle",
+    "Mt Hood Wilderness",
+  ],
+  "romo-many-parks-curve": ["Rocky Mountain N.P. Fairview Curve", "Rocky Mountain N.P., Fairview Curve", "Populus tremuloides"],
+  "romo-rainbow-curve": ["Ochotona princeps", "Nucifraga columbiana", "RubusIdaeus"],
+  "romo-tundra-communities": ["Winter travel on the tundra"],
+  "romo-gore-range-overlook": ["Fort Collins-Loveland", "Casper Mountain"],
+  "romo-milner-pass": ["Doris Milner Dedication"],
+  "romo-old-fall-river-road": ["Falls in winter, Au Sable Chasm", "Au Sable Chasm"],
+  // 北瀑布也有一条 Trail of the Cedars（华盛顿州 Newhalem）
+  "glac-trail-of-the-cedars": ["Newhalem"],
+  "glac-highline-trail": ["Highline Trail - Cracked and Burnt", "Highline Trail - As Old As Time"],
+  "glac-st-mary-virginia-falls": ["Siltite in Glacier"],
+  "glac-st-mary-visitor-center": [
+    "Visitors hiking the Hidden Lake",
+    "Electric Vehicle Charger in St Mary",
+    "Photographing a waterfall on Going",
+    "Siyeh Creek",
+    "Near Logan Pass area",
+    "Stone bridge, Going-to-the-sun",
+    "Free Shuttle at Logan Pass",
+    "Jammer.jpg",
+  ],
+  "glac-grinnell-glacier": ["Mudcracks in argillite"],
+  // 阿拉斯加的冰湖（Spencer Lake、兰格尔–圣伊莱亚斯的 Nizina 冰川）
+  "glac-iceberg-lake": [
+    "Iceberg on Spencer Lake",
+    "Iceberg lake at the toe of the Nizina",
+    "Grey Glacier",
+    "Iceberg lake on the Russell Glacier",
+  ],
+  "glac-running-eagle-falls": ["Last July i took a couple of Red"],
+  "glac-bowman-lake": ["Boulder Pass and Hole in the Wall"],
+  "kefj-exit-glacier-nature-center": ["Exit Glacier Demo Scan"],
+  "kefj-exit-glacier": ["Barack Obama tours"],
+  "kefj-fjords-cruise": ["Barack Obama tours"],
+  "kefj-visitor-center": [
+    "Admiral Papp Tours",
+    "Chinook's Waterfront",
+    "Boatlift in street",
+    "2018-09-16 Fireboat",
+    "Fairweather at Seward",
+    "Swetman House",
+    "Swim (",
+  ],
+  "kefj-sealife-center": [
+    "Mount Mary across Resurrection Bay",
+    "Hoben Park Seward",
+    "St Peters church Seward",
+    "Green forest by a blue lake",
+    "Seward Brewing Company",
+  ],
+  "wrst-visitor-center": [
+    "Copper Center - Wrangell-St Elias (",
+    "Copper Center Garage",
+    "Mt. Blackburn, Donoho Peak",
+    "Copper River Princess Lodge",
+  ],
+  // Mount Chitina、Chitina Glacier 在公园深处，不是 Chitina 小镇
+  "wrst-chitina": ["Mount Chitina", "Chitina River, Mt Bona", "Chitina Glacier"],
+  "wrst-mccarthy": [
+    "McCarthy Creek Headwaters",
+    "McCarthy Road - Wrangell-St Elias",
+    "Anxiously awaiting the parade",
+    "Tators in Disguise",
+    "Kids on bikes",
+  ],
+  "wrst-glacier-hike": ["The guardians of the Columbia"],
+  "wrst-bonanza-mine": ["AK-June-15"],
+  // 白沙一带的照片很多是白沙导弹靶场和 NASA 试验场的（飞船、直升机、颁奖），月光徒步、卢塞罗湖附近都是
+  "whsa-dune-life-trail": ["Young Great Horned Owl"],
+  "whsa-dunes-drive": ["Dunes and Dreams - Figure", "White Sands National Monument WHSA26", "Treasures of poetry"],
+  "whsa-playa-trail": ["Psilostrophe tagetina leaf", "Oenothera hartwegii"],
+  "whsa-alkali-flat": ["LeeWhiteSands"],
+  "whsa-moonlight-hike": [
+    "Orion",
+    "Boeing CST-100 Starliner",
+    "Adam Wroblewski",
+    "Pilatus PC-12",
+    "View of the Glenn Research Center",
+    "Team Members Prep for Test Flight",
+    "Small crater in",
+    "Dr. Wernher von Braun",
+  ],
+  "whsa-lake-lucero": ["HFCA 1607", "20150225-APHIS", "Flickr - Official U.S. Navy Imagery", "03 - San Carlos de Bariloche"],
+  "cave-bat-flight": ["CCC structures in Carlsbad Caverns", "Carlsbad Caverns National Park and White's City"],
+  "cave-walnut-canyon-overlook": ["Parthenium incanum foliage", "Historic Carlsbad Caverns in New Mexico"],
+  // 田纳西州也有个 Rattlesnake Springs
+  "cave-rattlesnake-springs": [
+    "An over grown house at Rattlesnake Springs",
+    "A damaged home at Rattlesnake Springs",
+    "Hot springs travertine",
+  ],
+  "meve-visitor-center": ["American Flag, Far View Visitors Center"],
+  // USS Mesa Verde 是军舰
+  "meve-night-sky": ["USS Mesa Verde"],
+  "meve-balcony-house": ["Balcony House tour at Mesa Verde NP"],
+  // 大峡谷的 Desert View 瞭望塔、谢伊峡谷的页岩，名字里都有 Painted Desert / Chinle
+  "pefo-painted-desert-vc": ["Desert View Watchtower"],
+  // 塔瓦观景点、Onyx Bridge 路线都在彩绘沙漠旅馆旁边，附近照片多是旅馆的
+  "pefo-tawa-point": ["Shales (Chinle Formation", "Fred Harvey counter", "Painted Desert Inn"],
+  "pefo-onyx-bridge": [
+    "Painted Desert front entrance",
+    "Inside the cafe of Painted Desert Inn",
+    "Painted Desert Inn",
+    "The bar stool in Painted Desert Inn",
+  ],
+  // 大峡谷游客中心的放映厅（银幕上是大峡谷星空派对），1972 年的老照片
+  "grsa-visitor-center": ["Boy Next To Mosca Creek", "Visitor Center Theater"],
+  "grsa-montville-trail": ["Great Sand Dunes National Monument, 05-1972"],
+  "grsa-sandboarding": ["Great Sand Dunes National Park - partially burnt"],
+  "grsa-zapata-falls": ["Zapata Falls, United States (Unsplash", "Baker the dog", "Dogs at Zapata Falls"],
+  // 护林员合影、停车场
+  "blca-visitor-center": ["Black Canyon of the Gunnison National Park (2fcf9a56", "Black Canyon of the Gunnison National Park (4df1144e"],
+  // 老明信片、大章克申那边的 Dominguez-Escalante、Curecanti 的蓝台水库
+  "blca-gunnison-route": ["Rocky Mountain Views - Black Canyon", "Dominguez-Escalante NCA", "Blue Mesa Reservoir"],
+  // 按 “Sunset View” 搜，各国的日落照片都会搜出来
+  "blca-sunset-view": [
+    "Sunset View Point",
+    "Sunset view from",
+    "Foggy sunset view from",
+    "Sunset view bhattarika",
+    "Beautiful sunset view",
+    "Sunset view at the port",
+    "Sunset view on hill",
+    "Craigdarroch Castle",
+    "Sunset Finder",
+    "Sunset view in Villag",
+  ],
+  "blca-warner-point": ["Mariposa lily", "Toxicoscordion"],
+  // 大章克申的 Redlands 水坝和那里的鱼道、别的灌溉渠
+  "blca-east-portal": [
+    "Redlands Diversion Dam",
+    "Colorado Pikeminnow",
+    "Bluehead Sucker",
+    "Fire Mountain Canal",
+    "USDA Rural Development",
+    "Releasing Fish Through",
+    "Drought Mitigation",
+    "Girl Walking towards her Mom",
+    "Fish Ladder Baffles",
+    "Turning a river into the heart of a mountain",
+  ],
+  "blca-night-sky": ["Rock faces can appear to dramatically change color"],
+  // Buck Hill 搜到的只有山顶匍匐圆柏的特写
+  "thro-buck-hill": ["Juniperus horizontalis"],
+  // 一个小孩站在前面看河，做首图不合适
+  "thro-wind-canyon": ["Overlooking the Little Missouri River (52708623085)"],
+};
+
+/**
+ * 个别景点：补充搜索词；geo: false 表示不用附近的照片（地点不固定，或者附近照片跟景点无关）；
+ * name: false 表示不按景点名搜（名字太常见，比如 The Wave 会搜到浮世绘和跑鞋），只用补充的搜索词
+ */
+const TUNING = {
+  "yose-horsetail-fall": { search: ["Horsetail Fall firefall", "Horsetail Fall El Capitan"], geo: false },
+  "yose-hetch-hetchy": { search: ["Wapama Falls"] },
+  "seki-kings-canyon": {
+    search: ["Kings Canyon Scenic Byway", "Junction View Kings Canyon", "Kings Canyon Highway 180", "Cedar Grove Kings Canyon"],
+  },
+  "deva-salt-creek": { search: ["Salt Creek Death Valley", "Salt Creek pupfish"] },
+  "brca-night-sky": { search: ["Bryce Canyon night sky", "Bryce Canyon Milky Way", "Bryce Canyon stars night"], geo: false },
+  "brca-bristlecone-loop": { search: ["Bristlecone Loop Bryce", "Pinus longaeva Bryce Canyon", "Rainbow Point bristlecone"] },
+  "grca-hermits-rest": { search: ["Hermit's Rest Grand Canyon"] },
+  "dena-mountain-vista": { search: ["Mountain Vista Denali", "Savage River Denali"] },
+  "dena-talkeetna": { search: ["Denali flightseeing", "Ruth Glacier Denali", "Talkeetna floatplane"], geo: false },
+  "dena-nenana-rafting": { search: ["Nenana River rafting", "Nenana River canyon Denali"], geo: false },
+  "chis-whale-watching": { search: ["Channel Islands whale", "Santa Barbara Channel whale"], geo: false },
+  "chis-sea-cave-kayak": { search: ["Channel Islands sea cave kayak", "Scorpion Anchorage kayak", "Santa Cruz Island sea cave"] },
+  "redw-avenue-of-the-giants": { search: ["Avenue of the Giants", "Founders Grove Humboldt Redwoods"] },
+  "lavo-burney-falls": { search: ["Burney Falls"] },
+  "lavo-subway-cave": { search: ["Subway Cave lava tube"] },
+  "yell-beartooth-highway": { search: ["Beartooth Highway", "Beartooth Pass"] },
+  "olym-cape-flattery": { search: ["Cape Flattery"] },
+  "olym-lake-quinault": { search: ["Lake Quinault"] },
+  "olym-largest-sitka-spruce": { search: ["Quinault Sitka spruce"] },
+  "noca-maple-pass-loop": { search: ["Maple Pass Loop", "Heather Maple Pass"] },
+  // “Blue Lake Washington” 会搜到西雅图 Lake Washington 上空的蓝天使飞行表演
+  "noca-blue-lake": { search: ["Blue Lake North Cascades", "Blue Lake Early Winters Spires", "Blue Lake Liberty Bell"] },
+  "noca-trail-of-the-cedars": { search: ["Trail of the Cedars Newhalem"] },
+  // 只写名字会搜到别处的同名地点（英国的 Leyland Titan 公交车、约书亚树的 Boy Scout Trail），加上 redwood
+  // 泰坦巨人林的位置以前不公开，Commons 上只有几张几百像素的小图，用同在 Mill Creek 边的 Jedediah Smith 红杉林照片
+  "redw-grove-of-titans": { search: ["Grove of Titans redwood", "Mill Creek Jedediah Smith", "Jedediah Smith Redwoods State Park"] },
+  "redw-boy-scout-tree": { search: ["Boy Scout Tree Trail redwood"] },
+  "crla-plaikni-falls": { search: ["Plaikni Falls"] },
+  // 只按名字搜几乎全是牵牛花池，补上城堡、大间歇泉和河畔间歇泉
+  "yell-upper-geyser-basin": { search: ["Castle Geyser", "Grand Geyser", "Riverside Geyser"] },
+  "yell-lake-yellowstone": { search: ["Yellowstone Lake"] },
+  "noca-diablo-lake-cruise": { search: ["Diablo Lake"] },
+  "grte-aerial-tram": { search: ["Jackson Hole Aerial Tram", "Rendezvous Mountain tram"] },
+  // 保护区就在 Jackson 镇边，附近的照片多半是镇上的酒吧、博物馆
+  "grte-elk-refuge": { search: ["National Elk Refuge", "National Elk Refuge elk herd"], geo: false },
+  "grte-teton-park-road": { search: ["Teton Park Road", "Cathedral Group Teton"] },
+  "grte-signal-mountain": { search: ["Signal Mountain Grand Teton", "Signal Mountain summit Jackson Lake"] },
+  "grte-lsr-preserve": { search: ["Phelps Lake Grand Teton", "Laurance S. Rockefeller Preserve"] },
+  "grte-moose-wilson-road": { search: ["Moose-Wilson Road"] },
+  "arch-windows": { search: ["North Window Arches", "South Window Arches", "Turret Arch"] },
+  "arch-devils-garden-loop": {
+    search: [
+      "Dark Angel Arches",
+      "Private Arch Arches",
+      "Partition Arch",
+      "Navajo Arch Arches",
+      "Devils Garden Arches",
+    ],
+  },
+  "arch-panorama-point": {
+    search: ["Panorama Point Arches National Park", "Arches National Park night sky", "Arches Milky Way"],
+  },
+  "arch-delicate-arch-viewpoint": { search: ["Upper Delicate Arch Viewpoint", "Lower Delicate Arch Viewpoint"] },
+  "arch-la-sal-viewpoint": { search: ["La Sal Mountains Viewpoint", "Courthouse Towers Arches"] },
+  "arch-park-avenue": { search: ["Park Avenue Arches National Park"] },
+  "arch-visitor-center": { search: ["Arches Visitor Center"] },
+  "cany-dead-horse-point": { search: ["Dead Horse Point", "Dead Horse Point State Park"] },
+  "cany-newspaper-rock": { search: ["Newspaper Rock Utah", "Newspaper Rock State Historic Monument"] },
+  "cany-horseshoe-canyon": {
+    search: ["Great Gallery Horseshoe Canyon", "Horseshoe Canyon pictographs", "Barrier Canyon Style Great Gallery"],
+  },
+  "cany-chesler-park": { search: ["Chesler Park", "Chesler Park Needles"] },
+  "cany-cave-spring": { search: ["Cave Spring Needles District", "Cowboy Camp Needles District"] },
+  "cany-slickrock-trail": { search: ["Slickrock Trail Needles District"] },
+  "cany-big-spring-canyon-overlook": { search: ["Big Spring Canyon Overlook"] },
+  "cany-pothole-point": { search: ["Pothole Point Needles"] },
+  "cany-needles-visitor-center": { search: ["Needles Visitor Center"] },
+  "cany-island-visitor-center": { search: ["Island in the Sky Visitor Center"] },
+  "care-fruita-gifford-house": {
+    search: ["Gifford House Capitol Reef", "Fruita orchard Capitol Reef", "Fruita Schoolhouse"],
+  },
+  "care-goosenecks-sunset-point": { search: ["Sunset Point Capitol Reef", "Goosenecks Overlook Capitol Reef"] },
+  "care-panorama-point": { search: ["Panorama Point Capitol Reef", "Capitol Reef night sky"] },
+  "care-cathedral-valley": {
+    search: [
+      "Temple of the Sun Cathedral Valley",
+      "Temple of the Moon Capitol Reef",
+      "Glass Mountain Cathedral Valley",
+    ],
+  },
+  "care-burr-trail": { search: ["Burr Trail switchbacks", "Burr Trail Capitol Reef"] },
+  "care-goblin-valley": { search: ["Goblin Valley State Park", "Goblin Valley hoodoos"] },
+  "care-scenic-drive": { search: ["Capitol Reef Scenic Drive", "Golden Throne Capitol Reef", "Waterpocket Fold"] },
+  "care-rim-overlook": { search: ["Rim Overlook Capitol Reef", "Navajo Knobs"] },
+  "care-petroglyph-panel": { search: ["Fremont petroglyphs Capitol Reef"] },
+  "care-capitol-gorge": { search: ["Capitol Gorge", "Pioneer Register Capitol Reef", "Capitol Wash"] },
+  "care-grand-wash": { search: ["Grand Wash Capitol Reef", "Grand Wash narrows"] },
+  "ante-upper-antelope-canyon": { search: ["Upper Antelope Canyon", "Antelope Canyon light beam"] },
+  "ante-lower-antelope-canyon": { search: ["Lower Antelope Canyon"] },
+  "ante-antelope-canyon-x": { search: ["Antelope Canyon-X, Page", "Antelope Canyon X, Page"] },
+  "ante-waterholes-canyon": { search: ["Water Holes Canyon, Page", "Waterholes Canyon"] },
+  "hsbd-glen-canyon-dam-overlook": { search: ["Dam Overlook, Page, Arizona", "Glen Canyon Dam"] },
+  "hsbd-carl-hayden-visitor-center": { search: ["Carl Hayden Visitor Center", "Glen Canyon Dam Bridge"] },
+  "hsbd-wahweap-overlook": { search: ["Wahweap Overlook", "Wahweap Bay Lake Powell"] },
+  "mova-the-view": { search: ["The Mittens Monument Valley", "Mittens and Merrick Butte"] },
+  "mova-valley-drive": {
+    search: ["Monument Valley drive", "Driving through Monument Valley", "Three Sisters Monument Valley"],
+  },
+  "mova-wildcat-trail": { search: ["Wildcat Trail Monument Valley", "West Mitten Butte"] },
+  "mova-guided-tour": {
+    search: [
+      "Ear of the Wind Monument Valley",
+      "Moccasin Arch Monument Valley",
+      "Mystery Valley Monument Valley",
+      "Sun's Eye Monument Valley",
+    ],
+  },
+  "mova-forrest-gump-point": { search: ["Forrest Gump Point"] },
+  "wave-the-wave": { name: false, search: ["The Wave - Coyote Buttes North", "Coyote Buttes North", "The Wave rock formation Arizona"] },
+  "wave-wire-pass": { search: ["Wire Pass", "Buckskin Gulch"] },
+  "wave-toadstools": { search: ["Toadstool Hoodoos"] },
+  "wave-white-pocket": { search: ["White Pocket Vermilion Cliffs", "White Pocket Recreation Area"] },
+  "banf-lake-louise": { search: ["Lake Louise Banff", "Lake Louise Victoria Glacier"] },
+  "banf-moraine-lake": { search: ["Moraine Lake Banff", "Valley of the Ten Peaks"] },
+  "banf-lake-agnes": { search: ["Lake Agnes Banff", "Lake Agnes Tea House"] },
+  "banf-larch-valley": { search: ["Larch Valley Banff", "Sentinel Pass Banff"] },
+  "banf-lake-louise-gondola": { search: ["Lake Louise Gondola", "Lake Louise Sightseeing Gondola"] },
+  "banf-bow-valley-parkway": { search: ["Bow Valley Parkway", "Castle Mountain Banff"] },
+  "banf-banff-avenue": { search: ["Banff Avenue"] },
+  "banf-banff-gondola": { search: ["Banff Gondola", "Sulphur Mountain Banff"] },
+  "banf-bow-falls": { search: ["Bow Falls Banff", "Surprise Corner Banff"] },
+  "banf-vermilion-lakes": { search: ["Vermilion Lakes Banff"] },
+  "banf-two-jack-lake": { search: ["Two Jack Lake"] },
+  "banf-tunnel-mountain": { search: ["Tunnel Mountain Banff"] },
+  "banf-sunshine-meadows": { search: ["Sunshine Meadows Banff", "Rock Isle Lake Mount Assiniboine"] },
+  "jasp-icefields-parkway": { search: ["Icefields Parkway Jasper", "Tangle Creek Falls"] },
+  "jasp-athabasca-glacier": { search: ["Athabasca Glacier", "Toe of the Athabasca Glacier"] },
+  "jasp-columbia-icefield-adventure": {
+    search: ["Ice Explorer Athabasca Glacier", "Glacier Skywalk", "Columbia Icefield Skywalk"],
+  },
+  "jasp-wilcox-pass": { search: ["Wilcox Pass"] },
+  "jasp-medicine-lake": { search: ["Medicine Lake Jasper"] },
+  "jasp-spirit-island": { search: ["Spirit Island Maligne Lake"] },
+  "jasp-jasper-skytram": { search: ["Jasper SkyTram", "Jasper Tramway", "The Whistlers Jasper"] },
+  "jasp-pyramid-lake": { search: ["Pyramid Lake Jasper", "Pyramid Island Jasper"] },
+  "jasp-mount-edith-cavell": { search: ["Mount Edith Cavell", "Angel Glacier Edith Cavell"] },
+  "jasp-jasper-town": {
+    search: ["Jasper Alberta townsite", "Connaught Drive Jasper", "Jasper Park Information Centre"],
+  },
+  "jasp-mount-robson": { search: ["Mount Robson"] },
+  "yoho-emerald-lake": { search: ["Emerald Lake Yoho"] },
+  "yoho-natural-bridge": { search: ["Natural Bridge Yoho"] },
+  "yoho-spiral-tunnels": { search: ["Spiral Tunnels Kicking Horse Pass", "Spiral Tunnel Canadian Pacific Yoho"] },
+  "yoho-lake-ohara": { search: ["Lake O'Hara"] },
+  "yoho-field-visitor-centre": { search: ["Field British Columbia", "Yoho National Park Visitor Centre"] },
+  "yoho-iceline": { search: ["Iceline Trail Yoho"] },
+  "yoho-sherbrooke-lake": { search: ["Sherbrooke Lake Yoho"] },
+  "yoho-burgess-shale": { search: ["Walcott Quarry", "Burgess Shale Yoho"] },
+  "jotr-skull-rock": { search: ["Skull Rock Joshua Tree National Park", "Skull Rock Joshua Tree"] },
+  "jotr-jumbo-rocks": { search: ["Jumbo Rocks Joshua Tree", "Skull Rock Nature Trail"] },
+  "jotr-night-sky": {
+    search: [
+      "Joshua Tree Milky Way",
+      "Night sky of Joshua Tree National Park",
+      "Stars and Milky Way above a Joshua tree",
+    ],
+  },
+  "jotr-oasis-visitor-center": {
+    search: ["Oasis of Mara", "Joshua Tree National Park Visitor Center Twentynine Palms"],
+  },
+  "jotr-keys-ranch": { search: ["Desert Queen Ranch", "Keys Ranch Joshua Tree"] },
+  "jotr-49-palms-oasis": { search: ["Fortynine Palms Oasis", "49 Palms Oasis"] },
+  "jotr-arch-rock": { search: ["Arch Rock Joshua Tree", "Arch Rock Nature Trail"] },
+  "jotr-cholla-garden": { search: ["Cholla Cactus Garden"] },
+  "jotr-ryan-mountain": { search: ["Ryan Mountain Joshua Tree", "Ryan Mountain Trail"] },
+  "jotr-mastodon-peak": { search: ["Mastodon Peak Joshua Tree"] },
+  "romo-emerald-lake": {
+    search: [
+      "Dream Lake Rocky Mountain National Park",
+      "Emerald Lake Colorado Hallett Peak",
+      "Nymph Lake Rocky Mountain National Park",
+    ],
+  },
+  "romo-mills-lake": {
+    search: ["Mills Lake Rocky Mountain National Park", "Glacier Gorge Rocky Mountain National Park"],
+  },
+  "romo-sky-pond": { search: ["Sky Pond Colorado", "The Loch Rocky Mountain National Park", "Timberline Falls"] },
+  "romo-old-fall-river-road": { search: ["Old Fall River Road Rocky Mountain National Park", "Chasm Falls"] },
+  "romo-sheep-lakes": {
+    search: ["Sheep Lakes Rocky Mountain National Park", "Horseshoe Park Rocky Mountain National Park"],
+  },
+  "romo-kawuneeche-valley": { search: ["Kawuneeche Valley", "Coyote Valley Trail Rocky Mountain", "moose Kawuneeche"] },
+  "romo-moraine-park": { search: ["Moraine Park Rocky Mountain National Park", "Elk in Moraine Park"] },
+  "romo-tundra-communities": { search: ["Tundra Communities Trail", "Toll Memorial Rocky Mountain National Park"] },
+  "romo-alpine-visitor-center": {
+    search: ["Alpine Visitor Center Rocky Mountain", "Alpine Ridge Trail Rocky Mountain"],
+  },
+  "romo-many-parks-curve": { search: ["Many Parks Curve"] },
+  "romo-milner-pass": { search: ["Milner Pass", "Poudre Lake"] },
+  "romo-kawuneeche-vc": { search: ["Kawuneeche Visitor Center"] },
+  "romo-deer-mountain": { search: ["Deer Mountain Colorado", "Deer Mountain Trail Rocky Mountain"] },
+  "glac-lake-mcdonald": {
+    search: ["Lake McDonald Glacier National Park", "Apgar Lake McDonald", "Lake McDonald rocks"],
+  },
+  "glac-trail-of-the-cedars": { search: ["Trail of the Cedars", "Avalanche Gorge Glacier"] },
+  "glac-red-bus-tour": { search: ["Red Jammer bus Glacier", "Red Bus Glacier National Park"] },
+  "glac-going-to-the-sun-road": {
+    search: ["Going-to-the-Sun Road", "Weeping Wall Glacier", "Triple Arches Glacier National Park"],
+  },
+  "glac-logan-pass": { search: ["Logan Pass", "Clements Mountain", "Logan Pass Visitor Center"] },
+  "glac-hidden-lake-overlook": { search: ["Hidden Lake Overlook", "Hidden Lake Bearhat Mountain"] },
+  "glac-highline-trail": { search: ["Highline Trail Glacier", "Garden Wall Highline", "Granite Park Chalet"] },
+  "glac-jackson-glacier-overlook": { search: ["Jackson Glacier Overlook", "Jackson Glacier"] },
+  "glac-st-mary-virginia-falls": { search: ["St Mary Falls Glacier", "Virginia Falls Glacier National Park"] },
+  "glac-sun-point-baring-falls": { search: ["Sun Point St. Mary Lake", "Baring Falls"] },
+  "glac-wild-goose-island": { search: ["Wild Goose Island", "St. Mary Lake Glacier"] },
+  "glac-swiftcurrent-lake": { search: ["Swiftcurrent Lake", "Many Glacier Hotel Swiftcurrent"] },
+  "glac-many-glacier-boat": { search: ["Lake Josephine Glacier", "Swiftcurrent Lake boat"] },
+  "glac-grinnell-glacier": { search: ["Grinnell Glacier", "Upper Grinnell Lake", "Grinnell Lake"] },
+  // Iceberg Lake 这个名字太常见（巴塔哥尼亚、格陵兰、阿拉斯加都有），只用带公园名的搜索词
+  // 游客中心附近的照片多是向阳大道沿线的风景，不是游客中心
+  "glac-st-mary-visitor-center": { geo: false, search: ["St. Mary Visitor Center Glacier", "Saint Mary Ranger Station"] },
+  "glac-iceberg-lake": { name: false, search: ["Iceberg Lake Glacier National Park", "Iceberg Lake Montana"] },
+  "glac-two-medicine-lake": { search: ["Two Medicine Lake", "Sinopah Mountain"] },
+  "glac-goat-lick": { search: ["Goat Lick Glacier", "mountain goat Glacier National Park"] },
+  "glac-bowman-lake": { search: ["Bowman Lake Glacier", "Bowman Lake Montana"] },
+  "kefj-exit-glacier-nature-center": { search: ["Exit Glacier Nature Center", "Exit Glacier pavilion"] },
+  // Seward 镇上的附近照片五花八门（游轮、民居、啤酒馆），只按名字搜
+  "kefj-visitor-center": { geo: false, search: ["Kenai Fjords National Park Visitor Center", "Seward Small Boat Harbor"] },
+  "kefj-sealife-center": { geo: false, search: ["Alaska SeaLife Center"] },
+  "kefj-sea-kayak": { search: ["kayaking Resurrection Bay", "kayak Aialik Bay"] },
+  "kefj-fjords-cruise": { search: ["Aialik Glacier", "Holgate Glacier", "Kenai Fjords tour boat"] },
+  "kefj-harding-icefield": { search: ["Harding Icefield Trail", "Harding Icefield"] },
+  "wrst-visitor-center": {
+    geo: false,
+    search: ["Wrangell-St. Elias National Park Visitor Center", "Copper Center Alaska"],
+  },
+  "wrst-mccarthy": { geo: false, search: ["McCarthy Alaska", "Main Street McCarthy"] },
+  "wrst-slana": { search: ["Slana Ranger Station", "Nabesna Road Wrangell"] },
+  "wrst-skookum-volcano": { name: false, search: ["Skookum Volcano Trail", "Skookum Creek volcano"] },
+  "wrst-nabesna-road": { search: ["Nabesna Road", "Twin Lakes Nabesna"] },
+  "wrst-mccarthy-road": { search: ["Kuskulana River Bridge", "Gilahina Trestle", "McCarthy Road Alaska"] },
+  "wrst-chitina": { search: ["Chitina Alaska", "Copper River fishwheel"] },
+  "wrst-flightseeing": {
+    geo: false,
+    search: ["Kennicott Glacier aerial", "Wrangell Mountains aerial", "Wrangell Mountain Air"],
+  },
+  // 集合点在矿镇里，附近的照片都是老矿楼
+  "wrst-glacier-hike": { geo: false, search: ["Root Glacier hikers", "Ice Climbing on the Root Glacier"] },
+  "wrst-bonanza-mine": { geo: false, search: ["Bonanza Mine Kennecott", "Bonanza Ridge Kennecott"] },
+  // 步道口在矿镇里，附近的照片多是老矿楼
+  "wrst-root-glacier": { geo: false, search: ["Root Glacier", "Root Glacier Trail"] },
+  "wrst-kennecott": { search: ["Kennecott Mines", "Kennecott Alaska"] },
+  "wrst-mill-tour": { search: ["Kennecott Concentration Mill", "Kennecott mill"] },
+  "whsa-visitor-center": { search: ["White Sands Visitor Center", "White Sands National Monument Visitor Center"] },
+  "whsa-dunes-drive": { search: ["Dunes Drive White Sands", "Heart of the Sands White Sands"] },
+  "whsa-dune-life-trail": { search: ["Dune Life Nature Trail", "Big Dune Trail White Sands"] },
+  "whsa-playa-trail": { search: ["White Sands National Park Playa", "Playa Trail White Sands"] },
+  "whsa-interdune-boardwalk": { search: ["Interdune Boardwalk White Sands"] },
+  "whsa-sledding": { search: ["White Sands sledding", "sledding White Sands National Park"] },
+  "whsa-backcountry-loop": { search: ["White Sands backcountry camping trail"] },
+  "whsa-alkali-flat": { search: ["Alkali Flat Trail White Sands", "Alkali Flats Trail"] },
+  "whsa-sunset-stroll": {
+    geo: false,
+    search: ["White Sands sunset", "Sunset White Sands National Monument", "White Sands National Park sunset dunes"],
+  },
+  "whsa-moonlight-hike": {
+    geo: false,
+    search: ["White Sands moonrise", "Moon at White Sands"],
+  },
+  "whsa-lake-lucero": { search: ["Lake Lucero", "Lake Lucero selenite"] },
+  "cave-visitor-center": {
+    geo: false,
+    search: ["Carlsbad Caverns Visitor Center", "Carlsbad Caverns National Park visitor center"],
+  },
+  "cave-natural-entrance": { search: ["Natural Entrance Carlsbad Cavern", "Carlsbad Caverns Natural Entrance"] },
+  "cave-big-room": { name: false, geo: false, search: ["Big Room Carlsbad Cavern", "Carlsbad Caverns Big Room"] },
+  "cave-kings-palace": {
+    name: false,
+    geo: false,
+    search: ["King's Palace Carlsbad Cavern", "Queen's Chamber Carlsbad Cavern"],
+  },
+  "cave-lower-cave": { name: false, geo: false, search: ["Lower Cave Carlsbad Cavern", "Rookery Lower Cave Carlsbad"] },
+  "cave-bat-flight": {
+    search: ["Bat Flight Amphitheater", "Carlsbad Caverns bat flight", "Tadarida brasiliensis Carlsbad"],
+  },
+  "cave-desert-nature-trail": {
+    geo: false,
+    search: ["Chihuahuan Desert Nature Trail Carlsbad", "Carlsbad Caverns desert plants"],
+  },
+  "cave-walnut-canyon-overlook": {
+    name: false,
+    geo: false,
+    search: ["Walnut Canyon Overlook Carlsbad", "Walnut Canyon Carlsbad Caverns"],
+  },
+  "cave-walnut-canyon-drive": {
+    name: false,
+    search: ["Walnut Canyon Desert Drive Carlsbad", "Walnut Canyon Carlsbad Caverns"],
+  },
+  "cave-rattlesnake-springs": {
+    name: false,
+    search: ["Rattlesnake Springs Carlsbad Caverns", "Rattlesnake Springs New Mexico"],
+  },
+  "cave-slaughter-canyon-cave": { search: ["Slaughter Canyon Cave", "Slaughter Canyon Carlsbad"] },
+  "meve-visitor-center": { search: ["Mesa Verde Visitor and Research Center"] },
+  "meve-point-lookout": { search: ["Point Lookout Mesa Verde"] },
+  "meve-night-sky": { search: ["Mesa Verde night sky", "Mesa Verde Milky Way"], geo: false },
+  "meve-park-point": { search: ["Park Point Lookout Mesa Verde", "Park Point Mesa Verde"] },
+  "meve-far-view-sites": { search: ["Far View House Mesa Verde", "Far View Sites Complex Mesa Verde"] },
+  "meve-museum": { search: ["Chapin Mesa Archeological Museum", "Chapin Mesa Museum"] },
+  "meve-spruce-tree-house": { search: ["Spruce Tree House Mesa Verde"] },
+  "meve-petroglyph-point": { search: ["Petroglyph Point Trail Mesa Verde", "Petroglyph Point MVNP"] },
+  "meve-pithouses": { search: ["Pithouse Mesa Top Loop Mesa Verde", "Mesa Top Sites Mesa Verde"] },
+  "meve-square-tower-house": { search: ["Square Tower House Mesa Verde"] },
+  "meve-sun-point-view": { search: ["Sun Point View Mesa Verde", "Cliff Palace Sun Point View"] },
+  "meve-sun-temple": { search: ["Sun Temple Mesa Verde"] },
+  "meve-cliff-palace": { search: ["Cliff Palace Mesa Verde"] },
+  "meve-cliff-palace-overlook": { search: ["Cliff Palace Overlook Mesa Verde"] },
+  "meve-balcony-house": { search: ["Balcony House Mesa Verde"] },
+  "meve-soda-canyon-overlook": { search: ["Soda Canyon Overlook Trail", "Balcony House Soda Canyon Overlook"] },
+  "meve-long-house": { search: ["Long House Mesa Verde", "Long House Wetherill Mesa"] },
+  "meve-step-house": { search: ["Step House Wetherill Mesa"] },
+  "pefo-painted-desert-vc": { search: ["Painted Desert Visitor Center", "Painted Desert Community Complex"] },
+  "pefo-tiponi-point": { search: ["Tiponi Point Petrified Forest"] },
+  "pefo-tawa-point": { search: ["Tawa Point Painted Desert", "Painted Desert Rim Petrified Forest"] },
+  "pefo-painted-desert-inn": { search: ["Painted Desert Inn", "View near Painted Desert Inn"] },
+  "pefo-pintado-point": { search: ["Pintado Point Petrified Forest", "Chinde Point Petrified Forest"] },
+  "pefo-onyx-bridge": {
+    search: ["View near Painted Desert Inn NHL", "Black Forest Petrified Forest", "Onyx Bridge Petrified Forest"],
+  },
+  "pefo-route-66": { search: ["Route 66 Petrified Forest", "1932 Studebaker Petrified Forest"] },
+  "pefo-puerco-pueblo": { search: ["Puerco Pueblo"] },
+  "pefo-newspaper-rock": { search: ["Newspaper Rock Petrified Forest"] },
+  "pefo-tepees": { search: ["The Tepees Petrified Forest"] },
+  "pefo-blue-mesa": { search: ["Blue Mesa Petrified Forest", "Blue Mesa Trail Petrified Forest"] },
+  "pefo-agate-bridge": { search: ["Agate Bridge Petrified Forest"] },
+  "pefo-jasper-forest": { search: ["Jasper Forest Petrified Forest"] },
+  "pefo-crystal-forest": { search: ["Crystal Forest Petrified Forest"] },
+  "pefo-rainbow-forest-museum": { search: ["Rainbow Forest Museum", "Giant Logs Petrified Forest"] },
+  "pefo-long-logs-agate-house": { search: ["Long Logs Petrified Forest", "Agate House Petrified Forest"] },
+  "grsa-visitor-center": { search: ["Great Sand Dunes Visitor Center"] },
+  "grsa-dunefield": { search: ["Great Sand Dunes dunefield", "Great Sand Dunes Medano Creek dunes"] },
+  "grsa-medano-creek": { search: ["Medano Creek surge flow", "Medano Creek Great Sand Dunes"] },
+  "grsa-high-dune": { search: ["High Dune on First Ridge", "High Dune Great Sand Dunes"] },
+  "grsa-star-dune": { search: ["Star Dune Great Sand Dunes", "Star Dune Crestone Peaks"] },
+  "grsa-sandboarding": { search: ["Great Sand Dunes sandboarding", "Great Sand Dunes sand sledding"] },
+  "grsa-night-sky": { search: ["Great Sand Dunes Milky Way", "Great Sand Dunes night sky stars"], geo: false },
+  "grsa-montville-trail": { search: ["Montville Trail Great Sand Dunes", "Mosca Creek Great Sand Dunes"] },
+  "grsa-mosca-pass-trail": { search: ["Mosca Pass Trail", "Mosca Pass aspens"] },
+  "grsa-castle-creek": { search: ["Castle Creek Picnic Area Great Sand Dunes", "Point of No Return Great Sand Dunes"] },
+  "grsa-medano-pass-road": { search: ["Medano Pass Primitive Road", "Medano Pass Great Sand Dunes"] },
+  "grsa-zapata-falls": { search: ["Zapata Falls"] },
+  "blca-visitor-center": { search: ["South Rim Visitor Center Black Canyon", "Gunnison Point Black Canyon"] },
+  "blca-tomichi-point": { search: ["Tomichi Point Black Canyon"] },
+  "blca-cross-fissures": {
+    search: ["Cross Fissures Black Canyon", "Rock Point Black Canyon Gunnison", "Devils Lookout Black Canyon"],
+  },
+  "blca-chasm-view": { search: ["Chasm View Black Canyon"] },
+  // “Sunset View” 太常见，按名字搜会搜到佛罗伦萨、印度的日落
+  "blca-sunset-view": { name: false, search: ["Sunset View Black Canyon Gunnison", "Sunset View Overlook Black Canyon"] },
+  "blca-painted-wall-view": { search: ["Painted Wall Black Canyon Gunnison"] },
+  "blca-gunnison-route": { search: ["Gunnison Route Black Canyon", "Gunnison River inner canyon Black Canyon"] },
+  // 垦务局的照片说明里常提到 Gunnison，按名字搜会搜到别处的水坝、鱼道
+  "blca-east-portal": { name: false, search: ["Gunnison Diversion Dam", "East Portal Black Canyon of the Gunnison"] },
+  "blca-north-rim-drive": {
+    // 只搜 “Kneeling Camel” 会搜到印着跪着的骆驼的古罗马钱币
+    search: ["North Rim Road Black Canyon", "Kneeling Camel View Black Canyon", "The Narrows View Black Canyon"],
+  },
+  "blca-north-chasm-view": { search: ["North Chasm View Black Canyon", "Chasm View Nature Trail North Rim"] },
+  "blca-exclamation-point": { search: ["North Vista Trail Black Canyon", "Exclamation Point Black Canyon"] },
+  "blca-night-sky": {
+    search: ["Black Canyon of the Gunnison night sky", "Black Canyon of the Gunnison stars"],
+    geo: false,
+  },
+};
+
+/** 搜索时代表公园的词。红杉和国王峡谷的照片一般只写其中一个；拉森的照片很少写全称 */
+const SEARCH_PARK = { seki: ["Sequoia", "Kings Canyon"], lavo: ["Lassen"] };
+/** 带坐标的照片离景点超过这么远，多半是同名的别处（巴黎的 Tower arch、加州的 Whale Rock） */
+const FAR_AWAY_KM = 50;
+/** 出发点离景点超过这么远（比如海峡群岛的码头）就不搜出发点附近的照片 */
+const START_NEARBY_KM = 5;
+
+const BAD_NAME = new RegExp(
+  "\\b(" +
+    [
+      // 地图、标牌、图表
+      "maps?|karte|carte|sign|signage|signpost|logo|diagram|brochure|plaque|placard|poster|marker|warning|trail info",
+      "parking|toilet|restroom|elevation profile|profile|chart|graph|stamp|ticket|menu|screenshot",
+      "master plan|construction details|elevation-section|haer|habs",
+      // 画、老照片、卫星图
+      "drawing|painting|sketch|engraving|lithograph|postcard|historic photo|hdr|nara|dpla|chs-\\d+|negative",
+      "museum and archives|ca ?1[89]\\d\\d|circa 1[89]\\d\\ds?|1[89]\\d0s|, (18\\d\\d|19[0-7]\\d)|plate [lxvic]+|landsat|satellite|aerial|view of earth|iss\\d+|stereo image",
+      // 跟景点无关的东西
+      "campsites?|campground|campfire|amphitheater|elementary school|library|bookstore|fire hydrant|scion",
+      "squirrel|chipmunk|chickadee|raven|newt|spider|mushrooms?|bobcat|mule deer|inat-?\\d+|inaturalist",
+      "wikiexpedition|wikiekspedycja|recycling|cemetery|clearcoat|(front|rear) (left|right)|winterfest|summerfest",
+      // 动植物特写（附近照片里常混进来）
+      "skink|lizard|snake|grosbeak|woodpecker|birds?|wildflowers?|flowers?|plant|sedge|butterfly|insect|beetle|lichen|fern|moss",
+      "salamander|jay|egret|falcon|swallows?|crow|vulture|towhee|wren|grouse|otters?|beaver|marmot|mushrooms?|fungus|fungi",
+      "sorrel|pasqueflowers?|fleeceflower|ptarmigan|magpie|hummingbird|sculpture",
+      // 岩石标本特写（地质学者拍的，文件名写岩石名和“152 ka”这样的年代）
+      "obsidian|breccia|dacite|porphyritic|quartzose|spherulitic|\\d+ ka",
+      // 人物活动、设施、别的东西
+      "us navy|blue angels|locomotive|comfort station|outhouse|lavator(y|ies)|selfies?|self portrait|reporter|school group|you are here",
+      "volunteers?|jewell|deer|fremont[- ]winema|joshua trees?|leyland|captive breeding|caprive breeding",
+      // 别处的国家军事公园（阿拉巴马州也有个 Horseshoe Bend）
+      "national military park",
+      // 搜 Loch、Tundra 会搜到苏格兰的湖和阿拉斯加野生动物保护区的冬季巡逻
+      "scotland|scottish|snowmachines?|selawik|iditarod|hyundai",
+      "chats with|answers questions|answers visitor questions|ranger answers|speaks with|junior ranger|ranger program|ranger talk|ranger-led|ranger led",
+    ].join("|") +
+    ")\\b",
+  "i",
+);
+/** 文件名里写了别的公园，多半是搜索词撞车（搜 Blue Lake 搜到一堆火山口湖的照片） */
+const PARK_IN_NAME = {
+  yose: /yosemite/i,
+  seki: /sequoia national|kings canyon/i,
+  deva: /death valley/i,
+  zion: /\bzion\b/i,
+  brca: /bryce/i,
+  grca: /grand canyon(?! of (the )?yellowstone)/i,
+  dena: /denali/i,
+  yell: /yellowstone/i,
+  grte: /grand teton/i,
+  redw: /redwood national/i,
+  lavo: /lassen/i,
+  crla: /crater lake/i,
+  chis: /channel islands/i,
+  mora: /rainier/i,
+  olym: /olympic national/i,
+  noca: /north cascades/i,
+  arch: /arches national/i,
+  cany: /canyonlands/i,
+  care: /capitol reef/i,
+  ante: /antelope canyon/i,
+  hsbd: /horseshoe bend/i,
+  mova: /monument valley/i,
+  wave: /\bthe wave\b|coyote buttes/i,
+  banf: /\bbanff\b/i,
+  jasp: /\bjasper national|jasper, alberta/i,
+  yoho: /\byoho\b/i,
+  jotr: /joshua tree national/i,
+  romo: /rocky mountain national/i,
+  glac: /glacier national/i,
+  kefj: /kenai fjords/i,
+  wrst: /wrangell/i,
+  whsa: /white sands/i,
+  cave: /carlsbad cavern/i,
+  meve: /mesa verde/i,
+  pefo: /petrified forest/i,
+  grsa: /great sand dunes/i,
+  blca: /black canyon of the gunnison/i,
+};
+const BAD_CATEGORY =
+  /\b(paintings?|drawings?|maps?|satellite|aerial|ISS Expedition|astronaut|HAER|HABS|book scans|illustrations?|engravings?|lithographs?|postcards?|historical images|black and white photographs|signs|information boards|plaques|diagrams?|logos?)\b/i;
+/**
+ * 物种照片常见的文件名：“拉丁学名 + 编号”，比如 “Cortinarius alboviolaceus 832949.jpg”（iNaturalist 导入）；
+ * 美国地质调查局的蜜蜂标本照：“Perdita albihirta geraeae, female, side 2012-08-01…”
+ */
+const SPECIES_PHOTO = /^[A-Z][a-z]+ [a-z]+( (var|subsp)\. [a-z]+)? \d{4,}|^[A-Z][a-z]+ [a-z]+( [a-z]+)?, (fe)?male\b/;
+const BAD_AUTHOR =
+  /George A\. Grant|Carl E\. Jepson|Ansel Adams|Carleton Watkins|Matson Collection|Internet Archive Book Images|Albert Bierstadt|William Keith/i;
+const QUALITY = {
+  "Category:Featured pictures on Wikimedia Commons": 6,
+  "Category:Quality images": 4,
+  "Category:Valued images sorted by promotion date": 2,
+};
+
+const parkName = Object.fromEntries(parks.map((p) => [p.code, p.nameEn]));
+
+function plainText(html) {
+  return (html ?? "")
+    .replace(/<[^>]*>/g, "")
+    .replace(/\(talk\s*·\s*contribs\)/g, "")
+    .replace(/&amp;/g, "&")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+async function query(params) {
+  const url = new URL(API);
+  url.search = new URLSearchParams({
+    action: "query",
+    format: "json",
+    formatversion: "2",
+    prop: "imageinfo|categories|coordinates",
+    iiprop: "url|size|mime|extmetadata",
+    colimit: "max",
+    iiurlwidth: String(THUMB_WIDTH),
+    iiextmetadatafilter: "Artist|Credit|LicenseShortName",
+    clshow: "!hidden",
+    cllimit: "max",
+    ...params,
+  });
+  for (let attempt = 0; attempt < 6; attempt++) {
+    let wait = 3000 * (attempt + 1);
+    try {
+      const res = await fetch(url, { headers: { "User-Agent": USER_AGENT }, signal: AbortSignal.timeout(30_000) });
+      if (res.ok) {
+        const data = await res.json();
+        // 限流、搜索繁忙时也可能是 200 + error / warnings（这时结果是空的），都要重试
+        const warning = data.warnings && JSON.stringify(data.warnings);
+        if (warning) console.warn(`Commons 警告，稍后重试：${warning.slice(0, 160)}`);
+        if (!data.error && !warning) return data.query?.pages ?? [];
+      } else if (res.status === 429) {
+        wait = Math.max(wait, Number(res.headers.get("retry-after") ?? 0) * 1000);
+      }
+    } catch {
+      // 超时或网络错误，稍后重试
+    }
+    await sleep(wait);
+  }
+  // 查不到就整体失败，免得悄悄少了照片
+  throw new Error(`Commons 查询失败：${params.gsrsearch ?? params.ggscoord ?? params.titles}`);
+}
+
+function distanceKm(a, b) {
+  const rad = Math.PI / 180;
+  const h =
+    Math.sin(((b.lat - a.lat) * rad) / 2) ** 2 +
+    Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(((b.lon - a.lon) * rad) / 2) ** 2;
+  return 2 * 6371 * Math.asin(Math.sqrt(h));
+}
+
+/** 景点名里有辨识度的词，用来判断照片是不是拍的这个景点 */
+function keywords(nameEn) {
+  return nameEn
+    .replace(/\(.*?\)/g, " ")
+    .split(/[\s–\-&/·,]+/)
+    .map((word) => word.replace(/[’']/g, "").toLowerCase())
+    .filter((word) => word.length > 2 && !["the", "and", "trail", "loop", "point", "national", "park"].includes(word));
+}
+
+function toPhoto(page) {
+  const info = page.imageinfo?.[0];
+  if (!info) return null;
+  const meta = info.extmetadata ?? {};
+  const url = info.thumburl.split("?")[0];
+  // 灯箱用的大图：Commons 标准缩略图尺寸里挑不超过原图的，原图太小就直接用原图
+  const largeWidth = [1920, 1280].find((width) => info.width >= width);
+  return {
+    url,
+    large: largeWidth ? url.replace(`/${THUMB_WIDTH}px-`, `/${largeWidth}px-`) : info.url,
+    width: info.thumbwidth,
+    height: info.thumbheight,
+    page: info.descriptionurl,
+    author: plainText(meta.Artist?.value) || plainText(meta.Credit?.value) || "Unknown",
+    license: plainText(meta.LicenseShortName?.value),
+  };
+}
+
+function excluded(id, title) {
+  const lower = title.toLowerCase();
+  return [...EXCLUDE["*"], ...(EXCLUDE[id] ?? [])].some((prefix) => lower.startsWith(prefix.toLowerCase()));
+}
+
+/**
+ * source：name = 按景点名搜到的，extra = TUNING 里补的搜索词，nearby = 景点附近带坐标的。
+ * 按名字搜到、文件名里却一个景点关键词都没有的，多半是描述里顺带提到，不要。
+ */
+function score(page, id, words, source, at) {
+  const info = page.imageinfo?.[0];
+  if (!info) return -Infinity;
+  const title = page.title.replace(/^File:/, "");
+  if (excluded(id, title)) return -Infinity;
+  const where = page.coordinates?.[0];
+  if (where && at && distanceKm(at, where) > FAR_AWAY_KM) return -Infinity;
+  // PNG 多半是地图、渲染图，只要 JPEG
+  if (info.mime !== "image/jpeg") return -Infinity;
+  // 景点名里的词不算（Lady Bird Johnson Grove 的 bird、Fern Canyon 的 fern）
+  const own = words.length > 0 ? new RegExp(`\\b(${words.map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})\\b`, "gi") : null;
+  const park = id.split("-")[0];
+  // 约书亚树（植物）在别的公园算无关的动植物照，在约书亚树国家公园里就是主角
+  const text = title.replace(/[_.]/g, " ");
+  const plain = park === "jotr" ? text.replace(/joshua trees?/gi, " ") : text;
+  if (BAD_NAME.test(own ? plain.replace(own, " ") : plain)) return -Infinity;
+  if (SPECIES_PHOTO.test(title)) return -Infinity;
+  if (Object.entries(PARK_IN_NAME).some(([code, pattern]) => code !== park && pattern.test(title))) return -Infinity;
+  if ((page.categories ?? []).some((category) => BAD_CATEGORY.test(category.title))) return -Infinity;
+  if (BAD_AUTHOR.test(plainText(info.extmetadata?.Artist?.value))) return -Infinity;
+  if (info.width < 1200) return -Infinity;
+  const ratio = info.width / info.height;
+  if (ratio > 2.8 || ratio < 0.6) return -Infinity;
+
+  let value = 0;
+  for (const category of page.categories ?? []) value += QUALITY[category.title] ?? 0;
+  const lower = title.toLowerCase().replace(/[’']/g, "");
+  const hits = words.filter((word) => lower.includes(word)).length;
+  if (source === "name" && words.length > 0 && hits === 0) return -Infinity;
+  value += words.length > 0 ? (hits / words.length) * 4 : 0;
+  if (source !== "nearby") value += 1;
+  if (ratio >= 1.25 && ratio <= 2.2) value += 1.5;
+  else if (ratio < 1) value -= 1.5;
+  if (info.width >= 2400) value += 0.5;
+  return value;
+}
+
+/** 一个景点的候选照片：名字搜索 + 附近照片，按分数从高到低 */
+async function candidatesFor(attraction) {
+  const tuning = TUNING[attraction.id] ?? {};
+  const words = keywords(attraction.nameEn);
+  const name = attraction.nameEn.replace(/\(.*?\)/g, " ").replace(/[–&]/g, " ").replace(/\s+/g, " ").trim();
+  const nameTerms = (SEARCH_PARK[attraction.park] ?? [parkName[attraction.park]]).map((park) => `${name} ${park}`);
+  const candidates = new Map();
+  const add = (pages, source) => {
+    for (const page of pages) {
+      const value = score(page, attraction.id, words, source, attraction);
+      if (value === -Infinity) continue;
+      const previous = candidates.get(page.title);
+      if (!previous || previous.value < value) candidates.set(page.title, { page, value });
+    }
+  };
+  const nearby = async (point, radius) =>
+    add(
+      await query({
+        generator: "geosearch",
+        ggscoord: `${point.lat}|${point.lon}`,
+        ggsradius: String(radius),
+        ggsnamespace: "6",
+        ggslimit: "50",
+      }),
+      "nearby",
+    );
+  const search = async (term, source) =>
+    add(await query({ generator: "search", gsrsearch: `${term} filetype:bitmap`, gsrnamespace: "6", gsrlimit: "30" }), source);
+
+  if (tuning.name !== false) for (const term of nameTerms) await search(term, "name");
+  for (const term of tuning.search ?? []) await search(term, "extra");
+  if (tuning.geo !== false) {
+    const startNearby = attraction.start && distanceKm(attraction, attraction.start) <= START_NEARBY_KM;
+    for (const point of [attraction, startNearby && attraction.start].filter(Boolean)) await nearby(point, GEO_RADIUS_M);
+    if (candidates.size < FEW_CANDIDATES) await nearby(attraction, WIDE_RADIUS_M);
+  }
+  const main = attraction.photoFile ? (await query({ titles: `File:${attraction.photoFile}` }))[0] : undefined;
+  return { main, ranked: [...candidates.values()].sort((a, b) => b.value - a.value).map((item) => item.page) };
+}
+
+// 调试：ONLY=景点id,景点id 只查这几个景点、打印候选，不写文件
+if (process.env.ONLY) {
+  for (const id of process.env.ONLY.split(",")) {
+    const attraction = attractions.find((a) => a.id === id);
+    if (!attraction) throw new Error(`没有景点 ${id}`);
+    const { ranked } = await candidatesFor(attraction);
+    console.log(`${id}：${ranked.length} 个候选`);
+    for (const page of ranked) console.log(`  ${page.title}`);
+  }
+  process.exit(0);
+}
+
+// 增量更新：UPDATE=公园代码或景点id,…（比如新加的公园、改过的景点）只重挑这些景点，
+// 其他景点的照片原样保留、也不会被这次挑走；不在数据里的旧景点顺便删掉
+const previous =
+  process.env.UPDATE && existsSync(OUTPUT)
+    ? JSON.parse(readFileSync(OUTPUT, "utf8").replace(/^[\s\S]*?= \{/, "{").replace(/;\s*$/, ""))
+    : null;
+const updateTokens = process.env.UPDATE?.split(",") ?? [];
+const targets = previous
+  ? attractions.filter((a) => updateTokens.includes(a.id) || updateTokens.includes(a.park) || !(a.id in previous))
+  : attractions;
+const titleOf = (photo) => decodeURIComponent(photo.page.split("/wiki/")[1]).replace(/_/g, " ");
+
+// 先并发查候选（几个景点同时查），再按景点顺序挑，保证同一张照片只给排在前面的景点
+const CONCURRENCY = 2;
+const found = new Array(targets.length);
+let next = 0;
+await Promise.all(
+  Array.from({ length: CONCURRENCY }, async () => {
+    while (next < targets.length) {
+      const index = next++;
+      found[index] = await candidatesFor(targets[index]);
+      await sleep(500);
+      console.log(`${targets[index].id}: 候选 ${found[index].ranked.length}`);
+    }
+  }),
+);
+
+// 手选的主图先占住，别的景点不能再用；增量更新时，保留下来的照片也占住
+const used = new Set(attractions.filter((a) => a.photoFile).map((a) => `File:${a.photoFile}`));
+const gallery = {};
+if (previous) {
+  for (const attraction of attractions) {
+    if (targets.includes(attraction)) continue;
+    gallery[attraction.id] = previous[attraction.id] ?? [];
+    for (const photo of gallery[attraction.id]) used.add(titleOf(photo));
+  }
+}
+targets.forEach((attraction, index) => {
+  const { main, ranked } = found[index];
+  const picked = [];
+  const mainPhoto = main && toPhoto(main);
+  if (mainPhoto) picked.push(mainPhoto);
+  const authors = new Map(picked.map((photo) => [photo.author, 1]));
+  for (const page of ranked) {
+    if (picked.length >= PER_ATTRACTION) break;
+    if (used.has(page.title)) continue;
+    const photo = toPhoto(page);
+    if (!photo) continue;
+    const count = authors.get(photo.author) ?? 0;
+    if (count >= MAX_PER_AUTHOR) continue;
+    authors.set(photo.author, count + 1);
+    used.add(page.title);
+    picked.push(photo);
+  }
+  gallery[attraction.id] = picked;
+  if (picked.length < 4) console.log(`注意：${attraction.id} 只有 ${picked.length} 张`);
+});
+// 按数据里的景点顺序输出
+const ordered = Object.fromEntries(attractions.map((a) => [a.id, gallery[a.id] ?? []]));
+
+writeFileSync(
+  OUTPUT,
+  `// 由 scripts/build-gallery.mjs 生成，请勿手改。照片来自 Wikimedia Commons，按各自授权署名使用。
+import type { Photo } from "./types";
+
+export const gallery: Record<string, Photo[]> = ${JSON.stringify(ordered, null, 2)};
+`,
+);
+console.log(
+  `写入 ${Object.keys(ordered).length} 个景点、${Object.values(ordered).flat().length} 张照片${previous ? `（重挑 ${targets.length} 个）` : ""}`,
+);

@@ -1,0 +1,93 @@
+import {
+  airportTravel,
+  interParkTravel,
+  pairTravel,
+  parkTravel,
+  type PairTable,
+  type TravelTable,
+} from "../data/attractions/travel.generated";
+
+// 车程表里没有的组合（比如新加了景点还没重新生成表），先按半小时算
+const FALLBACK_MIN = 30;
+/**
+ * 车程表里有、但两点之间不通公路的（OSRM 算不出来：夏威夷和本土、只能坐飞机去的 Gustavus 和 King Salmon）：
+ * 按这么久算，排行程时会提示这一段太远、建议飞过去
+ */
+export const NO_ROAD_MIN = 12 * 60;
+
+const indexCache = new WeakMap<TravelTable, Map<string, number>>();
+
+/** 表里没有这两个点是 undefined，有但不通公路是 null */
+function lookup(table: TravelTable | undefined, from: string, to: string): number | null | undefined {
+  if (!table) return undefined;
+  let index = indexCache.get(table);
+  if (!index) {
+    index = new Map(table.nodes.map((node, i) => [node, i]));
+    indexCache.set(table, index);
+  }
+  const i = index.get(from);
+  const j = index.get(to);
+  if (i === undefined || j === undefined) return undefined;
+  return table.minutes[i][j];
+}
+
+const minutesOr = (value: number | null | undefined) => (value === undefined ? FALLBACK_MIN : value === null ? NO_ROAD_MIN : value);
+
+const pairIndexCache = new WeakMap<PairTable, { a: Map<string, number>; b: Map<string, number> }>();
+
+/** 相邻公园的跨园车程；不在表里（比如公园定位点）时返回 null */
+function lookupPair(from: string, to: string, fromPark: string, toPark: string): number | null {
+  const table = pairTravel[fromPark < toPark ? `${fromPark}|${toPark}` : `${toPark}|${fromPark}`];
+  if (!table) return null;
+  let index = pairIndexCache.get(table);
+  if (!index) {
+    index = { a: new Map(table.a.map((id, i) => [id, i])), b: new Map(table.b.map((id, i) => [id, i])) };
+    pairIndexCache.set(table, index);
+  }
+  const ai = index.a.get(from);
+  const bj = index.b.get(to);
+  if (ai !== undefined && bj !== undefined) return table.ab[ai][bj];
+  const bi = index.b.get(from);
+  const aj = index.a.get(to);
+  if (bi !== undefined && aj !== undefined) return table.ba[bi][aj];
+  return null;
+}
+
+/** 公园定位点的节点 id，例如 "zion:gateway" */
+export function gatewayNode(park: string): string {
+  return `${park}:gateway`;
+}
+
+// 景点 id 统一以公园代码开头，例如 "zion-narrows"（排行程时要查上百万次，算过的存起来）
+const parks = new Map<string, string>();
+const parkOf = (node: string) => {
+  let park = parks.get(node);
+  if (park === undefined) parks.set(node, (park = node.split(/[-:]/)[0]));
+  return park;
+};
+const tableNode = (node: string) => (node.endsWith(":gateway") ? "gateway" : node);
+
+/** 两个景点（或公园定位点）之间的开车分钟数；跨公园时查相邻公园的表，没有就经过两边的定位点 */
+export function travelMinutes(from: string, to: string): number {
+  if (from === to) return 0;
+  const fromPark = parkOf(from);
+  const toPark = parkOf(to);
+  if (fromPark === toPark) {
+    return minutesOr(lookup(parkTravel[fromPark], tableNode(from), tableNode(to)));
+  }
+  // 相邻公园直接查跨园表，不用绕两边的定位点
+  const direct = lookupPair(from, to, fromPark, toPark);
+  if (direct !== null) return direct;
+  const toGateway = lookup(parkTravel[fromPark], tableNode(from), "gateway");
+  const between = lookup(interParkTravel, fromPark, toPark);
+  const fromGateway = lookup(parkTravel[toPark], "gateway", tableNode(to));
+  if (toGateway === null || between === null || fromGateway === null) return NO_ROAD_MIN;
+  return (toGateway ?? 0) + (between ?? FALLBACK_MIN) + (fromGateway ?? 0);
+}
+
+/** 从机场开到公园定位点的分钟数（OSRM）；表里没有就是 null */
+export function airportMinutes(airport: string, park: string): number | null {
+  const i = airportTravel.airports.indexOf(airport);
+  const j = airportTravel.parks.indexOf(park);
+  return i < 0 || j < 0 ? null : airportTravel.minutes[i][j];
+}
