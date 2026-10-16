@@ -19,6 +19,44 @@ export interface Hike {
   loop?: boolean;
 }
 
+/**
+ * 带小孩、老人、轮椅去要注意的危险：
+ * dropoff 悬崖陡坡边没有护栏；scramble 要手脚并用、抓铁链、爬梯子；thermal 地热区，离开栈道会烫伤；
+ * flashFlood 峡谷、窄缝里的山洪；water 急流、冷水、涉水、海浪；heat 夏天酷热、没有遮阴；
+ * altitude 海拔高（约 2,700 米 / 9,000 英尺以上）；wildlife 熊、野牛、驼鹿要保持距离；
+ * remote 偏远、没信号、出事救援慢（坐小飞机、坐船进出）；motion 小飞机、颠簸的船，晕机晕船、有健康限制
+ */
+export type Hazard =
+  | "dropoff"
+  | "scramble"
+  | "thermal"
+  | "flashFlood"
+  | "water"
+  | "heat"
+  | "altitude"
+  | "wildlife"
+  | "remote"
+  | "motion";
+
+/** 同行适合度（src/data/suitability/）：带多大的孩子、推婴儿车、坐轮椅、老人能不能去，有什么危险 */
+export interface Suitability {
+  /** 建议几岁以上的孩子去；0 是背着、抱着的婴儿也能去 */
+  kidsFromAge: number;
+  /** 官方写明的年龄下限（游船、洞穴团、骑马），不到这个岁数不让参加 */
+  minAge?: number;
+  /** 婴儿车：全程能推 / 一部分能推 / 推不了（要用背带） */
+  stroller: "yes" | "partial" | "no";
+  /** 轮椅：无障碍 / 有人协助能走 / 能到一部分（比如观景台能到、步道不行） / 去不了 */
+  wheelchair: "yes" | "assisted" | "partial" | "no";
+  /** 老人、体力一般的：没问题 / 量力而行 / 不建议 */
+  seniors: "ok" | "caution" | "no";
+  hazards?: Hazard[];
+  /** 为什么这么判断、带孩子老人怎么玩更稳妥（比如只走到哪里）；有危险、不适合哪类人的都要写 */
+  noteZh?: string;
+  /** 官方来源（无障碍页面、导览团页面），查了就写 */
+  source?: string;
+}
+
 /** 步道路线怎么画：从出发点（没有就用景点位置）按顺序经过 via，环线最后回到出发点 */
 export interface TrailPlan {
   /** 途经点，最后一个是终点；不填就直接走到景点位置 */

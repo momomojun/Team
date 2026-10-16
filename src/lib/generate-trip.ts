@@ -1,3 +1,4 @@
+import type { Suitability } from "../data/attractions/types";
 import {
   arrangeDay,
   buildTimeline,
@@ -17,6 +18,7 @@ import { addDays } from "./dates";
 import { moonNight } from "./moon";
 import { acrossClosedRoad, bestRoadDay, openChance, ROAD_LIKELY, roadDecides, roadFor, roadStatus } from "./roads";
 import { datedSchedule, runsOn, tourScheduleOf } from "./tours";
+import { fitFor, hasParty, type Party } from "./suitability";
 import { planTrip } from "./trip-plan";
 import type { Trip, TripItem, TripLodging } from "./trip-store";
 
@@ -37,6 +39,8 @@ export interface GenerateInput {
   destination: Endpoint;
   pace: Pace;
   lodgingPref: LodgingPref;
+  /** 同行的人（小孩、婴儿车、老人、轮椅）；不填是全是成年人 */
+  party?: Party;
 }
 
 /** 参与挑选的景点：排行程需要的字段 + 热度、季节、许可证 */
@@ -53,6 +57,8 @@ export interface GuideStop extends PlanStop {
   hike?: { difficulty: "easy" | "moderate" | "hard" };
   /** 园内片区 */
   area?: string;
+  /** 带小孩、老人、轮椅能不能去 */
+  family?: Suitability;
 }
 
 export interface GuideLodging extends LodgingPoint {
@@ -94,6 +100,8 @@ export interface GuideSkipped {
   tooFar?: string[];
   /** 季节性山路这几天封着、在路的另一侧要绕到园外（旧版行程没有） */
   across?: string[];
+  /** 不适合同行的小孩、老人、轮椅（旧版行程没有） */
+  unsuitable?: string[];
 }
 
 export interface GuideInfo {
@@ -103,6 +111,8 @@ export interface GuideInfo {
   park?: string;
   pace: Pace;
   lodgingPref?: LodgingPref;
+  /** 同行的人；全是成年人时没有 */
+  party?: Party;
   skipped: GuideSkipped;
 }
 
@@ -198,7 +208,15 @@ export function closedKind(
 }
 
 export function generateTrip(input: GenerateInput, context: GenerateContext): { trip: Trip; guide: GuideInfo } {
-  const skipped: Required<GuideSkipped> = { permit: [], closed: [], tooHard: [], noTime: [], tooFar: [], across: [] };
+  const skipped: Required<GuideSkipped> = {
+    permit: [],
+    closed: [],
+    tooHard: [],
+    noTime: [],
+    tooFar: [],
+    across: [],
+    unsuitable: [],
+  };
   const available: GuideStop[] = [];
   const tripDates = input.startDate ? Array.from({ length: input.days }, (_, day) => addDays(input.startDate, day)) : [];
   // 临时关闭按日期看；只定了月份时按那个月的大概日期
@@ -214,6 +232,8 @@ export function generateTrip(input: GenerateInput, context: GenerateContext): { 
     if (tripDates.length === 0 && datedTour(stop)) continue;
     if (closed(stop)) skipped.closed.push(stop.id);
     else if (stop.permit && stop.lottery) skipped.permit.push(stop.id);
+    // 带的孩子不到年龄、老人不建议、轮椅去不了的不排；只是要注意的照排，行程里标出提醒
+    else if (fitFor(input.party, stop.family).level === "no") skipped.unsuitable.push(stop.id);
     else if (
       stop.kind === "hike" &&
       (stop.durationMin > MAX_HIKE_MIN[input.pace] || (input.pace === "relaxed" && stop.hike?.difficulty === "hard"))
@@ -709,6 +729,12 @@ export function generateTrip(input: GenerateInput, context: GenerateContext): { 
     skipped.tooFar = skipped.tooFar.filter((id) => !across.includes(id));
   }
 
-  const guide: GuideInfo = { parks: input.parks, pace: input.pace, lodgingPref: input.lodgingPref, skipped };
+  const guide: GuideInfo = {
+    parks: input.parks,
+    pace: input.pace,
+    lodgingPref: input.lodgingPref,
+    ...(hasParty(input.party) ? { party: input.party } : {}),
+    skipped,
+  };
   return { trip: { ...trip, guide }, guide };
 }

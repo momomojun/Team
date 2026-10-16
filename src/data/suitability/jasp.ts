@@ -1,0 +1,142 @@
+import type { Suitability } from "../attractions/types";
+
+// 贾斯珀 · 同行适合度。2026-10-16 按 Parks Canada 贾斯珀无障碍设施页整理（逐个写了停车、厕所、步道坡度和台阶），
+// 冰原冰川车、贾斯珀缆车按 Pursuit 和缆车公司的 FAQ；2024 年山火后部分步道仍关闭，出发前查最新公告
+const ACCESS = "https://parks.canada.ca/pn-np/ab/jasper/visit/accessible";
+const ICEFIELD = "https://www.banffjaspercollection.com/attractions/columbia-icefield/faqs/";
+const SKYTRAM = "https://jasperskytram.com/plan-your-visit/faq/";
+
+export const suitability: Record<string, Suitability> = {
+  "jasp-icefields-parkway": {
+    kidsFromAge: 0,
+    stroller: "partial",
+    wheelchair: "yes",
+    seniors: "ok",
+    hazards: ["remote"],
+    noteZh: "开车一路看，路边观景点停车下来走几步；全程几乎没有信号、只有一个夏季加油站，出了事求救慢，带够水、吃的和保暖衣物。",
+  },
+  "jasp-athabasca-glacier": {
+    kidsFromAge: 3,
+    stroller: "no",
+    wheelchair: "partial",
+    seniors: "ok",
+    noteZh: "停车场是碎石地，坐轮椅在车边就能远看冰川；步道是碎石坡，往返约 1.8 公里。只能走到围栏，冰面上有被雪盖住的冰裂缝，有人掉进去过，孩子别翻围栏。",
+    source: ACCESS,
+  },
+  "jasp-columbia-icefield-adventure": {
+    kidsFromAge: 0,
+    stroller: "partial",
+    wheelchair: "assisted",
+    seniors: "ok",
+    noteZh: "有两辆装了升降台的冰川车，坐轮椅要至少提前 72 小时打电话订；天空步道是平路，婴儿车、轮椅都能走。普通游客全程要上下车 4–5 次、爬车门台阶，冰面上很冷很滑。",
+    source: ICEFIELD,
+  },
+  "jasp-wilcox-pass": {
+    kidsFromAge: 6,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "caution",
+    noteZh: "到山口往返约 8 公里、爬升约 390 米，山坡上没遮挡、风大；带小孩、老人走到第一个观景点（往返约 2.4 公里）就能看到冰川，然后回头。",
+  },
+  "jasp-sunwapta-falls": {
+    kidsFromAge: 0,
+    stroller: "yes",
+    wheelchair: "assisted",
+    seniors: "ok",
+    noteZh: "停车场到瀑布上的木桥是约 30 米的铺装路，坡度超过 10%，轮椅要有人帮忙；桥本身是无障碍的。去下瀑布是土路。",
+    source: ACCESS,
+  },
+  "jasp-athabasca-falls": {
+    kidsFromAge: 0,
+    stroller: "partial",
+    wheelchair: "partial",
+    seniors: "ok",
+    noteZh: "到上观景点的 150 米路有陡坡、不平，正对瀑布的桥要走 14 级台阶，轮椅在停车场一侧只能远看；这里发生过多起翻护栏落水事故，孩子一定要牵着。",
+    source: ACCESS,
+  },
+  "jasp-maligne-canyon": {
+    kidsFromAge: 3,
+    stroller: "partial",
+    wheelchair: "partial",
+    seniors: "ok",
+    noteZh: "峡谷步道 2026 年仍关闭，现在只能去下游的第五桥野餐区；重开后靠近停车场的几座桥有护栏，往下游是土路和台阶。",
+  },
+  "jasp-medicine-lake": {
+    kidsFromAge: 0,
+    stroller: "yes",
+    wheelchair: "yes",
+    seniors: "ok",
+    noteZh: "路边观景停车场就能看湖，在车上也看得到；停车场没有无障碍车位，附近也没有厕所。",
+    source: ACCESS,
+  },
+  "jasp-maligne-lake": {
+    kidsFromAge: 0,
+    stroller: "partial",
+    wheelchair: "partial",
+    seniors: "ok",
+    noteZh: "几个停车场都有无障碍车位；Mary Schäffer 环线前 300 米是铺装路，能推车、推轮椅到湖边看，往后是窄土路和树根。",
+    source: ACCESS,
+  },
+  "jasp-spirit-island": {
+    kidsFromAge: 0,
+    stroller: "no",
+    wheelchair: "assisted",
+    seniors: "ok",
+    noteZh: "游船不让带婴儿车，用背带；多数标准轮椅能上船，但码头上船处有一个高台阶和 5 厘米以上的缝，订票时说明要人帮忙。湖上冷，带外套。",
+    source: ACCESS,
+  },
+  "jasp-jasper-skytram": {
+    kidsFromAge: 0,
+    stroller: "partial",
+    wheelchair: "assisted",
+    seniors: "ok",
+    noteZh: "缆车和上站外的木栈道能上轮椅，上站二楼的餐厅要走约 20 级台阶；去山顶的 1.4 公里碎石坡（爬升约 200 米）轮椅、婴儿车都去不了。",
+    source: SKYTRAM,
+  },
+  "jasp-pyramid-lake": {
+    kidsFromAge: 0,
+    stroller: "partial",
+    wheelchair: "assisted",
+    seniors: "ok",
+    noteZh: "去金字塔岛有一个无障碍车位，8% 的坡道和较平的土路通到不到 100 米的木桥；岛上环线有石头树根，回桥上还有一个小台阶。湖水很冷。",
+    source: ACCESS,
+  },
+  "jasp-valley-of-five-lakes": {
+    kidsFromAge: 4,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "ok",
+    noteZh: "土路有小起伏，烧过的林子遮阴少；带小孩、老人选往返 1.8 公里的平路走到第一个湖，体力好再走 5.4 公里的 Emerald 环线。",
+  },
+  "jasp-mount-edith-cavell": {
+    kidsFromAge: 0,
+    stroller: "partial",
+    wheelchair: "assisted",
+    seniors: "ok",
+    noteZh: "冰川之路是铺装路，开头很陡，约 800 米后变平，路边有长椅；轮椅要有人推。冰川会崩落、冰碛湖里的冰块会翻，别下到湖边、别走近冰川。",
+    source: ACCESS,
+  },
+  "jasp-jasper-town": {
+    kidsFromAge: 0,
+    stroller: "yes",
+    wheelchair: "yes",
+    seniors: "ok",
+    noteZh: "游客中心从礼品店那边进是无障碍入口，有降低的服务台，全年开放；镇上部分地方还在山火后重建。",
+    source: ACCESS,
+  },
+  "jasp-miette-hot-springs": {
+    kidsFromAge: 0,
+    stroller: "partial",
+    wheelchair: "yes",
+    seniors: "ok",
+    noteZh: "建筑旁有下车区和无障碍车位，池子有坡道和扶手，可以借水中轮椅；去泉眼的 1.4 公里步道有陡坡和台阶。热池温度高，心脏不好的别泡太久；进山路 17 公里弯道多。",
+    source: ACCESS,
+  },
+  "jasp-mount-robson": {
+    kidsFromAge: 0,
+    stroller: "yes",
+    wheelchair: "yes",
+    seniors: "ok",
+    noteZh: "游客中心门口就能看到罗布森山，不用走路；去 Kinney Lake 往返约 9 公里，另算。",
+  },
+};

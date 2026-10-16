@@ -1,0 +1,160 @@
+import type { Suitability } from "../attractions/types";
+
+// 夏威夷火山 · 同行适合度。2026-10-16 按 NPS 无障碍页面整理：从 Steam Vents 停车场往西，硫磺岸大部分和到蒸汽崖的碎石小路
+// 都能走轮椅，Kīlauea 观景台有铺装短路，荒芜步道有人协助能走；Uēkahuna 按 NPS 观景点页（离停车场约 60 米，几乎是平的），
+// Keanakākoʻi、Nāhuku 按 NPS 各自的页面。喷发期间空气差、落渣时会临时封路，去之前看公告
+const ACCESS = "https://www.nps.gov/havo/planyourvisit/accessibility.htm";
+const UEKAHUNA = "https://www.nps.gov/places/eruption-viewing-from-uekahuna.htm";
+
+export const suitability: Record<string, Suitability> = {
+  "havo-welcome-center": {
+    kidsFromAge: 0,
+    stroller: "yes",
+    wheelchair: "partial",
+    seniors: "ok",
+    noteZh: "临时欢迎中心在 Kilauea Military Camp 里，NPS 没写这里的无障碍情况；坐轮椅的可以直接去车位多、平路的 Uēkahuna 观景台。",
+  },
+  "havo-uekahuna": {
+    kidsFromAge: 0,
+    stroller: "yes",
+    wheelchair: "yes",
+    seniors: "ok",
+    noteZh: "观景平台离停车场约 60 米，柏油和压实碎石路，几乎是平的，有无障碍厕所；刮南风喷发时会落火山渣，戴眼镜、帽子。",
+    source: UEKAHUNA,
+  },
+  "havo-kilauea-overlook": {
+    kidsFromAge: 0,
+    stroller: "yes",
+    wheelchair: "yes",
+    seniors: "ok",
+    noteZh: "从停车场走一小段铺装路就到观景台；车位只有 36 个，只有旱厕。",
+    source: ACCESS,
+  },
+  "havo-steam-vents": {
+    kidsFromAge: 0,
+    stroller: "yes",
+    wheelchair: "yes",
+    seniors: "ok",
+    hazards: ["thermal"],
+    noteZh: "停车场边就是喷气孔，到蒸汽崖约 150 米碎石路，官方说轮椅能走；蒸汽很烫，孩子别把手伸进地缝，别越过围栏。",
+    source: ACCESS,
+  },
+  "havo-sulphur-banks": {
+    kidsFromAge: 3,
+    stroller: "yes",
+    wheelchair: "yes",
+    seniors: "caution",
+    hazards: ["thermal"],
+    noteZh:
+      "从 Steam Vents 停车场往西进，木栈道大部分能走轮椅；空气里有火山气体，NPS 提醒心脏病、哮喘等呼吸道病人、孕妇和婴幼儿不要走，这些人在马路对面的喷气孔看看就好。别离开栈道。",
+    source: ACCESS,
+  },
+  "havo-kupinai-pali": {
+    kidsFromAge: 0,
+    stroller: "yes",
+    wheelchair: "assisted",
+    seniors: "ok",
+    noteZh: "老公路改的铺装步道，能推婴儿车和轮椅，但有裂缝和陡坡，轮椅要有人帮忙；Volcano House 后面第一个小观景点下坡很陡，尽头大的那个观景点是无障碍的。",
+  },
+  "havo-kilauea-iki": {
+    kidsFromAge: 5,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "caution",
+    noteZh: "环线约 5.3 公里，要顺着火山口壁下降约 120 米再爬上来，湖底没遮挡、晒、风大；体力一般的在 Kīlauea Iki 观景台往下看就很震撼，不用下去。",
+  },
+  "havo-nahuku": {
+    kidsFromAge: 0,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "ok",
+    noteZh: "一圈 20–30 分钟，进出熔岩管的路很陡、常湿滑，有台阶，洞里有积水、洞顶低；婴儿用背带，腿脚不好的扶着栏杆慢慢走。",
+    source: "https://www.nps.gov/thingstodo/hike-nahuku.htm",
+  },
+  "havo-devastation-trail": {
+    kidsFromAge: 0,
+    stroller: "yes",
+    wheelchair: "assisted",
+    seniors: "ok",
+    noteZh: "全程铺装，停车场有无障碍厕所，官方说轮椅有人协助能走，有几段坡度超过 8%；路边常有夏威夷雁，别喂。",
+    source: ACCESS,
+  },
+  "havo-keanakakoi": {
+    kidsFromAge: 3,
+    stroller: "partial",
+    wheelchair: "partial",
+    seniors: "ok",
+    noteZh: "从 Devastation 停车场单程约 1.6 公里，大部分是坡度 4–7% 的老公路柏油路，能推车；最后约 270 米是松散火山渣和不平的地面，轮椅、婴儿车过不去。火山气体浓时这里会关闭。",
+    source: "https://www.nps.gov/places/eruption-viewing-at-keanakakoi.htm",
+  },
+  "havo-eruption-glow": {
+    kidsFromAge: 0,
+    stroller: "yes",
+    wheelchair: "yes",
+    seniors: "ok",
+    noteZh:
+      "坐轮椅的去 Uēkahuna，平路、车位多；夜里山顶常只有 10°C 上下，喷发时会飘火山气体和火山渣，有哮喘、心肺病的和小婴儿空气差时留在车里或换天再来。",
+    source: UEKAHUNA,
+  },
+  "havo-chain-of-craters-road": {
+    kidsFromAge: 0,
+    stroller: "partial",
+    wheelchair: "yes",
+    seniors: "ok",
+    noteZh: "开车一路看，沿途观景点停车就能看熔岩原和大海；终点有无障碍厕所，路上没有水和吃的。",
+    source: ACCESS,
+  },
+  "havo-mauna-ulu": {
+    kidsFromAge: 5,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "caution",
+    noteZh: "熔岩上的路高低不平、靠石堆认路，没遮挡，最后约 400 米陡坡爬上渣锥；体力一般的走一段熔岩原看看熔岩树模就回头，停车场有无障碍厕所。",
+  },
+  "havo-puu-loa": {
+    kidsFromAge: 4,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "caution",
+    noteZh: "往返约 2.3 公里，走在起伏不平的熔岩上，海边低处太阳很毒、没遮阴；穿抓地的鞋、带水，岩画只能在木栈道上看，孩子别跑到熔岩上。",
+  },
+  "havo-holei-sea-cliffs": {
+    kidsFromAge: 0,
+    stroller: "partial",
+    wheelchair: "partial",
+    seniors: "ok",
+    hazards: ["dropoff"],
+    noteZh: "终点停车场有无障碍厕所，过路障沿老路走约 300 米到海崖观景区；海崖 2026 年 9 月刚塌过一次，随时可能再塌，只在绳子内看，孩子牵好。",
+    source: ACCESS,
+  },
+  "havo-mauna-loa-road": {
+    kidsFromAge: 0,
+    stroller: "partial",
+    wheelchair: "yes",
+    seniors: "ok",
+    noteZh: "开车看，冒纳罗亚观景台停车就到，有无障碍厕所；路窄、单车道、弯多，会车要靠边让。",
+    source: ACCESS,
+  },
+  "havo-kahuku": {
+    kidsFromAge: 4,
+    stroller: "no",
+    wheelchair: "no",
+    seniors: "ok",
+    noteZh: "环线约 3.2 公里，沿老牧场土路走，爬升只有约 40 米，最后上渣锥一小段较陡；没有饮用水，只在周四到周日开，赶时间可以只走 0.6 公里的小环线。",
+  },
+  "havo-punaluu": {
+    kidsFromAge: 0,
+    stroller: "partial",
+    wheelchair: "partial",
+    seniors: "ok",
+    hazards: ["water"],
+    noteZh: "停车场边就能看黑沙滩和海龟，沙地推不了车；浪大、暗流强，2026 年 8 月底起救生员撤了、厕所锁了，孩子别下水。",
+  },
+  "havo-rainbow-falls": {
+    kidsFromAge: 0,
+    stroller: "yes",
+    wheelchair: "assisted",
+    seniors: "ok",
+    noteZh: "停车场走几步铺装路就是观景台，能推车；往上的小路是台阶和土路。别让孩子翻栏杆。",
+  },
+};

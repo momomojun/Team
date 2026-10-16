@@ -7,6 +7,7 @@ import type { Airport } from "@/data/airports";
 import { fill } from "@/i18n/format";
 import type { LodgingPref, Pace } from "@/lib/generate-trip";
 import { searchPlaces, type PlaceResult } from "@/lib/geocode";
+import type { Party } from "@/lib/suitability";
 import { MAX_DAYS } from "@/lib/trip-store";
 import type { PlannerPark, PlannerText } from "./types";
 
@@ -37,9 +38,12 @@ export interface WizardInput {
   destination: WizardPlace;
   pace: Pace;
   lodgingPref: LodgingPref;
+  party?: Party;
 }
 
 const PACES: Pace[] = ["relaxed", "normal", "packed"];
+/** 最小的孩子几岁：0 是不到 1 岁 */
+const KID_AGES = Array.from({ length: 18 }, (_, age) => age);
 
 const noSubscribe = () => () => {};
 const useSearchParam = (name: string): string | null =>
@@ -197,6 +201,10 @@ export function TripWizard({
   const startDate = pickedDate ?? (requestedDate && /^\d{4}-\d{2}-\d{2}$/.test(requestedDate) ? requestedDate : "");
   const [days, setDays] = useState(3);
   const [pace, setPace] = useState<Pace>("normal");
+  const [youngestKid, setYoungestKid] = useState<number | null>(null);
+  const [stroller, setStroller] = useState(false);
+  const [seniors, setSeniors] = useState(false);
+  const [wheelchair, setWheelchair] = useState(false);
   const [origin, setOrigin] = useState<WizardPlace | null>(null);
   const [sameReturn, setSameReturn] = useState(true);
   const [destination, setDestination] = useState<WizardPlace | null>(null);
@@ -241,6 +249,12 @@ export function TripWizard({
       destination: destinationValue,
       pace,
       lodgingPref,
+      party: {
+        ...(youngestKid !== null ? { youngestKid } : {}),
+        ...(stroller ? { stroller } : {}),
+        ...(seniors ? { seniors } : {}),
+        ...(wheelchair ? { wheelchair } : {}),
+      },
     });
   };
 
@@ -431,6 +445,46 @@ export function TripWizard({
           ))}
         </div>
         <p className="mt-2 text-xs leading-6 text-mute">{t.lodgingPrefHints[lodgingPref]}</p>
+      </div>
+
+      <div>
+        <p className="eyebrow text-mute">{t.party}</p>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            aria-pressed={youngestKid !== null}
+            className={chip(youngestKid !== null)}
+            onClick={() => setYoungestKid((current) => (current === null ? 6 : null))}
+          >
+            {t.partyKids}
+          </button>
+          {youngestKid !== null && (
+            <label className="inline-flex items-center gap-2 text-xs text-ink-soft">
+              {t.partyYoungest}
+              <select
+                value={youngestKid}
+                onChange={(event) => setYoungestKid(Number(event.target.value))}
+                className="border-b border-ink/30 bg-transparent py-1 text-xs focus:border-ink focus:outline-none"
+              >
+                {KID_AGES.map((age) => (
+                  <option key={age} value={age}>
+                    {age === 0 ? t.partyInfant : fill(t.partyAge, { n: age })}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+          <button type="button" aria-pressed={stroller} className={chip(stroller)} onClick={() => setStroller(!stroller)}>
+            {t.partyStroller}
+          </button>
+          <button type="button" aria-pressed={seniors} className={chip(seniors)} onClick={() => setSeniors(!seniors)}>
+            {t.partySeniors}
+          </button>
+          <button type="button" aria-pressed={wheelchair} className={chip(wheelchair)} onClick={() => setWheelchair(!wheelchair)}>
+            {t.partyWheelchair}
+          </button>
+        </div>
+        <p className="mt-2 text-xs leading-6 text-mute">{t.partyHint}</p>
       </div>
 
       <div className="flex flex-wrap items-center gap-6">

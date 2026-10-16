@@ -1,6 +1,7 @@
 "use client";
 
 import type { DragEvent, ReactNode } from "react";
+import { fitSummary } from "@/components/attractions/family-fit";
 import { KIND_COLORS } from "@/components/attractions/kinds";
 import {
   IconAlert,
@@ -20,6 +21,7 @@ import { closureOn, weekdaysZh } from "@/lib/closures";
 import { monthOf } from "@/lib/dates";
 import { moonNight } from "@/lib/moon";
 import { entryWindow, lodgingLeg, onlyAt, parkingOn, type TimelineEntry } from "@/lib/planner";
+import type { Party } from "@/lib/suitability";
 import { formatClock } from "@/lib/sun";
 import { datedSchedule, departuresOn, runsOn, tourScheduleOf, tourSeason } from "@/lib/tours";
 import { moveItem, removeItem, setItemStatus } from "@/lib/trip-edit";
@@ -79,6 +81,7 @@ export function DayCard({
   dateLabel,
   exactDate,
   parkNames,
+  party,
   text,
   selectedId,
   openId,
@@ -102,6 +105,8 @@ export function DayCard({
   /** 定了出发日期时这天的日期（只定了月份时没有）：季节性道路按这天算往年通不通 */
   exactDate: string | null;
   parkNames: string[];
+  /** 自动生成攻略时填的同行的人：不适合、要注意的景点标出来 */
+  party?: Party;
   text: PlannerText;
   selectedId: string | null;
   /** 展开详情的景点 */
@@ -191,6 +196,8 @@ export function DayCard({
       notes.push({ text: fill(t.roads.stop, { road: road.name, note: road.note }), tone: roadWarn(road) ? "warn" : "info" });
     }
     if (stop.permit) notes.push({ text: t.warnings.permit, tone: "warn" });
+    const family = fitSummary(party, stop, text);
+    if (family) notes.push({ text: fill(t.warnings.family, { reasons: family }), tone: "warn" });
     // 有固定班次的游船、导览团：列出这天的班次（这天不开就说几号到几号才开），不是每天都开的提醒一下
     const schedule = tourScheduleOf(stop.id);
     const departures = departuresOn(stop.id, view.date);
