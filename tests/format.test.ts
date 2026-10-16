@@ -82,3 +82,8 @@ test("英文模板：序数和 ISO 日期", () => {
   assert.equal(fill("Checked {date:date}", { date: "2026-12-01" }), "Checked December 1, 2026");
   assert.equal(fill("Checked {date:date}", { date: "soon" }), "Checked soon");
 });
+
+test("英文句末的 a.m. 不重复句点", () => {
+  assert.equal(fill("The lot fills by {time}.", { time: "08:00" }), "The lot fills by 8 a.m.");
+  assert.equal(fill("Opens {time}, daily", { time: "08:00" }), "Opens 8 a.m., daily");
+});

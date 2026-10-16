@@ -45,6 +45,8 @@ export function fill(template: string, values: Record<string, string | number>):
     // 英文模板里填进来的“17:30”这种时间（数据里存的开门、停满时间）写成 12 小时制
     const time = english ? /^([01]?\d|2[0-3]):([0-5]\d)$/.exec(value) : null;
     if (time) value = clock12(Number(time[1]), Number(time[2]));
+    // “8 a.m.”后面紧跟句号时只留一个点
+    if (english && value.endsWith(".") && template[offset + match.length] === ".") value = value.slice(0, -1);
     if (value === "") return value;
     if (HAN.test(template[offset - 1] ?? "") && LATIN.test(value[0])) value = ` ${value}`;
     if (HAN.test(template[offset + match.length] ?? "") && LATIN.test(value.at(-1)!)) value = `${value} `;

@@ -114,7 +114,7 @@ export default async function ParkPage({ params }: PageProps<"/[locale]/parks/[c
       ...rule,
       titleZh: localize(rule.titleZh, locale),
       noteZh: localize(rule.noteZh, locale),
-      ...(rule.places?.length ? { places: [...rule.targets.map(targetName), ...rule.places] } : {}),
+      ...(rule.places?.length ? { places: [...rule.targets.map(targetName), ...rule.places.map((place) => localize(place, locale))] } : {}),
     }));
   const parkShuttles = shuttleSystems
     .filter((system) => system.park === park.code)
@@ -505,7 +505,7 @@ export default async function ParkPage({ params }: PageProps<"/[locale]/parks/[c
             </div>
             <div className="lg:col-span-5">
               <Suspense fallback={<SectionSkeleton title={t.fees.title} />}>
-                <FeesSection parkCode={park.code} npsCode={npsCodeOf(park)} dict={dict} />
+                <FeesSection parkCode={park.code} npsCode={npsCodeOf(park)} dict={dict} locale={locale} />
               </Suspense>
             </div>
           </div>
