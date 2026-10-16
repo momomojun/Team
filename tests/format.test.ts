@@ -51,3 +51,13 @@ test("繁体：台湾用语别换过头（窗口、分区），十几分钟、�
   // 该换的照样换：视频→影片、信息→資訊
   assert.equal(localize("视频里的信息", "zh-Hant"), "影片裡的資訊");
 });
+
+test("英文模板：单复数、月份名、星期几", () => {
+  assert.equal(fill("{n} {n|day|days}", { n: 1 }), "1 day");
+  assert.equal(fill("{n} {n|day|days}", { n: 3 }), "3 days");
+  assert.equal(fill("{from:month}–{to:month}", { from: 6, to: 10 }), "June–October");
+  assert.equal(fill("{m:mon} {d}", { m: 9, d: 5 }), "Sept. 5");
+  assert.equal(fill("closed {w:weekday}s", { w: 3 }), "closed Wednesdays");
+  // 中文模板照旧
+  assert.equal(fill("{m} 月", { m: 6 }), "6 月");
+});

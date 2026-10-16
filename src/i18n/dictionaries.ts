@@ -1,6 +1,7 @@
 import "server-only";
 import type { Locale } from "./config";
 import { localize } from "./convert";
+import { en } from "./en/dictionary";
 
 /** 博主视频的语言（景点卡片和博主路线页共用） */
 const creatorLanguages = {
@@ -485,6 +486,9 @@ const zhHans = {
     wan: "{n} 万",
     yi: "{n} 亿",
     km2: "{n} 平方公里",
+    listSep: "、",
+    /** 大数怎么写：中文按万、亿；英文按 million（formatBig） */
+    numberStyle: "wan",
   },
   trip: {
     add: "加入行程",
@@ -1587,7 +1591,8 @@ const cache = new Map<Locale, Dictionary>();
 export function getDictionary(locale: Locale): Dictionary {
   let dict = cache.get(locale);
   if (!dict) {
-    dict = convertDeep(zhHans, locale);
+    // 英文版是另写的（src/i18n/en/dictionary.ts），不从中文转；还没写好时先用中文
+    dict = locale === "en" ? (en ?? zhHans) : convertDeep(zhHans, locale);
     cache.set(locale, dict);
   }
   return dict;

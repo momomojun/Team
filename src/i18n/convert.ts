@@ -1,6 +1,7 @@
 import "server-only";
 import * as OpenCC from "opencc-js";
 import type { Locale } from "./config";
+import { englishContent } from "./en/content";
 
 // cn → twp：简体转台湾正体，并替换常用词汇（信息→資訊、视频→影片）
 const toTraditional = OpenCC.Converter({ from: "cn", to: "twp" });
@@ -36,7 +37,12 @@ const FIXES: [string, string][] = [
   ["公交", "公車"],
 ];
 
+/**
+ * 数据里的中文（景点介绍、提示、公园说明……）换成当前语言：繁体用 OpenCC 转；
+ * 英文按原文查 src/i18n/en/content/ 里另写的英文，还没写的先显示中文（tests/i18n-en.test.ts 检查哪些该写的没写）
+ */
 export function localize(text: string, locale: Locale): string {
+  if (locale === "en") return englishContent.get(text) ?? text;
   if (locale !== "zh-Hant") return text;
   let converted = toTraditional(text);
   for (const [wrong, right] of FIXES) converted = converted.replaceAll(wrong, right);
