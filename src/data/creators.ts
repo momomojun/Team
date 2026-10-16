@@ -873,7 +873,7 @@ export const creatorRoutes: CreatorRoute[] = [
       { stop: "arch-balanced-rock", text: "绕石头一圈约 0.5 公里，与其说是步道，不如说是个观景点。" },
       { stop: "arch-double-arch", text: "可以爬到拱门下面；窗户区步道口停车场满了，她在双拱门这边的小停车场找到了位子。" },
       { stop: "arch-windows", text: "南北窗加炮塔拱门一圈约 1.8 公里，路好走，但夏天太阳很毒，短短一段也晒得很累，一定要防晒、带够水。" },
-      { stop: "arch-delicate-arch", text: "往返约 4.8 公里、爬升不到 210 米，上去 40 多分钟；比天使降临容易，但全程没遮挡，夏天别在中午、下午爬。" },
+      { stop: "arch-delicate-arch", text: "往返约 4.8 公里、爬升约 164 米（NPS 数据），上去 40 多分钟；比天使降临容易，但全程没遮挡，夏天别在中午、下午爬。" },
     ],
     tips: [
       "她去的那年（2022）进园要预约分时段门票（每张 $2）：提前抢，或者等前一天傍晚再放的第二天的票；园里没信号，要早点回酒店抢。她觉得比别的国家公园好抢。",
@@ -1168,7 +1168,7 @@ export const creatorRoutes: CreatorRoute[] = [
     byDay: true,
     notes: [
       { stop: "romo-farview-curve", text: "从西边进园的第一站，看雪山和山下的田野。" },
-      { stop: "romo-gore-range-overlook", text: "海拔约 3,700 米，她觉得美得像川西高原；路边是生态保护区，别学别人走进草地。" },
+      { stop: "romo-gore-range-overlook", text: "海拔约 3,670 米（12,000 多英尺），她觉得美得像川西高原；路边是生态保护区，别学别人走进草地。" },
       { stop: "romo-rainbow-curve", text: "也很有名，但她觉得景色远不如西段的几个观景点。" },
       { stop: "romo-bear-lake", text: "湖很小很浅、水偏绿，下午还逆光，两人都有点失望；要来就早上来，周边的徒步倒是很不错。" },
     ],

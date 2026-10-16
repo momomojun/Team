@@ -221,7 +221,7 @@ export const activities: ParkActivity[] = [
     park: "chis",
     nameZh: "西美鸥繁殖季",
     nameEn: "Western Gull Nesting Season",
-    months: [5, 6, 7],
+    months: [4, 5, 6, 7],
     summary: "Anacapa 岛是全世界最大的西美鸥繁殖地，4 月底到 7 月步道两旁都是鸟巢和毛茸茸的雏鸟，亲鸟会大声鸣叫、俯冲护巢，场面很热闹。",
     booking: "坐 Anacapa 一日游船即可；经过鸟巢别停留太久，戴顶帽子，鸟多时气味也比较重。",
     attraction: "chis-anacapa-island",
@@ -268,7 +268,7 @@ export const activities: ParkActivity[] = [
     park: "redw",
     nameZh: "罗斯福马鹿发情季",
     nameEn: "Roosevelt Elk Rut",
-    months: [9, 10],
+    months: [8, 9, 10],
     summary:
       "8 月下旬到 10 月是罗斯福马鹿的发情期，公鹿顶着大角在草原上高声鸣叫、争夺母鹿群，Elk Prairie、Elk Meadow 和 Gold Bluffs Beach 一带最容易看到；这时公鹿脾气暴躁，比平时更要离远。",
     booking: "免费、不用预约；清晨和傍晚最活跃，至少隔开约 23 米（一辆校车的长度），用长焦或望远镜看，别在路中间停车。",
@@ -385,7 +385,7 @@ export const activities: ParkActivity[] = [
     park: "crla",
     nameZh: "护林员雪鞋徒步",
     nameEn: "Ranger-Guided Snowshoe Walks",
-    months: [12, 1, 2, 3, 4],
+    months: [11, 12, 1, 2, 3, 4],
     summary: "火山口湖每年平均降雪约 13 米，冬天护林员带队穿雪鞋在湖边的森林和雪原里走 1.6–3 公里，讲动植物怎么熬过漫长的雪季；雪鞋免费提供，不需要经验。",
     booking: "免费（只收冬季门票每车 20 美元），名额有限，要提前打电话 541-594-3100 预约；8 岁以上。通常 11 月下旬到 4 月的周六、周日和节假日 12:30 出发，寒假和春假期间平日也有。",
     status: "雪不够或天气太差会取消；去 Rim Village 的路封闭时改在公园总部附近走。",
@@ -537,7 +537,7 @@ export const activities: ParkActivity[] = [
     months: [5, 6, 7, 8],
     summary:
       "奥林匹克海岸的礁石潮池里有巨型绿海葵、紫色海星和海胆，Kalaloch 的 Beach 4 和 Rialto 的 Hole-in-the-Wall 最有名，Second Beach、Ruby Beach 也很好；夏季护林员会按潮汐带潮池导览。",
-    booking: "免费；一定要赶“负潮”（潮高低于 1 英尺），夏季的大退潮多在清晨，出发前查 Destruction Island 潮汐表，穿防滑、能湿水的鞋，只看不摸、不翻石头。",
+    booking: "免费；一定要赶低潮：NPS 说负潮最好，至少要潮高低于 1 英尺（约 0.3 米）的低潮，夏季的大退潮多在清晨，出发前查 Destruction Island 潮汐表，穿防滑、能湿水的鞋，只看不摸、不翻石头。",
     status:
       "Mora Road 2026 年 7 月 8 日到 10 月 15 日施工全封，这段时间去不了 Rialto Beach / Hole-in-the-Wall，可以改去 Beach 4 或 Ruby Beach。",
     url: "https://www.nps.gov/olym/planyourvisit/tidepool-activities.htm",
