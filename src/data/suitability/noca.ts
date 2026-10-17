@@ -87,7 +87,7 @@ export const suitability: Record<string, Suitability> = {
     stroller: "no",
     wheelchair: "yes",
     seniors: "ok",
-    noteZh: "官网说游船能上轮椅：有登船坡道、轮椅座位和船上的无障碍厕所；需要其他帮助先打 360-854-2599。2 岁以下免费，婴儿车上船要收起来。",
+    noteZh: "官网说游船能上轮椅：有登船坡道、轮椅座位和船上的无障碍厕所；需要其他帮助先打 360-854-2599。2 岁及以下免费，婴儿车上船要收起来。",
     source: "https://ncascades.org/signup/programs/skagit-tours/diablo-lake-afternoon-cruise",
   },
   "noca-ross-lake-overlook": {

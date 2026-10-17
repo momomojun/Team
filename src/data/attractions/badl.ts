@@ -27,7 +27,7 @@ export const badlands: Attraction[] = [
       "北园区的主游客中心，在 Cedar Pass 脚下。展厅讲恶地岩层、古生物和拉科塔文化，放映厅播放介绍片《Land of Stone and Light》；夏秋还能隔着玻璃看古生物学家在化石修复室里清理刚挖出来的化石，这是美国国家公园里少有的。",
     tips: [
       "化石修复室 2026 年 5 月 23 日到 10 月 31 日 9:00–16:00 开放，可以直接向里面的人提问",
-      "园里只有这里有饮用水，出发去 Sage Creek 或长步道前在这里装满",
+      "野外和 Sage Creek 营地都没有饮用水，出发去 Sage Creek 或长步道前在这里装满",
       "旁边就是 Cedar Pass Lodge 的餐厅和礼品店，园内唯一能吃饭的地方（4 月中到 10 月中营业）",
     ],
     photoFile: "Ben Reifel Visitor Center, Badlands National Park, South Dakota (28665957922).jpg",
@@ -275,7 +275,7 @@ export const badlands: Attraction[] = [
     summary:
       "Pinnacles 观景点北边分出去的砂石路，沿着 Sage Creek 荒野区的边缘走：一侧是起伏的草原，一侧是恶地岩丘。公园的野牛群就生活在这片荒野区里，常常就在路边吃草；中途的 Roberts 草原犬鼠城里几百只草原犬鼠站在洞口张望。从东口开到 Sage Creek Basin 观景点约 8 公里，再原路回来。",
     tips: [
-      "野牛看着温顺，其实跑得比人快，至少保持 25 码（约 23 米），NPS 建议 100 英尺以上，在车里看最安全",
+      "野牛看着温顺，其实时速能超过 30 英里（约 48 公里），公园规定离野生动物至少 100 英尺（约 30 米），在车里看最安全",
       "砂石路平时普通轿车能开，大雨、下雪后会临时封路，泥浆很滑，出发前问游客中心",
       "继续往西开到 Sage Creek 免费营地，野牛更多；路也能一直通到 Scenic 附近的 44 号公路",
     ],

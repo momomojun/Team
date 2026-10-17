@@ -45,7 +45,7 @@ export const suitability: Record<string, Suitability> = {
     seniors: "no",
     hazards: ["scramble", "heat", "remote"],
     noteZh:
-      "不是修好的步道：约 1.6 公里里下降约 550 米，全是松动碎石，中途要抓约 24 米长的铁链下陡坡，回程上坡最容易中暑；受伤后救援要几个小时甚至一天。不适合小孩和体力一般的人，全家可以走橡树平地环线到崖下看看。",
+      "不是修好的步道：约 2.4 公里里下降约 550 米，全是松动碎石，中途要抓约 24 米长的铁链下陡坡，回程上坡最容易中暑；受伤后救援要几个小时甚至一天。不适合小孩和体力一般的人，全家可以走橡树平地环线到崖下看看。",
   },
   "blca-pulpit-rock": {
     kidsFromAge: 0,
@@ -103,7 +103,7 @@ export const suitability: Record<string, Suitability> = {
     wheelchair: "no",
     seniors: "caution",
     hazards: ["dropoff"],
-    noteZh: "往返约 2.4 公里，沿山脊有几段上下坡，路边有长椅能歇；终点观景处就在峡谷最深处的崖边，孩子别靠近。",
+    noteZh: "往返约 2.6 公里，沿山脊有几段上下坡，路边有长椅能歇；终点观景处就在峡谷最深处的崖边，孩子别靠近。",
   },
   "blca-east-portal": {
     kidsFromAge: 0,
@@ -128,7 +128,7 @@ export const suitability: Record<string, Suitability> = {
     wheelchair: "no",
     seniors: "ok",
     hazards: ["dropoff"],
-    noteZh: "不到 1 公里的碎石小环线，观景台在约 550 米深的崖边，孩子要牵着。",
+    noteZh: "约 500 米的碎石小环线，观景台在约 550 米深的崖边，孩子要牵着。",
   },
   "blca-exclamation-point": {
     kidsFromAge: 6,
@@ -136,7 +136,7 @@ export const suitability: Record<string, Suitability> = {
     wheelchair: "no",
     seniors: "caution",
     hazards: ["dropoff"],
-    noteZh: "往返约 5.2 公里、起伏不大但遮阴少；终点惊叹点在崖边，没有护栏，孩子别靠近。带老人可以只走北缘深渊观景步道。",
+    noteZh: "往返约 4.5 公里、起伏不大但遮阴少；终点惊叹点在崖边，没有护栏，孩子别靠近。带老人可以只走北缘深渊观景步道。",
   },
   "blca-night-sky": {
     kidsFromAge: 0,

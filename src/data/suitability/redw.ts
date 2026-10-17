@@ -100,7 +100,7 @@ export const suitability: Record<string, Suitability> = {
     stroller: "partial",
     wheelchair: "partial",
     seniors: "ok",
-    noteZh: "停车场边就能看到河口和海；从停车场往下的 Coastal Trail 走约 800 米后变陡，带老人小孩在上面看就好。",
+    noteZh: "停车场边就能看到河口和海；从停车场往下的 Coastal Trail 是陡路，约 800 米到下方观景点，带老人小孩在上面看就好。",
   },
   "redw-coastal-drive": {
     kidsFromAge: 0,
@@ -114,7 +114,7 @@ export const suitability: Record<string, Suitability> = {
     stroller: "no",
     wheelchair: "no",
     seniors: "ok",
-    noteZh: "林子里是约 460 米的高架栈道，但要先走一段 Mill Creek Trail，途中有不少金属台阶，婴儿车、轮椅过不去；轮椅可以去 Stout Grove 或大树。",
+    noteZh: "林子里是约 400 米（1,300 英尺）的高架栈道，但要先走一段 Mill Creek Trail，途中有不少金属台阶，婴儿车、轮椅过不去；轮椅可以去 Stout Grove 或大树。",
   },
   "redw-boy-scout-tree": {
     kidsFromAge: 6,

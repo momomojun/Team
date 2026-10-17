@@ -34,7 +34,7 @@ export const katmai: Attraction[] = [
     tips: [
       "瀑布观景台只能站 40 人，7 月中午常要排队登记、限时轮换，可以先去下游的 Riffles 和河口观景台，不限时",
       "除了室内和指定的野餐区，Brooks Camp 里不能带着吃的走；离熊至少 46 米（50 码），熊走过来就让路",
-      "从安克雷奇也有一日游（Katmai Air 经 King Salmon 转水上飞机，2026 年 $1,489；Rust's 从 Lake Hood 起飞，$1,395，6 月下旬到 8 月初），King Salmon 出发只要约 20 分钟（Katmai Air 往返 $500）",
+      "从安克雷奇也有一日游（Katmai Air 经 King Salmon 转水上飞机，2026 年 $1,489；Rust's 从 Lake Hood 起飞，2026 年 10 月官网标价 $1,495，官网写 7 月飞（2026 年是 6 月下旬到 8 月初）），King Salmon 出发只要约 20 分钟（Katmai Air 往返 $500）",
     ],
     photoFile: "Grizzly Bears.jpg",
   },
@@ -53,7 +53,7 @@ export const katmai: Attraction[] = [
     closedNote: "Homer 的看熊航班大约 5 月中到 9 月中飞，冬季没有；海岸看熊最好的是 6–8 月。",
     bestMonths: [6, 7, 8],
     permit:
-      "向 Homer 的航空公司订一日游（2026 年 Alaska Bear Adventures $795 起、Smokey Bay Air $895、Beryl Air 的 Hallo 湾团 $1,195），都带向导",
+      "向 Homer 的航空公司订一日游（2026 年 10 月官网标价：Alaska Bear Adventures 的海岸团 $1,185 起、另加 7.25% 燃油附加费，Smokey Bay Air $1,145，Beryl Air 的 Hallo 湾团 $1,195），都带向导",
     mustSee: true,
     summary:
       "卡特迈的太平洋海岸是全世界棕熊密度最高的地方之一。小飞机从 Homer 飞约 1 小时、越过 Cook 湾，降落在 Hallo 湾、Swikshak、Kukak 湾一带的沙滩或海湾里，向导带着步行到熊附近：6 月熊在海边草甸吃莎草、退潮时挖蛤蜊，也是交配和母熊带小熊出来的季节；7–8 月熊转到溪口抓鲑鱼。这里没有观景台，人很少，熊常常就在几十米外。",
@@ -87,8 +87,8 @@ export const katmai: Attraction[] = [
       "1912 年 Novarupta 火山大爆发是 20 世纪最大的一次火山喷发，滚烫的火山灰流把一整条绿色山谷埋到最深约 200 米；四年后 Griggs 带探险队来时，谷底成千上万个喷气孔还在冒烟，于是叫它“万烟谷”。如今烟早已散尽，留下一片寸草不生的灰色、橙色荒原和被河水切开的深峡。巴士从 Brooks Camp 出发，沿 37 公里的砂石路开约 1.5 小时到谷边的观景小屋，护林员一路讲解，午饭后可以跟着下到谷底看 Ukak 瀑布。",
     tips: [
       "巴士每天 9:00 从 Brooks Camp 出发、16:00 回来；要先坐 Katmai Air 飞过来、听完熊安全讲座才能上车，从 King Salmon 来的一早就要出发，住 Brooks Lodge 或营地的最方便",
-      "下到谷底往返约 5.5 公里、落差约 300 米，回程一路上坡；谷里风大、天气变化快，带防风防雨的外套",
-      "只想从空中看，Brooks Lodge 也有约 50 分钟的水上飞机观光（2026 年 $400/人，2 人起）",
+      "下到谷底往返约 5.4 公里、落差约 300 米，回程一路上坡；谷里风大、天气变化快，带防风防雨的外套",
+      "只想从空中看，Brooks Lodge 也有约 1 小时的水上飞机观光（2026 年 $400/人，2 人起）",
     ],
     photoFile: "Valley of Ten Thousand Smokes from Overlook Cabin.jpg",
   },

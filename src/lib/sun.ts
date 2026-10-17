@@ -1,3 +1,5 @@
+import { offsetAt } from "./time-zone";
+
 const RAD = Math.PI / 180;
 const DAY_MS = 24 * 60 * 60 * 1000;
 const J2000_MS = Date.UTC(2000, 0, 1, 12);
@@ -40,16 +42,10 @@ export function sunTimes(date: string, lat: number, lon: number): SunTimes {
   };
 }
 
-/** 某个时刻在指定时区是当天的第几分钟 */
+/** 某个时刻在指定时区是当天的第几分钟（艾伯塔、BC 2026 年的新规则见 time-zone.ts，时区数据旧也算对） */
 export function minutesOfDay(date: Date, timeZone: string): number {
-  const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone,
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23",
-  }).formatToParts(date);
-  const value = (type: string) => Number(parts.find((p) => p.type === type)?.value ?? 0);
-  return value("hour") * 60 + value("minute");
+  const minutes = Math.floor(date.getTime() / 60000) + offsetAt(timeZone, date);
+  return ((minutes % 1440) + 1440) % 1440;
 }
 
 /** 当天第几分钟 → "07:05" */

@@ -75,7 +75,7 @@ export const suitability: Record<string, Suitability> = {
     stroller: "no",
     wheelchair: "no",
     seniors: "caution",
-    noteZh: "往返约 7.7 公里，坡度不大，但要过两次溪、踩着石头走，留足 3–4 小时，17:00 前要开出大门；体力一般的走到第一次过溪处看看红叶就回头。",
+    noteZh: "往返约 7.4 公里，坡度不大，但要过两次溪、踩着石头走，留足 3–4 小时，17:00 前要开出大门；体力一般的走到第一次过溪处看看红叶就回头。",
   },
   "gumo-grotto": {
     kidsFromAge: 7,
@@ -90,7 +90,7 @@ export const suitability: Record<string, Suitability> = {
     wheelchair: "no",
     seniors: "caution",
     hazards: ["heat", "remote"],
-    noteZh: "从步道口在沙地上走约 2.5 公里才到沙丘，往返近 6 公里没有树荫；地方偏远、雨后土路会陷车，附近没有服务。只在凉快的季节来，带足水。",
+    noteZh: "从步道口在沙地上走约 1.6 公里才到沙丘，往返近 6 公里没有树荫；地方偏远、雨后土路会陷车，附近没有服务。只在凉快的季节来，带足水。",
   },
   "gumo-dog-canyon": {
     kidsFromAge: 0,

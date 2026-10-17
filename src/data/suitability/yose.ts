@@ -183,7 +183,7 @@ export const suitability: Record<string, Suitability> = {
     wheelchair: "no",
     seniors: "caution",
     noteZh:
-      "往返约 15 公里、爬升约 975 米，一直是之字形上坡，冬春上段结冰；体力一般的走一两公里看看酋长岩就回头，想看冰川点的全景直接开车上去。",
+      "往返约 15.5 公里、爬升约 975 米，一直是之字形上坡，冬春上段结冰；体力一般的走一两公里看看酋长岩就回头，想看冰川点的全景直接开车上去。",
   },
   "yose-nevada-fall": {
     kidsFromAge: 8,
@@ -232,7 +232,7 @@ export const suitability: Record<string, Suitability> = {
     wheelchair: "no",
     seniors: "caution",
     hazards: ["altitude"],
-    noteZh: "往返约 11 公里，湖在海拔约 2,900 米，开头一段一直上坡，容易喘；带孩子、老人可以只走到下湖，或者改走五月湖这种短的。",
+    noteZh: "往返约 12 公里，湖在海拔约 2,900 米，开头一段一直上坡，容易喘；带孩子、老人可以只走到下湖，或者改走五月湖这种短的。",
   },
   "yose-gaylor-lakes": {
     kidsFromAge: 5,

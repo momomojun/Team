@@ -38,8 +38,8 @@ test("向阳大道：6 月 20 日 5/20、6 月 22 日 10/20，秋天按关闭算
   assert.equal(count("2027-06-22"), "10/20");
   const autumn = roadStatus(glacier, "2027-10-14");
   assert.equal(autumn?.kind === "odds" && autumn.phase, "closing");
-  // 2013 年政府停摆没有关闭日期，秋天不算
-  assert.equal(autumn?.kind === "odds" && autumn.known, 18);
+  // 2013 年政府停摆没有关闭日期，秋天不算；2026 年 10 月 9 日提前关闭已经补上，近 20 年里有 19 年知道关闭日期
+  assert.equal(autumn?.kind === "odds" && autumn.known, 19);
 });
 
 test("疫情、修路的年份不算进统计", () => {

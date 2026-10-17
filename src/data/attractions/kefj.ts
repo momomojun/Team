@@ -49,7 +49,7 @@ export const kenaiFjords: Attraction[] = [
         { lat: 60.18021, lon: -149.64539 },
       ],
     },
-    hike: { distanceMi: 2.2, gainFt: 300, difficulty: "moderate" },
+    hike: { distanceMi: 1.8, gainFt: 300, difficulty: "moderate" },
     openMonths: EXIT_ROAD,
     closedNote: EXIT_ROAD_CLOSED,
     bestMonths: [6, 7, 8, 9],
@@ -138,7 +138,7 @@ export const kenaiFjords: Attraction[] = [
     bestMonths: [6, 7, 8],
     permit: "要提前向 Seward 的游船公司订票，班次比短线少",
     summary:
-      "最深入公园的航线，8.5–9 小时，一直开到西北峡湾尽头，沿途能看到好几条从山上挂下来的冰川和潮水冰川，看到野生动物的机会也最多。",
+      "最深入公园的航线，8–8.5 小时，一直开到西北峡湾尽头，沿途能看到好几条从山上挂下来的冰川和潮水冰川，看到野生动物的机会也最多。",
     tips: ["一整天都在船上，海况差的日子晕船更明显", "有的公司船上供午餐，订票时看清楚"],
     photoFile: "Northwestern Glacier at Kenai Fjords National Park.jpg",
   },

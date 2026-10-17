@@ -42,11 +42,11 @@ export const grandCanyon: Attraction[] = [
     lon: -112.14363,
     durationMin: 180,
     trail: { via: [{ lat: 36.06045, lon: -112.13929 }] },
-    hike: { distanceMi: 3, gainFt: 1131, difficulty: "moderate" },
+    hike: { distanceMi: 3.2, gainFt: 1131, difficulty: "moderate" },
     summary:
       "从村子直接下到峡谷里的经典步道，沿途有休息站，平常还有季节性饮水点。这里的数据按第一站 1.5 Mile Resthouse 往返计算。",
     tips: [
-      "2026 年 8 月 29 日山洪后，峡谷里和步道口的饮水全部关闭（恢复时间看 NPS 公告），每人自带足够的水和电解质",
+      "2026 年 8 月 29 日山洪后，峡谷里的饮水全部关闭（恢复时间看 NPS 公告），只有步道口厕所旁的黑色大水箱能接水，每人自带足够的水和电解质",
       "下坡容易上坡难，上来的时间约是下去的两倍",
       "夏天避开上午 10 点到下午 4 点在峡谷里徒步",
       "千万不要尝试一天往返河边",
@@ -89,7 +89,7 @@ export const grandCanyon: Attraction[] = [
     bestTime: ["sunset"],
     mustSee: true,
     summary: "Hermit Road 上视野最开阔的观景点之一，能看到好几段科罗拉多河，是南缘最受欢迎的日落点。",
-    tips: ["3 月到 11 月 Hermit Road 只通免费班车（红线），日落后回程班车很挤，早点去"],
+    tips: ["3 月到 11 月 Hermit Road 只通免费班车（红线）；回程班车不停霍皮点，要沿边缘步道往东走约 500 米到 Powell Point 上车，日落后回程班车很挤，早点去"],
     photoFile: "Grand Canyon Hopi Point Evening Light 2013.jpg",
   },
   {
@@ -132,7 +132,7 @@ export const grandCanyon: Attraction[] = [
     mustSee: true,
     summary: "南缘最东端，Mary Colter 设计的约 21 米高石塔，塔内有霍皮族壁画，塔外能看到科罗拉多河和彩色沙漠。",
     tips: [
-      "离村子约 40 公里，Desert View Drive 全年可以自驾",
+      "离村子约 37 公里（23 英里），Desert View Drive 全年可以自驾",
       "沿途的 Grandview Point、Moran Point、Lipan Point 都值得停",
       "东入口就在旁边，从佩吉（Page）方向过来可以从这里进园",
     ],
@@ -220,7 +220,9 @@ export const grandCanyon: Attraction[] = [
     lat: 36.0134,
     lon: -111.86579,
     durationMin: 30,
+    openMonths: [4, 5, 6, 7, 8, 9, 10],
+    closedNote: "遗址每年冬季不开放，2026 年的开放季是 4 月 2 日到 10 月 31 日；关闭期间可以去旁边的沙漠观景塔和 Desert View Drive 上的莫兰点、大观点。",
     summary: "约 800 年前古普韦布洛人的村落遗址，有一条短环线和一座小博物馆，介绍早期住在峡谷边的原住民。",
-    tips: ["在 Desert View 西边几公里，去沙漠观景塔的路上顺路"],
+    tips: ["在 Desert View 西边约 5 公里（3 英里），去沙漠观景塔的路上顺路；2026 年遗址 4 月 2 日到 10 月 31 日开放，周四到周一 8:00–16:00，周二、周三不开"],
   },
 ];

@@ -34,7 +34,7 @@ export const joshuaTree: Attraction[] = [
     lon: -116.05685,
     durationMin: 45,
     summary:
-      "Twentynine Palms 镇上的公园总部游客中心（原来叫 Oasis Visitor Center），门口就是马拉绿洲：一圈加州扇棕榈围着泉眼，原住民和早期定居者都靠它取水。从北入口进园前在这里停。",
+      "Twentynine Palms 市中心 Freedom Plaza 上的游客中心，2022 年开放，取代了原来公园总部旁的 Oasis Visitor Center；不远处的公园总部旁就是马拉绿洲：一圈加州扇棕榈围着泉眼，原住民和早期定居者都靠它取水。从北入口进园前在这里停。",
     tips: [
       "绿洲旁有约 0.8 公里的铺装小环线；2026 年 3 月洪水后绿洲以北的一段关闭，只能走到绿洲旁折返",
       "往南约 5 公里是北入口，进园后约 20 分钟到骷髅岩",
@@ -128,15 +128,15 @@ export const joshuaTree: Attraction[] = [
     lon: -116.16942,
     start: { lat: 34.03351, lon: -116.16695, nameZh: "Keys Ranch 大门停车场（集合点）" },
     durationMin: 120,
-    openMonths: [1, 2, 3, 4, 10, 11, 12],
+    openMonths: [1, 2, 3, 4, 5, 10, 11, 12],
     closedNote:
-      "牧场只能跟护林员导览参观，5–8 月（有时到 9 月）太热，通常没有导览场次；可以改去旁边的巴克水坝，或走 Wall Street 磨坊步道看采矿遗迹。",
+      "牧场只能跟护林员导览参观，导览通常在 10 月到次年 5 月，夏天太热没有场次；可以改去旁边的巴克水坝，或走 Wall Street 磨坊步道看采矿遗迹。",
     permit: "只能跟护林员导览进入：在 Recreation.gov 买票，最早提前 60 天，没有现场票",
     summary:
       "Bill Keys 一家在这片偏僻石谷里住了 60 年的牧场，木屋、学校、商店、修车铺和满院子的老汽车、采矿机器都原样留着。护林员带着走约 0.8 公里，讲他们怎么在沙漠里自给自足。",
     tips: [
-      "12 岁以上每人 10 美元，6–11 岁 5 美元，6 岁以下免费；约 90 分钟",
-      "集合点在 Barker Dam Road 岔进去约 1.6 公里土路尽头上锁的大门，提前 15 分钟到；西入口排队可能要多花半小时",
+      "12 岁以上每人 20 美元，4–11 岁和持老人卡、Access 卡的 10 美元，4 岁以下 1 美元（婴儿也要有票），不含公园门票；约 2 小时",
+      "集合点在牧场上锁的大门：过了 Hidden Valley 露营地入口，在 Y 字路口左转，再开约 3.2 公里（2 英里）；超过 25 英尺（约 7.6 米）的房车可能开不进去，提前 15 分钟到，迟到不能参加；西入口排队可能要多花半小时",
     ],
     photoFile: "Keys Desert Queen Ranch Homestead.jpg",
   },
@@ -225,7 +225,7 @@ export const joshuaTree: Attraction[] = [
     hike: { distanceMi: 4, gainFt: 550, difficulty: "moderate" },
     bestTime: ["morning"],
     summary:
-      "沿老矿路爬到 19 世纪末公园里产金最多的金矿，山坡上还立着十锤捣矿机和矿井设备，能远眺四周的山谷。往返约 6.4 公里；体力好可以接着走完约 11 公里的环线。",
+      "沿老矿路爬到公园里最成功的金矿之一（1894–1931 年产金一万多盎司），山坡上还立着十锤捣矿机和矿井设备，能远眺四周的山谷。往返约 6.4 公里；体力好可以接着走完约 11 公里的环线。",
     tips: [
       "步道口在约 1.6 公里土路的尽头，只有 20 来个车位，别停在土路两边",
       "夏天 8 点前出发；捣矿机和矿井围着栅栏，不要进去",
@@ -244,9 +244,9 @@ export const joshuaTree: Attraction[] = [
     durationMin: 90,
     bestTime: ["night"],
     summary:
-      "国际暗夜公园，南加州星空最好的地方之一，很多人第一次用肉眼看到银河就是在这里。公园指定的观星点是 Quail Springs、Hidden Valley、Cap Rock 和 Ryan Mountain 几个停车场，最暗的是东南部的平托盆地。",
+      "国际暗夜公园，南加州星空最好的地方之一，很多人第一次用肉眼看到银河就是在这里。公园指定的观星点是 Quail Springs、Hidden Valley、Cap Rock 和 Ryan Mountain 几个停车场，天最暗的是南部的 Cottonwood 露营地。",
     tips: [
-      "挑没有月亮的晴夜，5–6 月前后看银河最好；带红光手电，眼睛适应黑暗要 20–30 分钟",
+      "挑没有月亮的晴夜，夏天看银河最好；带红光手电，眼睛适应黑暗要 20–30 分钟",
       "仙人掌园到 Cottonwood 之间的 Pinto Basin Road 车最少、天最暗，可以在路边停车处看，但要待在车旁 6 米以内；只限白天的停车场天黑后关闭",
       "沙漠夜里降温快，冬天常到 0°C 以下，带厚外套和折叠椅",
     ],
@@ -408,7 +408,7 @@ export const joshuaTree: Attraction[] = [
       "在起伏的荒漠里走约 5 公里，最后下到一条峡谷里，谷底挤着公园里数量最多的一片加州扇棕榈。往返约 12 公里，是公园南部最值得走的长线。",
     tips: [
       "全程没有水和遮阴，只在凉快的 11–3 月走，夏天千万别去",
-      "最后下到绿洲的一段又陡又要攀石，回程上坡最累；留足 4–5 小时",
+      "最后下到绿洲的一段又陡又要攀石，回程上坡最累；留足 4–6 小时",
     ],
     photoFile: "Lost Palms Oasis (52583481721).jpg",
   },
@@ -425,7 +425,7 @@ export const joshuaTree: Attraction[] = [
     durationMin: 150,
     openMonths: [1, 2, 3, 4, 5, 10, 11, 12],
     closedNote:
-      "为防止中暑，49 Palms 步道每年 6 月 1 日到 9 月 30 日关闭；夏天可以改走隐谷、Cap Rock 这些短步道，并赶在上午 10 点前走完。",
+      "49 Palms 绿洲、步道和停车场通常夏天关闭，让大角羊不受打扰地喝泉水，等夏秋的季风雨下够了才重开，每年日期不同；夏天可以改走隐谷、Cap Rock 这些短步道，并赶在上午 10 点前走完。",
     trail: {},
     hike: { distanceMi: 3, gainFt: 300, difficulty: "hard" },
     bestTime: ["morning"],

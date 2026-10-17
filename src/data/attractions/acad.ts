@@ -80,10 +80,10 @@ export const acadia: Attraction[] = [
     bestMonths: [7, 8],
     mustSee: true,
     summary:
-      "夹在 Great Head 岬角和蜂巢山之间的小海湾，公园唯一的海边沙滩，沙子里混着大量贝壳碎屑。夏天水温只有 10–15°C，下水的人不多，大多在沙滩上晒太阳、看浪；Ocean Path 和蜂巢步道都从这里出发。",
+      "夹在 Great Head 岬角和蜂巢山之间的小海湾，公园最大的沙滩，沙子里混着大量贝壳碎屑。夏天水温只有 10–15°C，下水的人不多，大多在沙滩上晒太阳、看浪；Ocean Path 和蜂巢步道都从这里出发。",
     tips: [
       "夏季停车场常在上午 9 点前停满，满了可以停 Park Loop Road 右侧车道（路边划了车位），或者坐 Island Explorer 的 Loop Road 线",
-      "夏季有救生员，下水前看沙滩边的告示（水质、离岸流）",
+      "不一定有救生员，下水前看沙滩边的告示（水质、离岸流）",
       "想多走一点可以从沙滩东头的石阶上 Great Head 步道，环线约 3 公里，能俯瞰整片沙滩和蜂巢山",
     ],
     photoFile: "Acadia National Park Beach.jpg",
@@ -134,7 +134,7 @@ export const acadia: Attraction[] = [
     durationMin: 30,
     mustSee: true,
     summary:
-      "海浪冲进花岗岩里一道窄缝，把缝底的空气挤出来，发出像打雷一样的轰响，浪花能溅起好几米高。从 Sand Beach 沿 Ocean Path 走约 1.1 公里就到，也可以开到旁边的停车场。",
+      "海浪冲进花岗岩里一道窄缝，把缝底的空气挤出来，发出像打雷一样的轰响，浪花能溅起 12 米以上。从 Sand Beach 沿 Ocean Path 走约 1.1 公里就到，也可以开到旁边的停车场。",
     tips: [
       "响不响看潮水和浪：涨潮前 1–2 小时、海上有风浪时最壮观，退潮、风平浪静时几乎没声音，去之前查一下潮汐表",
       "风浪很大时护林员会封掉下到缝边的台阶，别翻栏杆，有人被浪卷进海里过",
@@ -388,7 +388,7 @@ export const acadia: Attraction[] = [
       "1858 年建的白色小灯塔立在荒漠山岛最南端的粉色花岗岩崖上，是缅因州被拍得最多的灯塔之一。从停车场左边的小路和木台阶下到海边礁石上，才能拍到灯塔和崖壁的全景，日落时最美。",
     tips: [
       "停车场只有二十来个车位，日落前一小时就满，Island Explorer 也不到这里；早点到，或者白天来",
-      "灯塔本身是海岸警卫队的住所，不对外开放，只能在外面看",
+      "灯塔本身不对外开放（2020 年起归国家公园管理，海岸警卫队只负责航标灯），只能在外面看",
       "下到礁石上的台阶和石头很滑，涨潮时别站在靠海的湿石头上",
     ],
     photoFile: "Bass Harbor Head Light Station Day.jpg",
@@ -421,6 +421,7 @@ export const acadia: Attraction[] = [
       "低潮前后来能看潮池，翻看过的石头放回原处，不要带走海星和贝壳",
       "隔壁约 1 公里的 Wonderland 步道也是平路到海边，两条可以一起走",
       "离 Bass Harbor 灯塔约 5 分钟车程，下午走完再去灯塔等日落正好",
+      "2026 年 10 月 5 日起 Southwest Harbor 一段 Seawall Road（102A 公路）施工封闭，开车、走路、骑车都不能过，按路边的绕行指示走；Island Explorer 班车也改走绕行路线",
     ],
     photoFile: "Ship Harbor, Acadia National Park, ME - panoramio.jpg",
   },

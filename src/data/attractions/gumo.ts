@@ -209,13 +209,13 @@ export const guadalupeMountains: Attraction[] = [
     start: MCKITTRICK_TH,
     durationMin: 180,
     trail: { via: [{ lat: 31.98364, lon: -104.78066 }] },
-    hike: { distanceMi: 4.8, gainFt: 300, difficulty: "moderate" },
+    hike: { distanceMi: 4.6, gainFt: 300, difficulty: "moderate" },
     hours: MCKITTRICK_HOURS,
     bestTime: ["morning"],
     bestMonths: [10, 11],
     mustSee: true,
     summary:
-      "被称作“得州最美的地方”的峡谷：沿着时隐时现的 McKittrick 溪往里走，两次过溪，两侧是几百米高的石灰岩壁，谷底长着大齿枫、得州马德隆和橡树，10 月底到 11 月初红黄一片。约 3.9 公里处是石油地质学家 Wallace Pratt 1930 年代建的石头小屋，门廊下和野餐桌旁正好歇脚吃午饭，往返约 7.7 公里。",
+      "被称作“得州最美的地方”的峡谷：沿着时隐时现的 McKittrick 溪往里走，两次过溪，两侧是几百米高的石灰岩壁，谷底长着大齿枫、得州马德隆和橡树，10 月底到 11 月初红黄一片。约 3.7 公里处是石油地质学家 Wallace Pratt 1930 年代建的石头小屋，门廊下和野餐桌旁正好歇脚吃午饭，往返约 7.4 公里。",
     tips: [
       "红叶一般 10 月最后一周到 11 月第一周最盛（每年不同），这时周末停车场常满、会限流“出一辆进一辆”，尽量平日来、8 点开门就到",
       "17:00 前必须开出大门，往返留足 3–4 小时；为保护溪里的生态，只走步道、不要下水",
@@ -235,7 +235,7 @@ export const guadalupeMountains: Attraction[] = [
     start: MCKITTRICK_TH,
     durationMin: 270,
     trail: { via: [{ lat: 31.98364, lon: -104.78066 }, { lat: 31.9705, lon: -104.78814 }] },
-    hike: { distanceMi: 7, gainFt: 600, difficulty: "moderate" },
+    hike: { distanceMi: 6.8, gainFt: 600, difficulty: "moderate" },
     hours: MCKITTRICK_HOURS,
     bestTime: ["morning"],
     bestMonths: [10, 11],
@@ -266,10 +266,10 @@ export const guadalupeMountains: Attraction[] = [
     bestMonths: [10, 11, 12, 1, 2, 3, 4],
     mustSee: true,
     summary:
-      "公园偏远的西侧，瓜达卢佩山西壁脚下的一片白色石膏沙丘，最高约 30 米，和背后黑色的绝壁对比强烈；沙子是西边盐湖蒸发留下的石膏被风吹过来堆成的，和白沙国家公园同一个道理但人少得多。从步道口沿沙地小路走约 2.5 公里才到沙丘，沙丘上可以随便走、随便爬。",
+      "公园偏远的西侧，瓜达卢佩山西壁脚下的一片白色石膏沙丘，最高约 30 米，和背后黑色的绝壁对比强烈；沙子是西边盐湖蒸发留下的石膏被风吹过来堆成的，和白沙国家公园同一个道理但人少得多。从步道口沿沙地小路走约 1.6 公里才到沙丘，沙丘上可以随便走、随便爬。",
     tips: [
       "从 Pine Springs 要绕经 Dell City，开约 1.5 小时，最后一段是黏土路：下雨后极滑、车会陷，雨天和雨后几天别去；路上常有牛",
-      "只能日出到日落后 30 分钟之间来，不许露营；夏天沙丘上常超过 38°C，只在凉快的季节来，带足水",
+      "只能日出到日落之间来，不许露营；夏天沙丘上常超过 38°C，只在凉快的季节来，带足水",
       "傍晚夕阳把山壁照成橙红色最好看，但看完要摸黑开一段土路，小心慢开",
     ],
     photoFile: "Salt Basin Dunes - Flickr - aspidoscelis.jpg",

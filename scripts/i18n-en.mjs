@@ -26,7 +26,7 @@ export const GROUPS = [
   {
     id: "conditions",
     batch: 1,
-    files: ["src/data/closures.ts", "src/data/roads.ts", "src/data/roads.generated.ts", "src/data/shuttles.ts", "src/data/tours.ts", "src/data/parking.ts"],
+    files: ["src/data/closures.ts", "src/data/roads.ts", "src/data/roads.generated.ts", "src/data/shuttles.ts", "src/data/tours.ts", "src/data/parking.ts", "src/data/time-notes.ts"],
   },
   {
     id: "places",
@@ -45,7 +45,7 @@ export const GROUPS = [
 
 /** 一个数据文件里所有带汉字的字符串；同一个对象里有 nameZh 和 nameEn 的，nameZh 的英文先填成 nameEn */
 async function stringsOf(file, skipKeys = []) {
-  const module = await import(new URL(file, ROOT).href);
+  const mod = await import(new URL(file, ROOT).href);
   const found = new Map();
   const seen = new Set();
   const walk = (value, key) => {
@@ -61,7 +61,7 @@ async function stringsOf(file, skipKeys = []) {
     if (value instanceof Map) for (const [k, v] of value) walk(v, String(k));
     else for (const [k, v] of Object.entries(value)) walk(v, k);
   };
-  for (const value of Object.values(module)) if (typeof value !== "function") walk(value);
+  for (const value of Object.values(mod)) if (typeof value !== "function") walk(value);
   return found;
 }
 

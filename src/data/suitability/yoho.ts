@@ -1,7 +1,7 @@
 import type { Suitability } from "../attractions/types";
 
 // 幽鹤 · 同行适合度。2026-10-16 按 Parks Canada 幽鹤景点页整理：Field、翡翠湖、天然桥、塔卡考瀑布、螺旋隧道观景点
-// 标了无障碍设施，翡翠湖到湖后木桥是平的碎石路，塔卡考瀑布是平坦的铺装路；伯吉斯页岩按 Parks Canada 导览页（8 岁以下不能参加）
+// 标了无障碍设施，翡翠湖到湖后木桥是平的碎石路，塔卡考瀑布是平坦的铺装路；伯吉斯页岩按 Parks Canada 导览页（Walcott 采石场 10 岁以下不能参加）
 const PLACES = "https://parks.canada.ca/pn-np/bc/yoho/activ/places";
 const WALCOTT = "https://parks.canada.ca/pn-np/bc/yoho/activ/burgess/walcott";
 
@@ -76,12 +76,12 @@ export const suitability: Record<string, Suitability> = {
   },
   "yoho-burgess-shale": {
     kidsFromAge: 12,
-    minAge: 8,
+    minAge: 10,
     stroller: "no",
     wheelchair: "no",
     seniors: "no",
     noteZh:
-      "Parks Canada 规定 8 岁以下不能参加，16 岁以下要大人陪；Walcott 采石场往返约 22–24 公里、爬升约 825–900 米，要跟上团队走 11 小时，接近化石点是陡坡碎石。体力一般的、带小孩的去 Field 游客中心看化石展就好。",
+      "Parks Canada 规定 10 岁以下不能参加，16 岁以下要大人陪；Walcott 采石场往返约 22 公里、爬升约 900 米，要跟上团队走 11 小时，接近化石点是陡坡碎石。体力一般的、带小孩的去 Field 游客中心看化石展就好。",
     source: WALCOTT,
   },
 };

@@ -4,7 +4,7 @@ import type { Attraction } from "./types";
 // （api.openstreetmap.org 的 map 接口，2026-10-05）。步道距离按 NPS 的 Hiking and Trail Guide 表。
 // South Unit 的景观环路（Scenic Loop Drive）全长约 58 公里（36 英里），2019 年东南段约 10 公里塌方封闭，2025 年 11 月 25 日修好全线重开；
 // 冬天下雪结冰时部分路段会临时封闭。North Unit 的景观路单程约 23 公里（14 英里），到 Oxbow 观景台是尽头、原路返回。
-// North Unit 用中部时间（比 South Unit 和 Medora 早一小时），公园的 timeZone 按 South Unit 填，North Unit 的景点在提示里说。
+// North Unit 用中部时间（比 South Unit 和 Medora 快一小时），公园的 timeZone 按 South Unit 填，North Unit 的景点单独写 timeZone，提示里也说。
 
 const NORTH_UNIT_TIME = "North Unit 用中部时间，比 Medora 和 South Unit 早一小时，看日落、赶游客中心开门时注意";
 
@@ -28,7 +28,7 @@ export const theodoreRoosevelt: Attraction[] = [
     summary:
       "景观环路的起点，就在 Medora 镇边：有小博物馆、17 分钟的公园影片和书店，门口就是罗斯福 1883 年在恶地的第一间牧场小屋——马耳他十字小屋。小屋原来在 Medora 以南约 11 公里的牧场上，后来被运去圣路易斯世博会等地展出，几经搬迁才放到这里，屋里按当年的样子摆着家具。",
     tips: [
-      "门票 $30 一车、7 天有效，2026 年 5 月起不收现金；夏天在入口收费站交，10 月到次年 5 月在游客中心交",
+      "门票 $30 一车、7 天有效，2026 年 5 月起不收现金；5 月到 9 月在入口收费站交，10 月到次年 4 月在游客中心交",
       "进环路前在这里问清楚哪段路因雪、施工临时封着，最近在哪见到野牛和野马",
       "感恩节、圣诞节和元旦闭馆",
     ],
@@ -312,7 +312,7 @@ export const theodoreRoosevelt: Attraction[] = [
     },
     bestMonths: [5, 6, 9],
     summary:
-      "公园的石化木密度在全美排第三（仅次于石化林和黄石国家公园）：约 6,000 万年前这里是一片沼泽三角洲，红杉、落羽杉被泥沙迅速掩埋，变成一截截粗大的石头树桩。步道先爬上草原，再分成南北两支下到谷里的树桩群，从停车场到两处都约 2.4 公里；南支景色更开阔，北支树桩多一点。",
+      "公园的石化木密度在全美排第三（仅次于石化林和黄石国家公园）：约 6,500 万年前这里是一片沼泽三角洲，红杉、落羽杉被泥沙迅速掩埋，变成一截截粗大的石头树桩。步道先爬上草原，再分成南北两支下到谷里的树桩群，从停车场到两处都约 2.4 公里；南支景色更开阔，北支树桩多一点。",
     tips: [
       "步道口在园区西边、园外的砂石路尽头：从 I-94 的 10 号出口走 NPS 指定路线（按路边标桩，经 Wannagan Creek 路），从 Medora 约 50 分钟；不要按导航抄近路穿私人牧场",
       "雨后、化雪时砂石路和黏土路很容易陷车，要高底盘车，天气不好别去；沿路和步道上都没有手机信号",
@@ -343,7 +343,7 @@ export const theodoreRoosevelt: Attraction[] = [
     },
     bestMonths: [5, 6, 9],
     summary:
-      "1884 年情人节那天，罗斯福的母亲和妻子在同一栋房子里相继去世。几个月后他回到恶地，在 Medora 以北约 55 公里的小密苏里河边建了自己的“主牧场”Elkhorn，在这里写书、放牛、独处。木屋早已不在，只剩几块地基石；从停车场沿约 1.1 公里修剪过的草地小路走到三叶杨下的河边，解说牌上是他自己写的牧场生活。",
+      "1884 年情人节那天，罗斯福的母亲和妻子在同一栋房子里相继去世。几个月后他回到恶地，在 Medora 以北约 56 公里（35 英里）的小密苏里河边建了自己的“主牧场”Elkhorn，在这里写书、放牛、独处。木屋早已不在，只剩几块地基石；从停车场沿约 1.1 公里修剪过的草地小路走到三叶杨下的河边，解说牌上是他自己写的牧场生活。",
     tips: [
       "这里没有游客中心、厕所和手机信号；从 Medora 走砂石路单程约 1 小时 15 分，最后约 5 公里雨后、冬天常要四驱或高底盘车，出发前在游客中心问路况",
       "从 South Unit 走 I-94 的 10 号出口往北；从 North Unit 来要绕 Watford City，单程约 2 小时",
@@ -355,6 +355,7 @@ export const theodoreRoosevelt: Attraction[] = [
   {
     id: "thro-cannonball-concretions",
     park: "thro",
+    timeZone: "America/Chicago",
     nameZh: "炮弹石（Cannonball Concretions）",
     nameEn: "Cannonball Concretions",
     kind: "landmark",
@@ -371,6 +372,7 @@ export const theodoreRoosevelt: Attraction[] = [
   {
     id: "thro-little-mo",
     park: "thro",
+    timeZone: "America/Chicago",
     nameZh: "Little Mo 自然步道",
     nameEn: "Little Mo Nature Trail",
     kind: "hike",
@@ -399,6 +401,7 @@ export const theodoreRoosevelt: Attraction[] = [
   {
     id: "thro-caprock-coulee",
     park: "thro",
+    timeZone: "America/Chicago",
     nameZh: "Caprock Coulee 自然步道",
     nameEn: "Caprock Coulee Nature Trail",
     kind: "hike",
@@ -427,6 +430,7 @@ export const theodoreRoosevelt: Attraction[] = [
   {
     id: "thro-river-bend",
     park: "thro",
+    timeZone: "America/Chicago",
     nameZh: "河湾观景台（River Bend Overlook）",
     nameEn: "River Bend Overlook",
     kind: "viewpoint",
@@ -444,6 +448,7 @@ export const theodoreRoosevelt: Attraction[] = [
   {
     id: "thro-oxbow-overlook",
     park: "thro",
+    timeZone: "America/Chicago",
     nameZh: "Oxbow 观景台",
     nameEn: "Oxbow Overlook",
     kind: "viewpoint",
@@ -509,7 +514,7 @@ export const theodoreRoosevelt: Attraction[] = [
     summary:
       "2026 年 7 月 4 日（美国建国 250 周年）开馆的总统图书馆，建在 Medora 镇西的山丘上、屋顶长满草，和恶地连成一片。展厅讲罗斯福从体弱多病的纽约少年到牛仔、总统和自然保护推手的一生，有大量互动展项；楼顶和外面的木栈道能俯瞰 Medora 和公园。",
     tips: [
-      "最晚入场是闭馆前 90 分钟；9 月 14 日以后周一闭馆、周末开到 18:00，12 月到 3 月 1 日只在周三到周日开，表里按工作日的时间算",
+      "最晚入场是闭馆前 90 分钟；9 月 14 日以后周一闭馆；9 月 14 日到 11 月周末开到 18:00，3 月 2 日到 5 月周末开到 17:00；12 月到 3 月 1 日只在周三到周日开，表里按工作日的时间算",
       "感恩节、圣诞节和元旦闭馆；馆内有餐厅，有 Tesla 目的地充电桩",
       "和公园门票分开，国家公园年卡不能用",
     ],

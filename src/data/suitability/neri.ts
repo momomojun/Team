@@ -56,7 +56,7 @@ export const suitability: Record<string, Suitability> = {
     seniors: "caution",
     hazards: ["water"],
     noteZh:
-      "下游峡谷多是 III–IV 级激流，运营方要求 12 岁以上、会游泳，水上 4–6 小时，落水的可能不小。带小孩、老人改订上游河段（Upper New）的平缓漂流，年龄要求低得多。",
+      "下游峡谷是 III–V 级激流，运营方要求 12 岁以上、会游泳，水上 4–6 小时，落水的可能不小。带小孩、老人改订上游河段（Upper New）的平缓漂流，年龄要求低得多。",
     source: "https://adventuresonthegorge.com/whitewater-rafting/lower-new-river-rafting-full-day/",
   },
   "neri-kaymoor": {

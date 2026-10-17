@@ -9,7 +9,7 @@ const CLIFF_PALACE_LOOP_CLOSED =
 const TOUR_SEASON = [5, 6, 7, 8, 9, 10];
 /** 遗址、观景点和步道 8:00 开到日落（日落时间每天不同，不写关门；NPS 2026-10-01） */
 const SITE_HOURS = [{ open: "08:00" }];
-const TOUR_PERMIT = "要买护林员导览票：提前 14 天、山地时间早上 8 点在 Recreation.gov 开放，每人 $8（3 岁以上）";
+const TOUR_PERMIT = "要买护林员导览票：提前 14 天、山地时间早上 8 点在 Recreation.gov 开放，每人 $8，2 岁及以下婴儿 $1";
 const WETHERILL_CLOSED =
   "Wetherill Mesa 只在 5 月下旬到 10 月下旬开放（2026 年是 5 月 22 日到 10 月 21 日），其余时间整条 Wetherill Mesa Road 封闭；可以改去 Chapin Mesa 一侧的悬崖宫殿、阳台屋导览，或在云杉树屋、方塔屋观景台看崖居。";
 const MUSEUM_PARKING = { lat: 37.18418, lon: -108.48909, nameZh: "Chapin Mesa 博物馆停车场" };
@@ -290,11 +290,11 @@ export const mesaVerde: Attraction[] = [
     permit: `2026 年 5 月 4 日–10 月 21 日${TOUR_PERMIT}`,
     mustSee: true,
     summary:
-      "北美最大的崖居，约 150 个房间、21 个地穴（kiva），建于 1190–1280 年前后，曾住约 100 人。跟护林员走约 45 分钟：下石阶、爬 4 段梯子，在房间和圆塔之间穿过，高差约 30 米。",
+      "北美最大的崖居，约 150 个房间、23 个地穴（kiva），建于 1190–1280 年前后，曾住约 100 人。跟护林员走约 45 分钟：下石阶、爬 4 段梯子，在房间和圆塔之间穿过，高差约 30 米。",
     tips: [
       "开团前 15 分钟到 Cliff Palace 观景台集合（停车场走约 110 米），从公园入口开过来要留 75 分钟；集合点没有手机信号，预约凭证先截图或打印",
       "每团限 50 人，旺季和周末常订满；有人退票会放回 Recreation.gov，开团前 2 小时都能捡漏。订不到还可以报 Far View Lodge 出发的 700 Years Tour 大巴团（含悬崖宫殿导览）",
-      "崖居里只能带白开水，不能带吃的和含糖饮料；小孩要能自己爬梯子",
+      "崖居里只能带白开水，不能带吃的和含糖饮料；小孩要能自己爬梯子，婴儿要背在背带里",
     ],
     photoFile: "Cliff Palace-Colorado-Mesa Verde NP.jpg",
   },

@@ -152,7 +152,7 @@ export const shenandoah: Attraction[] = [
       "峡谷里一连串六道瀑布，最上面的一道落差约 26 米，是园里第二高的瀑布。从天际线公路下去，穿过高大的铁杉和橡树林走到俯瞰上瀑布的岩石平台，往返约 7.4 公里，回程一路上坡、爬升约 320 米。",
     tips: [
       "下得容易上来难，回程留足时间和水；石头湿滑，别爬到瀑布边",
-      "体力好的可以接着往下走到下面几道瀑布，再经 Cedar Run 绕回来（官方的 Cedar Run–Whiteoak 环线从园界东侧出发，约 13 公里、爬升约 850 米，很累）",
+      "体力好的可以接着往下走到下面几道瀑布，再经 Cedar Run 绕回来（官方的 Cedar Run–Whiteoak 环线从 45.6 英里的 Hawksbill Gap 停车场出发，约 13 公里、爬升约 850 米，很累）",
       "从园界东侧的 Whiteoak 下步道口上来看下瀑布更省力（往返约 3.2 公里），但那边要另外开车绕过去，停车场也小",
     ],
     photoFile: "White Oak Canyon Upper Falls (54004989319).jpg",
@@ -324,7 +324,7 @@ export const shenandoah: Attraction[] = [
     tips: [
       "下雨、结冰时岩石很滑，不要爬；恐高的可以走阿巴拉契亚步道绕到观景点，避开攀爬段",
       "不许带宠物；对面停车场不大，周末中午常满",
-      "2026 年 10 月公园公告：因为野生动物（熊）问题，Lewis Mountain 到 Big Meadows 一段阿巴拉契亚步道（包括 Bearfence 避难棚）禁止露营，旁边的 Naked Creek 荒野区整片关闭；白天走这条环线不受影响",
+      "2026 年 10 月公园公告：因为最近发生的野生动物冲突，Lewis Mountain 到 Big Meadows 一段阿巴拉契亚步道（包括 Bearfence 避难棚）禁止野外露营，Naked Creek 观景台也因调查仍然关闭；白天走这条环线不受影响",
     ],
     photoFile: "Bearfence Golden Hour (30563413786).jpg",
   },

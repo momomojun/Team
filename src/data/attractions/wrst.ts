@@ -178,7 +178,7 @@ export const wrangellStElias: Attraction[] = [
       "从 Kennecott 往北沿冰川侧碛走约 3 公里，一路对着 Kennicott 冰川和 Root 冰川，远处是 Blackburn 山；最后下到 Root 冰川脚下，可以踩上冰面看冰川上的蓝色水潭。",
     tips: [
       "冰面很滑，自己上冰一定要穿冰爪；不熟悉冰川就跟向导团",
-      "途中要过季节性的 Amazon Creek，雨后可能湿脚",
+      "途中要过季节性的 Amazon Creek，雨后可能湿脚；2026 年 7 月起原来下到冰面的那段路因地面不稳不再安全，NPS 让改走过了 Amazon Creek 以后的新路，出发前在 Kennecott 游客中心问清楚",
       "整条路都有熊出没，结伴走、出声",
     ],
     photoFile: "Backpackers Stepping onto the Root Glacier (20977719713).jpg",

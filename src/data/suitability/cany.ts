@@ -66,7 +66,7 @@ export const suitability: Record<string, Suitability> = {
     seniors: "caution",
     hazards: ["scramble"],
     noteZh:
-      "前段是沙地，后面上山顶、去粮仓都要在陡的光滑岩坡上手脚并用，下来比上去难；带孩子、体力一般的走到分岔口看看就回头，想看古粮仓可以去针尖区的洞穴泉步道。",
+      "前段是沙地，后面上山顶、去粮仓都要在陡的光滑岩坡上手脚并用，下来比上去难；带孩子、体力一般的走到分岔口看看就回头，想轻松看古人留下的痕迹，可以去针尖区的洞穴泉步道看岩洞里的手印和彩绘岩画。",
     source: ACCESS,
   },
   "cany-whale-rock": {
@@ -138,7 +138,7 @@ export const suitability: Record<string, Suitability> = {
     stroller: "partial",
     wheelchair: "partial",
     seniors: "ok",
-    noteZh: "铺装路尽头的停车场边就能看；往前走就是岩面和长线步道，轮椅想到正式的无障碍观景点可以去路上的 Wooden Shoe 观景点。",
+    noteZh: "铺装路尽头的停车场边就能看；往前走就是岩面和长线步道，轮椅想到正式的无障碍观景点可以去路上的 Wooden Shoe Arch 观景点。",
     source: ACCESS,
   },
   "cany-chesler-park": {

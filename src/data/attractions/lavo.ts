@@ -66,11 +66,11 @@ export const lassenVolcanic: Attraction[] = [
     start: { lat: 40.4658, lon: -121.51444, nameZh: "Bumpass Hell 停车场" },
     durationMin: 120,
     trail: {},
-    hike: { distanceMi: 2.8, gainFt: 300, difficulty: "moderate" },
+    hike: { distanceMi: 3, gainFt: 300, difficulty: "moderate" },
     bestTime: ["morning"],
     openMonths: HIGH_TRAILS,
     closedNote:
-      "步道要等积雪化完才开放，一般在 7 月前后（2026 年是 6 月 26 日），10 月底到 11 月下雪后公路封闭就去不了，雪地里的地热区非常危险，冬季禁止前往（以 NPS 公告为准）；冬春想看地热，可以从游客中心穿雪鞋走到硫磺厂。",
+      "步道要等积雪化完才开放，多在 7 月中旬前后（2026 年是 6 月 26 日），10 月底到 11 月下雪后公路封闭就去不了，雪地里的地热区非常危险，冬季禁止前往（以 NPS 公告为准）；冬春想看地热，可以从游客中心穿雪鞋走到硫磺厂。",
     mustSee: true,
     summary:
       "公园最大的地热区，木栈道穿过沸腾的泥浆池、蓝绿色的热水池和嘶嘶作响的喷气孔，硫磺味很重。前一英里几乎是平路，最后一段下到盆地。",
@@ -126,7 +126,7 @@ export const lassenVolcanic: Attraction[] = [
       ],
       loop: true,
     },
-    hike: { distanceMi: 1.8, difficulty: "easy", loop: true },
+    hike: { distanceMi: 1.7, difficulty: "easy", loop: true },
     bestTime: ["sunrise", "sunset"],
     mustSee: true,
     summary:
@@ -290,7 +290,7 @@ export const lassenVolcanic: Attraction[] = [
       ],
       loop: true,
     },
-    hike: { distanceMi: 0.3, difficulty: "easy", loop: true },
+    hike: { distanceMi: 0.2, difficulty: "easy", loop: true },
     openMonths: END_SECTIONS,
     closedNote: "离西北入口约 16 公里，冬季公路只清雪到入口旁的 Loomis Plaza，一般 5 月前后北段先清雪通车、11 月下雪后封路（以 NPS 公告为准）；冬天可以在曼萨尼塔湖一带穿雪鞋或越野滑雪。",
     summary:
@@ -396,7 +396,7 @@ export const lassenVolcanic: Attraction[] = [
     durationMin: 45,
     hike: { distanceMi: 0.3, difficulty: "easy" },
     openMonths: [5, 6, 7, 8, 9, 10],
-    closedNote: "熔岩洞归拉森国家森林管理，约 5 月下旬到 10 月开放，冬季关闭（洞里结冰很危险，也为了保护冬眠的蝙蝠）；这段时间可以去全年有水的伯尼瀑布。",
+    closedNote: "熔岩洞归拉森国家森林管理，约 4 月底到 10 月开放，冬季关闭（洞里结冰很危险，也为了保护冬眠的蝙蝠）；这段时间可以去全年有水的伯尼瀑布。",
     outsidePark: true,
     summary: "拉森国家森林里的一段熔岩管，长约 1/3 英里（约 500 米），打着手电从一头走进去、从另一头出来，洞里常年只有约 8°C（46°F）。",
     tips: [

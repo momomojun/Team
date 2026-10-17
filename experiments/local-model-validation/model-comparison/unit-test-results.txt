@@ -1,0 +1,8 @@
+test_truncation_or_unexpected_thinking_rejected (test_replay.ComparisonReplayTest.test_truncation_or_unexpected_thinking_rejected) ... ok
+test_v2_preserved_outputs_reproduce_scores (test_replay.ComparisonReplayTest.test_v2_preserved_outputs_reproduce_scores) ... ok
+test_v3_preserved_outputs_reproduce_states (test_replay.ComparisonReplayTest.test_v3_preserved_outputs_reproduce_states) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.039s
+
+OK

@@ -315,7 +315,7 @@ export const content: Record<string, string> = {
   "Hinton 小城": "Hinton",
   "公园东门外约 30 公里的小城（在公园外），连锁酒店和超市多、价格比贾斯珀低，到贾斯珀镇约 1 小时、米耶特温泉约 50 分钟，适合订不到镇上住处的人。": "A small city about 19 miles (30 km) outside the park's east gate (outside the park), with plenty of chain hotels and grocery stores at lower prices than Jasper. About 1 hour to the town of Jasper and 50 minutes to Miette Hot Springs. A fallback if you can't get a room in town.",
   "Valemount 民宿区（BC 省）": "Valemount, BC",
-  "公园西边 BC 省的小镇，木屋和整套民宅比贾斯珀便宜，离罗布森山约 30 分钟、贾斯珀镇约 1 小时 20 分；这边用太平洋时间，比贾斯珀晚 1 小时（冬季差 2 小时）。": "A small town in British Columbia west of the park, where cabins and whole houses are cheaper than in Jasper. About 30 minutes to Mount Robson and 1 hour 20 minutes to the town of Jasper. It's on Pacific Time, an hour behind Jasper (two hours in winter).",
+  "公园西边 BC 省的小镇，木屋和整套民宅比贾斯珀便宜，离罗布森山约 30 分钟、贾斯珀镇约 1 小时 20 分；这边用 BC 省的太平洋时间，比贾斯珀晚 1 小时，全年都是。": "A small town in British Columbia west of the park, where cabins and whole houses are cheaper than in Jasper. About 30 minutes to Mount Robson and 1 hour 20 minutes to the town of Jasper. It's on BC's Pacific Time, an hour behind Jasper all year.",
   "翡翠湖旅馆": "Emerald Lake Lodge",
   "翡翠湖边的木屋度假酒店，客人把车停在湖边停车场、走过小桥入住，傍晚一日游的人走后很安静；价格高，夏季要早订，到 Field 约 15 分钟、露易丝湖约 40 分钟。": "A lodge of cabins on Emerald Lake. Guests park in the lakeside lot and walk across a footbridge to check in, and it's very quiet in the evening after the day visitors leave. Expensive; book early for summer. About 15 minutes to Field and 40 minutes to Lake Louise.",
   "大教堂山木屋酒店": "Cathedral Mountain Lodge",

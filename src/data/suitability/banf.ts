@@ -68,17 +68,17 @@ export const suitability: Record<string, Suitability> = {
   },
   "banf-johnston-canyon": {
     kidsFromAge: 3,
-    stroller: "partial",
+    stroller: "no",
     wheelchair: "partial",
     seniors: "ok",
-    noteZh: "到下瀑布约 1.1 公里，铺装路和贴崖的铁栈道都有护栏，但有几段陡坡；婴儿车、轮椅有人推可以走前段看峡谷，到上瀑布坡更多，带小孩、老人到下瀑布就回头。冬天栈道结冰要穿冰爪。",
+    noteZh: "到下瀑布约 1.1 公里，铺装路和贴崖的铁栈道都有护栏，但有几段陡坡，Parks Canada 不建议推婴儿车；轮椅有人推可以走前段看峡谷，到上瀑布坡更多，带小孩、老人到下瀑布就回头。冬天栈道结冰要穿冰爪。",
   },
   "banf-bow-lake": {
     kidsFromAge: 0,
     stroller: "yes",
     wheelchair: "yes",
     seniors: "ok",
-    noteZh: "停车场就在湖边，下车就能看到湖和冰川；去 Bow Glacier Falls 是往返 3–4 小时的碎石步道，另算。",
+    noteZh: "停车场就在湖边，下车就能看到湖和冰川；去 Bow Glacier Falls 是往返约 3 小时的碎石步道，另算。",
   },
   "banf-peyto-lake": {
     kidsFromAge: 0,

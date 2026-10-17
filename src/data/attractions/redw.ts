@@ -230,7 +230,7 @@ export const redwood: Attraction[] = [
       "牛顿·德鲁里风景道边的一棵巨大红杉，树龄估计超过 1,500 年，从停车场走约 70 米平路就到，是园区里看巨树最省力的一站。",
     tips: [
       "路面平坦，可以推轮椅；停车场在 Prairie Creek 游客中心以北约 1.2 公里",
-      "旁边有约 15 分钟的 Circle Trail 小环线，也可以接 Cathedral Trees、Foothill 等步道走得更远",
+      "旁边有约 15 分钟的 Circle Trail 小环线，也可以接 Cathedral Trees、Foothills 等步道走得更远",
     ],
   },
   {
@@ -269,7 +269,7 @@ export const redwood: Attraction[] = [
     tips: [
       "从 101 公路转 Requa Road 上坡约 3.6 公里，路窄坡陡，不适合大房车和拖车",
       "灰鲸迁徙高峰是 11–12 月和 3–4 月，带上望远镜；没雾的傍晚日落很好看",
-      "Coastal Trail 从停车场出发，走约 800 米后变陡，可以下到下方另一个观景点",
+      "Coastal Trail 从停车场出发，是一段陡路，走约 800 米（半英里）下到下方另一个观景点",
     ],
   },
   {
@@ -304,7 +304,7 @@ export const redwood: Attraction[] = [
     trail: {},
     hike: { distanceMi: 1.5, difficulty: "easy" },
     summary:
-      "这里有几棵世界上最大、最古老的海岸红杉，位置多年没有公开；2022 年修好约 460 米的高架栈道后正式开放，既能走近巨树，又不会踩坏林地。",
+      "这里有几棵世界上最大、最古老的海岸红杉，位置多年没有公开；2022 年修好约 400 米（1,300 英尺）的高架栈道后正式开放，既能走近巨树，又不会踩坏林地。",
     tips: [
       "从 Howland Hill Road 东段的步道口出发，先走一段 Mill Creek Trail，途中有不少金属台阶",
       "夏天路边停车位很少，尽量早到；房车和拖车不能开 Howland Hill Road",

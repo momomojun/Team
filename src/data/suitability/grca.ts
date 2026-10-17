@@ -30,7 +30,7 @@ export const suitability: Record<string, Suitability> = {
     seniors: "caution",
     hazards: ["heat"],
     noteZh:
-      "下到 1.5 Mile Resthouse 要掉 340 米，回程全是上坡，2026 年 8 月山洪后沿途饮水全关；带孩子、老人走到第一条隧道（约 15 分钟）就回头，上来不吃力，夏天别中午下去。",
+      "下到 1.5 Mile Resthouse 要掉约 345 米，回程全是上坡，2026 年 8 月山洪后沿途饮水全关；带孩子、老人走到第一条隧道（约 15 分钟）就回头，上来不吃力，夏天别中午下去。",
   },
   "grca-south-kaibab": {
     kidsFromAge: 6,

@@ -37,7 +37,7 @@ export const content: Record<string, string> = {
   "Root 冰川步道": "Root Glacier Trail",
   "从 Kennecott 往北沿冰川侧碛走约 3 公里，一路对着 Kennicott 冰川和 Root 冰川，远处是 Blackburn 山；最后下到 Root 冰川脚下，可以踩上冰面看冰川上的蓝色水潭。": "From Kennecott, the trail heads north along the glacier's lateral moraine for about 1.9 miles, facing the Kennicott and Root glaciers with Mount Blackburn in the distance. At the end it drops to the edge of the Root Glacier, where you can step onto the ice and see blue meltwater pools on the surface.",
   "冰面很滑，自己上冰一定要穿冰爪；不熟悉冰川就跟向导团": "The ice is very slippery; if you go onto it on your own, you must wear crampons. If you're not experienced on glaciers, join a guided trip.",
-  "途中要过季节性的 Amazon Creek，雨后可能湿脚": "You'll cross seasonal Amazon Creek on the way, and after rain your feet may get wet.",
+  "途中要过季节性的 Amazon Creek，雨后可能湿脚；2026 年 7 月起原来下到冰面的那段路因地面不稳不再安全，NPS 让改走过了 Amazon Creek 以后的新路，出发前在 Kennecott 游客中心问清楚": "You'll cross seasonal Amazon Creek on the way, and after rain your feet may get wet. Since July 2026 the old route down onto the ice has been unsafe because of unstable ground; NPS directs hikers to a new route past Amazon Creek, so ask at the Kennecott Visitor Center before you go.",
   "整条路都有熊出没，结伴走、出声": "Bears are around the whole way. Hike in a group and make noise.",
   "Root 冰川向导徒步": "Guided Root Glacier Hike",
   "要跟 Kennecott 的向导公司订（St. Elias Alpine Guides、Kennicott Wilderness Guides），夏季提前订": "Book with a guide company in Kennecott (St. Elias Alpine Guides or Kennicott Wilderness Guides); in summer, book ahead.",

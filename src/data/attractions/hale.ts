@@ -54,10 +54,10 @@ export const haleakala: Attraction[] = [
       ],
       loop: true,
     },
-    hike: { distanceMi: 0.6, gainFt: 50, difficulty: "easy", loop: true },
+    hike: { distanceMi: 0.54, gainFt: 50, difficulty: "easy", loop: true },
     bestTime: ["morning"],
     summary:
-      "一百多年前林务官 Ralph Hosmer 为了试种造林栽下的松、杉、桉树林，和旁边的夏威夷本土灌木林只隔一条小路。约 1 公里的环线是观鸟的好地方，清晨常能看到通红的 ʻiʻiwi、ʻapapane 等只有夏威夷才有的蜜雀。",
+      "一百多年前林务官 Ralph Hosmer 为了试种造林栽下的松、杉、桉树林，和旁边的夏威夷本土灌木林只隔一条小路。约 0.9 公里的环线是观鸟的好地方，清晨常能看到通红的 ʻiʻiwi、ʻapapane 等只有夏威夷才有的蜜雀。",
     tips: [
       "在收费站后不远的岔路进去，离公园总部约 1.6 公里，旁边就是 Hosmer Grove 营地",
       "海拔约 2,100 米、在云带里，常起雾下雨，带外套",

@@ -32,6 +32,49 @@ export const UNKNOWN_REOPEN_DAYS = 90;
 
 export const tempClosures: TempClosure[] = [
   {
+    attractions: ["mora-silver-falls"],
+    from: "2026-10-05",
+    reopen: null,
+    reasonZh:
+      "Grove of the Patriarchs 停车场 10 月 5 日起关闭，这条线原来的起点停不了车；可以停 Cowlitz Divide 停车场，沿 Eastside Trail 往南走过去，或者从 123 号公路那头的步道口进。",
+    source: "https://www.nps.gov/mora/planyourvisit/trails-and-backcountry-camp-conditions.htm",
+    checked: "2026-10-16",
+  },
+  {
+    attractions: ["bibe-balanced-rock"],
+    from: "2026-10-16",
+    reopen: null,
+    reasonZh: "Grapevine Hills Road 封闭，重开时间未定，开车到不了平衡石的步道口；可以改走奇索斯盆地的 Window、Lost Mine 步道。",
+    source: "https://www.nps.gov/bibe/planyourvisit/conditions.htm",
+    checked: "2026-10-16",
+  },
+  {
+    attractions: ["brca-peekaboo-loop"],
+    from: "2026-08-28",
+    reopen: null,
+    reasonZh:
+      "8 月 28 日暴雨后，从 Bryce Point 下去的 Bryce Connector Trail 关闭，重开时间未定；可以从 Sunset Point 沿纳瓦霍环线下到谷底，再接 Peekaboo Loop（Wall Street 一侧也关着，走 Two Bridges 那边）。",
+    source: "https://www.nps.gov/brca/planyourvisit/conditions.htm",
+    checked: "2026-10-16",
+  },
+  {
+    attractions: ["grba-scenic-drive", "grba-alpine-lakes", "grba-bristlecone-grove", "grba-wheeler-peak"],
+    from: "2026-10-08",
+    reopen: null,
+    reasonZh:
+      "惠勒峰景观道 10 月 8 日起封路过冬，一般要到第二年 6 月雪化后才重开；冬天景观道下段 Upper Lehman Creek 一带以下还能去，Lehman Caves 导览照常。",
+    source: "https://www.nps.gov/grba/planyourvisit/conditions.htm",
+    checked: "2026-10-16",
+  },
+  {
+    attractions: ["care-capitol-gorge"],
+    from: "2026-10-15",
+    reopen: null,
+    reasonZh: "国会峡谷的土路封闭，重开时间未定；可以改走 Grand Wash，或者在景观道上看 Cassidy Arch 一带。",
+    source: "https://www.nps.gov/care/planyourvisit/conditions.htm",
+    checked: "2026-10-16",
+  },
+  {
     attractions: ["grca-lipan-point"],
     from: "2026-06-22",
     reopen: "2026-12-24",
@@ -56,7 +99,7 @@ export const tempClosures: TempClosure[] = [
     reasonZh:
       "Notch 步道和步道两侧 30 米内全部封闭，NPS 在修已经不安全的那段木梯，没有公布重开日期；可以改走同一个停车场的 Door、Window 步道，或者去 Saddle Pass 爬一段恶地之墙。",
     source: "https://www.nps.gov/badl/planyourvisit/conditions.htm",
-    checked: "2026-10-13",
+    checked: "2026-10-16",
   },
   {
     attractions: ["meve-far-view-sites"],
@@ -158,7 +201,7 @@ export const tempClosures: TempClosure[] = [
     from: "2026-09-23",
     reopen: "2026-10-30",
     reasonZh:
-      "第二道牛栏（Kīpukapuaulu 往上约 3 公里）到观景台一段因伐树全封，车、人、自行车都不能进，为之后的道路整修做准备（Kīpukapuaulu 步道也因危险树木关闭）。",
+      "第一道牛栏到观景台一段因伐树全封（到 10 月 29 日），车、人、自行车都不能进，为之后的道路整修做准备（Kīpukapuaulu 步道也因危险树木关闭，没有重开日期）。",
     source: "https://www.nps.gov/havo/planyourvisit/conditions.htm",
     checked: "2026-10-13",
   },

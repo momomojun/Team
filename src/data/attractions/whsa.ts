@@ -58,7 +58,7 @@ export const whiteSands: Attraction[] = [
     id: "whsa-playa-trail",
     park: "whsa",
     nameZh: "干湖步道（冰河时代步道）",
-    nameEn: "Playa Trail (Ice Age Trail)",
+    nameEn: "Ice Age Trail (formerly Playa Trail)",
     kind: "hike",
     area: "dunes-drive",
     lat: 32.7979,
@@ -75,8 +75,8 @@ export const whiteSands: Attraction[] = [
     },
     hike: { distanceMi: 0.8, difficulty: "easy", loop: true },
     summary:
-      "平坦的短步道，通到一片干湖（playa）：下雨后积水，干了以后结出石膏晶体，颜色从褐色到白色随时在变。NPS 2026 年的页面也叫它“冰河时代步道”（约 1.3 公里环线），9 块解说牌讲 2 万多年前古奥特罗湖（Lake Otero）边留下的猛犸象和人类脚印。",
-    tips: ["跟着绿色、带心形图案的标杆走", "没有树荫和厕所，30–45 分钟就能走完"],
+      "平坦的短步道，通到一片干湖（playa）：下雨后积水，干了以后结出石膏晶体，颜色从褐色到白色随时在变。NPS 现在把它改叫“冰河时代步道”（约 1.3 公里环线），9 块解说牌讲 2 万多年前古奥特罗湖（Lake Otero）边留下的猛犸象和人类脚印。",
+    tips: ["跟着绿色、带心形图案的标杆走", "没有树荫和厕所，约 45–60 分钟走完"],
     photoFile: "USA - New Mexico - White Sands National Park - Playa.jpg",
   },
   {
@@ -93,7 +93,7 @@ export const whiteSands: Attraction[] = [
     trail: {},
     hike: { distanceMi: 0.4, difficulty: "easy" },
     summary:
-      "约 650 米往返的架高木栈道，穿过沙丘之间长着植物的低地，走到能望见沙丘和萨克拉门托山的观景台；10 块解说牌讲石膏沙丘的地质和动植物，是园内唯一能推轮椅的步道。",
+      "约 650 米往返的架高木栈道，穿过沙丘之间长着植物的低地，走到能望见沙丘和萨克拉门托山的观景台；10 块解说牌讲石膏沙丘的地质和动植物，是园内唯一能推轮椅的步道；2024 年起这一段划进安全走廊，木栈道关闭，重开时间未定。",
   },
   {
     id: "whsa-dunes-drive",
@@ -195,7 +195,7 @@ export const whiteSands: Attraction[] = [
     tips: [
       "全程没有树荫、水和厕所。NPS 建议气温到 30°C（85°F）以上就不要出发，夏天只能早上 7 点一开门就走、每人至少带 4 升水；2015 年 8 月曾有一家人正午出发、只带了两小瓶水，父母都在这条步道上中暑身亡",
       "跟着红色、带方块图案的标杆走；风沙大、看不到下一根标杆时立刻原路返回，沙丘里很容易迷路",
-      "平均要 3–4 小时；3–5 月风大，常有沙尘暴",
+      "平均约 3 小时；3–5 月风大，常有沙尘暴",
     ],
     photoFile: "Alkali Flats Trail White Sands National Monument.jpg",
   },
@@ -214,7 +214,7 @@ export const whiteSands: Attraction[] = [
     summary:
       "日落前后，白沙从刺眼的白慢慢变成粉色、蓝紫色，西边圣安德烈斯山的剪影最好看。周五到周日有免费的护林员日落漫步：在沙丘里慢慢走约 800 米，讲石膏沙的来历和沙丘里的动植物，正好在日落时结束。",
     tips: [
-      "不用预约；开始时间随日落变，2026 年 10 月 17 日前 17:30、10 月 18–31 日 17:00、11–12 月 16:00，出发前看 NPS 的 Sunset Stroll 页面",
+      "不用预约；开始时间随日落变，2026 年 10 月 17 日前 17:30、10 月 18–31 日 17:00（23–25 日停办）、11–12 月 16:00，出发前看 NPS 的 Sunset Stroll 页面",
       "高温警报时取消；因天气取消一般在开始前 30 分钟内才决定，可以打 575-479-6124 转 236 问",
       "公园日落后 30 分钟关门，看完日落直接往外开；太阳一下山气温掉得很快，带件外套",
     ],
@@ -255,7 +255,7 @@ export const whiteSands: Attraction[] = [
     lat: 32.706,
     lon: -106.438,
     start: { lat: 32.47361, lon: -106.41052, nameZh: "US-70 公路旁的 Small Missile Range 大门（174–175 英里桩之间）" },
-    durationMin: 240,
+    durationMin: 180,
     openMonths: [11, 12, 1, 2, 3],
     closedNote:
       "导览只在 11 月到次年 3 月每月一个周六上午举行（2026–27 年是 11/21、12/19、1/9、2/13、3/13），其余月份进不去：湖在导弹靶场里，只能跟护林员车队进。可以改走干湖步道，看同样会析出石膏的小干湖。",
@@ -265,7 +265,7 @@ export const whiteSands: Attraction[] = [
     tips: [
       "9:30 开始在 US-70 公路的 Small Missile Range 大门报到，10:00 车队准时出发，迟到就进不去；从游客中心开过去约 25 分钟",
       "要跟车队在靶场里开约 28 公里到步道口，路上没有任何服务、手机信号差，加满油、带好备胎",
-      "在靶场范围内禁止拍照录像，进了公园地界护林员说可以再拍；按靶场规定不能随身带枪，要穿包头鞋、带 2 升以上的水",
+      "在靶场范围内禁止拍照录像，进了公园地界护林员说可以再拍；按靶场规定不能随身带枪，要穿包头鞋，每人至少带 1 加仑（约 3.8 升）水",
     ],
     photoFile: "Lake Lucero NPS photo.jpg",
   },

@@ -5,6 +5,7 @@ import { fitSummary } from "@/components/attractions/family-fit";
 import { KIND_COLORS } from "@/components/attractions/kinds";
 import {
   IconAlert,
+  IconClock,
   IconBed,
   IconCar,
   IconCheck,
@@ -23,6 +24,7 @@ import { moonNight } from "@/lib/moon";
 import { entryWindow, lodgingLeg, onlyAt, parkingOn, type TimelineEntry } from "@/lib/planner";
 import type { Party } from "@/lib/suitability";
 import { formatClock } from "@/lib/sun";
+import { utcOffset, zoneOf } from "@/lib/time-zone";
 import { datedSchedule, departuresOn, runsOn, tourScheduleOf, tourSeason } from "@/lib/tours";
 import { moveItem, removeItem, setItemStatus } from "@/lib/trip-edit";
 import type { Trip } from "@/lib/trip-store";
@@ -81,6 +83,7 @@ export function DayCard({
   dateLabel,
   exactDate,
   parkNames,
+  firstVisits,
   party,
   text,
   selectedId,
@@ -105,6 +108,8 @@ export function DayCard({
   /** 定了出发日期时这天的日期（只定了月份时没有）：季节性道路按这天算往年通不通 */
   exactDate: string | null;
   parkNames: string[];
+  /** 这天第一次去的公园（公园代码）：时区的坑在这天说 */
+  firstVisits: string[];
   /** 自动生成攻略时填的同行的人：不适合、要注意的景点标出来 */
   party?: Party;
   text: PlannerText;
@@ -306,6 +311,25 @@ export function DayCard({
     },
   });
 
+  // 时区：这天跨了时区的说一下按哪个时区写；第一次去的公园有时区的坑（羚羊峡谷按亚利桑那时间、手机会跳）也在这天说
+  const zoneName = (zone: string | undefined) => (zone && text.units.zones[zone]) || zone || "";
+  const crossZone = timeline.entries.some((entry) => entry.zoneShift);
+  const inDst = view.date ? utcOffset("America/Denver", view.date) === -6 * 60 : undefined;
+  const timeInfo = [
+    ...(crossZone && view.timeZone ? [fill(t.dayZone, { zone: zoneName(view.timeZone) })] : []),
+    ...text.timeNotes
+      .filter((note) => firstVisits.includes(note.park))
+      .filter((note) => inDst === undefined || !note.when || (note.when === "dst") === inDst)
+      .map((note) => note.text),
+  ];
+  const zoneNote = (stop: AttractionWithPhoto, entry: TimelineEntry): { text: string; tone: Tone } | null => {
+    if (!entry.zoneShift) return null;
+    const h = Math.abs(entry.zoneShift) / 60;
+    const diff = fill(entry.zoneShift > 0 ? text.units.zoneAhead : text.units.zoneBehind, { h });
+    const local = text.timeNotes.find((note) => note.park === stop.park && note.zone)?.zone;
+    return { text: fill(t.warnings.zoneShift, { zone: local ?? zoneName(zoneOf(stop)), diff }), tone: "info" };
+  };
+
   const dayWarnings = [
     timeline.overloaded ? t.warnings.overloaded : null,
     timeline.lateReturn ? t.warnings.lateReturn : null,
@@ -358,6 +382,16 @@ export function DayCard({
           )}
         </div>
       </header>
+
+      {timeInfo.length > 0 && (
+        <ul className="mb-4 space-y-1 border-l border-line pl-4 text-xs leading-5 text-ink-soft">
+          {timeInfo.map((note) => (
+            <li key={note} className="flex items-start gap-1.5">
+              <IconClock className="mt-0.5 shrink-0" /> {note}
+            </li>
+          ))}
+        </ul>
+      )}
 
       {dayWarnings.length > 0 && (
         <ul className="mb-4 space-y-1 border-l border-clay-600 pl-4 text-xs text-clay-800">
@@ -412,6 +446,7 @@ export function DayCard({
               const finished = item.status !== "planned";
               const parking = parkingNote(stop, entry);
               const moon = moonNote(stop, entry);
+              const zone = zoneNote(stop, entry);
               const hub = hubParkingAt.get(k);
               const notes = finished
                 ? []
@@ -420,6 +455,7 @@ export function DayCard({
                     ...(hub ? [{ text: fill(t.warnings.hubParking, { note: hub }), tone: "info" as Tone }] : []),
                     ...(parking ? [parking] : []),
                     ...(moon ? [moon] : []),
+                    ...(zone ? [zone] : []),
                     ...entry.warnings
                       .filter((w) => w !== "parkingFull" || !parking)
                       .map((w) => ({
@@ -491,6 +527,11 @@ export function DayCard({
                     <span className={timeCol}>
                       <span className={`${clock} ${finished ? "text-mute" : ""}`}>{formatClock(entry.start, text.units.clock)}</span>
                       <span className="block text-[11px] leading-4 text-mute">{fill(t.until, { time: formatClock(entry.end, text.units.clock) })}</span>
+                      {entry.zoneShift ? (
+                        <span className="block text-[11px] leading-4 text-clay-700">
+                          {fill(t.localTime, { time: formatClock(entry.start + entry.zoneShift, text.units.clock) })}
+                        </span>
+                      ) : null}
                     </span>
                     <button
                       type="button"

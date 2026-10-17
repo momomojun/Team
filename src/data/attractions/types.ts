@@ -123,6 +123,11 @@ export interface Attraction {
   lottery?: boolean;
   /** 进去的时间有限制的（洞穴入场时间、公园大门开关）；游客中心、游船这类没写的按一般的开放时间算 */
   hours?: EntryHours[];
+  /**
+   * 和公园不在一个时区的景点（IANA 名称）：西奥多·罗斯福 North Unit 用中部时间（公园按 South Unit 写山地时间），
+   * 贾斯珀旁边 BC 省的罗布森山。hours、班次、停车场时间都按这里的当地时间写；不写就按公园的时区
+   */
+  timeZone?: string;
   mustSee?: boolean;
   /**
    * 和这个景点是同一件事的另一种去法、一般只选一个（干龟的水上飞机和渡轮）：自动生成攻略里那个景点能去时不排这个，

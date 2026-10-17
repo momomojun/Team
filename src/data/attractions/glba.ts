@@ -48,7 +48,7 @@ export const glacierBay: Attraction[] = [
     permit: "向 Glacier Bay Lodge & Tours 订票（2026 年成人 $273.57、3–12 岁 $142.92，含午餐），夏季常订满",
     mustSee: true,
     summary:
-      "不坐邮轮的人进湾的主要方式，也是湾里唯一每天固定开的观光船：约 150 座的双体船从 Bartlett Cove 出发，沿西臂开到湾底，在 Margerie 和 Grand Pacific 冰川前停一阵，看高出水面七十多米的冰墙崩落入海。船上有 NPS 护林员一路讲解，常见座头鲸、海獭、斯特勒海狮和海鸟，岸边有时能看到棕熊和山羊。",
+      "不坐邮轮的人进湾的主要方式，也是湾里唯一每天固定开的观光船：约 150 座的双体船从 Bartlett Cove 出发，沿西臂开到湾底，在 Margerie 或 Johns Hopkins 冰川前停一阵，看高出水面七十多米的冰墙崩落入海。船上有 NPS 护林员一路讲解，常见座头鲸、海獭、斯特勒海狮和海鸟，岸边有时能看到棕熊和山羊。",
     tips: [
       "6:50 登船、7:15 开船、约 15:30 回到码头；住 Gustavus 的提前约好出租车或酒店接驳，早上赶到码头",
       "船舱有暖气，甲板上很冷，带防水外套、帽子、手套和望远镜",
@@ -147,7 +147,7 @@ export const glacierBay: Attraction[] = [
     tips: [
       "路上树根、石头多，雨后泥泞，穿防水的鞋；NPS 估计要 4–5 小时",
       "鲑鱼季河口熊多，带熊喷雾、结伴走、出声，看到熊就绕开",
-      "约 400 米处分出去的 Bartlett Lake 步道往返约 16 公里，维护少、要自己认路",
+      "约 400 米处分出去的 Bartlett Lake 步道往返约 13 公里（8 英里），维护少、要自己认路",
     ],
     photoFile: "Glacier Bay National Park, Bartlett River and Lake Trail.jpg",
   },

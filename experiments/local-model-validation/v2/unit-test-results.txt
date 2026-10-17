@@ -1,0 +1,13 @@
+test_gold_extraction_produces_expected_decision (test_intake.IntakeRulesTest.test_gold_extraction_produces_expected_decision) ... ok
+test_invalid_shape_rejected (test_intake.IntakeRulesTest.test_invalid_shape_rejected) ... ok
+test_invented_date_is_rejected_not_completed (test_intake.IntakeRulesTest.test_invented_date_is_rejected_not_completed) ... ok
+test_model_omission_is_not_silently_repaired (test_intake.IntakeRulesTest.test_model_omission_is_not_silently_repaired) ... ok
+test_out_of_range_duration_cannot_be_ready (test_intake.IntakeRulesTest.test_out_of_range_duration_cannot_be_ready) ... ok
+test_split_range_quotes_and_leap_year (test_intake.IntakeRulesTest.test_split_range_quotes_and_leap_year) ... ok
+test_two_unrelated_dates_are_not_assumed_range (test_intake.IntakeRulesTest.test_two_unrelated_dates_are_not_assumed_range) ... ok
+test_unknown_origin_requires_clarification (test_intake.IntakeRulesTest.test_unknown_origin_requires_clarification) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.016s
+
+OK

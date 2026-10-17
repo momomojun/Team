@@ -19,7 +19,7 @@ export const suitability: Record<string, Suitability> = {
     stroller: "partial",
     wheelchair: "partial",
     seniors: "ok",
-    noteZh: "野餐区和厕所无障碍，坐轮椅在林边就能听鸟叫；约 1 公里的环线是土路，有起伏，常起雾下雨。",
+    noteZh: "野餐区和厕所无障碍，坐轮椅在林边就能听鸟叫；约 0.9 公里的环线是土路，有起伏，常起雾下雨。",
     source: ACCESS,
   },
   "hale-halemauu-trail": {

@@ -2,7 +2,7 @@ import type { Attraction } from "./types";
 
 // Hurricane Hill Road（主停车场再往前 1.5 英里）冬季积雪不通车，通常 6–10 月能开到步道口
 const HURRICANE_HILL_ROAD = [6, 7, 8, 9, 10];
-// Sol Duc 温泉泳池约 3 月下旬到 10 月底开放
+// Sol Duc 温泉泳池约 3 月 20 日到 11 月 1 日中午开放（度假村官网）
 const SOL_DUC_POOLS = [3, 4, 5, 6, 7, 8, 9, 10];
 // Lake Crescent 南岸 Storm King 护林站旁的步道口，Marymere Falls 和 Mount Storm King 共用
 const STORM_KING_TH = { lat: 48.05797, lon: -123.78643, nameZh: "Storm King 护林站旁步道口停车场" };
@@ -25,7 +25,7 @@ export const olympic: Attraction[] = [
       "海拔约 1,600 米的山脊，开车就能上来，正对奥林匹斯山一带的雪峰和冰川，北面能望见胡安·德富卡海峡。夏天草甸开满野花，常见黑尾鹿。",
     tips: [
       "从天使港游客中心上山约 27 公里（17 英里）；夏季（约 5 月中到 10 月）道路通常 24 小时开放，冬季（约 11 月下旬到 3 月）一般只在周五到周日白天开放，11 月 1 日到 4 月 1 日必须随车带雪链",
-      "山顶游客中心 2023 年 5 月烧毁，重建最早 2028 年动工；现在只有临时厕所，没有餐饮和饮用水，上山前备好",
+      "山顶的日间旅舍（Day Lodge）2023 年 5 月烧毁，重建最早 2028 年动工；现在只有临时厕所拖车，没有餐饮和饮用水，上山前备好",
       "夏季周末停车场常满，满了会在 Heart O' the Hills 入口站拦车等车位，早上或傍晚去；入口站只收卡不收现金",
     ],
     photoFile: "Hurricane Ridge - Olympic National Park, Washington.jpg",
@@ -121,9 +121,9 @@ export const olympic: Attraction[] = [
     start: STORM_KING_TH,
     durationMin: 240,
     trail: {},
-    hike: { distanceMi: 4.2, gainFt: 2100, difficulty: "hard" },
+    hike: { distanceMi: 4.4, gainFt: 2000, difficulty: "hard" },
     bestMonths: [5, 6, 7, 8, 9, 10],
-    summary: "从 Marymere Falls 步道岔出去，一路之字形陡坡爬升约 640 米，终点俯瞰整个新月湖，是湖区视野最好的步道。",
+    summary: "从 Marymere Falls 步道岔出去，一路之字形陡坡爬升约 610 米，终点俯瞰整个新月湖，是湖区视野最好的步道。",
     tips: [
       "坡非常陡、路面有碎石，穿抓地好的鞋、带足水",
       "维护步道到“End of maintained trail”牌子为止；再往上是要拉绳攀爬的陡峭岩脊，没有维护、坠落风险高，不建议继续",
@@ -184,10 +184,10 @@ export const olympic: Attraction[] = [
     durationMin: 120,
     openMonths: SOL_DUC_POOLS,
     closedNote:
-      "温泉度假村冬季关闭（2026 年泡池开放到 10 月 31 日，通常 3 月下旬重开），Sol Duc 路冬季也常因冰雪封闭（以度假村和 NPS 公告为准）；这段时间可以去新月湖边走玛丽米尔瀑布步道，或去冬季雨水充沛、苔藓最绿的霍河雨林。",
+      "温泉度假村冬季关闭（2026 年泡池开放到 11 月 1 日中午，通常 3 月 20 日前后重开），Sol Duc 路冬季也常因冰雪封闭（以度假村和 NPS 公告为准）；这段时间可以去新月湖边走玛丽米尔瀑布步道，或去冬季雨水充沛、苔藓最绿的霍河雨林。",
     permit: "泡池按场次收费（每场 90 分钟），可在度假村官网预约，夏季周末建议提前订",
     summary: "Sol Duc 河谷里的温泉度假村，有三个约 37–40°C 的矿物温泉池和一个淡水泳池，徒步完来泡一场很舒服。",
-    tips: ["2026 年泡池开放到 10 月 31 日，冬季关闭；成人每场约 19 美元，以官网为准", "住度假村小木屋的客人可以免费泡"],
+    tips: ["2026 年泡池开放到 11 月 1 日中午，冬季关闭；成人每场约 19 美元，以官网为准", "住度假村小木屋的客人可以免费泡"],
   },
   {
     id: "olym-rialto-beach",
@@ -275,7 +275,7 @@ export const olympic: Attraction[] = [
     hike: { distanceMi: 0.8, gainFt: 100, difficulty: "easy", loop: true },
     mustSee: true,
     summary:
-      "霍河雨林最经典的环线：大叶枫的枝干上挂满厚厚的苔藓，像一道道绿色帘幕，四周是高大的锡特卡云杉和铁杉。这里年降水量可达约 3.6 米。",
+      "霍河雨林最经典的环线：大叶枫的枝干上挂满厚厚的苔藓，像一道道绿色帘幕，四周是高大的锡特卡云杉和铁杉。这里年均降水量约 3.6 米。",
     tips: ["步道口就在游客中心旁", "常见罗斯福马鹿，保持距离", "霍河雨林的步道都不准带宠物"],
     photoFile: "Hoh Rain Forest Olympic June 2018 001.jpg",
   },
@@ -400,7 +400,7 @@ export const olympic: Attraction[] = [
       "2026 年 10 月 13–19 日 101 号公路 Hoh River 桥夜间封路（具体时段看 NPS 公告），封路时没有绕行路线，从天使港、Forks 过不来，要绕半岛东侧多开 4 小时以上",
       "湖北岸属于国家公园，南岸属于奥林匹克国家森林；南岸老旅馆前的草坪一直通到湖边，是看湖最方便的地方",
       "南岸往西约 1 公里有国家森林的雨林自然步道，往东约 1 英里是世界最大锡特卡云杉",
-      "2026 年 South Shore Road 在约 8 英里处被冲毁封闭，环湖一圈的路暂时走不通，以公告为准",
+      "环湖的 South Shore Road 目前开放（NPS 2026 年 10 月 10 日更新），但土路段坑洼多、路况差，不建议房车和拖车走，以 NPS 路况为准",
     ],
   },
   {

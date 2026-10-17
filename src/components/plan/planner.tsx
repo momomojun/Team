@@ -293,19 +293,21 @@ export function Planner({
   };
   const nightAt = (night: number) => resolve(trip.nights[night]);
 
-  const sunInfo = (day: number, parkCode: string | undefined): SunInfo => {
+  // 日出日落按当天第一站所在的公园算，钟点按第一站的时区（一天的时间线都用这个时区，见 planner.ts 的 localShifts）
+  const sunInfo = (day: number, stop: { park: string; timeZone?: string } | undefined): SunInfo => {
     const date = refDateOf(day);
-    const park = parkCode ? parkByCode.get(parkCode) : undefined;
-    if (!date || !park) return { kind: "unknown" };
+    const park = stop ? parkByCode.get(stop.park) : undefined;
+    const zone = stop?.timeZone ?? park?.timeZone;
+    if (!date || !park || !zone) return { kind: "unknown" };
     const sun = sunTimes(date, park.lat, park.lon);
     if (sun.kind !== "normal") return { kind: sun.kind };
     return {
       kind: "normal",
-      window: { sunrise: minutesOfDay(sun.sunrise, park.timeZone), sunset: minutesOfDay(sun.sunset, park.timeZone) },
+      window: { sunrise: minutesOfDay(sun.sunrise, zone), sunset: minutesOfDay(sun.sunset, zone), zone },
     };
   };
-  const sunWindow = (day: number, parkCode: string) => {
-    const info = sunInfo(day, parkCode);
+  const sunWindow = (day: number, stop: PlanStop) => {
+    const info = sunInfo(day, stop);
     return info.kind === "normal" ? info.window : NOMINAL_SUN;
   };
 
@@ -319,7 +321,7 @@ export function Planner({
     });
     const from = nightAt(day);
     const to = nightAt(day + 1);
-    const sun = sunInfo(day, rows[0]?.stop.park ?? previous?.park);
+    const sun = sunInfo(day, rows[0]?.stop ?? previous);
     const context = {
       sun: sun.kind === "normal" ? sun.window : NOMINAL_SUN,
       from,
@@ -345,7 +347,8 @@ export function Planner({
         rows.map((row) => (row.item.status === "planned" ? paced(row.stop) : row.stop)),
         context,
       );
-    const timeZone = parkByCode.get(rows[0]?.stop.park ?? previous?.park ?? "")?.timeZone;
+    const first = rows[0]?.stop ?? previous;
+    const timeZone = first && (first.timeZone ?? parkByCode.get(first.park)?.timeZone);
     dayViews.push({ day, date: refDateOf(day), rows, sun, timeline, from, to, timeZone });
     previous = rows.at(-1)?.stop ?? previous;
   }
@@ -484,7 +487,7 @@ export function Planner({
       const sunFor = (day: number) => {
         const sun = sunTimes(dateFor(day), park.lat, park.lon);
         return sun.kind === "normal"
-          ? { sunrise: minutesOfDay(sun.sunrise, park.timeZone), sunset: minutesOfDay(sun.sunset, park.timeZone) }
+          ? { sunrise: minutesOfDay(sun.sunrise, park.timeZone), sunset: minutesOfDay(sun.sunset, park.timeZone), zone: park.timeZone }
           : NOMINAL_SUN;
       };
       // 近期出发（两周内）：生成前读一次 NPS 实时公告，公告里说关了的景点先不排
@@ -541,7 +544,8 @@ export function Planner({
   const roughToday = dayIndexOn(dateIn(undefined));
   const todayIndex = roughToday >= 0 ? dayIndexOn(dateIn(parkOfDay(roughToday)?.timeZone)) : -1;
   const todayView = todayIndex >= 0 ? dayViews[todayIndex] : undefined;
-  const todayZone = todayIndex >= 0 ? parkOfDay(todayIndex)?.timeZone : undefined;
+  // “今天”的时间按这天行程用的时区（当天第一站的时区，和时间线一致）
+  const todayZone = todayIndex >= 0 ? (todayView?.timeZone ?? parkOfDay(todayIndex)?.timeZone) : undefined;
   const nowMinutes = now !== null && todayZone ? minutesOfDay(new Date(now), todayZone) : null;
 
   const sectionLinks: SectionLink[] = [
@@ -1330,8 +1334,11 @@ export function Planner({
 
           {dayViews.map((view) => {
             const night = view.day + 1;
-            const parkNames = [...new Set(view.rows.map((row) => row.stop.park))].map(
-              (code) => parkByCode.get(code)?.nameZh ?? code,
+            const dayParks = [...new Set(view.rows.map((row) => row.stop.park))];
+            const parkNames = dayParks.map((code) => parkByCode.get(code)?.nameZh ?? code);
+            // 时区的坑：只在第一次去这座公园的那天说
+            const firstVisits = dayParks.filter(
+              (code) => !dayViews.some((other) => other.day < view.day && other.rows.some((row) => row.stop.park === code)),
             );
             return (
               <DayCard
@@ -1343,6 +1350,7 @@ export function Planner({
                 dateLabel={trip.startDate ? dateFormat.format(new Date(`${dateOf(view.day)}T00:00:00Z`)) : null}
                 exactDate={dateOf(view.day)}
                 parkNames={parkNames}
+                firstVisits={firstVisits}
                 party={trip.guide?.party}
                 text={text}
                 selectedId={selectedId}

@@ -16,6 +16,8 @@ export type PlannerText = Pick<
   shuttleParking: Record<string, string>;
   /** 季节性道路 id → 当前语言的名字 */
   roadNames: Record<string, string>;
+  /** 各公园时区的坑（见 time-notes.ts，已经转成当前语言） */
+  timeNotes: { park: string; when?: "dst" | "winter"; text: string; zone?: string }[];
 };
 
 export interface PlannerPark {

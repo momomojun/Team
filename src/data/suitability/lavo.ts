@@ -1,7 +1,7 @@
 import type { Suitability } from "../attractions/types";
 
 // 拉森火山 · 同行适合度。2026-10-16 按 NPS 无障碍页面整理：Kohm Yah-mah-nee 游客中心完全无障碍，卢米斯博物馆西侧有轮椅入口；
-// 硫磺厂的铺装人行道官方说要有人协助，火山毁灭区是约 0.8 公里硬化路面环线，曼萨尼塔湖的环湖路是土路、只有南岸一段比较好走；
+// 硫磺厂的铺装人行道官方说要有人协助，火山毁灭区是约 0.3 公里（0.2 英里）硬化路面环线（无障碍页写 half-mile，以步道页为准），曼萨尼塔湖的环湖路是土路、只有南岸一段比较好走；
 // 曼萨尼塔湖、海伦湖、火山毁灭区、国王溪的野餐区有平整位置、无障碍厕所和车位。伯尼瀑布按加州州立公园无障碍页面，
 // 地铁熔岩洞按景点数据。地热区只能走步道和栈道
 const ACCESS = "https://www.nps.gov/lavo/planyourvisit/accessibility.htm";
@@ -33,7 +33,7 @@ export const suitability: Record<string, Suitability> = {
     seniors: "caution",
     hazards: ["thermal"],
     noteZh:
-      "往返约 4.5 公里，起点海拔约 2,500 米，最后一段下到盆地、回程要爬坡，没有遮阴；盆地里只能走栈道，离开栈道有人被严重烫伤，孩子一定牵着。不想走远的可以去硫磺厂，路边就能看地热。",
+      "往返约 4.8 公里，起点海拔约 2,500 米，最后一段下到盆地、回程要爬坡，没有遮阴；盆地里只能走栈道，离开栈道有人被严重烫伤，孩子一定牵着。不想走远的可以去硫磺厂，路边就能看地热。",
   },
   "lavo-lassen-peak": {
     kidsFromAge: 9,
@@ -103,7 +103,7 @@ export const suitability: Record<string, Suitability> = {
     stroller: "yes",
     wheelchair: "yes",
     seniors: "ok",
-    noteZh: "官方说是约 0.8 公里的硬化路面环线，步道口有无障碍车位和旱厕，抬头就是拉森峰。",
+    noteZh: "官方说是约 0.3 公里（0.2 英里）的硬化路面环线，步道口有无障碍车位和旱厕，抬头就是拉森峰。",
     source: ACCESS,
   },
   "lavo-hot-rock": {

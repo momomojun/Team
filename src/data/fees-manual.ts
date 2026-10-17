@@ -36,11 +36,11 @@ export const manualFees: Record<string, ManualFees> = {
   },
   mova: {
     currency: "USD",
-    perPerson: 8,
+    perPerson: 10,
     note:
-      "纳瓦霍部落公园门票每人每天 $8（官网在线预付页面显示 $10），先到先得、不能预约，国家公园年卡不适用；向导团另付，阿甘点在园外、不收费。",
+      "纳瓦霍部落公园门票每人每天 $10，官网另列每车 $15（没说哪些车要收）；先到先得、不能预约，国家公园年卡不适用；向导团另付，阿甘点在园外、不收费。",
     source: "https://navajonationparks.org/navajo-tribal-parks/monument-valley/",
-    checked: "2026-09-28",
+    checked: "2026-10-16",
   },
   wave: {
     currency: "USD",

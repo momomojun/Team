@@ -50,11 +50,11 @@ export const biscayne: Attraction[] = [
         { lat: 25.46335, lon: -80.33098 },
       ],
     },
-    hike: { distanceMi: 0.7, gainFt: 0, difficulty: "easy" },
+    hike: { distanceMi: 0.8, gainFt: 0, difficulty: "easy" },
     hours: [{ open: "07:00", close: "17:30" }],
     bestTime: ["morning", "afternoon"],
     summary:
-      "从游客中心沿红树林边的木栈道走上伸进湾里的海堤，单程约 600 米，一路平坦。海堤尽头是鸟类保护区，冬天常见鸬鹚、燕鸥和滨鸟；早晚有成群的白鹮从头顶飞过，往返于南边岛上的栖息地。",
+      "从游客中心沿红树林边的木栈道走上伸进湾里的海堤，往返约 1.3 公里，一路平坦。海堤尽头是鸟类保护区，冬天常见鸬鹚、燕鸥和滨鸟；早晚有成群的白鹮从头顶飞过，往返于南边岛上的栖息地。",
     tips: [
       "全程几乎没有遮阴，带水、防晒；夏天傍晚蚊子多",
       "海堤尽头的鸟类保护区不要进去，用望远镜看",

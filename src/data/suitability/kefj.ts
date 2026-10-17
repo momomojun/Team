@@ -51,7 +51,7 @@ export const suitability: Record<string, Suitability> = {
     seniors: "caution",
     hazards: ["motion"],
     noteZh:
-      "8.5–9 小时一整天在船上，外海风浪大的日子晕船很明显；Major Marine 这条线 12 岁以下不能上船，带小孩订 Kenai Fjords Tours，或者改坐 6 小时的 Aialik 湾航线。轮椅订票时说明。",
+      "8–8.5 小时一整天在船上，外海风浪大的日子晕船很明显；Major Marine 这条线 12 岁以下不能上船，带小孩订 Kenai Fjords Tours，或者改坐 6 小时的 Aialik 湾航线。轮椅订票时说明。",
     source: ACCESS,
   },
   "kefj-resurrection-bay-cruise": {

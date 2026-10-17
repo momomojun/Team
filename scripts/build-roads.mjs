@@ -46,7 +46,8 @@ const FIXES = [
   ["glac-logan-pass", 2023, "06-13", "10-15"],
   ["glac-logan-pass", 2024, "06-22", "10-17"],
   ["glac-logan-pass", 2025, "06-16", "10-14"],
-  ["glac-logan-pass", 2026, "06-22", null],
+  // 2026 年 10 月 9 日晚 7 点起高山段（Avalanche 到 Jackson Glacier Overlook）因天气临时封闭，原定季末 10 月 19 日，按关闭算
+  ["glac-logan-pass", 2026, "06-22", "10-09"],
   // 雷尼尔山两个山口：2019 年秋天临时封过几天，取最后关闭的日子；Cayuse 2007 年冬季风暴毁路到 9 月底才开；
   // 2026 年 5 月 22 日一起重开（WSDOT 新闻稿）
   ["mora-chinook-pass", 2019, "05-23", "11-21"],

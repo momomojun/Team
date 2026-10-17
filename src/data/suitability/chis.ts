@@ -26,7 +26,7 @@ export const suitability: Record<string, Suitability> = {
     seniors: "caution",
     hazards: ["motion", "remote", "dropoff"],
     noteZh:
-      "要从随浪起伏的船上踏上码头铁梯（随潮水高 0–7 英尺），再爬 154 级台阶上岛，Island Packers 说手劲和行动力不够的可能不让下船；岛上步道两边是没有护栏的海崖。带小婴儿、行动不便的老人可以改坐不登岛的 Anacapa 沿岸巡游。",
+      "要从随浪起伏的船上踏上码头铁梯（随潮水高 0–7 英尺），再爬 157 级台阶上岛，Island Packers 说手劲和行动力不够的可能不让下船；岛上步道两边是没有护栏的海崖。带小婴儿、行动不便的老人可以改坐不登岛的 Anacapa 沿岸巡游。",
     source: MOBILITY,
   },
   "chis-sea-cave-kayak": {

@@ -2113,9 +2113,9 @@ export const bookingRules: BookingRule[] = [
     window: { type: "anytime" },
     url: "https://www.nps.gov/katm/planyourvisit/directions.htm",
     noteZh:
-      "去 Brooks Camp 只能坐飞机，一日游由几家航空公司经营，7 月最抢手，定了日期就订。2026 年参考价：Homer 出发 Bald Mountain Air $1,349、Alaska Bear Adventures $1,395（7–8 小时，地面约 4 小时）、Beryl Air $1,495；安克雷奇出发 Katmai Air $1,489（6 月 1 日到 9 月 18 日，经 King Salmon 转水上飞机）、Rust's $1,395（6 月 25 日到 8 月 5 日）；King Salmon 出发 Katmai Air 往返 $500。看天气起飞，订的时候问清楚取消、改期规则。",
+      "去 Brooks Camp 只能坐飞机，一日游由几家航空公司经营，7 月最抢手，定了日期就订。2026 年参考价：Homer 出发 Bald Mountain Air $1,349、Alaska Bear Adventures $1,395（7–8 小时，地面约 4 小时）、Beryl Air $1,495；安克雷奇出发 Katmai Air $1,489（6 月 1 日到 9 月 18 日，经 King Salmon 转水上飞机）、Rust's $1,495（6 月 25 日到 8 月 5 日，2026 年 10 月官网标价）；King Salmon 出发 Katmai Air 往返 $500。看天气起飞，订的时候问清楚取消、改期规则。",
     source: "https://katmaiair.com/bear-viewing/brooks-falls-day-tours/",
-    verified: "2026-10-04",
+    verified: "2026-10-16",
   },
   {
     id: "katm-coastal-day-trips",
@@ -2126,9 +2126,9 @@ export const bookingRules: BookingRule[] = [
     window: { type: "anytime" },
     url: "https://www.alaska.org/destination/homer/bear-viewing",
     noteZh:
-      "Homer 有好几家航空公司飞卡特迈海岸，大约 5 月中到 9 月中营业，都带向导。2026 年参考价：Alaska Bear Adventures 3–4 小时 $795、5–7 小时 $1,185（5 月 15 日到 9 月 15 日）；Smokey Bay Air 约 5 小时 $895；Beryl Air 的 Hallo 湾团 6 小时 $1,195。每架飞机只坐几个人，旺季提前订。",
+      "Homer 有好几家航空公司飞卡特迈海岸，大约 5 月中到 9 月中营业，都带向导。参考价（2026 年 10 月官网标价）：Alaska Bear Adventures 5–7 小时 $1,185 起，另收 7.25% 燃油附加费（5 月 15 日到 9 月 15 日）；Smokey Bay Air 约 5 小时 $1,145；Beryl Air 的 Hallo 湾团 6 小时 $1,195。每架飞机只坐几个人，旺季提前订。",
     source: "https://www.alaska.org/detail/alaska-bear-adventures",
-    verified: "2026-10-04",
+    verified: "2026-10-16",
   },
   {
     id: "katm-vtts-tour",
@@ -2219,9 +2219,9 @@ export const bookingRules: BookingRule[] = [
     window: { type: "anytime" },
     url: "https://www.nps.gov/lacl/planyourvisit/directions.htm",
     noteZh:
-      "海岸看熊要坐小飞机，退潮时在海滩降落，每架飞机只坐几个人，夏季提前订。2026 年参考：安克雷奇出发 Rust's 的 Chinitna 湾团约 6 小时 $1,145（7:30、14:00 两班，5 月 15 日到 8 月 31 日），Regal Air 的 Silver Salmon Creek 团 6.5 小时 $1,125（5 月 10 日到 9 月中，起飞时间看潮水）；Homer 出发 Smokey Bay Air $895、Alaska Bear Adventures $795 起；Soldotna 出发 Natron Air $800（5 月 25 日到 9 月 15 日）。",
+      "海岸看熊要坐小飞机，退潮时在海滩降落，每架飞机只坐几个人，夏季提前订。参考价（2026 年 10 月官网标价）：安克雷奇出发 Rust's 的 Chinitna 湾团约 6 小时 $1,195（7:30、14:00 两班，5 月 15 日到 8 月 31 日），Regal Air 的 Silver Salmon Creek 团 6.5 小时 $1,175（5 月 10 日到 9 月中，起飞时间看潮水）；Homer 出发 Smokey Bay Air $1,145、Alaska Bear Adventures $795 起；Soldotna 出发 Natron Air $800（5 月 25 日到 9 月 15 日）。",
     source: "https://www.alaska.org/destination/lake-clark-natl-park-preserve/bear-viewing",
-    verified: "2026-10-04",
+    verified: "2026-10-16",
   },
   {
     id: "lacl-crescent-lake",

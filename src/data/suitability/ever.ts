@@ -35,7 +35,7 @@ export const suitability: Record<string, Suitability> = {
     stroller: "yes",
     wheelchair: "yes",
     seniors: "ok",
-    noteZh: "约 300 米木栈道到观景台，官方列在轮椅能走的步道里；没有遮阴，夏天带帽子。",
+    noteZh: "约 260 米的木栈道环线到观景台，官方列在轮椅能走的步道里；没有遮阴，夏天带帽子。",
     source: MOBILITY,
   },
   "ever-mahogany-hammock": {

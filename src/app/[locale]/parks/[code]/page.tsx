@@ -11,6 +11,7 @@ import { ChargersSection } from "@/components/park/chargers-section";
 import { FeesSection } from "@/components/park/fees-section";
 import { ParkProfile } from "@/components/park/park-profile";
 import { RoadsSection } from "@/components/park/roads-section";
+import { TimeZoneBlock } from "@/components/park/time-zone-block";
 import { VisitsSection } from "@/components/park/visits-section";
 import { SectionSkeleton } from "@/components/section";
 import { IconArrowRight } from "@/components/icons";
@@ -22,7 +23,7 @@ import { getParkAttractions } from "@/data/attractions";
 import { CelebrityShotItem } from "@/components/attractions/celebrity-shots";
 import { FilmShotItem } from "@/components/attractions/film-shots";
 import { celebrityShots } from "@/data/celebrities";
-import { filmShots } from "@/data/films";
+import { filmSpots } from "@/data/film-spots";
 import { creatorRoutes, type CreatorRoute } from "@/data/creators";
 import { lodgingOptions } from "@/data/lodging";
 import { getPark, isSite, npsCodeOf } from "@/data/parks";
@@ -157,7 +158,7 @@ export default async function ParkPage({ params }: PageProps<"/[locale]/parks/[c
     .map((shot) => localizeCelebrity(shot, locale))
     .sort((a, b) => Number(!a.attraction) - Number(!b.attraction) || b.date.localeCompare(a.date));
   // 电影同款：能对上景点的排前面，新片在前
-  const parkFilms = filmShots
+  const parkFilms = filmSpots
     .filter((shot) => shot.park === park.code)
     .map((shot) => localizeFilm(shot, locale))
     .sort((a, b) => Number(!a.attraction) - Number(!b.attraction) || b.year - a.year);
@@ -294,6 +295,7 @@ export default async function ParkPage({ params }: PageProps<"/[locale]/parks/[c
             <p className="eyebrow text-mute">{t.seasonTitle}</p>
             <p className="mt-4 text-sm leading-7 text-ink-soft">{park.seasonNote}</p>
           </div>
+          <TimeZoneBlock park={park.code} timeZone={park.timeZone} locale={locale} dict={dict} />
           <ParkProfile code={park.code} visits={visits} locale={locale} dict={dict} />
           <div>
             <p className="eyebrow text-mute">{t.areasTitle}</p>

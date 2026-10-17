@@ -99,7 +99,7 @@ export const suitability: Record<string, Suitability> = {
     stroller: "partial",
     wheelchair: "no",
     seniors: "ok",
-    noteZh: "往返约 8 公里，几乎是平路，前段是碎石旧路，婴儿车能推一段；树矮、遮阴少，夏天带足水，体力一般的走到大棱镜观景台的岔路就回头。",
+    noteZh: "往返约 8.7 公里（5.4 英里），几乎是平路，前段是碎石旧路，婴儿车能推一段；树矮、遮阴少，夏天带足水，体力一般的走到大棱镜观景台的岔路就回头。",
   },
   "yell-fountain-paint-pot": {
     kidsFromAge: 0,

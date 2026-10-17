@@ -1,0 +1,10 @@
+{
+  "frozen_at_utc": "2026-10-17T03:43:31.261700+00:00",
+  "note": "Controlled comparison reuses exposed frozen V2/V3 fixtures, not a blind new test.",
+  "sha256": {
+    "run.py": "729c2c0056a3dabb1327d549a3c9e58021dba2dab97cd30cf0ac5e4e0538f2ac",
+    "test_replay.py": "8f45ff46f715841dd1a17ab2ab6806a7e754c40f6b0c7c144ae9bde066405b67",
+    "../v2/frozen-manifest.json": "3237a48184dc917146aaecde63f4115ebd1c5ea8586caa06beb93e2978d3ff26",
+    "../v3/frozen-manifest.json": "d2fe67c04842a41ace6b0018ec2326b775a64bf0eb4211e9c83417615cdf55a9"
+  }
+}

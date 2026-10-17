@@ -279,10 +279,10 @@ export const saguaro: Attraction[] = [
     lon: -110.72605,
     durationMin: 45,
     trail: { loop: true },
-    hike: { distanceMi: 1, gainFt: 100, difficulty: "easy", loop: true },
+    hike: { distanceMi: 0.9, gainFt: 100, difficulty: "easy", loop: true },
     bestTime: ["morning"],
     summary:
-      "约 1.6 公里的小环线，经过 1930 年代 Freeman 一家住过的土坯房遗址（只剩墙基），再下到一条长着牧豆树和大巨人柱的干河床，树荫比别的步道多，常能看到鸟和野生动物。路边有解说牌讲当年的沙漠拓荒生活。",
+      "约 1.5 公里的小环线，经过 1930 年代 Freeman 一家住过的土坯房遗址（只剩墙基），再下到一条长着牧豆树和大巨人柱的干河床，树荫比别的步道多，常能看到鸟和野生动物。路边有解说牌讲当年的沙漠拓荒生活。",
     tips: [
       "步道口在环线入口前的双向路段（往 Javelina 野餐区方向），不用开整个环线也能来",
       "河床里有不少踩出来的岔路，跟着石头和金属路标走",
@@ -322,11 +322,11 @@ export const saguaro: Attraction[] = [
     start: { lat: 32.23513, lon: -110.68684, nameZh: "Douglas Spring 步道口（Speedway Blvd 东头尽头）" },
     durationMin: 210,
     trail: { via: [{ lat: 32.2272, lon: -110.65058 }] },
-    hike: { distanceMi: 5.9, gainFt: 1100, difficulty: "moderate" },
+    hike: { distanceMi: 5.6, gainFt: 1000, difficulty: "moderate" },
     bestTime: ["morning"],
     bestMonths: [1, 2, 3],
     summary:
-      "从东区北边的 Douglas Spring 步道口沿山坡一路爬升，穿过巨人柱和草坡，再拐进一条小峡谷，尽头是一道从岩壁上分几层流下的小瀑布，往返约 9.5 公里、爬升约 350 米。冬春雨雪后才有水，旱季常常只剩岩壁上的水痕。",
+      "从东区北边的 Douglas Spring 步道口沿山坡一路爬升，穿过巨人柱和草坡，再拐进一条小峡谷，尽头是一道从岩壁上分几层流下的小瀑布，往返约 9 公里、爬升约 300 米。冬春雨雪后才有水，旱季常常只剩岩壁上的水痕。",
     tips: [
       "步道口在图森东边 Speedway Blvd 的尽头，不在 Cactus Forest 环线上，从东区游客中心开过去约 25 分钟",
       "1–3 月下过雨雪后去最有可能看到流水；夏天太热、季风季峡谷有山洪危险",

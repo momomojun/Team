@@ -38,7 +38,7 @@ export const gatesOfTheArctic: Attraction[] = [
     tips: [
       "这是 Dalton 公路上 Coldfoot 以南唯一的加油站，到 Coldfoot 还有约 190 公里，在这里加满",
       "木桥面湿了很滑，过桥慢开；别在桥上停车，过桥后到停车场再拍",
-      "BLM 游客站只在夏季开；Yukon River Camp 有 24 间客房（约 $249–289），想把去 Coldfoot 的 6 小时路拆成两天可以住这里",
+      "BLM 游客站只在夏季开；Yukon River Camp 有 24 间客房（约 $249–289），想把去 Coldfoot 的 6–8 小时路拆成两天可以住这里",
     ],
     photoFile: "DOT&PF Dalton Tour (5861529291).jpg",
   },
@@ -80,7 +80,7 @@ export const gatesOfTheArctic: Attraction[] = [
     tips: [
       "想看完整的午夜太阳，再往北约 27 公里到 132 英里处的 Gobblers Knob，爬到路东的山坡上；或者翻过 Atigun 山口",
       "支路往上约 800 米是 BLM 的北极圈营地（19 个营位，没有水），有野餐桌和厕所",
-      "从费尔班克斯开过来约 4–5 小时，不少一日游就在这里折返；跟团的会拿到一张“北极圈证书”",
+      "从费尔班克斯开过来约 320 公里、5–7 小时，不少一日游就在这里折返；跟团的会拿到一张“北极圈证书”",
     ],
     photoFile: "Arctic Circle sign (29650507696).jpg",
   },
@@ -96,7 +96,7 @@ export const gatesOfTheArctic: Attraction[] = [
     durationMin: 60,
     openMonths: [6, 7, 8, 9],
     closedNote:
-      "游客中心只在夏季开放（大约 5 月底到 9 月中旬），冬季关闭；BLM 在 Coldfoot 另有一个冬季联络站，开放时间有限，可以先打 BLM 费尔班克斯办公室的电话（907-474-2200）问。",
+      "游客中心只在夏季开放（一般 5 月底到 9 月上旬），冬季关闭；BLM 在 Coldfoot 另有一个冬季联络站，开放时间有限，可以先打 BLM 费尔班克斯办公室的电话（907-474-2200）问。",
     hours: [{ open: "12:00", close: "21:00" }],
     mustSee: true,
     outsidePark: true,
@@ -123,7 +123,7 @@ export const gatesOfTheArctic: Attraction[] = [
     mustSee: true,
     outsidePark: true,
     summary:
-      "1908 年前后淘金时兴起的小村，现在常住的只有十来个人，还靠打猎、设陷阱、种菜过日子。1930 年前后 Bob Marshall 在这里住了 15 个月，写成《Arctic Village》，也是从这里出发走进今天的北极之门。村里留着 1910 年代的木屋、由老木屋改成的小教堂（Kalhabuk Memorial Chapel）和小博物馆；从 Dalton 公路 189 英里处过 Koyukuk 河中叉的桥，再开约 5 公里就到。",
+      "1908 年前后淘金时兴起的小村，现在常住的只有十来个人，还靠打猎、设陷阱、种菜过日子。1930 年前后 Bob Marshall 在这里住了整整一年，写成《Arctic Village》，也是从这里出发走进今天的北极之门。村里留着 1910 年代的木屋、由老木屋改成的小教堂（Kalhabuk Memorial Chapel）和小博物馆；从 Dalton 公路 189 英里处过 Koyukuk 河中叉的桥，再开约 5 公里就到。",
     tips: [
       "村里的房子和地都是私人的，只走公共道路，别进院子拍照",
       "想进木屋听当地人讲生活，可以报 Coldfoot Camp 的 Wiseman 村探访团（2026 年每人 $69）",
@@ -335,7 +335,7 @@ export const gatesOfTheArctic: Attraction[] = [
       "公园正中的一个 Iñupiat 村子，约 400 人，坐落在布鲁克斯山脉分水岭上一个海拔六百多米的宽阔山口，村名的意思是“驯鹿粪多的地方”。村民是世代跟着驯鹿迁徙的内陆 Iñupiat 人 Nunamiut（“土地上的人”），1949 年起才陆续在这一带定居，至今春秋两季仍在村边猎驯鹿。Simon Paneak 纪念博物馆讲他们的历史和生活；NPS 在村中心有护林站，是公园里唯一有人值守的设施。没有路通到这里，可以从费尔班克斯坐 Wright Air 的定期航班当天往返。",
     tips: [
       "按 Wright Air 2026 年 8 月的时刻表，周一到周五 9:00、13:00 各有一班，周末只有 13:00；要当天往返坐工作日早上 9:00 那班，回程时间向航空公司确认",
-      "博物馆周一到周五 8:30–17:00 开（中午休息一小时），收少量门票；护林站大约 5 月中到 9 月中的工作日有人",
+      "博物馆周一到周五 8:30–17:00 开（中午休息一小时），门票 $20；护林站 4 月到 9 月底的工作日 9:00–17:00 有人，护林员进园巡逻时常关门",
       "村里物价很高，商店周日不开；尊重村民打猎和隐私，给人拍照先问。11 月到次年 2 月极冷，12 月上旬到 1 月初太阳整天不升起",
     ],
     photoFile: "Anaktuvuk Pass - panoramio.jpg",

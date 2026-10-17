@@ -5,7 +5,7 @@ import { useState } from "react";
 import { CelebrityShotItem } from "@/components/attractions/celebrity-shots";
 import { FilmShotItem } from "@/components/attractions/film-shots";
 import type { CelebrityShot } from "@/data/celebrities";
-import type { FilmShot } from "@/data/films";
+import type { FilmSpot } from "@/data/film-spots";
 import type { Dictionary } from "@/i18n/dictionaries";
 
 /**
@@ -21,7 +21,7 @@ export function CelebritySpots({
   text,
 }: {
   kind: "celebs" | "films";
-  shots: (CelebrityShot | FilmShot)[];
+  shots: (CelebrityShot | FilmSpot)[];
   /** 有明星同款的公园：代码 → 名字 */
   parks: { code: string; nameZh: string }[];
   /** 景点 id → 名字 */

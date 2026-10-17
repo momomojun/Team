@@ -23,7 +23,7 @@ export const suitability: Record<string, Suitability> = {
     seniors: "caution",
     hazards: ["wildlife", "remote", "motion"],
     noteZh:
-      "小飞机降在沙滩上，跟着向导蹚水、走泥滩到熊几十米外，没有观景台；Smokey Bay Air 要求 7 岁以上，各家公司年龄下限不同，有的要 12 岁。体力一般的要能走几公里泥地，订之前问清楚。",
+      "小飞机降在沙滩上，跟着向导蹚水、走泥滩到熊几十米外，没有观景台；Smokey Bay Air 要求 7 岁以上，各家公司年龄下限不同，Alaska Bear Adventures 的海岸团要 8 岁或 10 岁以上。体力一般的要能走几公里泥地，订之前问清楚。",
     source: "https://smokeybayair.com/bear-viewing",
   },
   "katm-vtts": {
@@ -33,7 +33,7 @@ export const suitability: Record<string, Suitability> = {
     seniors: "caution",
     hazards: ["remote", "motion"],
     noteZh:
-      "先坐水上飞机到 Brooks Camp，再坐约 1.5 小时的巴士走砂石路，一整天；在观景小屋看就够，下到谷底往返约 5.5 公里、落差约 300 米，回程一路上坡，小孩、老人别下去。NPS 没写巴士能不能上轮椅。",
+      "先坐水上飞机到 Brooks Camp，再坐约 1.5 小时的巴士走砂石路，一整天；在观景小屋看就够，下到谷底往返约 5.4 公里、落差约 300 米，回程一路上坡，小孩、老人别下去。NPS 没写巴士能不能上轮椅。",
     source: ACCESS,
   },
   "katm-dumpling-mountain": {

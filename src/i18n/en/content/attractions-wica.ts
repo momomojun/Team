@@ -51,7 +51,7 @@ export const content: Record<string, string> = {
   "Lookout Point 步道口（SD-87）": "Lookout Point Trailhead (SD-87)",
   "园里最适合半天的环线：Lookout Point 步道翻过起伏的草原小山，接 Highland Creek 步道下到 Beaver Creek 溪谷，再沿黑山 Centennial 步道最南的一段回来，约 7 公里。一路几乎没人，野牛、马鹿常在附近，山顶能看到 2010 年计划烧除后重新长起来的草原。": "The park's best half-day loop. The Lookout Point Trail crosses rolling prairie hills, then the Highland Creek Trail drops into the Beaver Creek valley, and you return on the southernmost stretch of the Black Hills' Centennial Trail, about 4.5 miles in all. You'll see almost no one, bison and elk are often nearby, and from the hilltop you can see prairie regrown after a 2010 prescribed burn.",
   "野牛就在步道附近，远远绕开，不要从野牛群中间穿过": "Bison are right by the trail. Give them a wide berth, and never walk through the middle of a herd.",
-  "夏天下午常到 32°C 以上、还有冰雹雷暴，早上出发、多带水，走长裤防蜱虫和毒葛": "Summer afternoons often top 90°F, with hail and thunderstorms. Start in the morning, carry extra water, and wear long pants against ticks and poison ivy.",
+  "夏天下午常超过 27°C（80°F）、还常有带大冰雹的雷暴，早上出发、多带水，走长裤防蜱虫和毒葛": "Summer afternoons regularly top 80°F, and strong thunderstorms with large hail are common. Start in the morning, carry extra water, and wear long pants against ticks and poison ivy.",
   "只想短走就爬到 Lookout Point 小山顶看看再原路回来": "For a short walk, climb to the top of Lookout Point and return the way you came.",
   "NPS 5 / NPS 6 砂石路（野牛群和马鹿）": "NPS 5 & NPS 6 backcountry roads",
   "NPS 5 砂石路（地质解说第 7 站）": "NPS 5 (geology road guide stop 7)",

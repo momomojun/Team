@@ -77,7 +77,7 @@ export const greatBasin: Attraction[] = [
     bestTime: ["morning", "afternoon"],
     summary:
       "游客中心旁的小环线，经过 Lehman Caves 早年的天然洞口和老的 Rhodes 小木屋，沿途是矮松、杜松林和大理石露头，有自导解说（游客中心的小册子或 NPS App），等洞穴导览时走一圈正好。",
-    tips: ["全年都能走，冬天可能有积雪", "园内步道一律不许带宠物，这条也一样"],
+    tips: ["全年都能走，冬天可能有积雪", "园内步道除了 Lexington 石拱步道和 Baker 镇到 Great Basin 游客中心的小路，都不许带宠物，这条也不行"],
     photoFile: "Rhodes Cabin Great Basin NV NPS.jpg",
   },
   {
@@ -235,8 +235,8 @@ export const greatBasin: Attraction[] = [
     durationMin: 120,
     trail: { loop: true },
     hike: { distanceMi: 3.3, gainFt: 850, difficulty: "moderate", loop: true },
-    openMonths: [5, 6, 7, 8, 9, 10],
-    closedNote: "Baker Creek 路是约 5.6 公里的砂石路，冬天积雪就关，一般 5 月到 10 月能开进去；冬天可以从路口穿雪鞋走进去。",
+    openMonths: [5, 6, 7, 8, 9, 10, 11],
+    closedNote: "Baker Creek 路是约 5.6 公里的砂石路，冬天积雪就关，一般 5 月到 11 月能开进去；冬天可以从路口穿雪鞋走进去。",
     bestTime: ["morning", "afternoon"],
     bestMonths: [9, 10],
     summary:
@@ -262,7 +262,7 @@ export const greatBasin: Attraction[] = [
     bestTime: ["morning"],
     bestMonths: [5, 6, 9, 10],
     summary:
-      "公园最南端的巨大石拱，少见地由石灰岩而不是砂岩构成，拱脚有流石，可能原本是一条古洞穴的通道。约 9 公里往返的步道穿过 2010 年代山火烧过的山坡，一路几乎无遮挡，最后走到石拱正下方；人很少，也是园内唯一能带狗的步道。",
+      "公园最南端的巨大石拱，少见地由石灰岩而不是砂岩构成，拱脚有流石，可能原本是一条古洞穴的通道。约 9 公里往返的步道穿过 2010 年代山火烧过的山坡，一路几乎无遮挡，最后走到石拱正下方；人很少，也是园内仅有的两条能牵狗走的步道之一（另一条是 Baker 镇到 Great Basin 游客中心的小路）。",
     tips: [
       "从 Baker 往南经犹他 21 号公路约 17 公里，过 Pruess 湖后右转进土路再开 11 公里以上；BLM 管的土路被冲得很烂，NPS 建议开高底盘四驱；NPS 路况说车要停在原步道口前约 1.6 公里",
       "来回开车加走路要大半天，路上没有厕所、水和信号；春秋常有冲沟积水，下雨别去",

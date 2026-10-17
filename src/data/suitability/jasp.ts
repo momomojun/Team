@@ -90,7 +90,7 @@ export const suitability: Record<string, Suitability> = {
     stroller: "partial",
     wheelchair: "assisted",
     seniors: "ok",
-    noteZh: "缆车和上站外的木栈道能上轮椅，上站二楼的餐厅要走约 20 级台阶；去山顶的 1.4 公里碎石坡（爬升约 200 米）轮椅、婴儿车都去不了。",
+    noteZh: "缆车和上站外的木栈道能上轮椅，上站二楼的餐厅要走约 20 级台阶；去山顶的 1.1 公里碎石坡（爬升约 150 米）轮椅、婴儿车都去不了。",
     source: SKYTRAM,
   },
   "jasp-pyramid-lake": {

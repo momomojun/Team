@@ -38,11 +38,11 @@ export const channelIslands: Attraction[] = [
     lon: -119.36211,
     start: VENTURA_DOCK,
     durationMin: 450,
-    bestMonths: [2, 3, 4],
+    bestMonths: [1, 2, 3],
     mustSee: true,
     permit: "船票要提前向 Island Packers 预订（不是抽签），Ventura 和 Oxnard 都有班次，淡季每周只有几班",
     summary:
-      "离大陆最近的岛，坐船约 1 小时。Anacapa 其实是三座小岛，游客只能登东岛：爬上 157 级台阶后是约 3 公里的平缓步道，走到 Inspiration Point 能俯瞰中、西两岛，2–4 月野花开时满岛金黄。",
+      "离大陆最近的岛，坐船约 1 小时。Anacapa 其实是三座小岛，游客只能登东岛：爬上 157 级台阶后是约 3 公里的平缓步道，走到 Inspiration Point 能俯瞰中、西两岛，1 月底到 3 月野花盛开时满岛金黄。",
     tips: [
       "下船要先爬几级铁梯上码头、再爬 157 级台阶；岛上没有水、几乎没有树荫，带足水、帽子和防晒",
       "这里的码头最受风浪影响，船长到现场才决定能否靠岸，靠不了就改为海上巡游、退部分票款；3–5 月风大，更容易取消",
@@ -155,7 +155,7 @@ export const channelIslands: Attraction[] = [
     summary:
       "第二大岛，单程坐船 2–3 小时，在岛上约 3–4 小时：可以走到约 3 公里长的 Water Canyon 白沙滩（从码头往返约 4.8 公里），看看码头边的老牧场；回程船会绕到 Painted Cave 海蚀洞。",
     tips: [
-      "2026 年 5–6 月山火烧掉全岛近 40%，7 月 1 日恢复一日游；Torrey Pines 步道和烧过的区域仍关闭，露营 10 月 13 日后才恢复，出发前查 NPS 公告",
+      "2026 年 5–6 月山火烧掉全岛三成多，7 月 1 日恢复一日游；Torrey Pines 步道和烧过的区域仍关闭，Water Canyon 营地和西北、西南两区的海滩露营 10 月 14 日起恢复，东南区今年不开放，出发前查 NPS 公告",
       "船大约 4–10 月运行、每周只有几班；这座岛风常常很大，带防风外套",
       "码头上岸要爬一小段台阶；岛上不卖吃喝，水和食物自带",
     ],
@@ -174,7 +174,7 @@ export const channelIslands: Attraction[] = [
     durationMin: 720,
     openMonths: [10],
     closedNote:
-      "San Miguel 岛最远、海况最差，Island Packers 只在 7–10 月开船且大多只送露营者，一日游一年通常只有一两班（多在 9–10 月），其余时间基本去不了；可以改去 Santa Rosa 岛（回程也会绕 Painted Cave）或 Santa Cruz 岛。",
+      "San Miguel 岛最远、海况最差，Island Packers 只在 7–10 月开船且大多只送露营者，一日游一年通常只有一两班（多在 10 月），其余时间基本去不了；可以改去 Santa Rosa 岛（回程也会绕 Painted Cave）或 Santa Cruz 岛。",
     permit: "船票要提前向 Island Packers 预订，一日游班次极少，登岛还要签 NPS 的许可和免责书",
     summary:
       "最西、最远的岛，单程坐船 3–4 小时，最后换乘小艇冲上沙滩登岸。可以自己爬到 Cabrillo 纪念碑和 Lester 牧场旧址；西端 Point Bennett 聚集着大量海豹和海狮，要露营、跟护林员往返约 26 公里才能去。",
