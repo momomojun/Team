@@ -25,6 +25,8 @@ jobs:
       # Windows 上生成的 package-lock.json 有时缺 Linux 才装的可选包（npm 的老问题）；npm ci 不认时退到 npm install，并在 CI 里标一个警告
       - run: npm ci || { echo "::warning::package-lock.json 和 package.json 对不上，这次改用 npm install；在 Linux 上跑一次 npm install 更新锁文件"; npm install --no-audit --no-fund; }
       - run: npm run lint
+      # PageProps、LayoutProps、RouteContext 是 Next.js 生成到 .next/types 的全局类型，干净的 checkout 里没有，先生成
+      - run: npx next typegen
       - run: npx tsc --noEmit -p .
       - run: npm test
 
