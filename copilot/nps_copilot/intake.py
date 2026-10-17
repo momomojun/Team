@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Any
 
 from . import catalog
-from .dates import DateParts, date_range_days, merge, next_occurrence, parse_date_spans, parse_days
+from .dates import DateParts, date_range_days, merge, next_occurrence, parse_date_spans, parse_days, relative_month
 from .providers import Provider
 from .text import contains, normalize
 
@@ -40,6 +40,7 @@ EXTRACTION_SCHEMA = {
     },
 }
 MAX_DAYS = 14
+REGION_ZH = {"PDX": "俄勒冈州", "PWM": "缅因州", "IAD": "杜勒斯", "DCA": "里根"}
 
 PACE_OPTIONS = [
     {"value": "relaxed", "zh": "轻松玩", "en": "Take it easy", "zhNote": "每天少安排一些，多留休息时间", "enNote": "fewer stops, more downtime"},
@@ -62,8 +63,13 @@ def is_english(text: str) -> bool:
     return letters > 0 and han == 0
 
 
+YES_WORDS = r"是的|是啊|是滴|是|对的|对呀|对啊|对|没错|没问题|确认|嗯嗯|嗯|好的|好|可以|行|就这天|就是|yes|yeah|yep|yup|correct|right|ok|okay|sure|exactly"
+
+
 def yes(text: str) -> bool:
-    return bool(re.fullmatch(r"\s*(是|是的|对|对的|没错|确认|嗯|好|好的|可以|行|yes|yeah|yep|y|correct|right|ok|okay|sure)[。.!！~\s]*", text, re.I))
+    """“是的”“嗯对”“对的没错”“yes, correct”：整句只由表示肯定的词组成"""
+    words = r"(?:" + YES_WORDS + r")"
+    return bool(re.fullmatch(r"\s*" + words + r"(?:[\s,，、]*" + words + r")*[\s。.!！~呀啊吧呢]*", normalize(text), re.I))
 
 
 def no(text: str) -> bool:
@@ -233,6 +239,8 @@ class Intake:
                     self.pace = Field(option["value"], "user_confirmation", message.strip())
             elif target in ("origin", "destination"):
                 setattr(self, target, Field({"airport": option["value"]}, "user_confirmation", message.strip()))
+            elif target == "days":
+                self.days = Field(option["value"], "user_confirmation", message.strip())
             elif target == "parks":
                 self.parks = Field(option["value"], "user_confirmation", message.strip())
             return "choice"
@@ -284,14 +292,25 @@ class Intake:
     def _absorb(self, kept: dict, message: str) -> None:
         if kept["parks"]:
             self._read_parks(kept["parks"])
-        if kept["dates"]:
-            self._read_dates(kept["dates"], message)
+        range_days = self._read_dates(kept["dates"], message) if kept["dates"] else None
         # 模型常把“三天”“一周”“five days”放进 dates 而不是 duration：天数从哪个片段读到都算
+        stated = None
         for span in ([kept["duration"]] if kept["duration"] else []) + kept["dates"]:
             days = parse_days(span)
             if days is not None:
-                self.days = Field(days, "user", span)
+                stated = Field(days, "user", span)
                 break
+        if stated and range_days and stated.value != range_days:
+            # “6月1日到6月5日”是 5 天，又说“玩三天”：不替用户选，问按哪个
+            self.days = Field()
+            self.pending = {"kind": "choose", "target": "days", "options": [
+                {"value": range_days, "zh": f"{range_days} 天（按日期算）", "en": f"{range_days} days (from the dates)"},
+                {"value": stated.value, "zh": f"{stated.value} 天", "en": f"{stated.value} days"},
+            ]}
+        elif stated:
+            self.days = stated
+        elif range_days:
+            self.days = Field(range_days, "user", normalize(" ".join(kept["dates"])))
         for role in ("origin", "destination"):
             if kept[role]:
                 self._read_place(role, kept[role])
@@ -341,15 +360,20 @@ class Intake:
                 return [main] + [code for code in codes if code != main]
         return codes  # 凑不到一起：留给 _render 问
 
-    def _read_dates(self, spans: list[str], message: str) -> None:
+    def _read_dates(self, spans: list[str], message: str) -> int | None:
+        """读日期；返回日期范围算出来的天数（“6月1日到6月5日”是 5），没有范围是 None"""
         found, _ = parse_date_spans(spans)
-        if not found:
-            return
         joined = normalize(" ".join(spans))
+        if not found:
+            # “下个月”“next month”：按 reference 算出是几月（只给月份）
+            month = relative_month(joined, self.reference)
+            if month is not None:
+                self.date, self.date_evidence, self.start_date = DateParts(month=month), joined, Field()
+                self.month = Field(month, "user", joined)
+            return None
+        range_days = None
         if len(found) >= 2 and found[0].month is not None:
-            days = date_range_days(joined, found[0], found[1], self.reference)
-            if days is not None and not self.days.value:
-                self.days = Field(days, "user", joined)
+            range_days = date_range_days(joined, found[0], found[1], self.reference)
         parts = merge(self.date, found[0])
         self.date = parts
         self.date_evidence = joined
@@ -359,7 +383,11 @@ class Intake:
         if parts.month is not None and parts.day is not None:
             if year is not None:
                 try:
-                    self.start_date = Field(dt.date(year, parts.month, parts.day).isoformat(), "user", joined)
+                    start = dt.date(year, parts.month, parts.day)
+                    # “6月15日到盐湖城，第二天开始玩”：从第二天算
+                    if re.search(r"第二天开始|次日开始|第二天才开始|next day|the day after", normalize(message), re.I):
+                        start += dt.timedelta(days=1)
+                    self.start_date = Field(start.isoformat(), "user", joined)
                 except ValueError:
                     self.pending = {"kind": "bad_date", "text": f"{year} 年没有 {parts.month} 月 {parts.day} 日"}
         elif parts.month is not None:
@@ -367,35 +395,41 @@ class Intake:
             nearest = self.reference.year + (1 if parts.month < self.reference.month else 0)
             if year is None or year == nearest:
                 self.month = Field(parts.month, "user", joined)
+        return range_days
 
     def _read_place(self, role: str, span: str) -> None:
         hits = catalog.find_all(span, catalog.airports())
         if len(hits) == 1:
             setattr(self, role, Field({"airport": hits[0][0]}, "user", span))
         elif len(hits) > 1:
-            self.pending = {"kind": "choose", "target": role, "options": [self._airport_option(code) for code, _ in hits]}
+            # 记在字段上：这一轮没答清楚，下一轮接着问，不会悄悄变成“没有回程地”（之前会）
+            setattr(self, role, Field([code for code, _ in hits], "ambiguous", span))
         else:
             setattr(self, role, Field(None, "unknown", span))
 
     def _read_party(self, span: str) -> None:
         text = normalize(span)
         negated = re.search(r"不带|没有|不跟|without|\bno\b", text, re.I)
-        if re.search(r"老人|爸妈|父母|长辈|爷爷|奶奶|外公|外婆|老爸|老妈|senior|elderly|parents|grandparents", text, re.I):
+        if re.search(r"老人|爸妈|父母|长辈|爷爷|奶奶|外公|外婆|老爸|老妈|senior|elderly|parents|grand(?:parents?|ma|pa|mother|father)|granny", text, re.I):
             self.party["seniors"] = not negated
-        age = re.search(r"(\d{1,2}|[一二两三四五六七八九十]+)\s*(?:岁|周岁|-year-old|years? old)", text)
-        if age:
-            from .dates import zh_number
-            value = zh_number(age.group(1))
-            if value is not None and 0 <= value <= 17:
-                self.party["youngestKid"] = min(value, self.party.get("youngestKid", 99))
-                self.party.pop("_kidAgeUnknown", None)
-        elif re.search(r"婴儿|宝宝|baby|infant|toddler", text, re.I) and not negated:
+        from .dates import EN_NUMBERS, zh_number
+        words = "|".join(sorted(EN_NUMBERS, key=len, reverse=True))
+        ages = re.findall(r"(\d{1,2}|[一二两三四五六七八九十]+|" + words + r")\s*(?:岁|周岁|-? ?years?-? ?olds?|yo\b)", text, re.I)
+        values = [value for value in (zh_number(token) for token in ages) if value is not None and 0 <= value <= 17]
+        if values:
+            self.party["youngestKid"] = min(min(values), self.party.get("youngestKid", 99))
+            self.party.pop("_kidAgeUnknown", None)
+        # “婴儿车”只说明带推车，不说明孩子多大
+        elif re.search(r"婴儿(?!车)|宝宝|baby(?! ?(?:stroller|carrier))|infant", text, re.I) and not negated:
             self.party["youngestKid"] = 0
+        elif re.search(r"toddler|幼儿", text, re.I) and not negated:
+            self.party["youngestKid"] = min(2, self.party.get("youngestKid", 99))
+        age = bool(values)
         if re.search(r"婴儿车|推车|stroller", text, re.I):
             self.party["stroller"] = not negated
         if re.search(r"轮椅|wheelchair", text, re.I):
             self.party["wheelchair"] = not negated
-        if re.search(r"孩子|小孩|儿子|女儿|kids?|child|children|son|daughter", text, re.I) and "youngestKid" not in self.party and not negated and not age:
+        if re.search(r"孩子|小孩|儿子|女儿|kids?|child|children|\bson\b|daughter", text, re.I) and "youngestKid" not in self.party and not negated and not age:
             self.party.setdefault("_kidAgeUnknown", True)
         self.party_evidence.append(span)
 
@@ -447,7 +481,14 @@ class Intake:
         if question is None and self.days.value and not 1 <= self.days.value <= MAX_DAYS:
             question = {"kind": "days", "text": f"一次最多排 {MAX_DAYS} 天，要不要缩短一点，或者分成两段？" if zh else f"I can plan up to {MAX_DAYS} days at a time. Could you shorten it, or split it into two trips?"}
             self.days = Field()
-        if question is None and not (self.origin.value and "airport" in self.origin.value):
+        for role in ("origin", "destination"):
+            place = getattr(self, role)
+            if question is None and place.source == "ambiguous":
+                where = "" if role == "origin" else ("回程" if zh else "the return ")
+                question = {"kind": "choose", "target": role,
+                            "text": f"{where}“{place.evidence}”有好几个机场，是哪一个？" if zh else f"There are several airports for {where}“{place.evidence}”. Which one?",
+                            "options": [self._airport_option(code) for code in place.value]}
+        if question is None and not (isinstance(self.origin.value, dict) and "airport" in self.origin.value):
             question = self._origin_question(zh)
         if question is None and self.destination.source == "unknown":
             said = self.destination.evidence
@@ -477,8 +518,10 @@ class Intake:
             error = pending.get("error")
             text = (f"{error}。" if error else "") + (f"{month} 月 {day} 日是哪一年？" if zh else f"Which year for {calendar_name(month)} {day}?")
             return {"kind": "ask_year", "text": text, "month": month, "day": day}
-        if pending["kind"] == "choose" and pending.get("target") in ("origin", "destination") and "text" not in pending:
-            pending["text"] = "有好几个机场叫这个名字，是哪一个？" if zh else "A few airports go by that name. Which one?"
+        if pending["kind"] == "choose" and pending.get("target") == "days" and "text" not in pending:
+            dates_days, said_days = (option["value"] for option in pending["options"])
+            pending["text"] = (f"按你说的日期算是 {dates_days} 天，你又说玩 {said_days} 天，按哪个排？" if zh else
+                               f"Those dates make {dates_days} days, but you also said {said_days}. Which should I use?")
             return pending
         if pending["kind"] == "bad_date":
             self.pending = None
@@ -524,7 +567,10 @@ class Intake:
     def _airport_option(code: str) -> dict:
         airport = catalog.airports()[code]
         english = catalog.english_city(code)
-        return {"value": code, "zh": f"{airport.city} · {airport.name_zh}（{code}）", "en": f"{english} ({code})" if english else code}
+        # 同名城市要能说“俄勒冈那个”“缅因那个”“杜勒斯”：选项里写上地区
+        region = REGION_ZH.get(code)
+        city = f"{airport.city}（{region}）" if region and region not in airport.city else airport.city
+        return {"value": code, "zh": f"{city} · {airport.name_zh}（{code}）", "en": f"{english} ({code})" if english else code}
 
     @staticmethod
     def _public(question: dict, zh: bool) -> dict:

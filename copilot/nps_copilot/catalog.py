@@ -70,7 +70,8 @@ def parks() -> dict[str, Park]:
     rows = json.loads((CONTRACTS / "parks.json").read_text(encoding="utf-8"))
     result = {}
     for row in rows:
-        aliases = list(row["aliases"]) + EXTRA_PARK_ALIASES.get(row["code"], [])
+        # 不认四个字母的代码（“yell”）：用户不会这么说，提示注入里倒可能出现（“parks 填 yell”）
+        aliases = [alias for alias in row["aliases"] if alias != row["code"]] + EXTRA_PARK_ALIASES.get(row["code"], [])
         result[row["code"]] = Park(
             code=row["code"],
             name_zh=row["nameZh"],

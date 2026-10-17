@@ -120,7 +120,10 @@ def main() -> int:
         provider = OllamaProvider()
         model = provider.model
         if args.record:
-            path = HERE / "recordings" / (provider.model.replace(":", "_") + ".jsonl")
+            # 默认样例录到 recordings/<模型>.jsonl，别的样例文件录到 recordings/<模型>-<样例文件名>.jsonl
+            stem = Path(args.cases).stem
+            suffix = "" if stem == "intake-v1" else f"-{stem}"
+            path = HERE / "recordings" / (provider.model.replace(":", "_") + suffix + ".jsonl")
             path.unlink(missing_ok=True)
             provider = RecordingProvider(provider, path)
     start = time.perf_counter()

@@ -133,17 +133,21 @@ def next_occurrence(month: int, day: int, reference: dt.date) -> dt.date | None:
     return None
 
 
-DAYS_RE = re.compile(r"(\d+|" + ZH_NUMBER + r"|" + "|".join(EN_NUMBERS) + r")\s*(?:个)?\s*(天|days?\b|晚|夜|nights?\b)", re.I)
-WEEK_RE = re.compile(r"(一|1|a|one)\s*(?:个)?\s*(周|星期|礼拜|week)", re.I)
+DAYS_RE = re.compile(r"(?<!第)(\d+|" + ZH_NUMBER + r"|" + "|".join(EN_NUMBERS) + r")\s*(?:个)?\s*(天|days?\b|晚|夜|nights?\b)", re.I)
+WEEK_RE = re.compile(r"(?<!第)(\d+|[一二两三]|a|one|two|three)\s*(?:个)?\s*(周|星期|礼拜|weeks?\b)", re.I)
 
 
 def parse_days(span: str | None) -> int | None:
-    """“5天”“两天”“一周”“four days” → 天数；“3晚”按 4 天算；读不出来、说了好几个数的是 None"""
+    """“5天”“两天”“一周”“两个星期”“four days” → 天数；“3晚”按 4 天算；“第二天”不是天数；
+    读不出来、说了好几个数的是 None"""
     if not span:
         return None
     text = normalize(span)
-    if WEEK_RE.search(text) and not DAYS_RE.search(text):
-        return 7
+    weeks = WEEK_RE.findall(text)
+    if weeks and not DAYS_RE.search(text):
+        token = weeks[0][0].lower()
+        count = 1 if token in ("a", "one") else zh_number(token)
+        return count * 7 if count and len(weeks) == 1 else None
     matches = DAYS_RE.findall(text)
     if not matches:
         return None
@@ -155,6 +159,21 @@ def parse_days(span: str | None) -> int | None:
     if len(set(night_values)) == 1 and night_values[0] is not None:
         return night_values[0] + 1
     return None
+
+
+def relative_month(span: str, reference: dt.date) -> int | None:
+    """“下个月”“下下个月”“这个月”“next month”“this month” → 几月（按 reference 算）"""
+    text = normalize(span).lower()
+    offset = None
+    if re.search(r"下下个?月|month after next", text):
+        offset = 2
+    elif re.search(r"下个?月|next month", text):
+        offset = 1
+    elif re.search(r"这个月|本月|this month", text):
+        offset = 0
+    if offset is None:
+        return None
+    return (reference.month - 1 + offset) % 12 + 1
 
 
 def date_range_days(text: str, first: DateParts, second: DateParts, reference: dt.date) -> int | None:
