@@ -99,7 +99,7 @@ export const tempClosures: TempClosure[] = [
     reasonZh:
       "Notch 步道和步道两侧 30 米内全部封闭，NPS 在修已经不安全的那段木梯，没有公布重开日期；可以改走同一个停车场的 Door、Window 步道，或者去 Saddle Pass 爬一段恶地之墙。",
     source: "https://www.nps.gov/badl/planyourvisit/conditions.htm",
-    checked: "2026-10-13",
+    checked: "2026-10-16",
   },
   {
     attractions: ["meve-far-view-sites"],

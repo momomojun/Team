@@ -94,7 +94,7 @@ export const windCave: Attraction[] = [
     lon: VC.lon,
     start: VC_PARKING,
     durationMin: 60,
-    hike: { distanceMi: 0.25, difficulty: "easy" },
+    hike: { distanceMi: 0.25, difficulty: "moderate" },
     permit: TOUR_PERMIT,
     summary:
       "最轻松的导览，全年都有：坐电梯下去，走约 400 米、150 级台阶，箱格、洞穴爆米花和流石每样都能看一点，适合时间少、带小孩或体力一般的人。",
@@ -235,7 +235,7 @@ export const windCave: Attraction[] = [
       "园里最适合半天的环线：Lookout Point 步道翻过起伏的草原小山，接 Highland Creek 步道下到 Beaver Creek 溪谷，再沿黑山 Centennial 步道最南的一段回来，约 7 公里。一路几乎没人，野牛、马鹿常在附近，山顶能看到 2010 年计划烧除后重新长起来的草原。",
     tips: [
       "野牛就在步道附近，远远绕开，不要从野牛群中间穿过",
-      "夏天下午常到 32°C 以上、还有冰雹雷暴，早上出发、多带水，走长裤防蜱虫和毒葛",
+      "夏天下午常超过 27°C（80°F）、还常有带大冰雹的雷暴，早上出发、多带水，走长裤防蜱虫和毒葛",
       "只想短走就爬到 Lookout Point 小山顶看看再原路回来",
     ],
   },

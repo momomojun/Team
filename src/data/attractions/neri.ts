@@ -156,7 +156,7 @@ export const newRiverGorge: Attraction[] = [
     bestMonths: [6, 7, 8, 9],
     permit: "要向西弗州政府许可的漂流公司预订（ACE Adventure Resort、Adventures on the Gorge、River Expeditions 等），全天团每人约 $140 起；下游峡谷一般 12 岁以上",
     summary:
-      "新河下游峡谷（Thurmond / Cunard 到大桥下的 Fayette Station）是美东最有名的激流河段之一：20 多个激流、大多是 III–IV 级，水量大、浪头高，最后从大桥下面漂过。全天团含河边午餐，水上 4–6 小时。带小孩的可以选上游河段（Upper New，I–III 级，年龄要求低得多）。",
+      "新河下游峡谷（Thurmond / Cunard 到大桥下的 Fayette Station）是美东最有名的激流河段之一：20 多个激流、从 III 级到 V 级，水量大、浪头高，最后从大桥下面漂过。全天团含河边午餐，水上 4–6 小时。带小孩的可以选上游河段（Upper New，I–III 级，年龄要求低得多）。",
     tips: [
       "早上 8–9 点在漂流公司基地报到、换装、坐车到下水点，傍晚回来；留出一整天",
       "穿速干衣物和绑带凉鞋，别穿棉的；春秋水冷，公司会租湿衣",
