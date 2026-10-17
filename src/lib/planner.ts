@@ -3,6 +3,7 @@ import { lastBusMinutes, shuttleLeg, shuttleOptions, type ShuttleRide } from "./
 import { closureOn } from "./closures";
 import { aroundMinutes } from "./roads";
 import { departuresOn, weekdayOf, type Departures } from "./tours";
+import { zoneOf, zoneShift } from "./time-zone";
 import { gatewayNode, travelMinutes } from "./travel";
 
 export interface PlanStop {
@@ -19,6 +20,8 @@ export interface PlanStop {
   hours?: EntryHours[];
   /** 旺季早上就停满的停车场（见 parking.ts） */
   parking?: ParkingRule;
+  /** 和公园不在一个时区的景点（见 Attraction.timeZone）；不写按公园的时区 */
+  timeZone?: string;
 }
 
 /**
@@ -39,6 +42,8 @@ export interface LodgingPoint {
 export interface SunWindow {
   sunrise: number;
   sunset: number;
+  /** 这两个时间是哪个时区的钟点，一天的时间线都按它算；不写就按当天第一站的时区 */
+  zone?: string;
 }
 
 /** 没设出发日期时用的大致日出日落 */
@@ -488,6 +493,11 @@ export interface TimelineEntry {
   warnings: StopWarning[];
   /** 过来这一段要坐的班车 */
   shuttle?: ShuttleUse;
+  /**
+   * 这一站的当地时间比这天行程用的时间快多少分钟（同一天跨了时区：佩吉和纪念碑谷、
+   * 西奥多·罗斯福的 South Unit 和 North Unit）；start、end 还是按这天行程用的时间
+   */
+  zoneShift?: number;
 }
 
 export interface DayTimeline {
@@ -526,6 +536,8 @@ function simulate(
   windows: (EntryWindow | null)[] = [],
   /** 停车场一早就满的景点这天的情况，和 stops 一一对应 */
   parking: (ParkingWindow | null)[] = [],
+  /** 各站当地时间比这天行程用的时间快多少分钟（见 localShifts），和 stops 一一对应 */
+  shifts: number[] = [],
 ): DayTimeline {
   const morning = drives[0] ?? 0;
   const sunriseStart = sun.sunrise - 20;
@@ -598,7 +610,7 @@ function simulate(
       start = Math.max(arrive, windows[index]!.open);
     } else {
       // 游客中心、游船、导览团没开门之前到了，等开门；到的时候已经关门（或者只剩不到一刻钟）也算过了时间
-      const hours = openHours(stop);
+      const hours = openHours(stop, shifts[index]);
       if (hours) {
         start = Math.max(arrive, hours[0]);
         if (start > hours[1] - CLOSING_SLACK) warnings.push("afterHours");
@@ -626,7 +638,16 @@ function simulate(
     driveTotal += driveMin;
     activeTotal += driveMin + stop.durationMin;
     clock = end;
-    return { id: stop.id, driveMin, waitMin: start - arrive, start, end, slot: slots[index], warnings };
+    return {
+      id: stop.id,
+      driveMin,
+      waitMin: start - arrive,
+      start,
+      end,
+      slot: slots[index],
+      warnings,
+      ...(shifts[index] ? { zoneShift: shifts[index] } : {}),
+    };
   });
 
   const returnAt = returnDrive > 0 && entries.length > 0 ? clock + returnDrive : undefined;
@@ -720,12 +741,42 @@ export function parkingOn(stop: PlanStop, date: string | null | undefined): Park
   };
 }
 
+/**
+ * 各站的当地时间比这天行程用的时间快多少分钟。一天的时间线按日出日落的那个时区算
+ * （planner 里是当天第一站的时区），同一天去了别的时区的景点（佩吉的羚羊峡谷按亚利桑那时间、
+ * 纪念碑谷按纳瓦霍时间，夏天差 1 小时），那里写的开门、班次、停车场时间都要换算过来
+ */
+function localShifts(stops: PlanStop[], sun: SunWindow, date: string | null | undefined): number[] {
+  const dayZone = sun.zone ?? (stops[0] && zoneOf(stops[0]));
+  return stops.map((stop) => zoneShift(zoneOf(stop), dayZone, date));
+}
+
+/** 景点这天的班次、入场时间、停车场，换算成这天行程用的时间（shift 见 localShifts） */
+function dayClock(stop: PlanStop, date: string | null | undefined, shift: number) {
+  const departures = departuresOn(stop.id, date);
+  const window = entryWindow(stop, date);
+  const lot = parkingOn(stop, date);
+  if (!shift) return { departures, window, lot };
+  const move = (minutes: number | undefined) => (minutes === undefined ? undefined : minutes - shift);
+  return {
+    departures: departures && { ...departures, times: departures.times.map((time) => time - shift) },
+    window: window && {
+      open: window.open - shift,
+      ...(window.lastEntry !== undefined ? { lastEntry: move(window.lastEntry) } : {}),
+      ...(window.close !== undefined ? { close: move(window.close) } : {}),
+    },
+    lot: lot && { ...lot, full: lot.full - shift, free: lot.free - shift },
+  };
+}
+
 /** 按当天顺序推算几点出发、几点到每个景点、几点回到住处 */
 export function buildTimeline(stops: PlanStop[], context: DayContext): DayTimeline {
   const legs = stops.map((stop, index) =>
     scaleLeg(index === 0 ? morningLeg(context, stop) : stopLeg(stops[index - 1], stop, context.date), context.drive),
   );
   const back = scaleLeg(eveningLeg(context, stops.at(-1)), context.drive);
+  const shifts = localShifts(stops, context.sun, context.date);
+  const clocks = stops.map((stop, k) => dayClock(stop, context.date, shifts[k]));
   const timeline = simulate(
     stops,
     legs.map((leg) => leg.minutes),
@@ -735,9 +786,10 @@ export function buildTimeline(stops: PlanStop[], context: DayContext): DayTimeli
     undefined,
     context.from?.endpoint === "origin",
     context.to?.endpoint === "destination",
-    stops.map((stop) => departuresOn(stop.id, context.date)),
-    stops.map((stop) => entryWindow(stop, context.date)),
-    stops.map((stop) => parkingOn(stop, context.date)),
+    clocks.map((clock) => clock.departures),
+    clocks.map((clock) => clock.window),
+    clocks.map((clock) => clock.lot),
+    shifts,
   );
   return withClosures(withShuttles(timeline, stops, legs, back, context.date, context.sun), context.date);
 }
@@ -827,6 +879,13 @@ export function buildLiveTimeline(
     context.to && live.length > 0
       ? scaleLeg(stayLeg(context.to, live[live.length - 1], "back", context.date), context.drive)
       : { minutes: 0 };
+  const shifts = localShifts(live, context.sun, context.date);
+  // 已经到了的那一站不用再等班次、等开门
+  const clocks = live.map((stop, index) =>
+    index === 0 && arrivedAt !== undefined
+      ? { departures: null, window: null, lot: null }
+      : dayClock(stop, context.date, shifts[index]),
+  );
   const timeline = simulate(
     live,
     legs.map((leg) => leg.minutes),
@@ -836,10 +895,10 @@ export function buildLiveTimeline(
     arrivedAt ?? context.now,
     false,
     context.to?.endpoint === "destination",
-    // 已经到了的那一站不用再等班次、等开门
-    live.map((stop, index) => (index === 0 && arrivedAt !== undefined ? null : departuresOn(stop.id, context.date))),
-    live.map((stop, index) => (index === 0 && arrivedAt !== undefined ? null : entryWindow(stop, context.date))),
-    live.map((stop, index) => (index === 0 && arrivedAt !== undefined ? null : parkingOn(stop, context.date))),
+    clocks.map((clock) => clock.departures),
+    clocks.map((clock) => clock.window),
+    clocks.map((clock) => clock.lot),
+    shifts,
   );
   return withShuttles(timeline, live, legs, back, context.date, context.sun);
 }
@@ -850,16 +909,25 @@ export function buildLiveTimeline(
  * 没写最佳时段的体验一般 8:30 到 18:30（夏天，各家不同）。看日出日落、星空的体验有最佳时段，不受这个限制
  */
 const OPEN_HOURS = { visitor: [9 * 60, 17 * 60], experience: [8 * 60 + 30, 18 * 60 + 30] } as const;
-const openHours = (stop: PlanStop) =>
-  stop.kind === "visitor" ? OPEN_HOURS.visitor : stop.kind === "experience" && !stop.bestTime?.length ? OPEN_HOURS.experience : null;
+const openHours = (stop: PlanStop, shift = 0): readonly [number, number] | null => {
+  const hours =
+    stop.kind === "visitor" ? OPEN_HOURS.visitor : stop.kind === "experience" && !stop.bestTime?.length ? OPEN_HOURS.experience : null;
+  // 别的时区的景点：当地 9 点开门，换算成这天行程用的时间
+  return hours && shift ? [hours[0] - shift, hours[1] - shift] : hours;
+};
 
-function orderCost(timeline: DayTimeline, stops: PlanStop[], departures: (Departures | null)[]): number {
+function orderCost(
+  timeline: DayTimeline,
+  stops: PlanStop[],
+  departures: (Departures | null)[],
+  shifts: number[] = [],
+): number {
   // 回住处太晚：晚得越多越不好（日落后接着看星空，夏天会拖到半夜）
   let cost = timeline.driveMin + (timeline.lateReturn ? 60 + (timeline.returnAt ?? LATE_RETURN) - LATE_RETURN : 0);
   timeline.entries.forEach((entry, k) => {
     const prefers = stops[k].bestTime ?? [];
     // 有固定班次、写了进去时间的按自己的算，不再按一般的开放时间
-    const hours = departures[k] || stops[k].hours?.length ? null : openHours(stops[k]);
+    const hours = departures[k] || stops[k].hours?.length ? null : openHours(stops[k], shifts[k]);
     if (entry.warnings.includes("afterHours") || entry.warnings.includes("offTime")) cost += 240;
     if (hours && (entry.start < hours[0] || entry.end > hours[1])) cost += 60;
     // 等开门、等班次空出来的时间也算一点（等日落、等天黑是特意的，不算）
@@ -885,9 +953,12 @@ export function arrangeDay(stops: PlanStop[], context: DayContext): PlanStop[] {
   const morning = stops.map((stop) => morningMinutes(context, stop));
   const evening = stops.map((stop) => eveningMinutes(context, stop));
   const date = context.date;
-  const departures = stops.map((stop) => departuresOn(stop.id, date));
-  const windows = stops.map((stop) => entryWindow(stop, date));
-  const parking = stops.map((stop) => parkingOn(stop, date));
+  // 时区按排之前的第一站定（planner 里日出日落也是按它算的），换顺序时不跟着变
+  const shifts = localShifts(stops, context.sun, date);
+  const clocks = stops.map((stop, k) => dayClock(stop, date, shifts[k]));
+  const departures = clocks.map((clock) => clock.departures);
+  const windows = clocks.map((clock) => clock.window);
+  const parking = clocks.map((clock) => clock.lot);
   const evaluate = (order: number[]) => {
     const ordered = order.map((i) => stops[i]);
     const times = order.map((i) => departures[i]);
@@ -904,6 +975,7 @@ export function arrangeDay(stops: PlanStop[], context: DayContext): PlanStop[] {
       times,
       order.map((i) => windows[i]),
       order.map((i) => parking[i]),
+      order.map((i) => shifts[i]),
     );
     // 赶不上末班车的顺序尽量不要
     const stranded = date
@@ -911,7 +983,15 @@ export function arrangeDay(stops: PlanStop[], context: DayContext): PlanStop[] {
           missesLastBus(ordered[k], date, context.sun.sunset, entry.start - entry.waitMin, entry.end),
         ).length
       : 0;
-    return orderCost(timeline, ordered, times) + stranded * 180;
+    return (
+      orderCost(
+        timeline,
+        ordered,
+        times,
+        order.map((i) => shifts[i]),
+      ) +
+      stranded * 180
+    );
   };
 
   const order = stops.map((_, i) => i);

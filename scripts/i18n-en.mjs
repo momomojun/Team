@@ -26,7 +26,7 @@ export const GROUPS = [
   {
     id: "conditions",
     batch: 1,
-    files: ["src/data/closures.ts", "src/data/roads.ts", "src/data/roads.generated.ts", "src/data/shuttles.ts", "src/data/tours.ts", "src/data/parking.ts"],
+    files: ["src/data/closures.ts", "src/data/roads.ts", "src/data/roads.generated.ts", "src/data/shuttles.ts", "src/data/tours.ts", "src/data/parking.ts", "src/data/time-notes.ts"],
   },
   {
     id: "places",

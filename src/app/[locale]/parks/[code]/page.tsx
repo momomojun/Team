@@ -11,6 +11,7 @@ import { ChargersSection } from "@/components/park/chargers-section";
 import { FeesSection } from "@/components/park/fees-section";
 import { ParkProfile } from "@/components/park/park-profile";
 import { RoadsSection } from "@/components/park/roads-section";
+import { TimeZoneBlock } from "@/components/park/time-zone-block";
 import { VisitsSection } from "@/components/park/visits-section";
 import { SectionSkeleton } from "@/components/section";
 import { IconArrowRight } from "@/components/icons";
@@ -294,6 +295,7 @@ export default async function ParkPage({ params }: PageProps<"/[locale]/parks/[c
             <p className="eyebrow text-mute">{t.seasonTitle}</p>
             <p className="mt-4 text-sm leading-7 text-ink-soft">{park.seasonNote}</p>
           </div>
+          <TimeZoneBlock park={park.code} timeZone={park.timeZone} locale={locale} dict={dict} />
           <ParkProfile code={park.code} visits={visits} locale={locale} dict={dict} />
           <div>
             <p className="eyebrow text-mute">{t.areasTitle}</p>

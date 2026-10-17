@@ -9,6 +9,7 @@ import { darkSky } from "@/data/honors";
 import { lodgingOptions } from "@/data/lodging";
 import { isSite, parks } from "@/data/parks";
 import { seasonalRoads } from "@/data/roads";
+import { timeNotes } from "@/data/time-notes";
 import { servicesUpdated } from "@/data/services.generated";
 import { shuttleSystems } from "@/data/shuttles";
 import { hasLocale } from "@/i18n/config";
@@ -93,6 +94,12 @@ export default async function PlanPage({ params }: PageProps<"/[locale]/plan">) 
             ),
           ),
           roadNames: Object.fromEntries(seasonalRoads.map((road) => [road.id, localize(road.nameZh, locale)])),
+          timeNotes: timeNotes.map((note) => ({
+            park: note.park,
+            when: note.when,
+            text: localize(note.noteZh, locale),
+            ...(note.zoneZh ? { zone: localize(note.zoneZh, locale) } : {}),
+          })),
         }}
       />
     </div>

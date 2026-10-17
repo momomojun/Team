@@ -137,6 +137,12 @@ const zhHans = {
     areasTitle: "园内片区",
     seasonTitle: "季节",
     nonresidentTitle: "非居民附加费",
+    timeTitle: "时区",
+    /** zone 是时区的叫法，rule 是下面两句之一 */
+    timeLine: "{zone}，{rule}",
+    timeFixed: "全年 UTC{o}，不调夏令时",
+    timeDst: "实行夏令时：夏天 UTC{summer}，冬天 UTC{winter}",
+    timeSource: "来源",
     nonresidentNote: "2026 年起，非美国居民（16 岁以上）进入本园，除了门票每人另收 $100。",
     nonresidentWaiver:
       "同车只要有一个人持有效年卡，全车的门票和非居民附加费都免：可以是美国居民年卡（$80，凭美国护照、美国驾照 / 州 ID 或绿卡购买）、非居民年卡（$250）或本公园年卡。持卡人不一定是司机，但必须在车上并出示带照片的证件；步行、骑车等按人收费的入口，一张卡覆盖持卡人和另外 3 名成人。",
@@ -516,6 +522,23 @@ const zhHans = {
     weekdays: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],
     /** 大数怎么写：中文按万、亿；英文按 million（formatBig） */
     numberStyle: "wan",
+    /** 时区的叫法（IANA 名称 → 当地人怎么叫）；UTC 偏移另外写 */
+    zones: {
+      "America/Los_Angeles": "太平洋时间",
+      "America/Vancouver": "BC 省太平洋时间",
+      "America/Denver": "山地时间",
+      "America/Phoenix": "亚利桑那时间",
+      "America/Chicago": "中部时间",
+      "America/New_York": "东部时间",
+      "America/Edmonton": "艾伯塔时间",
+      "America/Anchorage": "阿拉斯加时间",
+      "America/Juneau": "阿拉斯加时间",
+      "America/Nome": "阿拉斯加时间",
+      "Pacific/Honolulu": "夏威夷时间",
+    } as Record<string, string>,
+    /** 当地时间比这天行程用的时间快 / 慢几小时 */
+    zoneAhead: "快 {h} 小时",
+    zoneBehind: "慢 {h} 小时",
   },
   trip: {
     add: "加入行程",
@@ -560,6 +583,10 @@ const zhHans = {
     },
     until: "至 {time}",
     pacedFrom: "原估算 {d}",
+    /** 和这天行程不在一个时区的景点：时间下面另写当地时间 */
+    localTime: "当地 {time}",
+    /** 这天去了不同时区的景点：一天的时间都按第一站的时区写 */
+    dayZone: "这天跨了时区，行程里的时间都按{zone}写；别的时区的景点下面另外标了当地时间",
     dayRoute: "在 Google 地图打开这天的路线",
     free: "空闲约 {d}",
     freeRest: "空闲约 {d}，离{name}约 {back}，可以先回去歇一会儿",
@@ -635,6 +662,7 @@ const zhHans = {
       dark: "结束时天已经黑了",
       missSunset: "赶不上日落",
       overloaded: "这天安排太满（超过 11 小时）",
+      zoneShift: "这里用{zone}，比这天行程用的时间{diff}；开门、导览、入场按当地钟点，上面的时间已经换算好",
       farTransfer: "车程太长，建议飞过去或拆成两段旅行",
       lastShuttle: "按这个时间可能赶不上末班车，注意班车的末班时间",
       missDeparture: "按这个时间赶不上最后一班，换个顺序或者换一天",

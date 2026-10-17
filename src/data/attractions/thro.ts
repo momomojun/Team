@@ -4,7 +4,7 @@ import type { Attraction } from "./types";
 // （api.openstreetmap.org 的 map 接口，2026-10-05）。步道距离按 NPS 的 Hiking and Trail Guide 表。
 // South Unit 的景观环路（Scenic Loop Drive）全长约 58 公里（36 英里），2019 年东南段约 10 公里塌方封闭，2025 年 11 月 25 日修好全线重开；
 // 冬天下雪结冰时部分路段会临时封闭。North Unit 的景观路单程约 23 公里（14 英里），到 Oxbow 观景台是尽头、原路返回。
-// North Unit 用中部时间（比 South Unit 和 Medora 早一小时），公园的 timeZone 按 South Unit 填，North Unit 的景点在提示里说。
+// North Unit 用中部时间（比 South Unit 和 Medora 快一小时），公园的 timeZone 按 South Unit 填，North Unit 的景点单独写 timeZone，提示里也说。
 
 const NORTH_UNIT_TIME = "North Unit 用中部时间，比 Medora 和 South Unit 早一小时，看日落、赶游客中心开门时注意";
 
@@ -355,6 +355,7 @@ export const theodoreRoosevelt: Attraction[] = [
   {
     id: "thro-cannonball-concretions",
     park: "thro",
+    timeZone: "America/Chicago",
     nameZh: "炮弹石（Cannonball Concretions）",
     nameEn: "Cannonball Concretions",
     kind: "landmark",
@@ -371,6 +372,7 @@ export const theodoreRoosevelt: Attraction[] = [
   {
     id: "thro-little-mo",
     park: "thro",
+    timeZone: "America/Chicago",
     nameZh: "Little Mo 自然步道",
     nameEn: "Little Mo Nature Trail",
     kind: "hike",
@@ -399,6 +401,7 @@ export const theodoreRoosevelt: Attraction[] = [
   {
     id: "thro-caprock-coulee",
     park: "thro",
+    timeZone: "America/Chicago",
     nameZh: "Caprock Coulee 自然步道",
     nameEn: "Caprock Coulee Nature Trail",
     kind: "hike",
@@ -427,6 +430,7 @@ export const theodoreRoosevelt: Attraction[] = [
   {
     id: "thro-river-bend",
     park: "thro",
+    timeZone: "America/Chicago",
     nameZh: "河湾观景台（River Bend Overlook）",
     nameEn: "River Bend Overlook",
     kind: "viewpoint",
@@ -444,6 +448,7 @@ export const theodoreRoosevelt: Attraction[] = [
   {
     id: "thro-oxbow-overlook",
     park: "thro",
+    timeZone: "America/Chicago",
     nameZh: "Oxbow 观景台",
     nameEn: "Oxbow Overlook",
     kind: "viewpoint",

@@ -355,6 +355,7 @@ export const jasper: Attraction[] = [
   {
     id: "jasp-mount-robson",
     park: "jasp",
+    timeZone: "America/Vancouver",
     nameZh: "罗布森山",
     nameEn: "Mount Robson",
     kind: "viewpoint",
@@ -369,7 +370,7 @@ export const jasper: Attraction[] = [
       "加拿大落基山最高峰（3,954 米），在贾斯珀西边 BC 省的罗布森山省立公园里，游客中心门口就能看到它从谷底拔起约 3,000 米的南壁；山顶常被云遮住，晴天早上机会最大。",
     tips: [
       "离贾斯珀镇约 90 公里、1 小时多车程，沿 16 号公路（黄头公路）往西翻过 Yellowhead Pass 进入 BC 省",
-      "BC 省这边用太平洋时间，比贾斯珀晚 1 小时（2026 年 11 月起阿尔伯塔不再调回冬令时，冬季差 2 小时）",
+      "BC 省这边用太平洋时间（2026 年 3 月起全年 UTC-7），比贾斯珀晚 1 小时；艾伯塔 11 月起也不再拨回冬令时，所以一年到头都差 1 小时",
       "体力好可以沿 Berg Lake 步道走到 Kinney Lake，往返约 9 公里",
     ],
     photoFile: "Mount Robson S face.JPG",

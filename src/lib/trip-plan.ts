@@ -8,8 +8,8 @@ import {
 } from "./planner";
 import type { Trip, TripItem } from "./trip-store";
 
-/** 第 day 天在 park 的日出日落 */
-export type SunLookup = (day: number, park: string) => SunWindow;
+/** 第 day 天在 stop（当天第一站）的日出日落，按它的时区（窗口里的 zone） */
+export type SunLookup = (day: number, stop: PlanStop) => SunWindow;
 
 /** 第 night 晚住的地方（0 = 第 1 天出发前） */
 export type NightLookup = (night: number) => LodgingPoint | undefined;
@@ -57,7 +57,7 @@ export function planTrip(
     const dayStops = split[d];
     const arranged =
       dayStops.length > 0
-        ? arrangeDay(dayStops, { sun: sunFor(from + d, dayStops[0].park), ...lodgingFor(from + d), previous })
+        ? arrangeDay(dayStops, { sun: sunFor(from + d, dayStops[0]), ...lodgingFor(from + d), previous })
         : [];
     previous = arranged.at(-1) ?? previous;
     return [...keep(day), ...arranged.map((stop): TripItem => ({ ...existing.get(stop.id), id: stop.id, status: "planned" }))];

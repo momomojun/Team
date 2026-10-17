@@ -647,9 +647,11 @@ export function generateTrip(input: GenerateInput, context: GenerateContext): { 
   if (tripDates.length > 0 && context.zoneFor) {
     const zoneFor = context.zoneFor;
     const glareOn = (stop: GuideStop, day: number) => {
-      const zone = zoneFor(stop.park);
+      // 日落是按 sunFor 那个时区的钟点算的，月亮也按同一个时区算
+      const sun = sunFor(day);
+      const zone = sun.zone ?? zoneFor(stop.park);
       if (!zone) return 0;
-      const sunset = sunFor(day).sunset;
+      const sunset = sun.sunset;
       const night = moonNight(tripDates[day], sunset + 60, sunset + 180, stop.lat, stop.lon, zone);
       return night.fraction * (night.upMin / 120);
     };

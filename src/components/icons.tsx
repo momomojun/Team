@@ -149,6 +149,13 @@ export const IconSun = (props: IconProps) => (
   </Icon>
 );
 
+export const IconClock = (props: IconProps) => (
+  <Icon {...props}>
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="M12 7.5V12l3 2" />
+  </Icon>
+);
+
 export const IconCloudSun = (props: IconProps) => (
   <Icon {...props}>
     <path d="M8.5 4.5v1M3.5 9.5h1M5 6l.7.7M12 6l-.7.7M6.2 11.2A3 3 0 1 1 11 8" />
