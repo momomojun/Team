@@ -201,7 +201,7 @@ export const tempClosures: TempClosure[] = [
     from: "2026-09-23",
     reopen: "2026-10-30",
     reasonZh:
-      "第二道牛栏（Kīpukapuaulu 往上约 3 公里）到观景台一段因伐树全封，车、人、自行车都不能进，为之后的道路整修做准备（Kīpukapuaulu 步道也因危险树木关闭）。",
+      "第一道牛栏到观景台一段因伐树全封（到 10 月 29 日），车、人、自行车都不能进，为之后的道路整修做准备（Kīpukapuaulu 步道也因危险树木关闭，没有重开日期）。",
     source: "https://www.nps.gov/havo/planyourvisit/conditions.htm",
     checked: "2026-10-13",
   },

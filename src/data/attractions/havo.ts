@@ -6,7 +6,8 @@ import type { Attraction } from "./types";
 //   9 月 7 日起第 55 次的前兆活动断断续续，10 月 3 日 USGS 仍是 WATCH / ORANGE，还没开始喷泉；喷发区本身一直封闭。
 // - Kīlauea 游客中心 2025 年 2 月起闭馆翻修，预计 2026 年底重开；这段时间服务搬到 Kilauea Military Camp 里的欢迎中心（9:00–16:45）。
 // - 10 月 1 日起 Keanakākoʻi 一侧因地震增多、火山活动不稳临时关闭；硫磺岸的小桥损坏关闭（木栈道从 Steam Vents 一侧进）；
-//   Mauna Loa 路第二道牛栏以上 9 月 23 日到 10 月 29 日伐树封路，Kīpukapuaulu 步道因危险树木关闭；Hōlei 海蚀拱 9 月底塌了。
+//   Mauna Loa 路第一道牛栏以上 9 月 23 日到 10 月 29 日伐树封路（NPS 公告 10/15），Kīpukapuaulu 步道因危险树木关闭；Hōlei 海蚀拱 9 月底塌了；
+//   10 月 9 日起 Halemaʻumaʻu 步道和 Byron Ledge 步道下到破火山口底的一段（共约 2 公里）因山顶膨胀、地震增多关闭。
 // - 喷发时如果刮南风，火山渣会落到 Uēkahuna、Kilauea Military Camp 一带，公园会临时封路甚至闭园（2026 年 3 月 10 日、4 月 9 日）。
 
 /** Kīlauea 游客中心停车场：游客中心翻修期间开放约一半，Volcano House、火山艺术中心和几条步道也从这里走 */
@@ -234,7 +235,7 @@ export const hawaiiVolcanoes: Attraction[] = [
     },
     hike: { distanceMi: 1, difficulty: "easy" },
     summary:
-      "1959 年 Kīlauea Iki 喷发时，几百米高的熔岩喷泉把火山渣撒满了这片森林，枯树、黑色渣地和慢慢长回来的植物都还在。铺装小路从停车场走到 Puʻupuaʻi 观景台，俯瞰 Kīlauea Iki 火山口和那次喷发堆起来的渣锥。",
+      "1959 年 Kīlauea Iki 喷发时，高达约 580 米的熔岩喷泉把火山渣撒满了这片森林，枯树、黑色渣地和慢慢长回来的植物都还在。铺装小路从停车场走到 Puʻupuaʻi 观景台，俯瞰 Kīlauea Iki 火山口和那次喷发堆起来的渣锥。",
     tips: [
       "全程铺装，能推婴儿车和轮椅（有几段坡度超过 8%）；不要爬 Puʻupuaʻi 渣锥",
       "这一带常有夏威夷雁（nēnē），停车、开车都留神，不要喂",
@@ -302,17 +303,17 @@ export const hawaiiVolcanoes: Attraction[] = [
     durationMin: 60,
     mustSee: true,
     summary:
-      "从 Kīlauea 山顶一路下到海边、全长约 30 公里、落差约 1,100 米的景观公路：上段经过一串塌陷火山口（Pauahi 等），中段穿过 1969–1974 年 Mauna Ulu 喷发流出的大片熔岩原，在 Kealakomo 观景台能看到熔岩一直铺到海边，最后沿 Hōlei 断崖的之字弯下到海岸，路走到被熔岩盖住的地方为止。",
+      "从 Kīlauea 山顶一路下到海边、全长约 30 公里、落差约 1,100 米的景观公路：上段经过一串塌陷火山口（Pauahi 等），中段穿过 1969–1974 年 Maunaulu 喷发流出的大片熔岩原，在 Kealakomo 观景台能看到熔岩一直铺到海边，最后沿 Hōlei 断崖的之字弯下到海岸，路走到被熔岩盖住的地方为止。",
     tips: [
       "沿途没有加油站、水和吃的（终点有厕所），出发前在 Volcano 村加满油",
-      "不停车单程约 30 分钟，加上沿途停车、Puʻu Loa 岩画和终点散步，留半天；路尽头不通，原路返回",
+      "不停车单程约 30 分钟，加上沿途停车、Puʻuloa 岩画和终点散步，留半天；路尽头不通，原路返回",
     ],
     photoFile: "Chain of Craters Rd, Hawaii Volcanoes National Park (504044) (21805928233).jpg",
   },
   {
     id: "havo-mauna-ulu",
     park: "havo",
-    nameZh: "Mauna Ulu 熔岩盾和 Puʻuhuluhulu",
+    nameZh: "Maunaulu 熔岩盾和 Puʻuhuluhulu",
     nameEn: "Maunaulu & Puʻuhuluhulu",
     kind: "hike",
     area: "chain-of-craters",
@@ -330,7 +331,7 @@ export const hawaiiVolcanoes: Attraction[] = [
     },
     hike: { distanceMi: 2.5, gainFt: 210, difficulty: "moderate" },
     summary:
-      "走过 1969–1974 年 Mauna Ulu 喷发流出的熔岩原，路边有熔岩树模、裂缝和光滑的绳状熔岩，最后约 400 米陡坡爬上长满树的 Puʻuhuluhulu 渣锥。顶上的观景台正对 Mauna Ulu 熔岩盾，晴天能同时看到冒纳罗亚、冒纳凯阿和大海。",
+      "走过 1969–1974 年 Maunaulu 喷发流出的熔岩原，路边有熔岩树模、裂缝和光滑的绳状熔岩，最后约 400 米陡坡爬上长满树的 Puʻuhuluhulu 渣锥。顶上的观景台正对 Maunaulu 熔岩盾，晴天能同时看到冒纳罗亚、冒纳凯阿和大海。",
     tips: [
       "熔岩上的路靠石堆（ahu）标记，别动它们，也别自己堆",
       "熔岩原没遮挡，带水、防晒和雨衣；停车场有厕所",
@@ -340,13 +341,13 @@ export const hawaiiVolcanoes: Attraction[] = [
   {
     id: "havo-puu-loa",
     park: "havo",
-    nameZh: "Puʻu Loa 岩画",
+    nameZh: "Puʻuloa 岩画",
     nameEn: "Puʻuloa Petroglyphs",
     kind: "hike",
     area: "chain-of-craters",
     lat: 19.2926,
     lon: -155.12228,
-    start: { lat: 19.28891, lon: -155.12995, nameZh: "Puʻu Loa 岩画步道口停车场" },
+    start: { lat: 19.28891, lon: -155.12995, nameZh: "Puʻuloa 岩画步道口停车场" },
     durationMin: 75,
     trail: {
       via: [
@@ -356,7 +357,7 @@ export const hawaiiVolcanoes: Attraction[] = [
     },
     hike: { distanceMi: 1.4, difficulty: "moderate" },
     summary:
-      "夏威夷最大的岩画群，有 2 万多个刻在熔岩上的图案：人形、帆、圆圈，还有成片的小坑，夏威夷人把新生儿的脐带放进小坑里祈求长寿。步道穿过约 550 年前的熔岩原，在一圈木栈道上看。",
+      "夏威夷最大的岩画群，有约 2.3 万个刻在熔岩上的图案：人形、帆、圆圈，还有成片的小坑，夏威夷人把新生儿的脐带放进小坑里祈求长寿。步道穿过 500–550 年前的熔岩原，在一圈木栈道上看。",
     tips: [
       "岩画很脆弱，只能在木栈道上看，不要走到熔岩上，也不要拓印",
       "熔岩路面起伏不平、太阳很晒，穿抓地的鞋、带水",
@@ -396,7 +397,7 @@ export const hawaiiVolcanoes: Attraction[] = [
     summary:
       "从 11 号公路岔进去的单车道山路：先经过熔岩树模（Tree Molds）和被熔岩包围的古老森林 Kīpukapuaulu（当地人叫“鸟园”，能看到 ʻapapane 等夏威夷特有的鸟），再穿过 koa、ʻōhiʻa 林爬到海拔约 2,030 米的冒纳罗亚观景台，1937 年修的八角形石亭里能俯瞰 Kīlauea 和远处的大海。",
     tips: [
-      "路窄弯多、只有一条车道，会车要靠边让；大巴、房车只能开到 Kīpukapuaulu 的掉头处",
+      "路窄弯多、只有一条车道，会车要靠边让；大巴、房车只能开到 Kīpukapuaulu 的掉头处；Kīpukapuaulu 步道 2026 年因暴风雨后的危险树木和断枝关闭，重开时间未定",
     ],
     photoFile: "Taking in the view from Mauna Loa Lookout (27702549919).jpg",
   },
