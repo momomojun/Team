@@ -15,7 +15,9 @@ Shipped so far:
 
 - PR #1: family suitability for kids, seniors, and wheelchair users.
 - PR #2: the English edition, film locations, and celebrity spots on the routes page.
-- In progress: the fact audit against official sources, more film and celebrity spots, and time-zone handling.
+- Time zones (Oct 16): attractions can carry their own zone, the planner converts local opening, tour, entry, and parking times into the day's zone (e.g. Page on Arizona time vs. Monument Valley on Navajo time in summer), day cards show local times and phone-switching warnings, and park pages get a "Time zone" block with official sources. Alberta's and B.C.'s 2026 permanent-time rules are patched in for outdated time zone data.
+- Film spots grew from 27 to 51, each with a licensed Commons photo of the location; celebrity spots grew from 11 to 19 with every post link re-verified through public embeds.
+- In progress: the fact audit for the last two park groups, and English text for the new film and celebrity entries.
 
 ---
 
@@ -89,7 +91,7 @@ Shipped so far:
 - 用户提出加电影同款：
   - 第一版有 27 处取景地，数据在 `src/data/films.ts`，任务说明见 [agent-briefs/04](agent-briefs/04-film-locations.md)；
   - 收录标准：要有可靠来源；只收在公园或景点里拍的；不剧透；不转载剧照。
-- **10-16 用户的新要求**（进行中）：
+- **10-16 用户的新要求**：
   1. 电影、电视剧多收出名的，并且配图。
      - 照片用 Wikimedia Commons 上允许转载的**取景地实景照片**，不用剧照。
      - 字段 `photoFile`，用 `npm run data:film-photos` 生成 `films-photos.generated.ts`。
@@ -100,6 +102,11 @@ Shipped so far:
      - 任务说明见 [agent-briefs/07](agent-briefs/07-celebrity-spots-v2.md)。
   3. 明星名字要带英文名，还要一句"是谁"。
      - 新字段 `whoZh`；页面显示中文常用名、英文名，再加一行身份说明。
+- **10-16 结果**：
+  - 电影同款从 27 条扩到 51 条（纪念碑谷 +9、死亡谷 +3、鲍威尔湖 +4、峡谷地 +2、班夫的韩剧《爱情怎么翻译？》2 条，锡安、白沙、恶地、拉什莫尔山各 1 条）。51 条都有专门挑的 Commons 实景照片（CC BY / CC BY-SA / CC0 / 公有领域），`npm run data:film-photos` 已生成。查过没收的片子和原因写在 `films.ts` 开头的注释里。
+  - 明星同款从 11 条扩到 19 条：新增肯达尔·詹娜（优胜美地）、贾斯汀·比伯和海莉·比伯（路易斯湖）、布莱恩·克兰斯顿（路易斯湖、班夫温泉酒店）、入江陵介（马蹄湾）、渡部香生子（下羚羊峡谷）、麦莉·赛勒斯（鲍威尔湖）。原有 6 条带原帖链接的用 Instagram 的公开 embed 页核对过，都是本人认证账号、内容对得上，没有指错的；X 的 oEmbed 接口要付费，改用推特公开的嵌入接口核对。所有条目补了 `whoZh`。
+  - 没到目标数量：这一轮会话的 WebSearch 额度（200 次，所有助手共用）用完了；中文娱乐新闻这个搜索引擎几乎搜不到，华语明星一条没找到。想继续扩充，可以开新会话，或者调高环境变量 `CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION`。
+  - 新条目的英文正在写，任务说明见 [agent-briefs/09](agent-briefs/09-english-films-celebrities.md)。
 
 ## 6. 按英文官方资料核对事实（10-16，进行中）
 
@@ -116,10 +123,10 @@ Shipped so far:
 - **进度**：
   - 已核完 35 座：加州、西北、落基山北部、犹他、大峡谷、死亡谷、大盆地、科罗拉多、得州，以及班夫、贾斯珀、幽鹤、基奈峡湾。
   - 剩下 4 组：
-    - 阿拉斯加：wrst、glba、katm、lacl、gaar、kova；
-    - 东部：acad、ever、bisc、drto、grsm；
-    - 大平原和阿巴拉契亚：thro、badl、wica、shen、neri；
-    - 园外名胜和新墨西哥、夏威夷：ante、hsbd、mova、wave、pefo、whsa、cave、havo、hale，这组 10-16 晚上已重新开始。
+    - 阿拉斯加：wrst、glba、katm、lacl、gaar、kova，**10-16 已核完**。重要的改动：冰川湾 Bartlett Lake 步道往返 8 英里（原来写 10 英里）、全天游船停 Margerie 或 Johns Hopkins 冰川；卡特迈、克拉克湖看熊团按 2026 年 10 月官网标价更新（`bookings.ts` 也同步了）；看熊团年龄限制按各家写的改；北极之门 Dalton 公路车程按 BLM 改长；科伯克谷遗产中心电话改成 907-318-2230；克拉克湖 Silver Salmon Creek 的莎草草甸 6 月 15 日到 9 月 15 日关闭写进了提示。
+    - 园外名胜和新墨西哥、夏威夷：ante、hsbd、mova、wave、pefo、whsa、cave、havo、hale，**10-16 已核完**（提交 dda968e）。
+    - 东部：acad、ever、bisc、drto、grsm，10-16 晚上在核。
+    - 大平原和阿巴拉契亚：thro、badl、wica、shen、neri，10-16 晚上在核（thro 前一次做了一半，改动保留）。
   - 中途两次碰到用量上限、一次换了会话，没核完的组要重新派。
 - **已经加进 `closures.ts` 的新临时关闭**（10-16）：
   - 雷尼尔山 Grove of the Patriarchs 停车场（影响银瀑布）；
@@ -134,16 +141,22 @@ Shipped so far:
   - 锡安 2026 年 6 月起取消隧道通行证，超尺寸车不能过隧道；
   - 德纳里的山名：NPS 2025 年起写 Mount McKinley，**要用户决定**。
 
-## 7. 时区（10-16，进行中）
+## 7. 时区（10-16）
 
 - 用户提醒：
   - 有的公园跨州、跨时区；
   - 有的项目按特定地区的时间计时，比如羚羊峡谷、佩吉；
   - 要提醒用户手机上的时区可能和实际不符。
 - 现在每座公园只有一个 `timeZone`，在 `src/data/parks.ts`。
-- 正在调研每座公园、每个项目按什么时间计时，任务说明见 [agent-briefs/08-time-zones.md](agent-briefs/08-time-zones.md)。调研完再改数据和界面：
-  - 景点或项目单独标时区；
-  - 行程里显示"按某地时间"，并提醒手机可能自动切换时区。
+- 调研：每座公园、每个项目按什么时间计时，任务说明见 [agent-briefs/08-time-zones.md](agent-briefs/08-time-zones.md)，结果（带官方原话和来源）在 [audit/2026-10-16/timezones.md](audit/2026-10-16/timezones.md)。59 个公园的 `timeZone` 都对；园内要单独标的是西奥多·罗斯福 North Unit（中部时间）和贾斯珀旁边 BC 省的罗布森山。
+- 做了什么：
+  - **景点可以单独写时区**（`Attraction.timeZone`）：North Unit 的 5 个景点是 `America/Chicago`，罗布森山是 `America/Vancouver`。
+  - **排行程按时区换算**（`src/lib/time-zone.ts`、`planner.ts` 的 `localShifts`）：一天的时间按当天第一站的时区写，别的时区的景点写的开门、班次、入场、停车场时间先换算过来。比如夏天从佩吉（亚利桑那时间）去纪念碑谷（纳瓦霍时间，快 1 小时），Valley Drive 当地 15:30 最晚入场，在行程里就是 14:30。日出日落的窗口带上它的时区（`SunWindow.zone`），自动生成攻略也一样。
+  - **行程页**：别的时区的景点在时间下面写“当地 15:25”，并说明比这天快 / 慢几小时；这天跨时区的，卡片上写“这天的时间都按某某时间写”；第一次去某座公园的那天，列出这座公园时区的坑（`src/data/time-notes.ts`：羚羊峡谷各家导览按亚利桑那时间、手机常跳成犹他时间，纪念碑谷是纳瓦霍时间，波浪谷抽签按犹他时间、领证按当地时间，瓜达卢佩山手机常显示中部时间，大盆地 Lehman Caves 按太平洋时间，大弯 Boquillas，冰川和加拿大落基山 2026 年 11 月的变化……）。只在夏令时才有差别的，冬天的行程不提。
+  - **公园页**新增“时区”：叫什么时间、调不调夏令时，加上这座公园的时区提醒和官方来源。
+  - **艾伯塔、BC 的新规则**：BC 省 2026 年 3 月起全年 UTC-7，艾伯塔 11 月 1 日起全年 UTC-6。Node 24 和很多浏览器的时区数据（2025b）还没有这两条，`time-zone.ts` 里手动补上（日出日落、行程都用它）。
+  - 改正：贾斯珀到罗布森山、Valemount 原来写“冬季差 2 小时”，其实一年到头都差 1 小时（中英文都改了）。
+  - 测试：`tests/time-zone.test.ts`（`park-zones.ts` 和 `parks.ts` 一致、佩吉到纪念碑谷的换算、North Unit、艾伯塔和 BC）。
 
 ## 8. 用户的偏好（接手时注意）
 

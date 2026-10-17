@@ -35,3 +35,11 @@
 - 峡谷地 Grand View Point 2027 年 7–9 月最后一期施工（每周一 6:00 到周四 16:00 关）。
 - 锡安：天使降临因搜救临时关闭（可能已重开）；大车新规（2026-06-07 起取消隧道通行证，超尺寸车不能走 Canyon Junction 到东门）→ 检查 parks.ts / roads.ts。
 - 大峡谷：南缘过夜住宿 8/30–11/16 全部暂停（lodging.ts）；北缘 10/15 起无服务、Point Imperial Road 10/15–11/3 关；North Kaibab、Phantom Ranch 关；Bright Angel 1.5 Mile 以下关到至少 10/22。
+
+## 处理情况（10-16 晚）
+- 已加进 closures.ts：雷尼尔山 Grove of the Patriarchs 停车场、大弯 Grapevine Hills Road、布莱斯 Bryce Connector Trail、大盆地景观道冬季封路、圆顶礁 Capitol Gorge。冰川向阳大道 10 月 9 日的关闭补进了 roads FIXES。
+- 大提顿 Death Canyon 路和步道口（2026-05 到 2027-06 全封、行人也不能进）：没有景点从这个步道口出发，写进了 LSR 保护区的提示（NPS road-construction.htm，10-15 更新）。Moose-Wilson Road 北段施工封路原来就在 closures.ts。
+- 大峡谷南缘过夜住宿：NPS 公告（8-30）和 alerts 都没写重开日期，lodging.ts 里“Xanterra 各酒店至少到 10 月 31 日，Yavapai Lodge 重开日期未定”的说法保留；没找到“11 月 16 日”的官方出处。
+- 锡安大车规定：只有 zion.ts 一处提到隧道，核对时已经按 2026-06-07 的新规改了，别处没有旧说法。
+- 阿拉斯加核对报的：bookings.ts 的看熊团价格、activities.ts 科伯克谷电话、克拉克湖 Silver Salmon Creek 草甸关闭都改了。Root 冰川改道的公告 9 月 25 日已到期，只写在提示里，没加 closures.ts。
+- 还没处理：北瀑布、奥林匹克、黄石、加州各园的施工延误和次要关闭；雷尼尔山几条路今年的计划关闭日（等实际关了再补进 FIXES）；德纳里山名（问用户）。
