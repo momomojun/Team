@@ -1,0 +1,12 @@
+{
+  "frozen_at_utc": "2026-10-17T02:00:39.884199+00:00",
+  "description": "Frozen before first V2 model inference; labels and code authored by same person, not independently blinded.",
+  "sha256": {
+    "prompt.txt": "0318be17eb1dcb801acdaac683000690bcc309cd5b7a81610cd27a27ac977c63",
+    "heldout.json": "0ee9aaaedad248dc9b02a75378f2c56e0607d3f00f8e8444f10608a7c39c0576",
+    "regression-raw.json": "a916e35f2cc83a8acc717fc6eb9b031a57dd0685589f5a0d1758a828a9833164",
+    "intake.py": "b8aa3930ab6ae43ece515a90a3005477c0b8b65891464f7ac433e58bd92d124c",
+    "test_intake.py": "c529974ae6da446f55f81dbcb24e7b377471da117c2f3e9dfb52e3a2d87f8624",
+    "run.py": "c46756f3ea58d5eeaef0ab2a058473a07695cf844618adba730b1288ce60a4c8"
+  }
+}

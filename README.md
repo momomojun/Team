@@ -266,6 +266,17 @@ npm run dev                  # 打开 http://localhost:3000
 
 Built with Next.js 16, React 19, TypeScript, Tailwind CSS 4 and MapLibre GL, mostly on open data (NPS API, OpenStreetMap, Open-Meteo, Wikimedia Commons). No keys are required to run it locally: `npm install && npm run dev`.
 
+## LLMOps 开发与交接
+
+Copilot 的本地模型验证与课程开发记录统一放在本仓库：
+
+- [项目工作记录：全部对话要点、决定和已做的工作 / Project log](docs/PROJECT_LOG.md)
+- [讨论记录、技术路线与后续待办](docs/LLMOPS_WORK_LOG.md)
+- [实验入口与完整验证材料](experiments/README.md)
+- [本地模型验证结果](experiments/local-model-validation/RESULTS.md)
+
+模型权重和运行库已在本机实验目录保存，通过 Git 忽略规则排除；验证脚本、样本、原始结果和说明可随仓库交接。
+
 ## 声明
 
 - 非官方项目，与美国国家公园管理局（National Park Service）无关，名字里的 NPS 只是说明用途。

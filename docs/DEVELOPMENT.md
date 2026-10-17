@@ -33,6 +33,7 @@ npm test                     # 自动生成攻略、季节性山路、个人配�
 | `src/app/[locale]/` | 页面：首页、公园页 `parks/[code]`、行程页 `plan`、什么时候去 `when`、博主路线 `routes`、机票租车油价 `prices`。`zh-Hans` 简体、`zh-Hant` 繁体；`src/proxy.ts` 按浏览器语言跳转 |
 | `src/proxy.ts`、`src/lib/site-auth.ts`、`src/app/[locale]/login/`、`src/app/api/login/` | 访问密码：设了 `SITE_PASSWORD`，没登录的页面跳到登录页、接口返回 401；登录后存一个一年有效的 HttpOnly cookie（值是密码的哈希，改密码就全部失效）。图标、manifest、service worker 这些静态文件不拦 |
 | `src/i18n/en/`、`scripts/i18n-en.mjs`、`docs/ENGLISH.md` | 英文版（`/en`）：给英语母语读者另写的，不是逐句翻译，写法见 [ENGLISH.md](ENGLISH.md)。界面文案在 `en/dictionary.ts`（和中文字典同样的结构，类型检查保证不漏键）；数据里的中文（景点介绍、提示、同行适合度、公园介绍、封路、住宿……）按原文查 `en/content/<组>.ts`（中文原文 → 英文），`localize(text, "en")` 查不到时先显示中文。`npm run i18n:en` 从数据里找出要显示的中文、给每组补上待写的空条目（中文改了就会多出新的空条目），`tests/i18n-en.test.ts` 检查已经写完的批次没有漏写、英文里没有混进汉字。英文模板里 `{n|day|days}` 按数字选单复数，`{m:month}` 写英文月份名；单位用英制（`units.km` 用 `{mi}`、`units.meters` 用 `{ft}`、温度用华氏那组占位符）；顿号、冒号、括号、星期这些都在 `units` 里，代码里不要写死中文标点。英文版的 NPS 公告直接显示原文 |
+| `scripts/rekey-zh.py`、`scripts/check-en.mjs`、`docs/audit/`、`docs/agent-briefs/` | 改中文原文时用 `rekey-zh.py` 同时改英文表里的键（直接改中文会让英文失效）；`check-en.mjs` 检查某几组英文有没有空值、汉字、没换英制的数；`docs/audit/` 是按官方资料核对事实的逐园记录（改了什么、来源），`docs/agent-briefs/` 是交给 AI 助手做数据整理、翻译、核对时的任务说明（等于这些数据的 prompt 版本） |
 | `src/i18n/` | 界面文案。简体撰写，繁体用 OpenCC 自动转换（台湾用语，“米”转“公尺”）。`fill` 填占位符时，汉字紧挨着英文字母、数字开头或结尾的值会自动补空格（“要走{road}” → “要走 Stevens Canyon Road”），模板里中文地名、景点名前后不用再写空格；数字、金额两边照旧写空格 |
 | `src/data/parks.ts` | 所有公园：特色介绍、园内片区、定位点、时区、常用机场、常一起玩的公园（`nearby`）、非居民附加费、住宿建议。`kind: "site"` 是园外名胜（羚羊峡谷、马蹄湾、纪念碑谷、波浪谷），页面上和国家公园分开列；`country: "CA"` 是加拿大的公园；`agency` 写归谁管；只能飞进去的公园（卡特迈、科伯克谷）gateway 是开车能到的出发城镇，首页地图的圆点画在 `mapAt` |
 | `src/data/fees-manual.ts` | NPS 门票接口里没有的门票：加拿大的国家公园（按天收、加元，汇率 `CAD_TO_USD`）和园外名胜（部落公园、BLM、城市停车场）；预算里按一车和按人取便宜的 |
@@ -137,6 +138,7 @@ npm run data:roads       # 季节性山路的历年开通、关闭日期：NPS�
 `data:travel` 也会算各机场到公园定位点的车程（机票和租车里比较附近机场用）。
 
 ```bash
+npm run data:film-photos # 电影同款的取景地照片：films.ts 里每条的 photoFile（Commons 文件名）查缩略图、作者、授权，只收 CC BY / BY-SA / CC0 / 公有领域
 npm run data:visits      # 游客人次：NPS 的 IRMA 统计接口（1979 年以来逐月，不用 key）和 Parks Canada 各财年的开放数据；每年二三月 NPS 公布上一年的数字以后跑一次
 ```
 

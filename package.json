@@ -21,6 +21,7 @@
     "data:roads": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-roads.mjs",
     "data:visits": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-visits.mjs",
     "data:asian": "python scripts/build-asian-groceries.py",
+    "data:film-photos": "node --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/build-film-photos.mjs",
     "docs:screenshots": "node scripts/screenshots.mjs",
     "i18n:en": "node --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/i18n-en.mjs",
     "check:closures": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/check-closures.mjs"

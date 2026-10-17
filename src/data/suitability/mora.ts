@@ -55,7 +55,7 @@ export const suitability: Record<string, Suitability> = {
     wheelchair: "partial",
     seniors: "ok",
     noteZh:
-      "蒂普苏湖停车场有 5 个无障碍车位和无障碍野餐桌，坐轮椅、推婴儿车在湖边看倒影就好；环线是窄土路，停车场附近有石阶，还要过几座木桥。",
+      "蒂普苏湖停车场有 5 个无障碍车位和无障碍野餐桌，坐轮椅、推婴儿车在湖边看倒影就好；绕湖一圈的 0.8 公里小路大多是压实的平土路，但很窄，停车场附近有石阶，还要过几座木桥。",
     source: SUNRISE,
   },
   "mora-paradise-visitor-center": {
@@ -79,7 +79,7 @@ export const suitability: Record<string, Suitability> = {
     stroller: "partial",
     wheelchair: "partial",
     seniors: "ok",
-    noteZh: "停车位就在石桥东侧，下到观景点是一小段陡路；桥上车流很近，孩子要牵着，别走上桥拍照。",
+    noteZh: "石桥两侧各有一处小停车点，下到观景点是约 30 米长的一小段下坡路；桥上车流很近，孩子要牵着，别走上桥拍照。",
   },
   "mora-comet-falls": {
     kidsFromAge: 7,
@@ -150,6 +150,6 @@ export const suitability: Record<string, Suitability> = {
     wheelchair: "no",
     seniors: "caution",
     noteZh:
-      "往返约 10 公里、爬升约 370 米，高山苔原上没有遮挡；北坡的残雪到夏末都可能结冰，NPS 提醒没有防滑装备别硬走。带孩子、老人最多到第一巴勒斯山，或只走到 Frozen Lake。",
+      "环线约 10 公里（6 英里）、爬升约 370 米（1,200 英尺），高山苔原上没有遮挡；北坡的残雪到夏末都可能结冰，NPS 提醒没有防滑装备别硬走。带孩子、老人最多到第一巴勒斯山，或只走到 Frozen Lake。",
   },
 };

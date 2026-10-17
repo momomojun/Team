@@ -65,7 +65,7 @@ export const suitability: Record<string, Suitability> = {
     seniors: "no",
     hazards: ["scramble", "dropoff", "wildlife"],
     noteZh:
-      "往返约 17 公里、爬升约 760 米，最后约 8 米要手脚并用爬露天岩壁，有坠落风险；山上有黑熊。不适合小孩和体力一般的老人，恐高或风大时在攀岩段下面的观景处停下。",
+      "往返约 16 公里、爬升约 760 米，最后约 8 米要手脚并用爬露天岩壁，有坠落风险；山上有黑熊。不适合小孩和体力一般的老人，恐高或风大时在攀岩段下面的观景处停下。",
   },
   "bibe-south-rim": {
     kidsFromAge: 10,

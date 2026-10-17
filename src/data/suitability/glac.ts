@@ -27,7 +27,7 @@ export const suitability: Record<string, Suitability> = {
     stroller: "yes",
     wheelchair: "yes",
     seniors: "ok",
-    noteZh: "官方说是约 1.1 公里的无障碍步道，路面是木栈道和硬化铺装；峡谷桥上有栏杆。",
+    noteZh: "官方说是 0.9 英里（约 1.4 公里）的无障碍环线，路面是木栈道和硬化铺装；峡谷桥上有栏杆。",
     source: PHYS,
   },
   "glac-avalanche-lake": {

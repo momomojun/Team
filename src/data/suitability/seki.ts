@@ -105,7 +105,7 @@ export const suitability: Record<string, Suitability> = {
     seniors: "caution",
     hazards: ["heat"],
     noteZh:
-      "往返约 13 公里，前半段平但没有树荫，夏天很晒，后半段石阶上坡；带孩子、老人走到 Bubbs Creek 岔路的大桥看看河就回头。瀑布边石头湿滑，别靠近水边。",
+      "往返约 13 公里，前面几英里平但没有树荫，夏天很晒，最后约 1.6 公里（1 英里）上坡、爬升约 180 米（600 英尺）；带孩子、老人走到 Bubbs Creek 岔路的大桥看看河就回头。瀑布边石头湿滑，别靠近水边。",
   },
   "seki-roaring-river-falls": {
     kidsFromAge: 0,

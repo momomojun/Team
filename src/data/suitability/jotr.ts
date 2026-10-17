@@ -20,7 +20,7 @@ export const suitability: Record<string, Suitability> = {
     stroller: "yes",
     wheelchair: "yes",
     seniors: "ok",
-    noteZh: "门口的马拉绿洲是约 0.8 公里的铺装小环线，几乎不爬升，有带靠背和扶手的长椅，轮椅、婴儿车都能走（2026 年洪水后北边一段关闭，走到绿洲旁折返）。",
+    noteZh: "附近公园总部旁的马拉绿洲是约 0.8 公里的铺装小环线，几乎不爬升，有带靠背和扶手的长椅，轮椅、婴儿车都能走（2026 年洪水后北边一段关闭，走到绿洲旁折返）。",
     source: MOBILITY,
   },
   "jotr-cottonwood-visitor-center": {
@@ -47,10 +47,11 @@ export const suitability: Record<string, Suitability> = {
   },
   "jotr-keys-ranch": {
     kidsFromAge: 0,
-    stroller: "partial",
-    wheelchair: "partial",
+    stroller: "no",
+    wheelchair: "no",
     seniors: "ok",
-    noteZh: "跟护林员走约 0.8 公里，院子里是土路和碎石，有坡，轮椅、婴儿车推起来费劲；坐轮椅的订票前先问公园。",
+    noteZh: "官方说导览不适合轮椅，也不能带婴儿车（可以用背带背着婴儿）；跟护林员走约 0.8 公里，院子里是土路和碎石，有坡。",
+    source: "https://www.nps.gov/thingstodo/attend-a-keys-ranch-tour.htm",
   },
   "jotr-cap-rock": {
     kidsFromAge: 0,
@@ -150,7 +151,7 @@ export const suitability: Record<string, Suitability> = {
     wheelchair: "no",
     seniors: "caution",
     hazards: ["heat"],
-    noteZh: "往返约 4.8 公里，去程、回程都要翻一道约 90 米的山脊，石头路、没有遮阴；6–9 月封闭，其他月份也要早上走、带足水。",
+    noteZh: "往返约 4.8 公里，去程、回程都要翻一道约 90 米的山脊，石头路、没有遮阴；夏天通常为保护大角羊封闭，其他月份也要早上走、带足水。",
   },
   "jotr-pioneertown": {
     kidsFromAge: 0,

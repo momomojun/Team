@@ -127,11 +127,11 @@ export const rockyMountain: Attraction[] = [
       ],
       loop: true,
     },
-    hike: { distanceMi: 0.7, difficulty: "easy", loop: true },
+    hike: { distanceMi: 0.8, difficulty: "easy", loop: true },
     bestTime: ["sunrise"],
     permit: BEAR_LAKE_ROAD_PERMIT,
     summary:
-      "Bear Lake 路边的小湖，约 1.1 公里的环湖步道几乎是平的，可以推轮椅；湖面倒映着大陆分水岭上的 Hallett Peak 和 Flattop Mountain，日出时最美。",
+      "Bear Lake 路边的小湖，约 1.3 公里的环湖步道几乎是平的，可以推轮椅；湖面倒映着大陆分水岭上的 Hallett Peak 和 Flattop Mountain，日出时最美。",
     tips: ["停车场不大，日出后很快就满；Moraine Park 线免费班车也停这里", "湖边有野餐桌和厕所，适合带老人小孩"],
     photoFile: "Rocky Mountain National Park in September 2011 - Sprague Lake.JPG",
   },
@@ -159,7 +159,7 @@ export const rockyMountain: Attraction[] = [
     permit: BEAR_LAKE_ROAD_PERMIT,
     mustSee: true,
     summary:
-      "Bear Lake 路尽头海拔约 2,880 米的高山湖，约 1 公里的环湖步道大部分平缓，西南侧有一段原木台阶和陡坡，正对 Hallett Peak 和 Longs Peak，也是去宁芙湖、梦湖、翡翠湖这一串高山湖泊的起点。",
+      "Bear Lake 路尽头海拔约 2,890 米的高山湖，约 1 公里的环湖步道大部分平缓，西南侧有一段原木台阶和陡坡，正对 Hallett Peak 和 Longs Peak，也是去宁芙湖、梦湖、翡翠湖这一串高山湖泊的起点。",
     tips: [
       "旺季停车场清晨就满，可以停在 Park & Ride 坐免费的 Bear Lake 线班车（2026 年 5 月 22 日–10 月 18 日每天 6:30–19:30，10–15 分钟一班）",
       "日出时 Hallett Peak 被照成金红色，没风时湖面有倒影",
@@ -232,11 +232,11 @@ export const rockyMountain: Attraction[] = [
     start: GLACIER_GORGE_TRAILHEAD,
     durationMin: 210,
     trail: {},
-    hike: { distanceMi: 5, gainFt: 750, difficulty: "moderate" },
+    hike: { distanceMi: 5.6, gainFt: 750, difficulty: "moderate" },
     bestTime: ["morning"],
     permit: BEAR_LAKE_ROAD_PERMIT,
     summary:
-      "过了艾伯塔瀑布继续深入 Glacier Gorge 冰川谷，终点的米尔斯湖被 Longs Peak、Pagoda Mountain 和锯齿状的 Keyboard of the Winds 环绕，湖边大块平整的花岗岩适合坐下来野餐。往返约 8 公里、爬升约 230 米。",
+      "过了艾伯塔瀑布继续深入 Glacier Gorge 冰川谷，终点的米尔斯湖被 Longs Peak、Pagoda Mountain 和锯齿状的 Keyboard of the Winds 环绕，湖边大块平整的花岗岩适合坐下来野餐。往返约 9 公里、爬升约 230 米。",
     tips: ["过了艾伯塔瀑布人少很多，最后一段要走过大片光滑的岩板，下雨后湿滑", "中午前往回走，躲开午后雷暴"],
   },
   {
@@ -380,7 +380,7 @@ export const rockyMountain: Attraction[] = [
     durationMin: 10,
     openMonths: TRAIL_RIDGE,
     closedNote: TRAIL_RIDGE_CLOSED,
-    summary: "高山游客中心西边几分钟的路边观景台，面朝西南，能看到 Never Summer 山脉和更远的 Gore 山脉，回头还能看到 Longs Peak 的平顶。",
+    summary: "高山游客中心东边约 1.6 公里的路边观景台，面朝西南，能看到 Never Summer 山脉和更远的 Gore 山脉，回头还能看到 Longs Peak 的平顶。",
     tips: ["和高山游客中心顺路，停几分钟就好"],
     photoFile: "Gore Range Overlook, RMNP, July 2016.jpg",
   },
@@ -502,7 +502,7 @@ export const rockyMountain: Attraction[] = [
     start: { lat: 40.23963, lon: -105.80018, nameZh: "East Inlet 步道口停车场" },
     durationMin: 45,
     trail: {},
-    hike: { distanceMi: 0.6, gainFt: 80, difficulty: "easy" },
+    hike: { distanceMi: 0.6, gainFt: 79, difficulty: "easy" },
     summary:
       "从 Grand Lake 镇东头的 East Inlet 步道口走约 500 米就到，East Inlet 溪水在花岗岩窄缝里分几段冲下；再往里走是开阔的 East Inlet 草甸，常有驼鹿。",
     tips: [

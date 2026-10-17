@@ -135,10 +135,10 @@ export const glacier: Attraction[] = [
     lat: 48.61738,
     lon: -113.87922,
     durationMin: 180,
-    openMonths: [6, 7, 8, 9],
+    openMonths: [5, 6, 7, 8, 9],
     bestMonths: [7, 8, 9],
     closedNote:
-      "红巴士团只在夏季运营（2026 年大约 6 月上中旬到 10 月初），翻越洛根山口的线路要等向阳大道全线通车；其余时间只能自己开车沿西侧开到 Lake McDonald Lodge 一带。",
+      "红巴士团只在夏季运营（2026 年 5 月 16 日到 10 月 2 日），翻越洛根山口的线路要等向阳大道全线通车；其余时间只能自己开车沿西侧开到 Lake McDonald Lodge 一带。",
     permit: "要提前在 Glacier National Park Lodges 官网订票（2026 年 Western Alpine 团成人 $80），旺季常提前卖完",
     summary:
       "1930 年代造的红色敞篷老巴士（Red Jammer），司机兼导游一路讲解，车顶帆布卷起来就能仰头看两边的峭壁。从 Lake McDonald Lodge 出发的 Western Alpine 团 3–4 小时，沿向阳大道开到洛根山口再回来。",
@@ -308,7 +308,7 @@ export const glacier: Attraction[] = [
     closedNote:
       "步道口在向阳大道东段，冬季东侧在 St. Mary 附近设卡，春季扫雪后一般 6 月前后才能开到这里，10 月下旬以后看积雪；这段时间可以在 St. Mary 游客中心一带看圣玛丽湖。",
     summary:
-      "穿过 2015 年山火后重新长起来的林子，下到圣玛丽河上蓝绿色的三级圣玛丽瀑布，再沿 Virginia 溪往上，经过几处小瀑布，走到约 15 米高的弗吉尼亚瀑布。",
+      "穿过 2015 年山火后重新长起来的林子，下到圣玛丽河上蓝绿色的两级圣玛丽瀑布，再沿 Virginia 溪往上，经过几处小瀑布，走到约 15 米高的弗吉尼亚瀑布。",
     tips: [
       "往返约 5.8 公里、累计爬升约 165 米，先下后上，老少都能走",
       "步道口停车场小，夏天上午就满，2026 年班车不停这里；也可以从 Rising Sun 坐游船过来，9 点那班有船公司的导游带着走到圣玛丽瀑布",
@@ -414,7 +414,7 @@ export const glacier: Attraction[] = [
       "Many Glacier 的路冬季不通车，一般春末雪化后开到 10 月下旬，具体看 NPS 路况；这段时间可以去西侧的麦克唐纳湖。",
     mustSee: true,
     summary:
-      "Many Glacier Hotel 前的急流湖（Swiftcurrent Lake），环湖步道几乎是平路，一圈能从不同角度看 Grinnell 峰和 Gould 山倒映在湖里。清晨在酒店后的湖边看日出把山峰照成红色，是 Many Glacier 最有名的一幕。",
+      "Many Glacier Hotel 前的急流湖（Swiftcurrent Lake），环湖步道几乎是平路，一圈能从不同角度看 Grinnell Point 和 Gould 山倒映在湖里。清晨在酒店后的湖边看日出把山峰照成红色，是 Many Glacier 最有名的一幕。",
     tips: [
       "清晨和傍晚对岸山坡上常能看到熊、驼鹿，保持距离",
       "Many Glacier Hotel 的大堂对外开放，可以进去看看",
@@ -599,7 +599,7 @@ export const glacier: Attraction[] = [
     summary:
       "园区西北角北岔（North Fork）的湖，长约 10 公里，湖尽头是一排雪峰，湖边只有小码头和露营地，人比东西两侧少得多，傍晚常有完整的倒影。",
     tips: [
-      "从 West Glacier 经 Polebridge 开过来约 1.5–2 小时，最后约 10 公里是窄的坑洼土路，不适合房车和拖车",
+      "从 West Glacier 经 Polebridge 开过来约 1.5–2 小时，最后约 10 公里是窄的坑洼土路；北岔园内道路禁止超过 21 英尺（约 6.4 米）的车和拖车",
       "Polebridge 的百年杂货铺 Mercantile 以现烤点心出名；一路没有加油站，手机基本没信号",
       "2026 年 10 月起 Polebridge 护林站往南去 Logging Creek 的路段施工全封，出发前看 NPS 施工公告",
     ],

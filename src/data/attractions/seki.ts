@@ -14,7 +14,7 @@ export const sequoiaKingsCanyon: Attraction[] = [
     lat: 36.56414,
     lon: -118.77323,
     durationMin: 45,
-    summary: "了解巨杉生态的小博物馆，门口的 Big Trees Trail 是平坦的铺装环线，绕着草甸看巨杉。",
+    summary: "了解巨杉生态的小博物馆，门口的 Big Trees Trail 是铺装环线，绕着草甸看巨杉。",
     tips: [
       "从南入口上来，Foothills 到这里的山路弯多坡陡，车长超过 22 英尺（约 6.7 米）不建议走",
       "去 Moro Rock 和 Crescent Meadow 的岔路从这里开始",
@@ -33,7 +33,7 @@ export const sequoiaKingsCanyon: Attraction[] = [
     start: { lat: 36.58462, lon: -118.74986, nameZh: "Sherman Tree 步道口停车场" },
     durationMin: 60,
     trail: {},
-    hike: { distanceMi: 1, gainFt: 212, difficulty: "easy" },
+    hike: { distanceMi: 1, gainFt: 200, difficulty: "easy" },
     mustSee: true,
     summary: "按体积算是地球上最大的单棵树，高约 84 米、基部直径约 11 米，站到树下才能体会它有多大。",
     tips: [
@@ -61,7 +61,7 @@ export const sequoiaKingsCanyon: Attraction[] = [
     tips: [
       "台阶窄、一侧是悬崖，恐高慎入",
       "打雷时不要上去",
-      "旺季周末这条路有时只通班车，以公园公告为准",
+      "夏季班车季（一般 5 月底到 9 月初）的周末和节假日，白天这条路不让私家车进，只能坐免费班车；挂无障碍停车证的车可以开进去",
     ],
     photoFile: "Moro Rock-View from Potwisha.jpg",
   },
@@ -163,7 +163,7 @@ export const sequoiaKingsCanyon: Attraction[] = [
     lat: 36.79161,
     lon: -118.59614,
     durationMin: 60,
-    hike: { distanceMi: 1.5, difficulty: "easy", loop: true },
+    hike: { distanceMi: 1.5, difficulty: "easy" },
     openMonths: CEDAR_GROVE_ROAD,
     closedNote:
       "在国王峡谷谷底的 Cedar Grove，进出的 180 号公路冬季封闭，通常 11 月上中旬到次年 4 月底或 5 月进不去（以 NPS 公告为准）；这段时间可以在 Grant Grove 走格兰特将军树步道，或去红杉公园 Giant Forest 的大树步道。",
@@ -200,9 +200,9 @@ export const sequoiaKingsCanyon: Attraction[] = [
     start: { lat: 36.56408, lon: -118.77325, nameZh: "巨人森林博物馆" },
     durationMin: 60,
     trail: { via: [{ lat: 36.56621, lon: -118.7695 }], loop: true },
-    hike: { distanceMi: 1, difficulty: "easy", loop: true },
+    hike: { distanceMi: 0.75, difficulty: "easy", loop: true },
     summary: "绕圆草甸一圈的无障碍步道，巨杉围着草甸生长，沿途的解说牌讲巨杉为什么离不开火和水。",
-    tips: ["全程平坦，适合带老人小孩", "夏天停车位紧张，可以坐园区免费班车"],
+    tips: ["全程铺装加栈道，坡度中等，适合带老人小孩", "夏天停车位紧张，可以坐园区免费班车"],
   },
   {
     id: "seki-mist-falls",
@@ -222,7 +222,7 @@ export const sequoiaKingsCanyon: Attraction[] = [
       "步道口在 Cedar Grove 最里面的 Roads End，180 号公路冬季封闭，通常 11 月上中旬到次年 4 月底或 5 月进不去（以 NPS 公告为准），开路后的 5–6 月瀑布水量最大；冬季想看瀑布可以去红杉公园的托科帕瀑布步道（有雪时要穿防滑鞋或雪鞋）。",
     bestMonths: [5, 6, 7],
     summary: "国王峡谷谷底最有名的步道，沿南福克河一路上溯，终点是一道宽阔的瀑布，春末初夏水雾最大。",
-    tips: ["前半段平坦但没树荫，夏天带帽子和足够的水", "有熊出没，食物别放在车里显眼处"],
+    tips: ["前面几英里平坦开阔、没树荫，夏天带帽子和足够的水", "这一带熊很活跃，所有带气味的东西都要放进防熊储物柜，别留在车里"],
   },
   {
     id: "seki-roaring-river-falls",
@@ -254,9 +254,9 @@ export const sequoiaKingsCanyon: Attraction[] = [
     bestTime: ["sunset"],
     openMonths: CEDAR_GROVE_ROAD,
     closedNote:
-      "Panoramic Point Road 冬季不清雪，积雪后就对车辆关闭，一般到 5 月下旬才重开（雪化得早会提前，以 NPS 公告为准）；封路期间可以从 Grant Grove 村沿这条路步行或穿雪鞋上去（单程约 3.7 公里），或者在格兰特将军树一带看雪中巨杉。",
+      "Panoramic Point Road 冬季不清雪，积雪后就对车辆关闭，一般到 5 月下旬阵亡将士纪念日前的周三才重开（以 NPS 公告为准）；封路期间可以从 Grant Grove 村沿这条路步行或穿雪鞋上去（单程约 3.7 公里），或者在格兰特将军树一带看雪中巨杉。",
     summary: "Grant Grove 上方的山顶观景台，眺望国王峡谷和远处连绵的高山雪峰，从停车场走几百米就到。",
-    tips: ["上山的小路很窄，不适合房车和拖车", "冬季道路封闭"],
+    tips: ["上山的小路很窄，房车和拖车不准上", "冬季道路封闭"],
   },
   {
     id: "seki-hospital-rock",

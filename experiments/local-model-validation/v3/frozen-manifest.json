@@ -1,0 +1,14 @@
+{
+  "frozen_at_utc": "2026-10-17T02:54:24.784375+00:00",
+  "reference_date": "2026-10-16",
+  "timezone": "America/Los_Angeles",
+  "note": "Code and cases authored together, frozen before inference; not blind validation.",
+  "sha256": {
+    "prompt.txt": "f425f1f0ff5bf5d3f962b66687a9a14f7f28e44209808d34d644f33892603cd0",
+    "scenarios.json": "1a7c9503355d4187701e60fe0036b7e539e1c95b144d8d259029ccde99affb42",
+    "dialogue.py": "72fd72a4475de3d3cef6d4b12b2180a45ef7bc5b05b408c13adf0d41c9106bcf",
+    "test_dialogue.py": "dad359011e028be3f42ea604aa31d607ead23cc5b91761d3503a064f92ce4e82",
+    "run.py": "829eedd30cd3a6f2f3854c645d56953a84adb41a9eb60e58a12ae467fe9369ee",
+    "../v2/intake.py": "b8aa3930ab6ae43ece515a90a3005477c0b8b65891464f7ac433e58bd92d124c"
+  }
+}

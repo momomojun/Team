@@ -110,7 +110,7 @@ export const suitability: Record<string, Suitability> = {
     wheelchair: "no",
     seniors: "caution",
     hazards: ["heat", "flashFlood"],
-    noteZh: "往返约 9.5 公里、爬升约 350 米，几乎没有树荫；夏天太热，季风季小峡谷里有山洪。带小孩、老人在东区开 Cactus Forest 环线、走铺装的 Desert Ecology 步道就好。",
+    noteZh: "往返约 9 公里、爬升约 300 米，几乎没有树荫；夏天太热，季风季小峡谷里有山洪。带小孩、老人在东区开 Cactus Forest 环线、走铺装的 Desert Ecology 步道就好。",
   },
   "sagu-sabino-canyon": {
     kidsFromAge: 0,

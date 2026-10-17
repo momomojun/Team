@@ -1,11 +1,11 @@
 import type { Attraction } from "./types";
 
 // 20 号公路中段（Ross Dam 步道口 MP 134 到 Silver Star 闸口 MP 171）冬季封闭：
-// 通常 4 月下旬到 5 月开通、11 月中下旬封路；2026 年因 2025 年 12 月路基冲毁和 3 月塌方，6 月 14 日才开通
+// NPS：通常 4 月或 5 月初开通、11 月下旬到 12 月初封路；2026 年因 2025 年 12 月路基冲毁和 3 月塌方，6 月 14 日才开通
 const SR20_THROUGH = [5, 6, 7, 8, 9, 10];
 // 公路开通后，Washington Pass 观景台支路和 Rainy Lake 铺装步道一般 6 月雪化后才好去
 const PASS_SUMMER = [6, 7, 8, 9, 10];
-// 高山步道：7 月中旬前常有残雪，10 月下旬开始下雪；Cascade River Road 一般 6 月底到 7 月初才通到步道口
+// 高山步道：7 月中旬前常有残雪，10 月下旬开始下雪；Cascade River Road 一般 6 月底才通到步道口（大雪年份 7 月初）
 const HIGH_TRAILS = [7, 8, 9, 10];
 const RAINY_PASS_TH = { lat: 48.51525, lon: -120.73578, nameZh: "Rainy Pass 停车场（步道口）" };
 const USFS_PARKING = "停车要付 $5/天，或挂 Northwest Forest Pass、America the Beautiful 年卡";
@@ -46,7 +46,7 @@ export const northCascades: Attraction[] = [
     bestTime: ["morning"],
     openMonths: PASS_SUMMER,
     closedNote:
-      "华盛顿山口在 20 号公路冬季封闭段（MP 134 到 MP 171）中间，公路通常 11 月中下旬因雪崩风险封闭、次年 4 月底到 5 月开通（2026 年因 2025 年 12 月路基冲毁和 3 月塌方拖到 6 月 14 日），开通后观景台支路还常要等雪化；封路期间可以去西段通常仍能开到的迪亚布洛湖观景台和 Newhalem 一带。",
+      "华盛顿山口在 20 号公路冬季封闭段（MP 134 到 MP 171）中间，公路通常 11 月下旬到 12 月初因雪崩风险封闭、次年 4 月或 5 月初开通（2026 年因 2025 年 12 月路基冲毁和 3 月塌方拖到 6 月 14 日），开通后观景台支路还常要等雪化；封路期间可以去西段通常仍能开到的迪亚布洛湖观景台和 Newhalem 一带。",
     mustSee: true,
     outsidePark: true,
     summary:
@@ -80,7 +80,7 @@ export const northCascades: Attraction[] = [
     hike: { distanceMi: 7.2, gainFt: 2020, difficulty: "hard", loop: true },
     openMonths: HIGH_TRAILS,
     closedNote:
-      "步道口在 20 号公路冬季封闭段内的 Rainy Pass，公路通常 11 月中下旬封闭、次年 4 月底到 5 月开通（2026 年 6 月 14 日才通），山脊上的积雪一般 7 月中旬才化，之前路迹难找、雪坡很滑；这段时间可以走低海拔的雪松步道、雷丘步道，路通后也可以先走平缓的 Rainy Lake 铺装步道。",
+      "步道口在 20 号公路冬季封闭段内的 Rainy Pass，公路通常 11 月下旬到 12 月初封闭、次年 4 月或 5 月初开通（2026 年 6 月 14 日才通），山脊上的积雪一般 7 月中旬才化，之前路迹难找、雪坡很滑；这段时间可以走低海拔的雪松步道、雷丘步道，路通后也可以先走平缓的 Rainy Lake 铺装步道。",
     bestMonths: [9, 10],
     mustSee: true,
     outsidePark: true,
@@ -89,7 +89,7 @@ export const northCascades: Attraction[] = [
     tips: [
       `停车场约 40 个车位，周末和落叶松季很早就满，路边停车不安全；${USFS_PARKING}`,
       "逆时针（先往 Lake Ann 方向）上坡较缓、景色越走越开阔；7 月中旬前常有残雪，路迹难找、雪坡很滑",
-      "山脊段完全暴露，带防风外套；环线沿途和 Lake Ann、Rainy Lake 周边禁止露营",
+      "山脊段完全暴露，带防风外套；Rainy Lake、Lake Ann、Heather Pass、Maple Pass 周边 1/4 英里内禁止露营",
     ],
     photoFile: "View from Maple Pass.jpg",
   },
@@ -108,7 +108,7 @@ export const northCascades: Attraction[] = [
     hike: { distanceMi: 7.4, gainFt: 1700, difficulty: "moderate" },
     openMonths: HIGH_TRAILS,
     closedNote:
-      "Cascade River Road 冬季不除雪，通常 6 月底到 7 月初才通到步道口（大雪年份拖到 7 月下旬），7 月中旬前山坡上还常有积雪和雪崩风险，10 月下旬开始下雪；这段时间可以改走 Newhalem 一带的雪松步道、梯溪瀑布等低海拔步道。",
+      "Cascade River Road 冬季不除雪，通常 6 月底才通到步道口（大雪年份要到 7 月初），7 月中旬前山坡上还常有积雪和雪崩风险，10 月下旬开始下雪；这段时间可以改走 Newhalem 一带的雪松步道、梯溪瀑布等低海拔步道。",
     mustSee: true,
     summary:
       "国家公园本体里最热门的一日徒步：先走三十多个之字弯穿过森林，再横切高山草甸到山口，对面是挂满冰川的 Johannesburg 山，运气好能见到旱獭。",
@@ -152,7 +152,7 @@ export const northCascades: Attraction[] = [
     start: { lat: 48.67315, lon: -121.24723, nameZh: "Newhalem 小镇（Skagit 信息中心一带）" },
     durationMin: 30,
     trail: { via: [{ lat: 48.67169, lon: -121.24607 }, { lat: 48.67015, lon: -121.24952 }], loop: true },
-    hike: { distanceMi: 0.5, difficulty: "easy", loop: true },
+    hike: { distanceMi: 0.3, difficulty: "easy", loop: true },
     summary:
       "从 Newhalem 小镇走过 Skagit 河上的吊桥，绕一圈河边的西部红雪松老林，沿途有解说牌，还能看到山火过后森林恢复的样子。",
     tips: [
@@ -193,7 +193,7 @@ export const northCascades: Attraction[] = [
       "20 号公路跨过 Gorge Creek 的桥上就能看到，溪水分几级落进又深又窄的岩缝；停车场旁还有一条小环线，能俯瞰 Gorge 大坝和碧绿的 Gorge 湖。",
     tips: [
       "在 MP 123.4，从 Newhalem 往东约 5 分钟；停车后沿人行道走上公路桥看瀑布，过马路走人行横道",
-      "停车场出发的 Gorge Overlook 环线约 0.5 英里，前半段铺装，有厕所",
+      "停车场出发的 Gorge Overlook 环线前 0.3 英里是铺装路，后约 0.5 英里是林间土路绕回停车场，有厕所",
       "桥面是钢格板，雨天湿滑；春夏融雪时水量最大",
     ],
   },
@@ -233,7 +233,7 @@ export const northCascades: Attraction[] = [
     start: { lat: 48.71959, lon: -121.11995, nameZh: "Diablo Lake 步道口（环境学习中心旁）" },
     durationMin: 270,
     trail: {},
-    hike: { distanceMi: 7.6, gainFt: 1300, difficulty: "moderate" },
+    hike: { distanceMi: 7.6, gainFt: 1312, difficulty: "moderate" },
     summary:
       "沿迪亚布洛湖北岸起伏的森林步道，途中多次从岩石平台俯瞰碧绿的湖面，终点是 Ross 大坝下方横跨湖湾的吊桥。",
     tips: [
@@ -276,11 +276,11 @@ export const northCascades: Attraction[] = [
     durationMin: 15,
     openMonths: SR20_THROUGH,
     closedNote:
-      "罗斯湖观景点在 20 号公路冬季封闭段内（MP 134 以东），公路通常 11 月中下旬封闭、次年 4 月底到 5 月开通（2026 年 6 月 14 日才通）；封路期间可以去 MP 134 以西的迪亚布洛湖观景台。",
+      "罗斯湖观景点在 20 号公路冬季封闭段内（MP 134 以东），公路通常 11 月下旬到 12 月初封闭、次年 4 月或 5 月初开通（2026 年 6 月 14 日才通）；封路期间可以去 MP 134 以西的迪亚布洛湖观景台。",
     summary:
       "20 号公路 MP 135–136 一带的路边观景点，俯瞰 Ross 湖南端的 Ruby Arm 湖湾；Ross 湖是 Ross 大坝蓄出的长湖，一直延伸到加拿大边境。",
     tips: [
-      "往西一两英里的 Ross Dam 步道口（MP 134）可以下到大坝顶：往返约 2.5 英里，回程是上坡",
+      "往西一两英里的 Ross Dam 步道口（MP 134）可以下到大坝顶：往返约 1.5 英里（再走过大坝往返约 2.5 英里），回程是上坡",
       "旁边 MP 134.3 的 Happy Creek 森林木栈道很短，十几分钟就能走完",
       "冬季 20 号公路在 MP 134 以东封闭，这里去不了",
     ],
@@ -300,7 +300,7 @@ export const northCascades: Attraction[] = [
     hike: { distanceMi: 4.4, gainFt: 1050, difficulty: "moderate" },
     openMonths: HIGH_TRAILS,
     closedNote:
-      "步道口在 Washington Pass 附近的 20 号公路冬季封闭段内，公路通常 11 月中下旬封闭、次年 4 月底到 5 月开通（2026 年 6 月 14 日才通），湖边积雪通常 7 月才化完；这段时间可以走西段低海拔的雪松步道、雷丘步道。",
+      "步道口在 Washington Pass 附近的 20 号公路冬季封闭段内，公路通常 11 月下旬到 12 月初封闭、次年 4 月或 5 月初开通（2026 年 6 月 14 日才通），湖边积雪通常 7 月才化完；这段时间可以走西段低海拔的雪松步道、雷丘步道。",
     bestMonths: [9, 10],
     outsidePark: true,
     summary:
@@ -326,7 +326,7 @@ export const northCascades: Attraction[] = [
     hike: { distanceMi: 2, gainFt: 70, difficulty: "easy" },
     openMonths: PASS_SUMMER,
     closedNote:
-      "Rainy Pass 在 20 号公路冬季封闭段内，公路通常 11 月中下旬封闭、次年 4 月底到 5 月开通（2026 年 6 月 14 日才通），刚开通时铺装步道上还常有积雪；这段时间可以改走 Newhalem 的雪松步道这类全年可走的平路。",
+      "Rainy Pass 在 20 号公路冬季封闭段内，公路通常 11 月下旬到 12 月初封闭、次年 4 月或 5 月初开通（2026 年 6 月 14 日才通），刚开通时铺装步道上还常有积雪；这段时间可以改走 Newhalem 的雪松步道这类全年可走的平路。",
     outsidePark: true,
     summary:
       "Rainy Pass 停车场出发的铺装步道，约 1 英里几乎没有坡，走到被陡峭山壁环抱的 Rainy Lake 湖边，老人小孩和轮椅都能去。",

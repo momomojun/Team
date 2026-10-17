@@ -59,7 +59,7 @@ export const suitability: Record<string, Suitability> = {
     stroller: "yes",
     wheelchair: "assisted",
     seniors: "ok",
-    noteZh: "约 107 米有坡的铺装路到观景台尽头，有无障碍洗手间；海拔约 2,780 米，老人走慢一点。",
+    noteZh: "约 107 米有坡的铺装路到观景台尽头，有无障碍洗手间；海拔约 2,778 米，老人走慢一点。",
     source: ACCESS,
   },
   "brca-mossy-cave": {
@@ -82,7 +82,7 @@ export const suitability: Record<string, Suitability> = {
     wheelchair: "no",
     seniors: "caution",
     noteZh:
-      "约 13 公里、上上下下累计爬升 500 多米，在海拔 2,400 米上走大半天，后段沿边缘步道回来还有长上坡；带孩子、老人在仙境观景点看，或者只往下走到第一个岔口就回头。",
+      "约 13 公里、上上下下累计爬升约 580 米，在海拔 2,400 米上走大半天，后段沿边缘步道回来还有长上坡；带孩子、老人在仙境观景点看，或者只往下走到第一个岔口就回头。",
   },
   "brca-peekaboo-loop": {
     kidsFromAge: 9,
@@ -123,7 +123,7 @@ export const suitability: Record<string, Suitability> = {
     seniors: "caution",
     hazards: ["altitude"],
     noteZh:
-      "约 1.6 公里硬地面环线，官方说轮椅有人协助能走，但有几段坡不达标；海拔约 2,800 米，是公园最高处，老人慢慢走、多歇，喘得厉害就在彩虹点看。",
+      "约 1.6 公里硬地面环线，官方说轮椅有人协助能走，但有几段坡不达标；海拔约 2,778 米，是公园最高处，老人慢慢走、多歇，喘得厉害就在彩虹点看。",
     source: ACCESS,
   },
 };

@@ -8,8 +8,12 @@ export type CelebrityPlatform = "instagram" | "x" | "weibo" | "youtube";
 
 export interface CelebrityShot {
   id: string;
+  /** 中文常用名（大陆、港台常见的叫法；英文名本身就通用的直接写英文） */
   nameZh: string;
+  /** 英文名或罗马字（页面上和中文名一起显示，方便认出是谁） */
   nameEn: string;
+  /** 一句话说明是谁：“韩国花样滑冰奥运冠军”“BLACKPINK 成员” */
+  whoZh?: string;
   /** 组合（BLACKPINK、BTS……） */
   group?: string;
   /** 国家、地区 */

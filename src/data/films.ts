@@ -23,6 +23,11 @@ export interface FilmShot {
   /** 怎么拍同款：站在哪、几点去光线最像、要不要预约或许可 */
   howToZh: string;
   tipsZh: string[];
+  /**
+   * 取景地的实景照片：Wikimedia Commons 上的文件名（不带 File: 前缀），只用允许转载的授权（CC BY、CC BY-SA、公有领域），
+   * 不用剧照；由 scripts/build-film-photos.mjs 查缩略图、作者和授权。不填时用对应景点图集的第一张
+   */
+  photoFile?: string;
   /** 确认取景地的来源 */
   sources: string[];
   /** high：官方或几家可靠来源都写明；medium：只有一家可靠来源，或者具体机位是推断的 */

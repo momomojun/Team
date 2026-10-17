@@ -250,7 +250,7 @@ export const banff: Attraction[] = [
       "冰原大道路边最大的湖之一，湖后是 Crowfoot 山和 Bow 冰川，无风的早上湖面倒影很清楚；北岸有红屋顶的 Num-Ti-Jah Lodge。",
     tips: [
       "离露易丝湖约 35 公里、30 分钟车程，湖面通常 6 月中下旬才解冻",
-      "从 Num-Ti-Jah Lodge 旁的步道可以沿湖走到 Bow Glacier Falls 瀑布，往返约 3–4 小时",
+      "从 Num-Ti-Jah Lodge 旁的步道可以沿湖走到 Bow Glacier Falls 瀑布，单程约 3.8 公里、往返约 3 小时",
       "往南不远的路边观景点能看到乌鸦爪冰川（Crowfoot Glacier）",
     ],
     photoFile: "Bow Lake beim Icefields Parkway.jpg",
@@ -270,7 +270,7 @@ export const banff: Attraction[] = [
     bestMonths: [7, 8, 9],
     mustSee: true,
     summary:
-      "在冰原大道最高点 Bow Pass（海拔 2,067 米）旁的观景台俯瞰山谷里的佩托湖，湖的形状像一只狼头，夏天湖水是浓得发亮的土耳其蓝，是落基山最经典的湖景之一。",
+      "在冰原大道最高点 Bow Summit（海拔约 2,070 米）旁的观景台俯瞰山谷里的佩托湖，湖的形状像一只狼头，夏天湖水是浓得发亮的土耳其蓝，是落基山最经典的湖景之一。",
     tips: [
       "从停车场沿铺装步道上坡走 10 分钟左右到观景台；中午前后旅行团大巴多，早上人少、光线也好",
       "离露易丝湖约 41 公里（约 40 分钟），湖面 6 月下旬到 7 月初才解冻，7–9 月颜色最好",

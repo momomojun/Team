@@ -124,7 +124,7 @@ export const deathValley: Attraction[] = [
     lon: -116.72675,
     durationMin: 45,
     bestTime: ["sunset", "sunrise"],
-    summary: "海拔约 1,669 米的山顶观景台，正下方就是 Badwater 盐滩，对面是 Telescope Peak，视野非常震撼。",
+    summary: "海拔 1,699 米（5,575 英尺）的山顶观景台，正下方就是 Badwater 盐滩，对面是 Telescope Peak，视野非常震撼。",
     tips: [
       "从 190 号公路拐进约 21 公里的山路，最后一段很陡，房车和拖挂车不适合",
       "气温明显比谷底低，带件外套",
@@ -159,7 +159,7 @@ export const deathValley: Attraction[] = [
     lon: -117.45065,
     start: { lat: 37.01095, lon: -117.45497, nameZh: "Ubehebe 停车场" },
     durationMin: 60,
-    summary: "宽约 800 米、深约 180 米的火山爆炸坑，边缘有步道可以绕一圈。",
+    summary: "宽约 800 米、深 152–237 米（看从哪道山脊量）的火山爆炸坑，边缘有步道可以绕一圈。",
     tips: [
       "从 Furnace Creek 开过去单程 1 小时以上",
       "下到坑底容易，爬上来很累（脚下是松软的火山渣）",
@@ -203,7 +203,7 @@ export const deathValley: Attraction[] = [
     hike: { distanceMi: 4, gainFt: 1200, difficulty: "moderate" },
     bestTime: ["morning"],
     summary: "Stovepipe Wells 旁边的狭窄峡谷，进去不远就是被水流打磨得光滑的大理石岩壁，花纹像马赛克拼贴。",
-    tips: ["最精彩的是前 800 米，时间不够走到这里就行", "通往步道口是一段约 4 公里的碎石路，普通轿车能开", "天热时别在中午进峡谷"],
+    tips: ["最精彩的是前 800 米，时间不够走到这里就行", "通往步道口是一段约 3.7 公里（2.3 英里）的土路，普通轿车能开", "天热时别在中午进峡谷"],
   },
   {
     id: "deva-harmony-borax",

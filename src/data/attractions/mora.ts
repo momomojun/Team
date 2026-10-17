@@ -127,7 +127,7 @@ export const mountRainier: Attraction[] = [
     durationMin: 45,
     openMonths: SUNRISE_ROAD,
     closedNote:
-      "Sunrise Road 是园内海拔最高的公路，冬季不清雪，通常 7 月初开通、9 月底到 10 月初封路，游客中心大约 7 月初到 9 月初开放；2026 年 8 月起因 Grand Park 2 等山火对车辆关闭到季末（只许步行和骑车，9 月 16 日起也没有饮用水），这段时间可以去 Paradise 看雷尼尔山南面。",
+      "Sunrise Road 是园内海拔最高的公路，冬季不清雪，通常 6 月底或 7 月初开通、9 月底到 10 月初封路，游客中心大约 7 月初到 9 月初开放；2026 年 8 月起因 Grand Park 2 等山火对车辆关闭到季末（只许步行和骑车，9 月 16 日起也没有饮用水），这段时间可以去 Paradise 看雷尼尔山南面。",
     mustSee: true,
     summary:
       "海拔约 1,950 米（6,400 英尺），是园内开车能到的最高点。停车场正对雷尼尔山东北面和美国本土面积最大的埃蒙斯冰川，附近几条步道都从这里出发。",
@@ -158,7 +158,7 @@ export const mountRainier: Attraction[] = [
       ],
       loop: true,
     },
-    hike: { distanceMi: 3.4, gainFt: 500, difficulty: "easy", loop: true },
+    hike: { distanceMi: 3.5, gainFt: 500, difficulty: "easy", loop: true },
     openMonths: [7, 8, 9, 10],
     closedNote:
       "410 号公路 Chinook Pass 段冬季封闭，一般 10 月底或 11 月到次年 5 月下旬（2026 年 5 月 22 日重开），开通后步道积雪也常到 7 月（以 WSDOT 和 NPS 公告为准）；这段时间可以去冬季也能开车到的 Paradise。",
@@ -227,7 +227,7 @@ export const mountRainier: Attraction[] = [
     durationMin: 15,
     summary: "去 Paradise 路上的路边瀑布，约 18 米高，水流正好从一座历史石拱桥下穿过，桥和瀑布一起入画。",
     tips: [
-      "停车位在石桥东侧，只能停几辆车；沿小路下行约 30 米高差就到观景点",
+      "石桥两侧各有一处小停车点，只能停几辆车；沿约 30 米长的小路稍微往下走就到桥下的观景点",
       "不要在桥上停车，也不要走上桥拍照，车流很近",
     ],
   },
@@ -250,7 +250,7 @@ export const mountRainier: Attraction[] = [
     tips: [
       "步道口在 Christine Falls 上方不远，停车位不多，夏季周末早点到",
       "积雪完全化掉前（通常 7 月前）雪坡很陡，NPS 不建议去",
-      "到 Van Trump Park 往返约 9 公里、爬升约 670 米",
+      "到 Van Trump Park 往返约 9.3 公里（5.8 英里）、爬升约 610 米（2,000 英尺）",
     ],
   },
   {
@@ -335,7 +335,7 @@ export const mountRainier: Attraction[] = [
     durationMin: 15,
     openMonths: SUNRISE_ROAD,
     closedNote:
-      "在 Sunrise Road 上，这条路冬季不清雪，通常 7 月初开通、9 月底到 10 月初封路；2026 年 8 月起因山火对车辆关闭到季末（只许步行和骑车），这段时间可以去 Paradise 或倒影湖看雷尼尔山。",
+      "在 Sunrise Road 上，这条路冬季不清雪，通常 6 月底或 7 月初开通、9 月底到 10 月初封路；2026 年 8 月起因山火对车辆关闭到季末（只许步行和骑车），这段时间可以去 Paradise 或倒影湖看雷尼尔山。",
     summary: "Sunrise Road 大弯道上的观景台（海拔约 1,865 米），360 度看雷尼尔山和喀斯喀特山脉，天晴时南边是亚当斯山、北边是贝克山，脚下是 Sunrise Lake。",
     tips: ["就在去 Sunrise 的路上，离终点还有几公里", "去 Palisades Lakes 的步道从这里出发"],
   },
@@ -382,7 +382,7 @@ export const mountRainier: Attraction[] = [
     hike: { distanceMi: 5.6, gainFt: 900, difficulty: "moderate" },
     openMonths: SUNRISE_ROAD,
     closedNote:
-      "步道从 Sunrise 出发，平时只在 7 月初到 9 月底 Sunrise Road 通车时能去；2026 年 8 月起 Sourdough Ridge 以北的步道（包括这条）因 Grand Park 2 和 Wonderland Complex 山火关闭，重开时间以 NPS 公告为准，这段时间可以改去 Paradise 走天际线步道。",
+      "步道从 Sunrise 出发，平时只在 7 月初到 9 月底 Sunrise Road 通车时能去；2026 年 8 月起 Sourdough Ridge 以北的步道（包括这条）因 Grand Park 2 山火关闭，重开时间以 NPS 公告为准，这段时间可以改去 Paradise 走天际线步道。",
     summary: "经 Sourdough Ridge 和 Frozen Lake 走到山顶的老式木结构火警瞭望塔（海拔约 2,190 米），正对雷尼尔山北面，脚下是 Grand Park 高原，常能看到山羊。",
     tips: [
       "全程几乎没有树荫，最后一段走在碎石坡上，风大",

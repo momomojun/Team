@@ -213,7 +213,7 @@ export const craterLake: Attraction[] = [
     closedNote: "在东环湖路南段，这段路通常 11 月 1 日或更早关闭，次年 7 月中旬前后清雪通车（以 NPS 公告为准）；冬春可以在 Rim Village 看湖和巫师岛，夏季也能从加菲尔德峰顶俯瞰幽灵船岛。",
     mustSee: true,
     summary:
-      "东环湖路 Kerr Notch 旁的观景台，俯瞰湖东南角的幽灵船岛：远看像一艘小帆船，其实高约 53 米、长约 122 米，由约 40 万年前的熔岩构成，是火山口内露出来的最古老的岩石。",
+      "东环湖路 Kerr Notch 旁的观景台，俯瞰湖东南角的幽灵船岛：远看像一艘小帆船，其实高约 52 米（170 英尺）、长约 152 米（500 英尺），由约 40 万年前的熔岩构成，是火山口内露出来的最古老的岩石。",
     tips: ["小岛贴着湖岸、颜色和崖壁相近，很多人第一眼找不到", "去普莱克尼瀑布和火山尖塔的 Pinnacles Road 就在这附近分出"],
     photoFile: "The Phantom Ship, Crater Lake National Park.jpg",
   },

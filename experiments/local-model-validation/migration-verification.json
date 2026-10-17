@@ -1,0 +1,21 @@
+{
+  "endpoint": "http://127.0.0.1:11435",
+  "version": {
+    "version": "0.40.5"
+  },
+  "model_digest": "359d7dd4bcdab3d86b87d73ac27966f4dbb9f5efdfcc75d34a8764a09474fae7",
+  "model_details": {
+    "parent_model": "",
+    "format": "gguf",
+    "family": "qwen3",
+    "families": [
+      "qwen3"
+    ],
+    "parameter_size": "4.0B",
+    "quantization_level": "Q4_K_M"
+  },
+  "baseline_digest_matches": true,
+  "original_file_count": 106,
+  "old_directory_exists": false,
+  "note": "Migration health check only; original 16-case benchmark results were not overwritten."
+}

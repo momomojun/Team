@@ -77,7 +77,7 @@ export const zion: Attraction[] = [
     start: { lat: 37.251, lon: -112.9584, nameZh: "Zion Lodge 对面步道口" },
     durationMin: 90,
     trail: {},
-    hike: { distanceMi: 1.2, gainFt: 70, difficulty: "easy" },
+    hike: { distanceMi: 1.2, gainFt: 150, difficulty: "easy" },
     summary: "从 Zion Lodge 过桥出发，走到小瀑布后面的下翡翠池；体力好可以继续爬到中、上池。",
     tips: ["春季水量大时瀑布最好看", "可以经 Kayenta Trail 走到 The Grotto，接天使降临步道"],
     photoFile: "Emerald Pools Color.jpg",
@@ -147,7 +147,7 @@ export const zion: Attraction[] = [
     summary: "隧道东口旁的短步道，终点俯瞰整条锡安峡谷，日出时尤其漂亮，花一小时就能看到大片景色。",
     tips: [
       "不在班车路线上，可以自驾；停车位很少，早去",
-      "从峡谷过来要穿过 Zion–Mt. Carmel 隧道，房车等大车需要办理通行证",
+      "从峡谷过来要穿过 Zion–Mt. Carmel 隧道；2026 年起，长超过 35 英尺 9 英寸（10.9 米）、宽超过 7 英尺 10 英寸（2.39 米）或高超过 11 英尺 4 英寸（3.45 米）的房车等大车不能走 Canyon Junction 到东入口这一段，原来的隧道通行证取消了",
     ],
     photoFile: "Overlook trail view - Zion Canyon.jpg",
   },
@@ -210,7 +210,7 @@ export const zion: Attraction[] = [
     start: { lat: 37.25897, lon: -112.95097, nameZh: "The Grotto 班车站" },
     durationMin: 180,
     trail: {},
-    hike: { distanceMi: 4, gainFt: 1000, difficulty: "hard" },
+    hike: { distanceMi: 4.2, gainFt: 1000, difficulty: "hard" },
     bestTime: ["morning"],
     summary:
       "天使降临铁链段之前的终点，不用抽许可证：爬完 21 道之字形的 Walter's Wiggles，就能在山脊上看天使降临和峡谷全景。",
@@ -228,11 +228,11 @@ export const zion: Attraction[] = [
     start: { lat: 37.29635, lon: -112.90139, nameZh: "East Mesa 步道口" },
     durationMin: 240,
     trail: {},
-    hike: { distanceMi: 6.7, gainFt: 700, difficulty: "moderate" },
+    hike: { distanceMi: 6.8, gainFt: 300, difficulty: "moderate" },
     summary: "比天使降临还高的观景台，俯瞰整条锡安峡谷，天使降临在脚下像一道小山脊。从东侧台地走过去，爬升不大。",
     tips: [
       "原来从峡谷里 Weeping Rock 上去的路 2019 年落石后关闭，现在从东侧的 East Mesa 步道口进",
-      "去步道口要走一段土路，下雨后泥泞，最好开高底盘车",
+      "去步道口要走一段土路，冬春和下雨后会非常泥泞、开不进去，官方说只有高底盘或四驱车能开",
     ],
   },
   {

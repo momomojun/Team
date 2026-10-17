@@ -5,7 +5,7 @@ import { CreatorRoutes } from "@/components/routes/creator-routes";
 import { RoutesTabs } from "@/components/routes/routes-tabs";
 import { attractions } from "@/data/attractions";
 import { celebrityShots } from "@/data/celebrities";
-import { filmShots } from "@/data/films";
+import { filmSpots } from "@/data/film-spots";
 import { creatorRoutes, creatorsUpdated, type CreatorRoute } from "@/data/creators";
 import { parks } from "@/data/parks";
 import { hasLocale, type Locale } from "@/i18n/config";
@@ -56,7 +56,7 @@ export default async function RoutesPage({ params }: PageProps<"/[locale]/routes
 
   // 明星同款：新发的在前；公园按网站的公园顺序
   const shots = celebrityShots.map((shot) => localizeCelebrity(shot, locale)).sort((a, b) => b.date.localeCompare(a.date));
-  const films = filmShots.map((shot) => localizeFilm(shot, locale)).sort((a, b) => b.year - a.year);
+  const films = filmSpots.map((shot) => localizeFilm(shot, locale)).sort((a, b) => b.year - a.year);
   const parksWith = (list: { park: string }[]) =>
     parks.filter((park) => list.some((item) => item.park === park.code)).map((park) => ({ code: park.code, nameZh: localize(park.nameZh, locale) }));
   const stopsOf = (list: { attraction?: string }[]) =>

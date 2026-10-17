@@ -71,7 +71,7 @@ export const blackCanyon: Attraction[] = [
     },
     hike: { distanceMi: 1.6, gainFt: 400, difficulty: "moderate", loop: true },
     summary:
-      "从游客中心往崖下绕一小圈，是不用许可证就能走到的最深入峡谷的步道：先穿过甘贝尔橡树丛，再进花旗松和山杨林，下到崖缘以下约 100 米，抬头看两侧黑色岩壁。",
+      "从游客中心往崖下绕一小圈，是不用许可证就能走到的最深入峡谷的步道：先穿过甘贝尔橡树丛，再进花旗松和山杨林，下到崖缘以下约 120 米，抬头看两侧黑色岩壁。",
     tips: [
       "全程约 2.6 公里，步道窄、坡陡，有几段贴着陡坡，NPS 评为“费力”；回程是上坡，海拔约 2,500 米，慢慢走",
       "去河边的甘尼森路线从这条步道上半段分出去，没有荒野许可不要往下走",
@@ -91,12 +91,12 @@ export const blackCanyon: Attraction[] = [
     start: VISITOR_CENTER_PARKING,
     durationMin: 60,
     trail: { via: [{ lat: 38.55078, lon: -107.68627 }, { lat: 38.54471, lon: -107.68875 }] },
-    hike: { distanceMi: 2, difficulty: "moderate" },
+    hike: { distanceMi: 1.8, difficulty: "moderate" },
     summary:
-      "沿南缘崖边从游客中心走到南缘营地，单程约 1.6 公里，大体平缓，有几段台阶和碎石路；半路经过托米奇点，一路能看到谷底的河和北边的 West Elk 山。",
+      "沿南缘崖边从游客中心走到南缘营地，单程约 1.5 公里，大体平缓，有几段台阶和碎石路；半路经过托米奇点，一路能看到谷底的河和北边的 West Elk 山。",
     tips: [
       "这一带 2025 年山火烧得很重，沿途多是烧焦的树，注意脚下不平和被风吹起的灰",
-      "回程可以接 Uplands Trail（约 1.4 公里）穿过台地上的灌木林回到游客中心，绕成一圈",
+      "回程可以接 Uplands Trail（约 1.5 公里）穿过台地上的灌木林回到游客中心，绕成一圈",
       "夏天母鹿护崽时会攻击狗，这个季节不准带狗",
     ],
     photoFile: "View looking up canyon from Rim Rock Trail (1fd61255-85ea-401b-b6f1-e497bf484bec).jpeg",
@@ -127,7 +127,7 @@ export const blackCanyon: Attraction[] = [
     permit:
       "5–10 月要在 Recreation.gov 预约荒野许可（5–7 月的 4 月 1 日、8–10 月的 7 月 1 日山地时间 8:00 开放），每份 $6 加每人 $4，每天限 15 人",
     summary:
-      "南缘最常走的下河路线：从游客中心沿橡树平地环线下去，再顺一条陡沟下降约 550 米到甘尼森河边，下到约三分之一处有一条约 24 米长的铁链帮忙下陡坡。这不是修好的步道，没有路标，全是松动的碎石，一般下去 1.5 小时、上来 2 小时以上。",
+      "南缘最常走的下河路线：从游客中心沿橡树平地环线下去，再顺一条陡沟下降约 550 米到甘尼森河边，下到约三分之一处有一条约 24 米长的铁链帮忙下陡坡。这不是修好的步道，没有路标，全是松动的碎石，一般下去约 2 小时、上来 2–3 小时。",
     tips: [
       "出发前要看 NPS 的荒野路线介绍视频，许可证号放在车前挡风玻璃下；每组最多 4 人",
       "2025 年山火后沿途有烧焦的陡坡、松动的石头和随时会倒的枯树；每人带 4 升水，河水要过滤后才能喝",
@@ -286,13 +286,13 @@ export const blackCanyon: Attraction[] = [
     start: { lat: 38.56249, lon: -107.74134, nameZh: "High Point 停车场（观景路终点）" },
     durationMin: 75,
     trail: { via: [{ lat: 38.56373, lon: -107.74731 }, { lat: 38.5669, lon: -107.75078 }] },
-    hike: { distanceMi: 1.5, gainFt: 350, difficulty: "moderate" },
+    hike: { distanceMi: 1.6, gainFt: 200, difficulty: "moderate" },
     openMonths: SOUTH_RIM_DRIVE,
     closedNote: SOUTH_RIM_DRIVE_CLOSED,
     summary:
       "从观景路终点高点出发，沿山脊走到华纳点：南边能望到圣胡安山脉和 Uncompahgre 河谷，北边是 West Elk 山；终点俯瞰甘尼森河，这一段是峡谷最深的地方，约 830 米。",
     tips: [
-      "往返约 2.4 公里，有几段上下坡，路边有长椅；高点停车场有厕所和野餐桌，植物解说手册在步道口或游客中心拿",
+      "往返约 2.6 公里，有几段上下坡，路边有长椅；高点停车场有厕所和野餐桌，植物解说手册在步道口或游客中心拿",
       "不能带宠物",
     ],
     photoFile: "Warner Point Trail at Black Canyon of the Gunnison National Park dyeclan.com - panoramio (3).jpg",
@@ -354,12 +354,12 @@ export const blackCanyon: Attraction[] = [
     start: { lat: 38.58532, lon: -107.70854, nameZh: "North Rim 营地旁步道口" },
     durationMin: 30,
     trail: { via: [{ lat: 38.58402, lon: -107.71081 }, { lat: 38.58246, lon: -107.70903 }], loop: true },
-    hike: { distanceMi: 0.5, difficulty: "easy", loop: true },
+    hike: { distanceMi: 0.3, difficulty: "easy", loop: true },
     openMonths: NORTH_RIM,
     closedNote: NORTH_RIM_CLOSED,
     summary:
       "从北缘营地出发的小环线，穿过矮松林到崖边的北深渊观景台，正对南缘的深渊观景台，脚下约 547 米就是河；再往前一个观景台能看到彩绘崖壁和蛇岬（Serpent Point）。",
-    tips: ["全程不到 1 公里，有些地方是碎石路；可以带拴绳的宠物", "夏天常见雨燕、燕子和猛禽贴着崖壁飞", "也是 NPS 推荐的观星点之一"],
+    tips: ["全程约 500 米，有些地方是碎石路；可以带拴绳的宠物", "夏天常见雨燕、燕子和猛禽贴着崖壁飞", "也是 NPS 推荐的观星点之一"],
   },
   {
     id: "blca-exclamation-point",
@@ -379,14 +379,14 @@ export const blackCanyon: Attraction[] = [
         { lat: 38.5869, lon: -107.72093 },
       ],
     },
-    hike: { distanceMi: 3.2, difficulty: "moderate" },
+    hike: { distanceMi: 2.8, difficulty: "moderate" },
     openMonths: NORTH_RIM,
     closedNote: NORTH_RIM_CLOSED,
     summary:
       "北缘最好的步道：从护林站出发穿过山艾、橡树灌丛和矮松杜松林，沿途几处观景点能看到 Pinyon Draw 和峡谷内部，终点惊叹点从北边看彩绘崖壁和下游深谷。体力好可以继续爬到 Green Mountain 山顶，远眺圣胡安山、West Elk 山和 Grand Mesa。",
     tips: [
-      "到惊叹点往返约 5.2 公里，起伏不大，但遮阴少，夏天带足水",
-      "到 Green Mountain 往返约 11.6 公里，NPS 评为费力",
+      "到惊叹点往返约 4.5 公里，起伏不大，但遮阴少，夏天带足水",
+      "到 Green Mountain 往返约 10.3 公里，NPS 评为费力",
       "不能带宠物；北缘有放牧，遇到牛栏门要随手关上",
     ],
     photoFile: "Painted Wall from North Vista Trail.jpg",

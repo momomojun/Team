@@ -1,5 +1,6 @@
 import type { CelebrityShot } from "@/data/celebrities";
 import type { Dictionary } from "@/i18n/dictionaries";
+import { otherName } from "@/i18n/format";
 
 type CelebText = Pick<Dictionary, "attraction" | "units">;
 
@@ -17,6 +18,7 @@ export function CelebrityShotItem({ shot, text, compact = false }: { shot: Celeb
     <div className="text-sm leading-6">
       <p className="flex flex-wrap items-baseline gap-x-2 text-xs text-mute">
         <span className="font-serif text-base text-ink">{shot.nameZh}</span>
+        {otherName(shot.nameZh, shot.nameEn) && <span className="text-ink-soft">{shot.nameEn}</span>}
         {shot.group && <span>{shot.group}</span>}
         <span>· {dateText(shot.date)}</span>
         {link && (
@@ -31,6 +33,7 @@ export function CelebrityShotItem({ shot, text, compact = false }: { shot: Celeb
           </a>
         ))}
       </p>
+      {shot.whoZh && <p className="mt-1 text-xs text-mute">{shot.whoZh}</p>}
       {!shot.attraction && <p className="mt-1 text-xs text-mute">{shot.placeZh}</p>}
       <p className="mt-2 text-ink-soft">{shot.shotZh}</p>
       {!compact && (

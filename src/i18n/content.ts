@@ -43,6 +43,7 @@ export function localizeCelebrity(shot: CelebrityShot, locale: Locale): Celebrit
   return {
     ...shot,
     nameZh: t(shot.nameZh),
+    whoZh: shot.whoZh && t(shot.whoZh),
     group: shot.group && t(shot.group),
     countryZh: t(shot.countryZh),
     placeZh: t(shot.placeZh),
@@ -54,7 +55,7 @@ export function localizeCelebrity(shot: CelebrityShot, locale: Locale): Celebrit
 }
 
 /** 电影同款：片名的中文译名、地点、场景、拍法换成当前语言（英文版片名用 titleEn） */
-export function localizeFilm(shot: FilmShot, locale: Locale): FilmShot {
+export function localizeFilm<T extends FilmShot>(shot: T, locale: Locale): T {
   if (locale === "zh-Hans") return shot;
   const t = (text: string) => localize(text, locale);
   return {

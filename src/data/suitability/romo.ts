@@ -91,7 +91,7 @@ export const suitability: Record<string, Suitability> = {
     wheelchair: "no",
     seniors: "caution",
     hazards: ["altitude"],
-    noteZh: "往返约 8 公里，最后一段要走过大片光滑的岩板，下雨后很滑；带小孩、老人走到艾伯塔瀑布（单程约 1.3 公里）就回头。",
+    noteZh: "往返约 9 公里，最后一段要走过大片光滑的岩板，下雨后很滑；带小孩、老人走到艾伯塔瀑布（单程约 1.3 公里）就回头。",
   },
   "romo-sky-pond": {
     kidsFromAge: 10,
@@ -186,7 +186,7 @@ export const suitability: Record<string, Suitability> = {
     seniors: "ok",
     hazards: ["wildlife"],
     noteZh:
-      "到牧场约 700 米的压实碎石路很宽、坡度不大，官方允许残障人士用电动助行器；牧场里的小路有石头树根、最陡 16%，小屋都要上木台阶。草甸上常有驼鹿，至少离 23 米。",
+      "到牧场约 800 米的压实碎石路很宽、坡度不大，官方允许残障人士用电动助行器；牧场里的小路有石头树根、最陡 16%，小屋都要上木台阶。草甸上常有驼鹿，至少离 23 米。",
     source: ACCESS,
   },
   "romo-kawuneeche-valley": {

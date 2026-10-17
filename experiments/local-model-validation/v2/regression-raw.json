@@ -1,0 +1,18 @@
+{
+ "zh_complete":{"parks":["黄石","大提顿"],"dates":["2027年10月3日"],"duration":"5天","origin":"盐湖城","pace":"不要太累","seniors":"带老人"},
+ "zh_vague_date":{"parks":["黄石","大提顿"],"dates":["十月初"],"duration":"五天","origin":"盐湖城","pace":"不要太累","seniors":"带老人"},
+ "zh_missing_origin":{"parks":["优胜美地"],"dates":["2027年7月10日"],"duration":"3天","origin":null,"pace":"轻松","seniors":null},
+ "zh_missing_days":{"parks":["黄石"],"dates":["2027年6月1日"],"duration":null,"origin":"博兹曼","pace":null,"seniors":null},
+ "zh_missing_park":{"parks":[],"dates":["2027年8月1日"],"duration":"4天","origin":"盐湖城","pace":null,"seniors":null},
+ "zh_no_year":{"parks":["黄石"],"dates":["10月3日"],"duration":"5天","origin":"盐湖城","pace":null,"seniors":null},
+ "zh_month_only":{"parks":["黄石"],"dates":["2027年10月"],"duration":"4天","origin":"博兹曼","pace":null,"seniors":null},
+ "zh_no_seniors":{"parks":["优胜美地"],"dates":["2027年7月1日"],"duration":"3天","origin":"弗雷斯诺","pace":"紧凑","seniors":"没有老人同行"},
+ "en_complete":{"parks":["Yellowstone","Grand Teton"],"dates":["October 3, 2027"],"duration":"5 days","origin":"Salt Lake City","pace":"Relaxed","seniors":"with elderly parents"},
+ "en_missing_date":{"parks":["Yosemite"],"dates":[],"duration":"Three days","origin":"Fresno","pace":"normal","seniors":null},
+ "mixed_language":{"parks":["Yellowstone","Grand Teton"],"dates":["2027-09-02"],"duration":"6天","origin":"SLC","pace":"普通","seniors":null},
+ "zh_date_range":{"parks":["黄石","大提顿"],"dates":["2027年10月3日至2027年10月7日"],"duration":null,"origin":"盐湖城","pace":null,"seniors":null},
+ "duration_conflict":{"parks":["黄石"],"dates":["2027年10月3日至2027年10月7日"],"duration":"2天","origin":"盐湖城","pace":null,"seniors":null},
+ "unsupported_park":{"parks":["锡安国家公园"],"dates":["2027年6月1日"],"duration":"3天","origin":"盐湖城","pace":null,"seniors":null},
+ "many_missing":{"parks":["黄石"],"dates":[],"duration":null,"origin":null,"pace":null,"seniors":null},
+ "ignore_injection":{"parks":["黄石"],"dates":[],"duration":"五天","origin":"盐湖城","pace":null,"seniors":null}
+}

@@ -12,7 +12,7 @@ export const suitability: Record<string, Suitability> = {
     wheelchair: "assisted",
     seniors: "ok",
     noteZh:
-      "停车场到观景处的铺装小路约 120 米，坡度 6–13%，轮椅要有人推；Big Meadow 铺装步道约 400 米、最大坡 9%，比较好走。山顶游客中心烧毁后只有临时厕所。",
+      "停车场到观景处的铺装小路约 120 米，坡度 6–13%，轮椅要有人推；Big Meadow 铺装步道约 400 米、最大坡 9%，比较好走。山顶日间旅舍（Day Lodge）烧毁后只有临时厕所拖车。",
     source: PHYS,
   },
   "olym-hurricane-hill": {
@@ -53,7 +53,7 @@ export const suitability: Record<string, Suitability> = {
     seniors: "caution",
     hazards: ["dropoff", "scramble"],
     noteZh:
-      "往返约 7 公里、爬升约 640 米，之字形陡坡加碎石；“End of maintained trail”牌子以上是要拉绳攀爬的岩脊，坠落风险高，一定在牌子处回头。带孩子、老人改走玛丽米尔瀑布。",
+      "往返约 7 公里、爬升约 610 米，之字形陡坡加碎石；“End of maintained trail”牌子以上是要拉绳攀爬的岩脊，坠落风险高，一定在牌子处回头。带孩子、老人改走玛丽米尔瀑布。",
   },
   "olym-spruce-railroad": {
     kidsFromAge: 0,

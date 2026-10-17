@@ -37,7 +37,7 @@ export const content: Record<string, string> = {
   "隧道东口停车场": "Lot at the tunnel's east entrance",
   "隧道东口旁的短步道，终点俯瞰整条锡安峡谷，日出时尤其漂亮，花一小时就能看到大片景色。": "A short trail by the east end of the tunnel that ends with a view down the length of Zion Canyon. It's especially good at sunrise, and it delivers big scenery in about an hour.",
   "不在班车路线上，可以自驾；停车位很少，早去": "It's not on the shuttle route, so you can drive here. Parking is very limited; arrive early.",
-  "从峡谷过来要穿过 Zion–Mt. Carmel 隧道，房车等大车需要办理通行证": "Coming from the canyon, you drive through the Zion–Mount Carmel Tunnel. RVs and other large vehicles need a tunnel permit.",
+  "从峡谷过来要穿过 Zion–Mt. Carmel 隧道；2026 年起，长超过 35 英尺 9 英寸（10.9 米）、宽超过 7 英尺 10 英寸（2.39 米）或高超过 11 英尺 4 英寸（3.45 米）的房车等大车不能走 Canyon Junction 到东入口这一段，原来的隧道通行证取消了": "Coming from the canyon, you drive through the Zion–Mount Carmel Tunnel. Since 2026, vehicles longer than 35 feet 9 inches, wider than 7 feet 10 inches, or taller than 11 feet 4 inches can no longer drive between Canyon Junction and the East Entrance; the old tunnel permit is gone.",
   "科罗布峡谷": "Kolob Canyons",
   "锡安西北角独立的园区，约 8 公里的景观道通到 Timber Creek Overlook，红色峡谷层层叠叠，人比主峡谷少得多。": "A separate section in Zion's northwest corner. A 5-mile scenic drive climbs to Timber Creek Overlook past layer after layer of red canyons, with far fewer people than the main canyon.",
   "从 I-15 的 40 号出口进，和主峡谷不相通": "Enter from I-15 at Exit 40. There's no road connection to the main canyon.",
@@ -60,7 +60,7 @@ export const content: Record<string, string> = {
   "East Mesa 步道口": "East Mesa Trailhead",
   "比天使降临还高的观景台，俯瞰整条锡安峡谷，天使降临在脚下像一道小山脊。从东侧台地走过去，爬升不大。": "A viewpoint higher than Angels Landing that looks down the whole of Zion Canyon, with Angels Landing below you like a small ridge. The approach across the mesa from the east has modest elevation gain.",
   "原来从峡谷里 Weeping Rock 上去的路 2019 年落石后关闭，现在从东侧的 East Mesa 步道口进": "The original route up from Weeping Rock in the canyon has been closed since a 2019 rockfall. Today you reach it from the East Mesa Trailhead.",
-  "去步道口要走一段土路，下雨后泥泞，最好开高底盘车": "The road to the trailhead includes a dirt stretch that turns muddy after rain; a high-clearance vehicle is best.",
+  "去步道口要走一段土路，冬春和下雨后会非常泥泞、开不进去，官方说只有高底盘或四驱车能开": "The road to the trailhead is dirt and can be extremely muddy and impassable in winter, spring, and after rain; the NPS says it's accessible only by high-clearance or 4WD vehicles.",
   "棋盘台地": "Checkerboard Mesa",
   "东入口附近的一座砂岩山，表面被风化出横竖交错的纹路，像一块巨大的棋盘。": "A sandstone mountain near the east entrance, weathered into a crosshatch of horizontal and vertical lines like a giant checkerboard.",
   "路边有观景停车区，开车经过顺便停一下": "There's a roadside pullout, so stop as you drive by.",
@@ -79,7 +79,7 @@ export const content: Record<string, string> = {
   "铺装步道，官方说轮椅有人协助能走，有几段坡；尽头就是窄缝入口，孩子可以在浅水边玩。": "Paved, and the NPS says it's passable by wheelchair with assistance, though there are a few slopes. It ends at the mouth of the Narrows, where kids can play in the shallows.",
   "全程铺装、平缓，官方说轮椅有人协助能走；有自行车，孩子靠边走。": "Paved and gently graded the whole way; the NPS says it's passable by wheelchair with assistance. Bikes share the path, so keep kids to the side.",
   "铺装但很陡，21 道之字弯 Walter's Wiggles 一直上坡，夏天晒；山脊上观景处边上是悬崖，孩子别靠近，铁链段开始的地方就回头。": "Paved but very steep: the 21 switchbacks of Walter's Wiggles climb steadily, in full sun in summer. The ridge-top viewpoint is bordered by cliffs, so keep kids back from the edge, and turn around where the chain section begins.",
-  "从东侧台地走，爬升不大但往返约 11 公里，路上遮阴少；终点观景台是悬崖边，没有护栏。": "The approach from the east mesa has modest elevation gain, but it's about 6.7 miles round trip with little shade. The viewpoint at the end is an unrailed cliff edge.",
+  "从东侧台地走，爬升不大但往返约 11 公里，路上遮阴少；终点观景台是悬崖边，没有护栏。": "The approach from the east mesa has modest elevation gain, but it's about 6.8 miles round trip with little shade. The viewpoint at the end is an unrailed cliff edge.",
   "路边停车就能看，在车上也看得到。": "Park at the roadside to look, or see it from your car.",
   "有坡道和无障碍停车位；冬天闭馆。": "Ramps and accessible parking. The museum is closed in winter."
 };

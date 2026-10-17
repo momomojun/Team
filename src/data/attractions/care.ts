@@ -37,7 +37,7 @@ export const capitolReef: Attraction[] = [
     mustSee: true,
     summary: "弗鲁塔是 1880 年起摩门拓荒者在河谷里建起的小村，最后一户居民 1969 年才搬走，留下约 1,900 棵果树。村中心的吉福德之家现在卖现烤的水果派、肉桂卷和冰淇淋，买一块坐在果园边的草地上吃，是圆顶礁最有名的体验。",
     tips: [
-      "吉福德之家每年 3 月 14 日到感恩节后的周六营业（2026 年到 11 月 28 日），旺季派常在中午前后卖完，早点去",
+      "吉福德之家每年 3 月 14 日到感恩节后的周六营业（2026 年提前到 11 月 22 日关门），旺季派常在中午前后卖完，早点去",
       "6–10 月果园挂出“U-Pick”牌子时可以自己摘：在园里现吃免费，带走的在入口的自助称重点付钱；哪个果园开放可以问游客中心",
       "24 号公路边还有 1896 年的弗鲁塔木屋学校；2026 年 8 月底的公告说 Fremont 河和 Sulphur 溪大肠杆菌超标，别下水、别让水进嘴",
     ],
@@ -136,7 +136,7 @@ export const capitolReef: Attraction[] = [
     hike: { distanceMi: 2.2, difficulty: "easy" },
     summary: "沿着两侧陡壁之间的干河床走，最窄的一段（The Narrows）谷底只有几米宽，抬头只剩一条天，几乎全程平路，适合一家人。",
     tips: [
-      "从 24 号公路边的步道口走到窄缝往返约 3.6 公里；也可以从景观道那头的 Grand Wash 土路尽头进来，全程单程约 3.5 公里，顺路接卡西迪拱门",
+      "从 24 号公路边的步道口走到窄缝往返约 3.6 公里；也可以从景观道那头的 Grand Wash 土路尽头进来，全程单程约 3.6 公里，顺路接卡西迪拱门",
       "下雨或有山洪预警时千万别进，7–9 月午后雷暴多",
     ],
     photoFile: "Grand Wash (6366478727).jpg",
@@ -177,7 +177,7 @@ export const capitolReef: Attraction[] = [
     hike: { distanceMi: 2, gainFt: 80, difficulty: "easy" },
     summary: "1962 年以前，这条窄峡谷就是穿过水袋褶皱的公路。沿平坦的谷底走约 800 米，岩壁上刻满 1871 年以来勘探者和拓荒者的名字（Pioneer Register），再爬一小段岩坡能看到积着雨水的天然石坑“水袋”（The Tanks）。",
     tips: [
-      "2026 年 9 月 24 日 NPS 路况表显示国会峡谷土路关闭，没写原因和重开时间（雨季常因山洪冲坏路面临时封闭），出发前查路况；关闭期间可以改走大冲沟",
+      "NPS 路况表从 2026 年 9 月下旬到 10 月 15 日一直显示国会峡谷土路关闭，没写原因和重开时间（雨季常因山洪冲坏路面临时封闭），出发前查路况；关闭期间可以改走大冲沟",
       "从景观道尽头开进约 3.9 公里土路，平时普通车能开；雷雨天别进峡谷",
     ],
     photoFile: "Capitol Gorge - 2016-07-01.jpg",
@@ -212,7 +212,7 @@ export const capitolReef: Attraction[] = [
     lon: -111.29427,
     start: { lat: 38.29899, lon: -111.29787, nameZh: "Goosenecks / Sunset Point 停车场" },
     durationMin: 45,
-    hike: { distanceMi: 0.8, difficulty: "easy" },
+    hike: { distanceMi: 1, difficulty: "easy" },
     bestTime: ["sunset"],
     mustSee: true,
     summary: "Panorama Point 土路尽头的两处观景点：鹅颈观景点离停车场约 150 米，脚下的 Sulphur 溪在深谷里拐出几个急弯；日落点单程约 600 米，傍晚夕阳把整面水袋褶皱的崖壁染得通红。",
@@ -262,7 +262,7 @@ export const capitolReef: Attraction[] = [
     summary: "公园北部的荒野：太阳神殿、月亮神殿两座巨大的砂岩孤峰从荒原上拔地而起，旁边还有一座由透明石膏晶体堆成的“玻璃山”（Glass Mountain）。去那里全靠土路，一路几乎见不到人。",
     tips: [
       "从 Caineville 附近的 24 号公路沿 Caineville Wash Road 往北约 27 公里到神殿，不用涉水，高底盘车一般能开，往返约 3 小时；走完整个大教堂谷环线约 93 公里、要 6–8 小时，南口要开车涉过 Fremont 河",
-      "2026 年 9 月 24 日 NPS 路况：高底盘两驱车能开到神殿，再往里不通；膨润土路面雨后又滑又黏，出发前打 435-425-3791 问路况",
+      "2026 年 10 月 15 日 NPS 路况：大教堂谷一带的土路（包括涉河口和 Hartnet 路）状况不明、很可能不通；膨润土路面雨后又滑又黏，出发前打 435-425-3791 问路况",
       "沿途没有水、没有手机信号，带足水、油和食物",
     ],
     photoFile: "Temple Of The Sun in UT.jpg",
@@ -279,7 +279,7 @@ export const capitolReef: Attraction[] = [
     durationMin: 60,
     summary: "Burr Trail 从 12 号公路上的 Boulder 小镇往东穿过长峡谷（Long Canyon），进公园后变成一串之字形土路，从水袋褶皱顶上盘下去，再接 Notom-Bullfrog 土路往北回到 24 号公路。",
     tips: [
-      "Boulder 到公园边界是铺装路，之字形段和 Notom 路是土路，路干时普通车一般能开，雨后可能不通；2026 年 9 月下旬 NPS 路况为高底盘两驱、之字形段有冲沟",
+      "Boulder 到公园边界是铺装路，之字形段和 Notom 路是土路，路干时普通车一般能开，雨后可能不通；2026 年 10 月 15 日 NPS 路况：Burr Trail 和 Notom-Bullfrog 路状况不明、很可能不通",
       "从弗鲁塔出发绕一圈（24 号公路 → Notom 路 → 之字形段 → Boulder → 12 号公路 → Torrey）要大半天",
     ],
     photoFile: "BURR TRAIL SCENIC BACKWAY, UTAH AT WATERPOCKET FOLD.jpg",

@@ -22,7 +22,7 @@ import { getParkAttractions } from "@/data/attractions";
 import { CelebrityShotItem } from "@/components/attractions/celebrity-shots";
 import { FilmShotItem } from "@/components/attractions/film-shots";
 import { celebrityShots } from "@/data/celebrities";
-import { filmShots } from "@/data/films";
+import { filmSpots } from "@/data/film-spots";
 import { creatorRoutes, type CreatorRoute } from "@/data/creators";
 import { lodgingOptions } from "@/data/lodging";
 import { getPark, isSite, npsCodeOf } from "@/data/parks";
@@ -157,7 +157,7 @@ export default async function ParkPage({ params }: PageProps<"/[locale]/parks/[c
     .map((shot) => localizeCelebrity(shot, locale))
     .sort((a, b) => Number(!a.attraction) - Number(!b.attraction) || b.date.localeCompare(a.date));
   // 电影同款：能对上景点的排前面，新片在前
-  const parkFilms = filmShots
+  const parkFilms = filmSpots
     .filter((shot) => shot.park === park.code)
     .map((shot) => localizeFilm(shot, locale))
     .sort((a, b) => Number(!a.attraction) - Number(!b.attraction) || b.year - a.year);

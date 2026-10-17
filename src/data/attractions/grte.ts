@@ -62,7 +62,7 @@ export const grandTeton: Attraction[] = [
     summary:
       "坐渡船横渡珍妮湖，从西岸码头走约 800 米到约 30 米高的隐秘瀑布，再沿石阶往上约 800 米到灵感点，脚下是珍妮湖，远处是整个 Jackson Hole 谷地。",
     tips: [
-      "渡船约 10–15 分钟一班；2026 年 6 月 6 日–9 月 7 日 7:00–19:00 运营，5 月和 9 月是 9:00–17:00，末班船在关门时间开出",
+      "渡船约 10–15 分钟一班；2026 年 6 月 6 日–9 月 7 日 7:00–19:00 运营，5 月 15 日–6 月 5 日和 9 月 8–30 日是 9:00–17:00，末班船在关门时间开出",
       "不坐船也可以沿南岸步道走：到隐秘瀑布往返约 7.9 公里，到灵感点往返约 9.2 公里",
       "去灵感点有几段石阶和裸露的树根，春季和初夏常有残雪湿滑",
     ],
@@ -126,7 +126,7 @@ export const grandTeton: Attraction[] = [
     bestTime: ["sunrise"],
     openMonths: [4, 5, 6, 7, 8, 9, 10, 11],
     closedNote:
-      "积雪后（大约 12 月到次年 3 月）Antelope Flats Road 封路不扫雪，车开不进来，只能把车停在 191 号公路边，步行、滑雪或穿雪鞋约 3 公里进去；不想走可以改去 191 号公路边的 Glacier View 观景点。",
+      "积雪后（大约 12 月到次年 3 月）Antelope Flats Road 封路不扫雪，车开不进来，只能把车停在 191 号公路边，步行、滑雪或穿雪鞋约 2.5 公里进去；不想走可以改去 191 号公路边的 Glacier View 观景点。",
     mustSee: true,
     summary:
       "1890 年代起摩门教移民在这里开垦的定居点，留下几座木头谷仓和农舍。T. A. Moulton 谷仓背靠提顿群峰，是公园最经典的照片之一；周围的 Antelope Flats 草原常有野牛和叉角羚。",
@@ -205,12 +205,12 @@ export const grandTeton: Attraction[] = [
     lat: 43.66013,
     lon: -110.71537,
     durationMin: 45,
-    hike: { distanceMi: 0.5, difficulty: "easy", loop: true },
+    hike: { distanceMi: 0.3, difficulty: "easy", loop: true },
     openMonths: [5, 6, 7, 8, 9, 10],
     closedNote:
       "教堂一般只在 5–9 月开门，冬季 Menors Ferry Road 积雪、不一定能开进来；冬天可以在 Moose 一带远眺群峰，或穿雪鞋走进去看教堂外观（以现场为准）。",
     summary:
-      "1925 年建成的小木教堂，祭坛后的窗户正好框住提顿群峰。旁边的梅诺渡口保留着 1890 年代拓荒者 Bill Menor 的木屋、杂货店和蛇河渡船的复制品，沿河边小环线走一圈约 800 米。",
+      "1925 年建成的小木教堂，祭坛后的窗户正好框住提顿群峰。旁边的梅诺渡口保留着 1890 年代拓荒者 Bill Menor 的木屋、杂货店和蛇河渡船的复制品，沿河边小环线走一圈约 500 米。",
     tips: [
       "教堂属于圣公会，夏天周日有礼拜，其他时间白天开门参观，请保持安静",
       "2026 年修环岛施工期间 Menors Ferry Road 工作日封闭、只在周末开放，停车位也减少了，出发前查 NPS 路况",
@@ -227,7 +227,7 @@ export const grandTeton: Attraction[] = [
     lon: -110.7887,
     start: { lat: 43.62661, lon: -110.77345, nameZh: "LSR 保护区中心停车场" },
     durationMin: 150,
-    hike: { distanceMi: 3, difficulty: "easy", loop: true },
+    hike: { distanceMi: 3, gainFt: 300, difficulty: "easy", loop: true },
     openMonths: MOOSE_WILSON,
     closedNote:
       "每年 11 月起 Moose-Wilson Road 中段封路不扫雪，保护区停车场开不进去，要到次年 5 月前后才通车；冬天可以改去全年能开车到的 Taggart Lake 步道口。",
@@ -282,11 +282,11 @@ export const grandTeton: Attraction[] = [
       "峡谷里的积雪常到 6、7 月才化完，渡船 10 月起停运（不坐船往返要多走约 6.4 公里），11 月到次年 4 月 Teton Park Road 也不通车；这些时候可以改走隐秘瀑布 · 灵感点或 Taggart Lake。",
     permit: "渡船不用预约，在东岸码头现场买票（2026 年成人往返 $20）。",
     summary:
-      "从灵感点继续往西，走进冰川切出的 U 形峡谷，沿 Cascade Creek 平缓上行约 5.5 公里到南北两条支谷的分岔口；南侧抬头就是 Mount Owen 和 Grand Teton 的北壁，沿途常见驼鹿、黑熊和鼠兔。",
+      "从灵感点继续往西，走进冰川切出的 U 形峡谷，沿 Cascade Creek 平缓上行约 6 公里到南北两条支谷的分岔口；南侧抬头就是 Mount Owen 和 Grand Teton 的北壁，沿途常见驼鹿、黑熊和鼠兔。",
     tips: [
       "距离按坐渡船计算；不坐船要绕珍妮湖南岸，往返约 21.4 公里、爬升约 520 米",
       "峡谷里熊和驼鹿很常见，结伴走、带防熊喷雾，和熊保持 100 码（约 91 米）以上",
-      "体力好可以从分岔口沿北支谷继续走到 Lake Solitude，往返还要再加约 9 公里",
+      "体力好可以从分岔口沿北支谷继续走到 Lake Solitude，往返还要再加约 8 公里",
     ],
   },
   {
@@ -301,7 +301,7 @@ export const grandTeton: Attraction[] = [
     start: { lat: 43.78445, lon: -110.72739, nameZh: "String Lake 步道口停车场" },
     durationMin: 90,
     trail: {},
-    hike: { distanceMi: 1.8, gainFt: 110, difficulty: "easy" },
+    hike: { distanceMi: 1.8, gainFt: 40, difficulty: "easy" },
     openMonths: TETON_PARK_ROAD,
     closedNote:
       "11 月到次年 4 月 Teton Park Road 北段不通车，弦湖一带只能滑雪或穿雪鞋进去；冬天可以改去全年能开车到的 Taggart Lake 步道口。",
@@ -438,7 +438,7 @@ export const grandTeton: Attraction[] = [
       ],
       loop: true,
     },
-    hike: { distanceMi: 3.1, gainFt: 320, difficulty: "easy", loop: true },
+    hike: { distanceMi: 3, gainFt: 200, difficulty: "easy", loop: true },
     openMonths: [5, 6, 7, 8, 9, 10],
     closedNote:
       "Colter Bay 的游客中心、商店和码头只在 5–9 月营业，冬天整个村子关闭、道路积雪；可以改去全年通车路边的牛轭湾或 Willow Flats 看湖光山色和野生动物。",
@@ -499,7 +499,7 @@ export const grandTeton: Attraction[] = [
     outsidePark: true,
     permit: "要买票（2026 年夏季成人窗口价 $67，官网提前买通常更便宜）。",
     summary:
-      "从 Teton Village 坐约 10 分钟缆车爬升约 1,260 米，到海拔 3,185 米的 Rendezvous 山顶，四周是提顿山南段、Jackson Hole 谷地和远处的群山；山顶小木屋卖现做的华夫饼。",
+      "从 Teton Village 坐约 12 分钟缆车爬升约 1,260 米，到海拔 3,185 米的 Rendezvous 山顶，四周是提顿山南段、Jackson Hole 谷地和远处的群山；山顶小木屋卖现做的华夫饼。",
     tips: [
       "2026 年夏季运营期 5 月 16 日–10 月 4 日（9:00–17:00）；冬季主要载滑雪者，也卖观光票，天气不好会停",
       "山顶比山下冷得多、风大，夏天也带外套；山顶有步道和观景平台",
@@ -520,11 +520,11 @@ export const grandTeton: Attraction[] = [
     closedNote:
       "马鹿只在冬天下山到保护区过冬，雪橇也只在 12 月中下旬到 4 月初运营；其他季节可以去旁边的游客中心看展览，或到园内的牛轭湾、Willow Flats 找马鹿和驼鹿。",
     outsidePark: true,
-    permit: "雪橇票在游客中心停车场的售票点买（2025–26 季成人 $42、5–12 岁 $27），先到先得，旺季建议提前预约。",
+    permit: "雪橇票在游客中心停车场的白色售票拖车买，也可以在运营方官网预约（2026–27 季成人 $43、5–12 岁 $28、4 岁及以下免费）；平时不用预约，节假日强烈建议提前订。",
     summary:
       "Jackson 镇北边的野生动物保护区，每年冬天有几千头马鹿（elk，常被译作麋鹿）从山里下来过冬；坐马拉雪橇驶进鹿群，近距离看公鹿的大角，是 Jackson 冬天最有名的活动。",
     tips: [
-      "从镇北的 Jackson Hole & Greater Yellowstone 游客中心坐接驳车去雪橇上车点，全程约 1 小时",
+      "从镇北的 Jackson Hole & Greater Yellowstone 游客中心坐接驳车去雪橇上车点；雪橇约 45 分钟到 1 小时，从签到到送回约 1.5 小时",
       "游客中心全年开放，可以顺便问大提顿和黄石的路况",
       "雪橇上很冷，穿厚外套、戴帽子和手套",
     ],
