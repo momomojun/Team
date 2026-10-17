@@ -22,7 +22,8 @@ jobs:
         with:
           node-version: 24
           cache: npm
-      - run: npm ci
+      # Windows 上生成的 package-lock.json 有时缺 Linux 才装的可选包（npm 的老问题）；npm ci 不认时退到 npm install，并在 CI 里标一个警告
+      - run: npm ci || { echo "::warning::package-lock.json 和 package.json 对不上，这次改用 npm install；在 Linux 上跑一次 npm install 更新锁文件"; npm install --no-audit --no-fund; }
       - run: npm run lint
       - run: npx tsc --noEmit -p .
       - run: npm test
@@ -37,7 +38,8 @@ jobs:
           node-version: 24
           cache: npm
       # plan_trip 工具跑的是仓库里的 TypeScript 行程引擎
-      - run: npm ci
+      # Windows 上生成的 package-lock.json 有时缺 Linux 才装的可选包（npm 的老问题）；npm ci 不认时退到 npm install，并在 CI 里标一个警告
+      - run: npm ci || { echo "::warning::package-lock.json 和 package.json 对不上，这次改用 npm install；在 Linux 上跑一次 npm install 更新锁文件"; npm install --no-audit --no-fund; }
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
