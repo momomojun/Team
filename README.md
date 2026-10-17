@@ -271,6 +271,7 @@ Built with Next.js 16, React 19, TypeScript, Tailwind CSS 4 and MapLibre GL, mos
 Copilot 的本地模型验证与课程开发记录统一放在本仓库：
 
 - [项目工作记录：全部对话要点、决定和已做的工作 / Project log](docs/PROJECT_LOG.md)
+- [LLMOps 现状评估和下一步计划（新人先看这个）/ LLMOps review and roadmap](docs/LLMOPS_PLAN.md)
 - [讨论记录、技术路线与后续待办](docs/LLMOPS_WORK_LOG.md)
 - [实验入口与完整验证材料](experiments/README.md)
 - [本地模型验证结果](experiments/local-model-validation/RESULTS.md)

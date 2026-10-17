@@ -17,7 +17,8 @@ Shipped so far:
 - PR #2: the English edition, film locations, and celebrity spots on the routes page.
 - Time zones (Oct 16): attractions can carry their own zone, the planner converts local opening, tour, entry, and parking times into the day's zone (e.g. Page on Arizona time vs. Monument Valley on Navajo time in summer), day cards show local times and phone-switching warnings, and park pages get a "Time zone" block with official sources. Alberta's and B.C.'s 2026 permanent-time rules are patched in for outdated time zone data.
 - Film spots grew from 27 to 51, each with a licensed Commons photo of the location; celebrity spots grew from 11 to 19 with every post link re-verified through public embeds.
-- In progress: the fact audit for the last two park groups, and English text for the new film and celebrity entries.
+- PR #3 (open): the fact audit, time zones, and the film and celebrity expansion. The last two audit groups will be added to it.
+- **LLMOps status (Oct 16)**: another assistant built a careful local-model Intake experiment track (Qwen3 / Qwen3.5 4B on Ollama). The Copilot is not yet wired to the trip engine, and there is no CI/CD yet. The review and roadmap are in [LLMOPS_PLAN.md](LLMOPS_PLAN.md). Start there.
 
 ---
 
@@ -157,6 +158,20 @@ Shipped so far:
   - **艾伯塔、BC 的新规则**：BC 省 2026 年 3 月起全年 UTC-7，艾伯塔 11 月 1 日起全年 UTC-6。Node 24 和很多浏览器的时区数据（2025b）还没有这两条，`time-zone.ts` 里手动补上（日出日落、行程都用它）。
   - 改正：贾斯珀到罗布森山、Valemount 原来写“冬季差 2 小时”，其实一年到头都差 1 小时（中英文都改了）。
   - 测试：`tests/time-zone.test.ts`（`park-zones.ts` 和 `parks.ts` 一致、佩吉到纪念碑谷的换算、North Unit、艾伯塔和 BC）。
+
+## 9. LLMOps：现状评估和下一步（10-16）
+
+- 另一个助手在 `experiments/local-model-validation/` 做了本地模型的 Intake 实验（V1、V2、V3、Qwen3 4B 对 Qwen3.5 4B），记录在 [LLMOPS_WORK_LOG.md](LLMOPS_WORK_LOG.md)。
+- 评估和分阶段计划写在 **[LLMOPS_PLAN.md](LLMOPS_PLAN.md)**：做得好的（实验规范、职责划分、全部本地）、要改的（只做了 Intake、没有 CI/CD、字段和网站的 `WizardInput` 没对齐、只支持 3 座公园、样本少、几个状态机 bug），以及下一步（契约和 `plan_trip` 工具 → 最小 Copilot → GitHub Actions 和回放评测门禁 → 150 条评测集和对照实验 → 接进网站）。
+
+## 10. 搜索额度（10-16）
+
+- 这一轮的 WebSearch 额度用完了。Claude Code 每个会话最多 200 次 WebSearch，主对话和所有子助手共用一个计数；这次同时开了好几个助手（事实核对、电影、明星、时区），每个都要搜很多次，所以很快用完。
+- 怎么增加（官方文档 code.claude.com/docs/en/tools-reference.md 的 Session search limit、env-vars.md）：
+  - 环境变量 `CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION` 调高上限（正整数，没有上限，不能关掉）；可以写在 `~/.claude/settings.json` 的 `env` 里，设好后重启 Claude Code；
+  - 在 Claude Code 里运行 `/clear` 会把计数清零；新版本（v2.1.290 以后）额度每小时大约回补 100 次（`CLAUDE_CODE_WEB_SEARCH_REFILLS_PER_HOUR` 可调）。
+  - 用 API 计费的话，网页搜索按每 1,000 次 $10 另算。
+- 额度用完后助手改用 WebFetch 直接打开官方页面（不受这个额度限制），能核对已知网址，但找不到新的资料（比如新的明星帖子）。
 
 ## 8. 用户的偏好（接手时注意）
 
