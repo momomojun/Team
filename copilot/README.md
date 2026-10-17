@@ -39,6 +39,55 @@ curl -X POST "http://localhost:3000/api/copilot/plan?reference=2026-10-16" -H "C
 - 不读 NPS 实时公告，只按仓库里整理的临时关闭（`src/data/closures.ts`）。要的话调用方查好，用 `live` 传进 `planTrip`。
 - 只给了月份时，日出日落、班次、临时关闭按那个月 15 号起算。
 
-## 下一步（阶段 2）
+## 阶段 2：Python 的 Copilot（2026-10-17）
 
-在这个目录下加 Python 服务：Intake（沿用 `experiments/local-model-validation/v3` 的做法，先修好 LLMOPS_PLAN 里列的几个状态机问题，输出改成 `TripRequest`）→ 调 `plan_trip` → Critic（按 `warnings`、`skipped` 检查硬约束，有问题带着原因再排一次）→ Writer（只根据 `TripResult` 写说明、附来源）。Provider：本机 Ollama（默认）、回放录好的输出（CI 用）、云端（留接口、默认关）。
+```mermaid
+flowchart LR
+    U[用户的话] --> I[Intake<br>模型逐字摘片段<br>代码读日期、认公园和机场、决定追问]
+    I -- 条件不齐 --> Q[追问 / 选项]
+    Q --> U
+    I -- TripRequest --> P[plan_trip<br>网站的行程引擎]
+    P -- TripResult --> C[Critic<br>代码检查提醒代码<br>必要时改一次再排]
+    C --> W[Writer<br>模板，或模型改写 + 忠实度检查]
+    W --> A[回复]
+```
+
+| 文件 | 内容 |
+|---|---|
+| `nps_copilot/intake.py`、`prompts/intake_v1.txt` | Intake：模型只从当前这条消息里逐字摘片段（公园、日期、天数、出发地、回程地、同行的人、偏好），代码检查片段确实在原话里（先规范化，“6天”“6 天”算一样），再读成代码、日期、天数，管对话状态，决定下一句问什么。没说年份的按“今天”（`reference_date`）给候选年份让用户确认；否定过的候选不会被后来的“是的”确认；先说的年份和后来补的月日合起来；“我选第二种”“缅因那个”都能对上选项。模型漏掉、原话写得很清楚的天数用规则补（trace 里记 `rule_filled`） |
+| `nps_copilot/catalog.py`、`dates.py`、`text.py` | 按 `contracts/parks.json`、`airports.json` 认公园和机场（加上常用简称和英文城市名 `data/airport_cities_en.json`），读日期和天数，文本规范化 |
+| `nps_copilot/plan_client.py` | 调 plan_trip：默认直接跑仓库里的 Node 命令行（不用开网站），设了 `COPILOT_PLAN_URL` 走 HTTP |
+| `nps_copilot/critic.py` | Critic：把每天、每站的提醒代码整理成 findings（hard / soft）；节奏是默认值、又有几天太满时改成轻松再排一次，用户自己说的节奏、天数、公园不擅自改；最多改一次 |
+| `nps_copilot/writer.py`、`prompts/writer_v1.txt` | Writer：默认按模板写（只用结果里的事实）；`--writer-model` 时让模型改写，再检查说明里的时间、数字都在结果里，对不上就退回模板 |
+| `nps_copilot/providers.py` | 模型提供方：本机 Ollama（默认 `qwen3.5:4b-q4_K_M`，参数和实验一样）、回放录好的输出（CI 用）、录音、测试用的脚本、云端（留接口、默认关） |
+| `nps_copilot/pipeline.py` | 把上面串起来；每轮写一条 JSONL 日志到 `copilot/runs/`（提示词版本和 hash、模型、各步耗时、模型输出、丢掉的片段、规则补的、Critic 的发现、Writer 有没有退回模板） |
+| `nps_copilot/api.py`、`__main__.py` | HTTP 服务（FastAPI）和命令行对话 |
+| `tests/` | pytest：Intake 每个修好的问题各有测试、Critic、Writer 的忠实度检查、接真行程引擎的端到端 |
+| `eval/` | 评测：`cases/intake-v1.jsonl` 25 组对话和期望结果，`run.py` 跑分，`recordings/` 录好的本机模型输出，`baseline.json` 门禁基线，结果见 [eval/RESULTS.md](eval/RESULTS.md) |
+
+### 怎么跑
+
+```bash
+pip install -e "copilot[dev,api]"            # Python 3.11 以上；plan_trip 要 Node 24
+# 开本机模型（实验目录里的便携 Ollama，模型已经下好）：
+powershell -File experiments/local-model-validation/start-local.ps1
+cd copilot
+python -m nps_copilot chat --reference 2026-10-16             # 命令行对话
+python -m nps_copilot serve                                    # HTTP 服务：POST /sessions、POST /sessions/{id}/messages
+python -m pytest -q tests                                      # 单元测试和端到端测试
+python eval/run.py --plan                                      # 真模型评测
+python eval/run.py --record                                    # 真模型评测并重新录音（改了提示词或样例以后）
+python eval/run.py --replay eval/recordings/qwen3.5_4b-q4_K_M.jsonl --gate eval/baseline.json --plan   # CI 跑的门禁
+```
+
+环境变量：`COPILOT_PROVIDER`（`ollama` / `replay` / `cloud`）、`COPILOT_MODEL`、`OLLAMA_HOST_URL`（默认 `http://127.0.0.1:11435`）、`COPILOT_REPLAY`、`COPILOT_PLAN_URL`、`COPILOT_RUNS`、`COPILOT_ALLOW_CLOUD`。
+
+### CI
+
+`.github/workflows/ci.yml`：每个 PR 跑网站的 lint、类型检查、测试，和 Copilot 的 pytest、回放评测门禁（低于 `eval/baseline.json` 就失败），评测报告作为 artifact 上传。CI 上不调真模型。**改了提示词、样例或模型**，回放记录就对不上了（门禁会报“回放记录里没有这次调用”）：先在本机用真模型 `--record` 重新录，看分数，再更新 `baseline.json` 一起提交。
+
+## 下一步（阶段 3、4）
+
+- Docker 镜像、按 tag 发版、回滚演示；提示词版本切换。
+- 另写一批改代码时不看的评测样例（现在的 25 组是开发集），加上 Writer 的成批评测、对照实验（单模型直接回答 vs 流水线，有没有 Critic）。
+- 网站行程页上的对话面板。

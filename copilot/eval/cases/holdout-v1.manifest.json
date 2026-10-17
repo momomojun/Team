@@ -1,0 +1,15 @@
+{
+ "frozen_at": "2026-10-17T22:54:27+00:00",
+ "commit": "d1852face92858ba314e6f2d0a027706ba114620",
+ "note": "held-out：样例在写好期望结果后、跑任何模型之前冻结；冻结时的代码 hash 一起记下。第一次的分数按这一版代码报告，之后改代码再跑的分数要另外标明。",
+ "sha256": {
+  "eval/cases/holdout-v1.jsonl": "3b767323665f7a1b2aa4a884a9bbb6fc3e41b7516f9c1cde13f5ec9b1cb29ed5",
+  "nps_copilot/intake.py": "83a76f14d6c74441137c568b4e3c9df187af6bb7d5f1b7a53fa65c70af64c97e",
+  "nps_copilot/dates.py": "4368896bcad02e75f301bbe1204783a16e905232109bd2049dfe3dc88409088d",
+  "nps_copilot/catalog.py": "125b205a2d66d8767a78c5336e0b9e7967539138038f6e70c84b508b040c2981",
+  "nps_copilot/text.py": "0d24380d837ebb98133acdcc2a04914d3ebcdcfde572219e5c1ca27c10fac4eb",
+  "nps_copilot/prompts/intake_v1.txt": "79d3b5f861f097f04fb47c92326cb6f6bf46cf21e1af1f32e820636feff6fd08",
+  "nps_copilot/writer.py": "1b40afb37727216e7a4993608516f92f16e0f331a8096b8f0e7278390b8c5e40",
+  "nps_copilot/critic.py": "5e4ba626d8c3a83d1b1b08e3e7314d00686c869653350c7eac2a4e2b49ad8c72"
+ }
+}

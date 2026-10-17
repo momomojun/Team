@@ -1,0 +1,6 @@
+{
+  "note": "held-out v1 的回归门禁。这 40 组样例 2026-10-17 冻结后第一次跑是 27/40，看过失败原因、改了代码以后是 37/40，所以它现在也算开发集了；以后还要另写一批没看过的（holdout-v2）。",
+  "recording": "recordings/qwen3.5_4b-q4_K_M-holdout-v1.jsonl",
+  "cases": "cases/holdout-v1.jsonl",
+  "min_passed": 37
+}

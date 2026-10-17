@@ -63,7 +63,15 @@
 - **其他工具**（都是现有的数据和函数，只是包成接口）：查临时关闭 `closureOn`、季节性山路把握 `openChance`、要提前订的 `bookingsForTrip`、同行适合度 `fitFor`、时区提醒 `time-notes`。
 - 公园别名表从 `parks.ts` 生成，覆盖全部 59 座。
 
-### 阶段 2：最小可用的 Copilot（第 2 周）
+### 阶段 2：最小可用的 Copilot（2026-10-17 已完成第一版）
+
+**已经做好的**（用法见 [copilot/README.md](../copilot/README.md)，评测见 [copilot/eval/RESULTS.md](../copilot/eval/RESULTS.md)）：
+
+- `copilot/nps_copilot/`：Intake（V3 的做法，修好了上面列的 5 个问题，输出 `TripRequest`、认全部 59 座公园和 86 个机场、支持中英文）→ plan_trip（调 Node 命令行或网站接口）→ Critic（代码检查，默认节奏太满时改成轻松再排一次，最多一次）→ Writer（模板；可选模型改写 + 忠实度检查，对不上退回模板）。
+- Provider：本机 Ollama（默认 Qwen3.5 4B）、回放、录音、测试脚本、云端（默认关）。每轮写 JSONL 日志。
+- pytest 27 个；评测 25 组对话：Qwen3.5 4B 第一次 14/25 → 修完代码 23/25 → 加上天数规则 25/25（其中 2 组靠规则补天数，单独记）；Qwen3 4B 同一版代码 20/25、编造 6 个片段。这 25 组现在是开发集。
+
+原来的计划：
 
 - `copilot/` 目录，Python 3.12 + FastAPI：
   - **Intake**：沿用 V3 的思路（模型摘原文、代码管状态），先修好上面列出的几个 bug，再接新契约；
@@ -73,14 +81,32 @@
 - **Provider 接口**：`OllamaProvider`（默认，本机）、`ReplayProvider`（读录好的模型输出，CI 用）、`CloudProvider`（留接口，默认关，不自动退到云端）。
 - 每次调用记日志：prompt 版本、模型 digest、参数、输入、输出、延迟、校验结果（JSONL，后面再接 MLflow）。
 
-### 阶段 3：CI/CD（和阶段 2 同时开始）
+### 阶段 3：CI/CD（GitHub Actions 已加，Docker 和回滚还没做）
+
+**已经做好的**：`.github/workflows/ci.yml`，每个 PR 跑网站的 lint、类型检查、测试和 Copilot 的 pytest、回放评测门禁（`copilot/eval/baseline.json`，现在是 25/25），报告作为 artifact 上传。**还没做的**：Docker 镜像、按 tag 发版、回滚演示、提示词版本切换。
+
+原来的计划：
 
 - **`.github/workflows/ci.yml`**，每个 PR 都跑：`npm run lint`、`npx tsc --noEmit`、`npm test`、Python 的 `pytest`（intake、对话状态机、契约一致性）、**离线回放评测**（用 `ReplayProvider` 和录好的模型输出跑 golden set，分数低于主分支就不让合并）。CI 上没有 GPU，不跑真模型。
 - **真模型评测**：本机脚本 `copilot/eval/run.py`，或者以后接 self-hosted runner；结果和 prompt、模型版本一起存档，作为“更新模型、改 prompt”的依据。
 - **版本管理**：`copilot/prompts/<名字>/v<n>.txt`，文件 hash 写进每条日志；评测报告写明用的是哪个版本。
 - **部署**：Copilot 打成 Docker 镜像（GitHub Actions 构建、推到 GHCR，按 git tag 打版本）；网站照旧走 Vercel。回滚演示：把 Copilot 镜像切回上一个 tag，或者 prompt 切回上一版，评测分数恢复。
 
-### 阶段 4：评测集和对照实验（第 3–4 周）
+### 阶段 4：评测集和对照实验（10-17 开始）
+
+**已经做的**：
+- 第一批 held-out（40 组复杂情况，冻结后才跑）：第一次 27/40，13 组失败里 11 组是代码问题；修完 37/40，现在当回归门禁用。
+- 行程质量检查 `copilot/eval/plan_quality.py`：40 组里排出来的行程没有硬问题。
+- Writer 成批评测：29/29 没有编造。
+
+详见 [copilot/eval/RESULTS.md](../copilot/eval/RESULTS.md)。
+
+**还没做**：
+- 再写一批没看过的（holdout-v2）；
+- 扩到约 150 条；
+- 对照实验（单模型直接回答 vs 流水线、有没有 Critic）。
+
+原来的计划：
 
 - golden set 扩到约 150 条：中文、英文、混合；日期（只说月份、没说年份、日期已过、日期和天数冲突）；多公园；带小孩、老人、轮椅；改口、否定、错别字；提示注入；要求去关闭的景点、抽签景点。
 - 分开报告：模型提取对不对、代码校验和追问对不对、整个流程对不对、行程有没有违反硬约束、Writer 有没有编造、延迟、显存。
@@ -99,9 +125,10 @@
 
 - 目前的分数主要卡在系统上，不是模型：Qwen3 4B 和 Qwen3.5 4B 在同一套任务上互有胜负（28/32 对 27/32、17/18 对 18/18），换模型解决不了“没接行程引擎、没有 CI、状态机有 bug”这些问题。
 - 现在的样本只测了“提取条件”这一件事，太少、太单一，用它选模型不可靠。模型差别真正大的地方还没测：调用工具（选对工具、参数填对）、Writer 根据工具结果写说明会不会编造、英文和中英混合的输入。
-- 默认先用 **Qwen3.5 4B**（官方支持工具调用、多语言，同样的显存），**Qwen3 4B 留作基线**对照。Provider 做成可换的，换模型只改配置。
+- 默认先用 **Qwen3.5 4B**（官方支持工具调用、多语言，同样的显存）。Provider 做成可换的，换模型只改配置。2026-10-17 用户决定本机只留 Qwen3.5 4B（默认）和 Qwen3.5 9B（对照），删掉 Qwen3 4B（`qwen3:4b`）。以后对照用 9B；Qwen3 4B 的历史成绩和录音（`copilot/eval/recordings/qwen3_4b.jsonl`）保留，回放不需要模型。
 - 等阶段 4 的评测集（约 150 条，含工具调用和 Writer 是否忠实）建好，再比较：Qwen3.5 4B、Qwen3 8B（约 5.2 GB，这台 8 GB 显卡要小上下文、单并发）、跨家族的 Gemma 4 E2B。可以分角色选：Intake 用小模型，Writer 写长段中文说明如果质量不够，再试 8B。
 - 不做微调，除非评测显示某类错误换模型、改 prompt 都解决不了，而且有足够的标注数据。
+- **10-17 实测了 Qwen3.5 9B**（下载约 6.6 GB，这台显卡能整个装下）：Intake 25/25 但更常漏公园名（4 组靠规则补）、慢 0.8 秒；Writer 和 4B 一样没有编造，景点名多保留一点，但慢将近一倍（15.4 s 对 8.7 s）。结论还是不换，默认 Qwen3.5 4B，9B 留着做对照。详见 [copilot/eval/RESULTS.md](../copilot/eval/RESULTS.md)。
 
 ## 4. 接手时注意
 

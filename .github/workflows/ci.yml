@@ -1,0 +1,61 @@
+# 每个 PR 和推到 main 时跑：网站的 lint / 类型检查 / 测试，Copilot 的单元测试和回放评测门禁。
+# CI 上没有 GPU、不调真模型：Copilot 的评测回放 copilot/eval/recordings/ 里录好的本机模型输出，
+# 分数低于 copilot/eval/baseline.json 就失败。改了提示词或样例，要先在本机用真模型重新录（见 copilot/README.md）。
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  web:
+    name: Website (lint, types, tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      # Windows 上生成的 package-lock.json 有时缺 Linux 才装的可选包（npm 的老问题）；npm ci 不认时退到 npm install，并在 CI 里标一个警告
+      - run: npm ci || { echo "::warning::package-lock.json 和 package.json 对不上，这次改用 npm install；在 Linux 上跑一次 npm install 更新锁文件"; npm install --no-audit --no-fund; }
+      - run: npm run lint
+      # PageProps、LayoutProps、RouteContext 是 Next.js 生成到 .next/types 的全局类型，干净的 checkout 里没有，先生成
+      - run: npx next typegen
+      - run: npx tsc --noEmit -p .
+      - run: npm test
+
+  copilot:
+    name: Copilot (tests, replay eval gate)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      # plan_trip 工具跑的是仓库里的 TypeScript 行程引擎
+      # Windows 上生成的 package-lock.json 有时缺 Linux 才装的可选包（npm 的老问题）；npm ci 不认时退到 npm install，并在 CI 里标一个警告
+      - run: npm ci || { echo "::warning::package-lock.json 和 package.json 对不上，这次改用 npm install；在 Linux 上跑一次 npm install 更新锁文件"; npm install --no-audit --no-fund; }
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: copilot/pyproject.toml
+      - run: pip install -e "copilot[dev]"
+      - name: Unit and integration tests
+        run: python -m pytest -q copilot/tests
+      - name: Replay eval gate
+        run: python copilot/eval/run.py --replay copilot/eval/recordings/qwen3.5_4b-q4_K_M.jsonl --gate copilot/eval/baseline.json --plan
+      - name: Replay eval gate (held-out v1, now a regression set)
+        run: python copilot/eval/run.py --cases copilot/eval/cases/holdout-v1.jsonl --replay copilot/eval/recordings/qwen3.5_4b-q4_K_M-holdout-v1.jsonl --gate copilot/eval/baseline-holdout.json --plan
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: copilot-eval-report
+          path: copilot/eval/reports/

@@ -10,7 +10,7 @@ import {
   type TripRequest,
 } from "../src/lib/copilot/contract";
 import { planTrip, TripRequestError } from "../src/lib/copilot/plan-tool";
-import { catalog } from "../scripts/build-copilot-contracts.mjs";
+import { catalog, hantToHans } from "../scripts/build-copilot-contracts.mjs";
 
 const contractFile = (name: string) => JSON.parse(readFileSync(new URL(`../copilot/contracts/${name}`, import.meta.url), "utf8"));
 const REFERENCE = { referenceDate: "2026-10-16" };
@@ -23,6 +23,7 @@ test("copilot/contracts 里的 schema、公园和机场目录和代码一致（�
   const { parks, airports } = catalog();
   assert.deepEqual(contractFile("parks.json"), parks);
   assert.deepEqual(contractFile("airports.json"), airports);
+  assert.deepEqual(contractFile("hant-to-hans.json"), hantToHans());
 });
 
 test("样例请求都符合契约", () => {
