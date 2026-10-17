@@ -22,7 +22,9 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 
+from nps_copilot.critic import critique  # noqa: E402
 from nps_copilot.intake import PROMPT_VERSION, Intake  # noqa: E402
+from nps_copilot.writer import template, write  # noqa: E402
 from nps_copilot.pipeline import prompt_hashes  # noqa: E402
 from nps_copilot.plan_client import PlanError, plan_trip  # noqa: E402
 from nps_copilot.providers import OllamaProvider, ProviderError, RecordingProvider, ReplayProvider  # noqa: E402
@@ -43,7 +45,24 @@ def subset(expected, actual) -> list[str]:
     return [] if expected == actual else [""]
 
 
-def run_case(case: dict, provider, with_plan: bool) -> dict:
+def writer_check(request: dict, result: dict, language: str, provider) -> dict:
+    """让模型改写说明：有没有编造（时间、数字不在结果里）、退回模板没有、保留了几成景点名和“没排进去”的景点"""
+    review = critique(request, result)
+    base = template(request, result, review, language)
+    text, trace = write(request, result, review, language, provider, use_model=True)
+    attempt = trace.get("draft", text)
+    stops = [stop["nameZh" if language != "en" else "nameEn"] for day in result["days"] for stop in day["stops"]]
+    skipped = [item["nameZh" if language != "en" else "nameEn"] for item in result.get("skipped", [])[:6]]
+    return {
+        "used": trace["writer"], "fallback": trace.get("fallback"), "unsupported": trace.get("unsupported", []),
+        "latency_ms": trace.get("latency_ms"), "chars": len(attempt), "template_chars": len(base),
+        "stop_coverage": round(sum(name in attempt for name in stops) / max(1, len(stops)), 2),
+        "skipped_kept": round(sum(name in attempt for name in skipped) / max(1, len(skipped)), 2) if skipped else None,
+        "text": attempt,
+    }
+
+
+def run_case(case: dict, provider, with_plan: bool, with_writer: bool = False) -> dict:
     intake = Intake(provider, dt.date.fromisoformat(case.get("reference", REFERENCE)))
     turns, latencies, dropped, model_calls, rule_fills = [], [], 0, 0, 0
     turn = None
@@ -74,6 +93,8 @@ def run_case(case: dict, provider, with_plan: bool) -> dict:
         try:
             call = plan_trip(turn.request, case.get("reference", REFERENCE))
             result["plan"] = {"ok": True, "days": len(call.result["days"]), "stops": sum(len(d["stops"]) for d in call.result["days"]), "latency_ms": call.latency_ms}
+            if with_writer:
+                result["writer"] = writer_check(turn.request, call.result, intake.language or "zh", provider)
         except PlanError as error:
             result["plan"] = {"ok": False, "error": str(error), "issues": error.issues}
     return result
@@ -85,6 +106,7 @@ def main() -> int:
     parser.add_argument("--replay")
     parser.add_argument("--record", action="store_true")
     parser.add_argument("--plan", action="store_true")
+    parser.add_argument("--writer", action="store_true", help="排出行程以后让模型改写说明，统计忠实度（要 --plan）")
     parser.add_argument("--gate")
     parser.add_argument("--out", default=str(HERE / "reports"))
     args = parser.parse_args()
@@ -102,7 +124,7 @@ def main() -> int:
             path.unlink(missing_ok=True)
             provider = RecordingProvider(provider, path)
     start = time.perf_counter()
-    results = [run_case(case, provider, args.plan) for case in cases]
+    results = [run_case(case, provider, args.plan or args.writer, args.writer) for case in cases]
     latencies = [ms for result in results for ms in result.get("latencies", [])]
     summary = {
         "cases": len(results),
@@ -115,9 +137,19 @@ def main() -> int:
         "rule_fills": sum(result.get("rule_fills", 0) for result in results),
         "errors": sum(1 for result in results if result.get("error")),
     }
-    if args.plan:
+    if args.plan or args.writer:
         planned = [r["plan"] for r in results if "plan" in r]
         summary["planned_ok"] = f"{sum(p['ok'] for p in planned)}/{len(planned)}"
+    if args.writer:
+        drafts = [r["writer"] for r in results if "writer" in r]
+        summary["writer"] = {
+            "drafts": len(drafts),
+            "faithful": sum(not d["unsupported"] and d["fallback"] is None for d in drafts),
+            "fallbacks": sum(d["fallback"] is not None for d in drafts),
+            "median_latency_ms": statistics.median([d["latency_ms"] for d in drafts if d["latency_ms"]]) if drafts else None,
+            "stop_coverage": round(statistics.mean(d["stop_coverage"] for d in drafts), 2) if drafts else None,
+            "skipped_kept": round(statistics.mean(d["skipped_kept"] for d in drafts if d["skipped_kept"] is not None), 2) if drafts else None,
+        }
     report = {"run_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"), "model": model, "prompt": PROMPT_VERSION,
               "prompt_hashes": prompt_hashes(), "cases_file": Path(args.cases).name, "seconds": round(time.perf_counter() - start, 1),
               "summary": summary, "results": results}
@@ -129,6 +161,10 @@ def main() -> int:
     print(f"{model}  {summary['passed']}/{summary['cases']} 个对话符合预期，追问类型 {summary['turn_kind_accuracy']:.0%}，"
           f"模型调用 {summary['model_calls']} 次，中位 {summary['median_latency_ms']} ms，丢掉的片段 {summary['dropped_spans']}，规则补的 {summary['rule_fills']}"
           + (f"，排出行程 {summary['planned_ok']}" if args.plan else ""))
+    if args.writer:
+        w = summary["writer"]
+        print(f"  Writer：{w['faithful']}/{w['drafts']} 篇没有编造，退回模板 {w['fallbacks']} 篇，中位 {w['median_latency_ms']} ms，"
+              f"景点名保留 {w['stop_coverage']:.0%}，“没排进去”保留 {w['skipped_kept']:.0%}")
     for result in results:
         if not result["ok"]:
             print(f"  ✗ {result['id']}: {result.get('error') or ', '.join(result['problems']) or '追问类型不对'}")

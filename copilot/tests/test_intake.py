@@ -189,3 +189,11 @@ def test_rule_does_not_guess_when_the_count_is_ambiguous(make_intake):
     turn = intake.step("2027年6月1日从弗雷斯诺去优胜美地，玩3天或者5天，适中")
     assert turn.question["kind"] == "days"
     assert turn.trace["rule_filled"] == []
+
+
+def test_rule_fills_park_names_the_model_missed(make_intake):
+    """9B 常把 parks 留空：模型一个都没摘时按公园目录在原话里认，trace 里记 rule_filled"""
+    intake = make_intake(extraction(dates=["2027年7月1日"], duration="5天", origin="博兹曼", preferences=["适中"]))
+    turn = intake.step("2027年7月1日博兹曼进出，黄石5天，适中")
+    assert turn.status == "ready" and turn.request["parks"] == ["yell"]
+    assert turn.trace["rule_filled"] == ["parks"]

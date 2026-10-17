@@ -144,7 +144,7 @@ def write(request: dict, result: dict, critique: Critique, language: str, provid
         return base, trace
     text = completion.data.get("summary", "")
     problems = faithful(text, result, base)
-    trace.update(model=completion.model, latency_ms=completion.latency_ms, unsupported=problems)
+    trace.update(model=completion.model, latency_ms=completion.latency_ms, unsupported=problems, draft=text)
     if problems or not text.strip():
         trace.update(writer="template", fallback="unfaithful" if problems else "empty")
         return base, trace

@@ -56,8 +56,10 @@ class OllamaProvider:
     })
 
     def complete_json(self, task: str, system: str, user: str, schema: dict) -> Completion:
+        # 写说明比摘片段长得多：7 天的行程 512 个 token 不够，JSON 会被截断
+        options = {**self.options, "num_predict": 1536} if task == "writer" else self.options
         body = json.dumps({
-            "model": self.model, "stream": False, "think": False, "format": schema, "options": self.options,
+            "model": self.model, "stream": False, "think": False, "format": schema, "options": options,
             "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
         }).encode("utf-8")
         request = urllib.request.Request(f"{self.host}/api/chat", data=body, headers={"Content-Type": "application/json"})

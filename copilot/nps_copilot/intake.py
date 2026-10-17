@@ -310,6 +310,12 @@ class Intake:
             if days is not None and len(matches) == 1:
                 self.days = Field(days, "user", matches[0])
                 filled.append("days")
+        # 公园名：模型一个都没摘、而整句话里能按目录认出公园的（9B 常漏“黄石”“大峡谷”），按目录补
+        if not self.parks.value and not self.unsupported:
+            hits = catalog.find_all(message, catalog.parks())
+            if hits:
+                self.parks = Field(self._order_parks([code for code, _ in hits][:4]), "user", "、".join(alias for _, alias in hits))
+                filled.append("parks")
         return filled
 
     def _read_parks(self, spans: list[str]) -> None:
