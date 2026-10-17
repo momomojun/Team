@@ -11,6 +11,8 @@
 - [逐案例原始结果](local-model-validation/results/cases.jsonl)
 - [项目讨论与工作记录](../docs/LLMOPS_WORK_LOG.md)
 
+> 2026-10-17 用户决定本机只留 Qwen3.5 4B（默认）和 Qwen3.5 9B（对照），删掉 Qwen3 4B（`qwen3:4b`）。下面 V1–V3 和模型对照的记录照旧保留（都是用 Qwen3 4B 跑的）；要复现，先 `ollama pull qwen3:4b`（约 2.5 GB）。现在 Copilot 的评测在 [copilot/eval/](../copilot/eval/RESULTS.md)。
+
 当前基线：Qwen3 4B Q4_K_M，16 个固定案例，5 个完全通过；本地 GPU 运行可行，需求理解尚未达到业务接入标准。完整测试不是独立留出集，不代表模型通用准确率。
 
 模型权重、便携运行库与压缩包留在实验目录供本机继续使用，但不纳入 Git。新机器按运行说明准备环境。

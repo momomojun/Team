@@ -26,7 +26,7 @@
 
 ### 两个模型比较
 
-同一版代码、同一套样例：Qwen3.5 4B 23/25、没有编造；Qwen3 4B 20/25、编造了 6 个片段（都被代码丢掉了），但快约 0.6 秒。所以默认用 Qwen3.5 4B，Qwen3 4B 留作对照（和 [LLMOPS_PLAN](../../docs/LLMOPS_PLAN.md) 第 3 节的结论一致）。
+同一版代码、同一套样例：Qwen3.5 4B 23/25、没有编造；Qwen3 4B 20/25、编造了 6 个片段（都被代码丢掉了），但快约 0.6 秒。所以默认用 Qwen3.5 4B（和 [LLMOPS_PLAN](../../docs/LLMOPS_PLAN.md) 第 3 节的结论一致）。2026-10-17 用户决定本机只留 Qwen3.5 4B（默认）和 Qwen3.5 9B（对照），删掉 Qwen3 4B（`qwen3:4b`）。它的录音 `recordings/qwen3_4b.jsonl` 留着，回放不需要模型；要重新跑真模型得先 `ollama pull qwen3:4b`。
 
 ### Writer
 

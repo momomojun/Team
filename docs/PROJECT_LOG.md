@@ -188,6 +188,8 @@ Shipped so far:
   - 逐个修了代码问题（每个补单元测试，pytest 38 个），重跑 37/40。
   - 这批因此不再算 held-out，改成回归门禁（CI 里多跑一个），下一批没看过的要另写。
   - 繁体输入用网站同一套 OpenCC 生成繁简对照表（`copilot/contracts/hant-to-hans.json`）。
+- 用户问哪个模型更好、以后就用哪个：Qwen3.5 4B（准、没有编造、速度适中），以后一直用它；9B 不比它好、慢将近一倍，留作对照；Qwen3 4B 最快但会编造。用户决定删掉 Qwen3 4B。助手不能替用户永久删除文件，给了命令让用户自己删（`ollama rm qwen3:4b`，用实验目录里的便携 Ollama、端口 11435）。仓库里的历史成绩和录音保留。
+- 同一天修 CI：Windows 上生成的 package-lock.json 缺 Linux 才装的 `@emnapi/runtime`、`@emnapi/core`，`npm ci` 在 GitHub 上报错。按 npm 官方源补上；CI 里 `npm ci` 不认锁文件时退到 `npm install` 并标警告。
 
 ## 9. 搜索额度（10-16）
 
