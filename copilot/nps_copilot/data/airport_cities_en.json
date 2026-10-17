@@ -1,0 +1,279 @@
+{
+ "SFO": [
+  "San Francisco"
+ ],
+ "OAK": [
+  "Oakland"
+ ],
+ "SJC": [
+  "San Jose"
+ ],
+ "FAT": [
+  "Fresno"
+ ],
+ "LAX": [
+  "Los Angeles",
+  "LA"
+ ],
+ "LAS": [
+  "Las Vegas",
+  "Vegas"
+ ],
+ "SGU": [
+  "St. George",
+  "Saint George"
+ ],
+ "SLC": [
+  "Salt Lake City",
+  "Salt Lake"
+ ],
+ "PHX": [
+  "Phoenix"
+ ],
+ "FLG": [
+  "Flagstaff"
+ ],
+ "ANC": [
+  "Anchorage"
+ ],
+ "FAI": [
+  "Fairbanks"
+ ],
+ "BUR": [
+  "Burbank"
+ ],
+ "SBA": [
+  "Santa Barbara"
+ ],
+ "ACV": [
+  "Arcata",
+  "Eureka"
+ ],
+ "CEC": [
+  "Crescent City"
+ ],
+ "MFR": [
+  "Medford"
+ ],
+ "RDD": [
+  "Redding"
+ ],
+ "SMF": [
+  "Sacramento"
+ ],
+ "RNO": [
+  "Reno"
+ ],
+ "RDM": [
+  "Redmond",
+  "Bend"
+ ],
+ "EUG": [
+  "Eugene"
+ ],
+ "PDX": [
+  "Portland, Oregon",
+  "Portland OR",
+  "Portland"
+ ],
+ "SEA": [
+  "Seattle"
+ ],
+ "PAE": [
+  "Everett"
+ ],
+ "BLI": [
+  "Bellingham"
+ ],
+ "BZN": [
+  "Bozeman"
+ ],
+ "JAC": [
+  "Jackson Hole",
+  "Jackson"
+ ],
+ "WYS": [
+  "West Yellowstone"
+ ],
+ "COD": [
+  "Cody"
+ ],
+ "IDA": [
+  "Idaho Falls"
+ ],
+ "BIL": [
+  "Billings"
+ ],
+ "CNY": [
+  "Moab"
+ ],
+ "GJT": [
+  "Grand Junction"
+ ],
+ "DEN": [
+  "Denver"
+ ],
+ "PGA": [
+  "Page"
+ ],
+ "YYC": [
+  "Calgary"
+ ],
+ "YEG": [
+  "Edmonton"
+ ],
+ "YVR": [
+  "Vancouver"
+ ],
+ "PSP": [
+  "Palm Springs"
+ ],
+ "ONT": [
+  "Ontario, California"
+ ],
+ "SNA": [
+  "Santa Ana",
+  "Orange County"
+ ],
+ "FCA": [
+  "Kalispell",
+  "Glacier Park International"
+ ],
+ "MSO": [
+  "Missoula"
+ ],
+ "GTF": [
+  "Great Falls"
+ ],
+ "ELP": [
+  "El Paso"
+ ],
+ "ABQ": [
+  "Albuquerque"
+ ],
+ "CNM": [
+  "Carlsbad, New Mexico"
+ ],
+ "MAF": [
+  "Midland"
+ ],
+ "DRO": [
+  "Durango"
+ ],
+ "ALS": [
+  "Alamosa"
+ ],
+ "COS": [
+  "Colorado Springs"
+ ],
+ "MTJ": [
+  "Montrose"
+ ],
+ "GUC": [
+  "Gunnison"
+ ],
+ "ITO": [
+  "Hilo"
+ ],
+ "KOA": [
+  "Kona",
+  "Kailua-Kona"
+ ],
+ "OGG": [
+  "Kahului",
+  "Maui"
+ ],
+ "GST": [
+  "Gustavus"
+ ],
+ "OTZ": [
+  "Kotzebue"
+ ],
+ "HOM": [
+  "Homer"
+ ],
+ "MRY": [
+  "Monterey"
+ ],
+ "SAT": [
+  "San Antonio"
+ ],
+ "AUS": [
+  "Austin"
+ ],
+ "BIS": [
+  "Bismarck"
+ ],
+ "DIK": [
+  "Dickinson"
+ ],
+ "XWA": [
+  "Williston"
+ ],
+ "RAP": [
+  "Rapid City"
+ ],
+ "TUS": [
+  "Tucson"
+ ],
+ "IAD": [
+  "Washington Dulles",
+  "Dulles",
+  "Washington"
+ ],
+ "DCA": [
+  "Reagan National",
+  "Washington National",
+  "Washington"
+ ],
+ "CHO": [
+  "Charlottesville"
+ ],
+ "CRW": [
+  "Charleston, West Virginia"
+ ],
+ "ROA": [
+  "Roanoke"
+ ],
+ "CLT": [
+  "Charlotte"
+ ],
+ "LWB": [
+  "Lewisburg"
+ ],
+ "BGR": [
+  "Bangor"
+ ],
+ "BHB": [
+  "Bar Harbor"
+ ],
+ "PWM": [
+  "Portland, Maine",
+  "Portland ME",
+  "Portland"
+ ],
+ "BOS": [
+  "Boston"
+ ],
+ "MIA": [
+  "Miami"
+ ],
+ "FLL": [
+  "Fort Lauderdale"
+ ],
+ "RSW": [
+  "Fort Myers"
+ ],
+ "EYW": [
+  "Key West"
+ ],
+ "TYS": [
+  "Knoxville"
+ ],
+ "AVL": [
+  "Asheville"
+ ],
+ "ATL": [
+  "Atlanta"
+ ]
+}
