@@ -87,4 +87,4 @@
 - 实验目录里的历史版本（V1、V2、V3、模型对照）是冻结的，不要改；新实验另建版本目录。
 - 不要把模型权重、Ollama 便携包提交进 Git（`.gitignore` 已经排除）。
 - 本机：RTX 2070 Max-Q 8 GB、内存约 16 GB，D 盘空间时常不够，下载新模型前先看空间。
-- 网站这边的规则见 [PROJECT_LOG.md](PROJECT_LOG.md) 第 8 节：提交说明、PR 都要中英双语；英文按官方英文资料写；改中文原文要用 `scripts/rekey-zh.py`。
+- 网站这边的规则见 [PROJECT_LOG.md](PROJECT_LOG.md) 第 10 节：提交说明、PR 都要中英双语；英文按官方英文资料写；改中文原文要用 `scripts/rekey-zh.py`。

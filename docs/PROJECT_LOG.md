@@ -34,7 +34,7 @@ Shipped so far:
   - 结构按老师模板的 1–9 节写。
   - 第 3 节先讲项目做什么，再讲为什么是 LLMOps 问题：知识过时、悄悄变差、成本不透明；这个领域的错误可以用代码客观判定。
   - 第 4 节按生命周期列出系统组件。
-  - 第 8 节逐条对应老师的 4 个学习目标。
+  - 第 10 节逐条对应老师的 4 个学习目标。
 - **用户问过的关键问题和结论**：
   - NPS Guide 本身不是 LLM 项目，要打分的 LLMOps 部分基本都要新写。
   - NPS Guide 适合当底座：真实、会变的数据，加上能客观判对错的检查逻辑。
@@ -159,12 +159,12 @@ Shipped so far:
   - 改正：贾斯珀到罗布森山、Valemount 原来写“冬季差 2 小时”，其实一年到头都差 1 小时（中英文都改了）。
   - 测试：`tests/time-zone.test.ts`（`park-zones.ts` 和 `parks.ts` 一致、佩吉到纪念碑谷的换算、North Unit、艾伯塔和 BC）。
 
-## 9. LLMOps：现状评估和下一步（10-16）
+## 8. LLMOps：现状评估和下一步（10-16）
 
 - 另一个助手在 `experiments/local-model-validation/` 做了本地模型的 Intake 实验（V1、V2、V3、Qwen3 4B 对 Qwen3.5 4B），记录在 [LLMOPS_WORK_LOG.md](LLMOPS_WORK_LOG.md)。
 - 评估和分阶段计划写在 **[LLMOPS_PLAN.md](LLMOPS_PLAN.md)**：做得好的（实验规范、职责划分、全部本地）、要改的（只做了 Intake、没有 CI/CD、字段和网站的 `WizardInput` 没对齐、只支持 3 座公园、样本少、几个状态机 bug），以及下一步（契约和 `plan_trip` 工具 → 最小 Copilot → GitHub Actions 和回放评测门禁 → 150 条评测集和对照实验 → 接进网站）。
 
-## 10. 搜索额度（10-16）
+## 9. 搜索额度（10-16）
 
 - 这一轮的 WebSearch 额度用完了。Claude Code 每个会话最多 200 次 WebSearch，主对话和所有子助手共用一个计数；这次同时开了好几个助手（事实核对、电影、明星、时区），每个都要搜很多次，所以很快用完。
 - 怎么增加（官方文档 code.claude.com/docs/en/tools-reference.md 的 Session search limit、env-vars.md）：
@@ -173,7 +173,7 @@ Shipped so far:
   - 用 API 计费的话，网页搜索按每 1,000 次 $10 另算。
 - 额度用完后助手改用 WebFetch 直接打开官方页面（不受这个额度限制），能核对已知网址，但找不到新的资料（比如新的明星帖子）。
 
-## 8. 用户的偏好（接手时注意）
+## 10. 用户的偏好（接手时注意）
 
 - 用户用中文交流，在美国，Next.js 开发者，去过 7 座国家公园。
 - 设计风格是纸色底、墨色字的杂志风，不要"AI 味"的默认 Tailwind 样式。
