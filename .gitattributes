@@ -1,0 +1,3 @@
+# 回放评测的 key 是提示词的 hash：提示词和录音固定用 LF，Windows 上 checkout 也不会变
+copilot/nps_copilot/prompts/*.txt text eol=lf
+copilot/eval/**/*.jsonl text eol=lf

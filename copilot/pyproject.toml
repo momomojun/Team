@@ -1,0 +1,23 @@
+[project]
+name = "nps-copilot"
+version = "0.1.0"
+description = "NPS Guide Copilot: LLM intake and explanation on top of the deterministic NPS Guide trip engine (CSYE 7374 LLMOps)"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+api = ["fastapi>=0.110", "uvicorn>=0.29"]
+dev = ["pytest>=8", "jsonschema>=4.21"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["nps_copilot"]
+
+[tool.setuptools.package-data]
+nps_copilot = ["prompts/*.txt", "data/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

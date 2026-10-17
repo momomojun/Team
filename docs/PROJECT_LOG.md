@@ -20,6 +20,7 @@ Shipped so far:
 - PR #3 (open): the fact audit, time zones, and the film and celebrity expansion. The last two audit groups will be added to it.
 - **LLMOps status (Oct 16)**: another assistant built a careful local-model Intake experiment track (Qwen3 / Qwen3.5 4B on Ollama). The Copilot is not yet wired to the trip engine, and there is no CI/CD yet. The review and roadmap are in [LLMOPS_PLAN.md](LLMOPS_PLAN.md). Start there.
 - **Phase 1 done (Oct 17)**: `TripRequest` / `TripResult` v1 contracts (JSON Schema in `copilot/contracts/`, generated from TypeScript), the `plan_trip` tool (`npm run copilot:plan`, `POST /api/copilot/plan`) wrapping the same trip generator as the website, and park and airport catalogs for intake. See [copilot/README.md](../copilot/README.md).
+- **Phase 2 done (Oct 17)**: a Python Copilot (`copilot/nps_copilot/`): intake with the model quoting spans and code owning state and follow-ups, the `plan_trip` client, a deterministic Critic with one bounded revision, a template Writer with an optional model rewrite behind a faithfulness check, and swappable providers (local Ollama by default, replay for CI). 27 pytest tests; the 25-dialogue dev eval scores 25/25 on replay (2 completed by a day-count rule, reported separately). GitHub Actions now runs website checks, Python tests, and a replay eval gate on every PR. Results: [copilot/eval/RESULTS.md](../copilot/eval/RESULTS.md).
 
 ---
 
@@ -172,6 +173,14 @@ Shipped so far:
 - 做了：`TripRequest` / `TripResult` v1 契约（JSON Schema，`copilot/contracts/`）、`plan_trip` 工具（`src/lib/copilot/plan-tool.ts`，命令行 `npm run copilot:plan`、HTTP `POST /api/copilot/plan`）、59 座公园和 86 个机场的目录（给 Intake 认名字）、测试 `tests/copilot-plan.test.ts`。用法见 [copilot/README.md](../copilot/README.md)，计划里的状态见 [LLMOPS_PLAN.md](LLMOPS_PLAN.md) 阶段 1。
 - 定下来的做法：JSON Schema 只写在 TypeScript 一处，生成 JSON 给 Python；契约改字段要升版本号；工具不联网、`referenceDate` 固定才能复现；和行程页不同的地方（机场车程用预先算好的表、不读实时公告、只给月份按 15 号算）写进结果的 `assumptions`，Writer 要照实说。
 - 下一步是阶段 2：Python 的最小 Copilot（Intake → plan_trip → Critic → Writer）和 GitHub Actions。
+
+### 阶段 2 做完了（10-17）
+
+- 用户合并 PR #4 后说“开始第二步”。分支 `feature/copilot-service`。
+- 做了：`copilot/nps_copilot/` Python 包（Intake、plan_trip 客户端、Critic、Writer、Provider、流水线和日志、FastAPI、命令行），pytest 27 个，评测 `copilot/eval/`（25 组对话、录好的本机模型输出、门禁基线），GitHub Actions `.github/workflows/ci.yml`。用法见 [copilot/README.md](../copilot/README.md)。
+- 在本机真模型上跑过评测：Qwen3.5 4B 第一次 14/25，看失败的原因改了几处代码问题（天数放错字段、孩子年龄、机场回答没对上选项、中文数字年份、“布莱斯”别名）以后 23/25，剩下 2 组是模型漏了“玩N天”，加了只补天数的规则后 25/25（规则补的单独记）。Qwen3 4B 同一版代码 20/25，还编造了 6 个片段，所以默认继续用 Qwen3.5 4B。结果和限制写在 [copilot/eval/RESULTS.md](../copilot/eval/RESULTS.md)：这 25 组是开发集，不是没见过的数据。
+- 定下来的做法：模型只摘片段、代码做决定；规则补的条件和模型的成绩分开算；Critic 不改用户自己说的条件、最多改一次；Writer 默认用模板，模型改写要过忠实度检查；CI 不调真模型，回放录音，改了提示词或样例要先在本机重新录。
+- 下一步：阶段 3 剩下的 Docker、发版和回滚；阶段 4 另写一批 held-out 样例、Writer 的成批评测和对照实验；阶段 5 网站上的对话面板。
 
 ## 9. 搜索额度（10-16）
 

@@ -63,7 +63,15 @@
 - **其他工具**（都是现有的数据和函数，只是包成接口）：查临时关闭 `closureOn`、季节性山路把握 `openChance`、要提前订的 `bookingsForTrip`、同行适合度 `fitFor`、时区提醒 `time-notes`。
 - 公园别名表从 `parks.ts` 生成，覆盖全部 59 座。
 
-### 阶段 2：最小可用的 Copilot（第 2 周）
+### 阶段 2：最小可用的 Copilot（2026-10-17 已完成第一版）
+
+**已经做好的**（用法见 [copilot/README.md](../copilot/README.md)，评测见 [copilot/eval/RESULTS.md](../copilot/eval/RESULTS.md)）：
+
+- `copilot/nps_copilot/`：Intake（V3 的做法，修好了上面列的 5 个问题，输出 `TripRequest`、认全部 59 座公园和 86 个机场、支持中英文）→ plan_trip（调 Node 命令行或网站接口）→ Critic（代码检查，默认节奏太满时改成轻松再排一次，最多一次）→ Writer（模板；可选模型改写 + 忠实度检查，对不上退回模板）。
+- Provider：本机 Ollama（默认 Qwen3.5 4B）、回放、录音、测试脚本、云端（默认关）。每轮写 JSONL 日志。
+- pytest 27 个；评测 25 组对话：Qwen3.5 4B 第一次 14/25 → 修完代码 23/25 → 加上天数规则 25/25（其中 2 组靠规则补天数，单独记）；Qwen3 4B 同一版代码 20/25、编造 6 个片段。这 25 组现在是开发集。
+
+原来的计划：
 
 - `copilot/` 目录，Python 3.12 + FastAPI：
   - **Intake**：沿用 V3 的思路（模型摘原文、代码管状态），先修好上面列出的几个 bug，再接新契约；
@@ -73,7 +81,11 @@
 - **Provider 接口**：`OllamaProvider`（默认，本机）、`ReplayProvider`（读录好的模型输出，CI 用）、`CloudProvider`（留接口，默认关，不自动退到云端）。
 - 每次调用记日志：prompt 版本、模型 digest、参数、输入、输出、延迟、校验结果（JSONL，后面再接 MLflow）。
 
-### 阶段 3：CI/CD（和阶段 2 同时开始）
+### 阶段 3：CI/CD（GitHub Actions 已加，Docker 和回滚还没做）
+
+**已经做好的**：`.github/workflows/ci.yml`，每个 PR 跑网站的 lint、类型检查、测试和 Copilot 的 pytest、回放评测门禁（`copilot/eval/baseline.json`，现在是 25/25），报告作为 artifact 上传。**还没做的**：Docker 镜像、按 tag 发版、回滚演示、提示词版本切换。
+
+原来的计划：
 
 - **`.github/workflows/ci.yml`**，每个 PR 都跑：`npm run lint`、`npx tsc --noEmit`、`npm test`、Python 的 `pytest`（intake、对话状态机、契约一致性）、**离线回放评测**（用 `ReplayProvider` 和录好的模型输出跑 golden set，分数低于主分支就不让合并）。CI 上没有 GPU，不跑真模型。
 - **真模型评测**：本机脚本 `copilot/eval/run.py`，或者以后接 self-hosted runner；结果和 prompt、模型版本一起存档，作为“更新模型、改 prompt”的依据。

@@ -1,0 +1,6 @@
+{
+  "note": "PR 门禁的基线：回放 recordings/qwen3.5_4b-q4_K_M.jsonl（2026-10-17 录的本机 Qwen3.5 4B 输出）跑 cases/intake-v1.jsonl。改了代码让分数掉了就不让合并；分数提高了就把 min_passed 改上去。改了提示词或样例要重新录（eval/run.py --record）。",
+  "recording": "recordings/qwen3.5_4b-q4_K_M.jsonl",
+  "cases": "cases/intake-v1.jsonl",
+  "min_passed": 25
+}
