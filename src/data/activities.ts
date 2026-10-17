@@ -2353,7 +2353,7 @@ export const activities: ParkActivity[] = [
     nameEn: "Programs at the Northwest Arctic Heritage Center",
     summary:
       "遗产中心全年不定期办讲座、工作坊和儿童活动，讲公园的自然、历史、当地的科研和 Iñupiat 文化；夏天也有护林员带的活动。",
-    booking: "免费；时间不固定，去之前打电话（907-442-3890）或看 NPS 的活动日历。",
+    booking: "免费；时间不固定，去之前打电话（907-318-2230）或看 NPS 的活动日历。",
     url: "https://www.nps.gov/thingstodo/visit-the-northwest-arctic-heritage-center.htm",
     attraction: "kova-heritage-center",
   },

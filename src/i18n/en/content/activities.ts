@@ -737,7 +737,7 @@ export const content: Record<string, string> = {
   "不用预约；带个眼罩睡觉。": "No reservation needed; bring an eye mask for sleeping.",
   "遗产中心的讲座和社区活动": "Programs at the Northwest Arctic Heritage Center",
   "遗产中心全年不定期办讲座、工作坊和儿童活动，讲公园的自然、历史、当地的科研和 Iñupiat 文化；夏天也有护林员带的活动。": "Year-round, the heritage center holds occasional talks, workshops, and kids' programs on the parks' nature and history, local research, and Iñupiat culture; there are also ranger-led programs in summer.",
-  "免费；时间不固定，去之前打电话（907-442-3890）或看 NPS 的活动日历。": "Free. Schedules vary, so call before you go (907-442-3890) or check the NPS events calendar.",
+  "免费；时间不固定，去之前打电话（907-318-2230）或看 NPS 的活动日历。": "Free. Schedules vary, so call before you go (907-318-2230) or check the NPS events calendar.",
   "向导带的多日荒野行程": "Guided multi-day trips",
   "想在沙丘上扎营、又没有荒野经验，可以跟 NPS 许可的向导公司去：通常和北极之门或诺阿塔克河连在一起，5 到 12 天，全程露营，包机、装备、伙食都由公司安排。": "To camp on the dunes without backcountry experience, go with an NPS-permitted guide company. Trips usually combine Kobuk Valley with Gates of the Arctic or the Noatak River, last 5–12 days, and are fully camped, with the company handling charter flights, gear, and food.",
   "例如 Arctic Wild 的“北极之门和科伯克谷”5 天营地团，2027 年 7 月 17–21 日、每人 $9,100，从 Kotzebue 出发，沙丘上住两天、北极之门住两天；Indigo Alpine Guides、Alaska Alpine Adventures 也有带沙丘的多日团。名额很少，尽早订。": "For example, Arctic Wild's 5-day Gates of the Arctic and Kobuk Valley basecamp trip runs July 17–21, 2027, for $9,100 per person, starting in Kotzebue, with two nights on the dunes and two in Gates of the Arctic. Indigo Alpine Guides and Alaska Alpine Adventures also run multiday trips that include the dunes. Space is very limited, so book early.",

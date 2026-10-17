@@ -26,13 +26,14 @@ export const lakeClark: Attraction[] = [
     bestTime: ["morning"],
     bestMonths: [6, 7, 8],
     permit:
-      "要订带向导的看熊一日游：安克雷奇出发 2026 年 Rust's 的 Chinitna 湾团 $1,145（约 6 小时，5 月 15 日到 8 月 31 日）、Regal Air $1,125；Homer 出发 Smokey Bay Air $895、Alaska Bear Adventures $795 起",
+      "要订带向导的看熊一日游：2026 年 10 月官网标价：安克雷奇出发 Rust's 的 Chinitna 湾团 $1,195（约 6 小时，5 月 15 日到 8 月 31 日）、Regal Air 的 Silver Salmon Creek 团 $1,175；Homer 出发 Smokey Bay Air $1,145、Alaska Bear Adventures $795 起",
     mustSee: true,
     summary:
       "比 Brooks 瀑布人少得多的海岸看熊：小飞机从安克雷奇飞约 1 小时 10 分，越过 Cook 湾、经过 Redoubt 和 Iliamna 两座活火山，在 Chinitna 湾或 Silver Salmon Creek 的海滩降落，跟着向导在盐沼和泥滩之间走。初夏熊在盐沼吃高蛋白的莎草，退潮时下到泥滩挖竹蛏；夏末鲑鱼进溪，熊转到河口，Silver Salmon Creek 8 月以后还有银鲑洄游。NPS 说在 Chinitna 湾一个地方就可能看到二十头熊。",
     tips: [
-      "从 Homer 或 Soldotna 飞更近、更便宜（Homer 出发 3–5 小时、$795–895），住在基奈半岛的可以从那里走",
+      "从 Homer 或 Soldotna 飞更近、更便宜（Homer 出发 3–5 小时、$795–1,145），住在基奈半岛的可以从那里走",
       "Chinitna 湾有指定的看熊点，部分盐沼不让进，跟着向导走指定路线、离熊保持距离",
+      "去 Silver Salmon Creek 的：每年 6 月 15 日到 9 月 15 日，Sargent Creek 汇口到 Silver Salmon Creek 之间的莎草草甸因生境恢复关闭，只走已有的小路",
       "公司一般发高筒防水靴；降落点看潮水和天气，坏天气会改期，行程里留一点弹性",
     ],
     photoFile: "Brown Bear, Silver Salmon Creek.jpg",
