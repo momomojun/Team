@@ -1,0 +1,387 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/momomojun/Team/blob/main/copilot/contracts/trip-result.v1.schema.json",
+  "title": "TripResult",
+  "description": "plan_trip 工具的输出：每天几点到哪、住哪、提醒，没排进去的景点和原因。时间都是“HH:MM”，按这一天的 timeZone",
+  "type": "object",
+  "required": [
+    "contract",
+    "engine",
+    "request",
+    "referenceDate",
+    "days",
+    "skipped",
+    "assumptions"
+  ],
+  "properties": {
+    "contract": {
+      "const": "trip-result/v1"
+    },
+    "engine": {
+      "type": "object",
+      "required": [
+        "name",
+        "version"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    },
+    "request": {
+      "$ref": "trip-request.v1.schema.json"
+    },
+    "referenceDate": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "days": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "day",
+          "date",
+          "parks",
+          "timeZone",
+          "stops",
+          "lodging",
+          "driveMin",
+          "activeMin",
+          "warnings"
+        ],
+        "properties": {
+          "day": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "date": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "dateIsExact": {
+            "type": "boolean"
+          },
+          "parks": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "acad",
+                "ante",
+                "arch",
+                "badl",
+                "banf",
+                "bibe",
+                "bisc",
+                "blca",
+                "brca",
+                "cany",
+                "care",
+                "cave",
+                "chis",
+                "crla",
+                "dena",
+                "deva",
+                "drto",
+                "ever",
+                "gaar",
+                "glac",
+                "glba",
+                "grba",
+                "grca",
+                "grsa",
+                "grsm",
+                "grte",
+                "gumo",
+                "hale",
+                "havo",
+                "hsbd",
+                "jasp",
+                "jotr",
+                "katm",
+                "kefj",
+                "kova",
+                "lacl",
+                "lavo",
+                "meve",
+                "mora",
+                "mova",
+                "neri",
+                "noca",
+                "olym",
+                "pefo",
+                "pinn",
+                "redw",
+                "romo",
+                "sagu",
+                "seki",
+                "shen",
+                "thro",
+                "wave",
+                "whsa",
+                "wica",
+                "wrst",
+                "yell",
+                "yoho",
+                "yose",
+                "zion"
+              ]
+            }
+          },
+          "timeZone": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "sunrise": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\d{2}:\\d{2}$"
+          },
+          "sunset": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\d{2}:\\d{2}$"
+          },
+          "departAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\d{2}:\\d{2}$"
+          },
+          "returnAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\d{2}:\\d{2}$"
+          },
+          "driveMin": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "activeMin": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "overloaded",
+                "lateReturn"
+              ]
+            }
+          },
+          "lodging": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "id",
+                  "nameZh",
+                  "nameEn"
+                ],
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "option",
+                      "endpoint"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "stops": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "park",
+                "nameZh",
+                "nameEn",
+                "kind",
+                "start",
+                "end",
+                "driveMin",
+                "waitMin",
+                "slot",
+                "warnings"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "park": {
+                  "enum": [
+                    "acad",
+                    "ante",
+                    "arch",
+                    "badl",
+                    "banf",
+                    "bibe",
+                    "bisc",
+                    "blca",
+                    "brca",
+                    "cany",
+                    "care",
+                    "cave",
+                    "chis",
+                    "crla",
+                    "dena",
+                    "deva",
+                    "drto",
+                    "ever",
+                    "gaar",
+                    "glac",
+                    "glba",
+                    "grba",
+                    "grca",
+                    "grsa",
+                    "grsm",
+                    "grte",
+                    "gumo",
+                    "hale",
+                    "havo",
+                    "hsbd",
+                    "jasp",
+                    "jotr",
+                    "katm",
+                    "kefj",
+                    "kova",
+                    "lacl",
+                    "lavo",
+                    "meve",
+                    "mora",
+                    "mova",
+                    "neri",
+                    "noca",
+                    "olym",
+                    "pefo",
+                    "pinn",
+                    "redw",
+                    "romo",
+                    "sagu",
+                    "seki",
+                    "shen",
+                    "thro",
+                    "wave",
+                    "whsa",
+                    "wica",
+                    "wrst",
+                    "yell",
+                    "yoho",
+                    "yose",
+                    "zion"
+                  ]
+                },
+                "kind": {
+                  "type": "string"
+                },
+                "start": {
+                  "type": "string",
+                  "pattern": "^\\d{2}:\\d{2}$"
+                },
+                "end": {
+                  "type": "string",
+                  "pattern": "^\\d{2}:\\d{2}$"
+                },
+                "localStart": {
+                  "type": "string",
+                  "pattern": "^\\d{2}:\\d{2}$"
+                },
+                "timeZone": {
+                  "type": "string"
+                },
+                "driveMin": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "waitMin": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "slot": {
+                  "enum": [
+                    "sunrise",
+                    "any",
+                    "sunset",
+                    "night"
+                  ]
+                },
+                "shuttle": {
+                  "type": "string"
+                },
+                "warnings": {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "farTransfer",
+                      "noService",
+                      "missDeparture",
+                      "missSunset",
+                      "offTime",
+                      "afterHours",
+                      "dark",
+                      "parkingFull",
+                      "lastShuttle",
+                      "tempClosed",
+                      "maybeClosed"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "skipped": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "park",
+          "nameZh",
+          "nameEn",
+          "reason"
+        ],
+        "properties": {
+          "reason": {
+            "enum": [
+              "permit",
+              "closed",
+              "tooHard",
+              "noTime",
+              "tooFar",
+              "across",
+              "unsuitable"
+            ]
+          }
+        }
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

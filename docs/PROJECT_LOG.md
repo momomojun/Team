@@ -19,6 +19,7 @@ Shipped so far:
 - Film spots grew from 27 to 51, each with a licensed Commons photo of the location; celebrity spots grew from 11 to 19 with every post link re-verified through public embeds.
 - PR #3 (open): the fact audit, time zones, and the film and celebrity expansion. The last two audit groups will be added to it.
 - **LLMOps status (Oct 16)**: another assistant built a careful local-model Intake experiment track (Qwen3 / Qwen3.5 4B on Ollama). The Copilot is not yet wired to the trip engine, and there is no CI/CD yet. The review and roadmap are in [LLMOPS_PLAN.md](LLMOPS_PLAN.md). Start there.
+- **Phase 1 done (Oct 17)**: `TripRequest` / `TripResult` v1 contracts (JSON Schema in `copilot/contracts/`, generated from TypeScript), the `plan_trip` tool (`npm run copilot:plan`, `POST /api/copilot/plan`) wrapping the same trip generator as the website, and park and airport catalogs for intake. See [copilot/README.md](../copilot/README.md).
 
 ---
 
@@ -164,6 +165,13 @@ Shipped so far:
 
 - 另一个助手在 `experiments/local-model-validation/` 做了本地模型的 Intake 实验（V1、V2、V3、Qwen3 4B 对 Qwen3.5 4B），记录在 [LLMOPS_WORK_LOG.md](LLMOPS_WORK_LOG.md)。
 - 评估和分阶段计划写在 **[LLMOPS_PLAN.md](LLMOPS_PLAN.md)**：做得好的（实验规范、职责划分、全部本地）、要改的（只做了 Intake、没有 CI/CD、字段和网站的 `WizardInput` 没对齐、只支持 3 座公园、样本少、几个状态机 bug），以及下一步（契约和 `plan_trip` 工具 → 最小 Copilot → GitHub Actions 和回放评测门禁 → 150 条评测集和对照实验 → 接进网站）。
+
+### 阶段 1 做完了（10-17）
+
+- 用户合并 PR #3 后说“开始第 1 步”。分支 `feature/copilot-plan-tool`。
+- 做了：`TripRequest` / `TripResult` v1 契约（JSON Schema，`copilot/contracts/`）、`plan_trip` 工具（`src/lib/copilot/plan-tool.ts`，命令行 `npm run copilot:plan`、HTTP `POST /api/copilot/plan`）、59 座公园和 86 个机场的目录（给 Intake 认名字）、测试 `tests/copilot-plan.test.ts`。用法见 [copilot/README.md](../copilot/README.md)，计划里的状态见 [LLMOPS_PLAN.md](LLMOPS_PLAN.md) 阶段 1。
+- 定下来的做法：JSON Schema 只写在 TypeScript 一处，生成 JSON 给 Python；契约改字段要升版本号；工具不联网、`referenceDate` 固定才能复现；和行程页不同的地方（机场车程用预先算好的表、不读实时公告、只给月份按 15 号算）写进结果的 `assumptions`，Writer 要照实说。
+- 下一步是阶段 2：Python 的最小 Copilot（Intake → plan_trip → Critic → Writer）和 GitHub Actions。
 
 ## 9. 搜索额度（10-16）
 

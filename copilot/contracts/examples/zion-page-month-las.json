@@ -1,0 +1,19 @@
+{
+  "contract": "trip-request/v1",
+  "parks": ["zion", "hsbd", "ante"],
+  "month": 5,
+  "days": 5,
+  "origin": { "airport": "LAS" },
+  "pace": "relaxed",
+  "lodgingPref": "hotel",
+  "party": { "seniors": true, "youngestKid": 6 },
+  "provenance": {
+    "parks": { "source": "user", "evidence": "锡安，再去马蹄湾和羚羊谷" },
+    "month": { "source": "user", "evidence": "明年五月" },
+    "days": { "source": "user", "evidence": "五天" },
+    "origin": { "source": "user", "evidence": "拉斯维加斯进出" },
+    "pace": { "source": "user_confirmation", "evidence": "轻松玩" },
+    "lodgingPref": { "source": "user", "evidence": "不想住民宿" },
+    "party": { "source": "user", "evidence": "带爸妈和6岁的孩子" }
+  }
+}
