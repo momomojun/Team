@@ -43,3 +43,5 @@
 - 锡安大车规定：只有 zion.ts 一处提到隧道，核对时已经按 2026-06-07 的新规改了，别处没有旧说法。
 - 阿拉斯加核对报的：bookings.ts 的看熊团价格、activities.ts 科伯克谷电话、克拉克湖 Silver Salmon Creek 草甸关闭都改了。Root 冰川改道的公告 9 月 25 日已到期，只写在提示里，没加 closures.ts。
 - 还没处理：北瀑布、奥林匹克、黄石、加州各园的施工延误和次要关闭；雷尼尔山几条路今年的计划关闭日（等实际关了再补进 FIXES）；德纳里山名（问用户）。
+- 东部核对报的、没有对应景点、没加进 closures.ts 的：大烟山 Carlos Campbell Overlook 路面裂缝临时关闭、Bullhead Trail 周一到周四关到 11-19；大沼泽地 US 41 抬高路面施工最多延误 15 分钟；比斯坎 Boca Chita、Elliott Key 白天靠岸收 $25（只影响自己开船的）。阿卡迪亚 Seawall Road 写进了 Ship Harbor 的提示。
+- 东部官方说法矛盾、没改：Grotto Falls 2.6 还是 4 英里；乔丹池屋开到 10-26（NPS）还是 10-23（餐厅官网）；干龟渡轮露营客 6:00 还是 6:30 报到。

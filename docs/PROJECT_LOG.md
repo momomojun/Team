@@ -83,7 +83,7 @@ Shipped so far:
   - 写作规范见 [ENGLISH.md](ENGLISH.md)，助手任务说明见 [agent-briefs/02](agent-briefs/02-english-ui-dictionary.md) 和 [03](agent-briefs/03-english-content.md)。
 - **顺带修正的中文数据**：
   - 《星球大战》的 Jawa 改译为"爪哇人"；
-  - 野牛的安全距离改为 25 码，大烟山麋鹿改为 50 码；
+  - 野牛的安全距离改为 25 码；大烟山麋鹿当时改成了 50 码，10-16 按 NPS elk.htm（2026-07-21 更新：25 码）改回 25 码；
   - 两个波特兰机场分开命名。
 
 ## 5. 明星同款、电影同款
@@ -109,7 +109,7 @@ Shipped so far:
   - 没到目标数量：这一轮会话的 WebSearch 额度（200 次，所有助手共用）用完了；中文娱乐新闻这个搜索引擎几乎搜不到，华语明星一条没找到。想继续扩充，可以开新会话，或者调高环境变量 `CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION`。
   - 新条目的英文正在写，任务说明见 [agent-briefs/09](agent-briefs/09-english-films-celebrities.md)。
 
-## 6. 按英文官方资料核对事实（10-16，进行中）
+## 6. 按英文官方资料核对事实（10-16，59 座全部核完）
 
 - 用户要求：中英文说法不一致时要查清楚谁对；**英文界面要依据英文原始资料**，比如 NPS 官网。中文是当初转述的，可能有误差。
 - **做法**：
@@ -126,8 +126,9 @@ Shipped so far:
   - 剩下 4 组：
     - 阿拉斯加：wrst、glba、katm、lacl、gaar、kova，**10-16 已核完**。重要的改动：冰川湾 Bartlett Lake 步道往返 8 英里（原来写 10 英里）、全天游船停 Margerie 或 Johns Hopkins 冰川；卡特迈、克拉克湖看熊团按 2026 年 10 月官网标价更新（`bookings.ts` 也同步了）；看熊团年龄限制按各家写的改；北极之门 Dalton 公路车程按 BLM 改长；科伯克谷遗产中心电话改成 907-318-2230；克拉克湖 Silver Salmon Creek 的莎草草甸 6 月 15 日到 9 月 15 日关闭写进了提示。
     - 园外名胜和新墨西哥、夏威夷：ante、hsbd、mova、wave、pefo、whsa、cave、havo、hale，**10-16 已核完**（提交 dda968e）。
-    - 东部：acad、ever、bisc、drto、grsm，10-16 晚上在核。
-    - 大平原和阿巴拉契亚：thro、badl、wica、shen、neri，10-16 晚上在核（thro 前一次做了一半，改动保留）。
+    - 大平原和阿巴拉契亚：thro、badl、wica、shen、neri，**10-16 已核完**。重要的：恶地离野牛等野生动物至少 100 英尺（原来写 25 码）、White River 游客中心也有饮用水；新河峡谷下游漂流是 III–V 级；仙纳度 Cedar Run–Whiteoak 环线从 Hawksbill Gap 停车场出发。恶地 Notch 步道：助手说公告写到 2027-01-05，主线重读公告只看到 9-30 的结束日期字段，没采用，重开日期保持未定。
+    - 东部：acad、ever、bisc、drto、grsm，**10-16 已核完**。重要的：大烟山离麋鹿至少 25 码（NPS elk.htm 2026-07-21；之前 cfb1a58 改成 50 码是错的，特别活动那条也改回来了）；阿卡迪亚 Sand Beach 没有救生员；Seawall Road（102A）10 月 5 日起施工封闭、按绕行走；大烟山几条步道长度（Alum Cave 上 LeConte 往返 10 英里、Craggy Pinnacle 1.4 英里）；干龟渡轮 7:30 登船。
+    - 查 NPS 公告不用 key：`https://www.nps.gov/<代码>/park-alerts-<代码>.json`，全站 `https://www.nps.gov/nps-alerts.json`（DEMO_KEY 超限时用）。
   - 中途两次碰到用量上限、一次换了会话，没核完的组要重新派。
 - **已经加进 `closures.ts` 的新临时关闭**（10-16）：
   - 雷尼尔山 Grove of the Patriarchs 停车场（影响银瀑布）；
@@ -181,7 +182,7 @@ Shipped so far:
 ### 当前交接状态（10-16 晚）
 
 - PR #3（`feature/fact-audit`）已开：事实核对 48 座、时区、电影 51 处和明星 19 条、交接文档。
-- 还在跑的：东部 5 座（acad ever bisc drto grsm）和大平原、阿巴拉契亚 5 座（thro badl wica shen neri）的事实核对。任务说明是 [agent-briefs/05-fact-audit.md](agent-briefs/05-fact-audit.md)；每座公园的记录先写在会话的临时目录里，做完复制到 `docs/audit/2026-10-16/`。如果助手中途停了：`git diff` 看哪些公园已经改了（`src/data/attractions/<代码>.ts`、`src/i18n/en/content/attractions-<代码>.ts`），没改的公园按同一份任务说明重新派。
+- 事实核对 59 座全部做完（任务说明 [agent-briefs/05-fact-audit.md](agent-briefs/05-fact-audit.md)，记录在 `docs/audit/2026-10-16/`）。以后再核对：按同一份任务说明派，记录写进新日期的目录。官方两处说法矛盾、没改的地方列在各公园记录的“没改、拿不准的”一节和 `_followups.md`。
 - 想继续扩充明星、电影同款：开新会话（额度已经加到 500），按 [agent-briefs/07](agent-briefs/07-celebrity-spots-v2.md)、[06](agent-briefs/06-film-locations-v2.md) 继续；新条目的英文按 [09](agent-briefs/09-english-films-celebrities.md) 写。
 - LLMOps 的下一步见 [LLMOPS_PLAN.md](LLMOPS_PLAN.md) 第 2 节，从阶段 1（契约和 `plan_trip` 工具）开始。
 

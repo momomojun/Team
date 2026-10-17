@@ -179,6 +179,6 @@ export const suitability: Record<string, Suitability> = {
     stroller: "partial",
     wheelchair: "partial",
     seniors: "ok",
-    noteZh: "Craggy Dome 观景点停车场就能看山；上 Craggy Pinnacle 的约 1.1 公里往返是有坡的土石路，山顶风大、冷。",
+    noteZh: "Craggy Dome 观景点停车场就能看山；上 Craggy Pinnacle 的约 2.3 公里往返是有坡的土石路，山顶风大、冷。",
   },
 };

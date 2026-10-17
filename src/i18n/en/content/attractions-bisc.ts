@@ -7,7 +7,7 @@ export const content: Record<string, string> = {
   "叫网约车来的，要在 17:30 闭园前约好回程的车": "If you come by rideshare, line up your ride back before the grounds close at 5:30 p.m.",
   "冬季周末 Homestead 市有免费的国家公园电车，从市中心开到这里和大沼泽地": "On winter weekends, the City of Homestead runs a free National Parks Trolley from downtown to here and to Everglades.",
   "Convoy Point 海堤步道": "Convoy Point Jetty Trail",
-  "从游客中心沿红树林边的木栈道走上伸进湾里的海堤，单程约 600 米，一路平坦。海堤尽头是鸟类保护区，冬天常见鸬鹚、燕鸥和滨鸟；早晚有成群的白鹮从头顶飞过，往返于南边岛上的栖息地。": "From the visitor center, a boardwalk along the mangroves leads onto a jetty that juts into the bay, a flat walk of about 0.4 mile one way. The end of the jetty is a bird sanctuary where cormorants, terns, and shorebirds are common in winter, and in the morning and evening flocks of white ibis pass overhead on their way to and from roosts on the islands to the south.",
+  "从游客中心沿红树林边的木栈道走上伸进湾里的海堤，往返约 1.3 公里，一路平坦。海堤尽头是鸟类保护区，冬天常见鸬鹚、燕鸥和滨鸟；早晚有成群的白鹮从头顶飞过，往返于南边岛上的栖息地。": "From the visitor center, a boardwalk along the mangroves leads onto a jetty that juts into the bay, a flat walk of 0.8 mile round trip. The end of the jetty is a bird sanctuary where cormorants, terns, and shorebirds are common in winter, and in the morning and evening flocks of white ibis pass overhead on their way to and from roosts on the islands to the south.",
   "全程几乎没有遮阴，带水、防晒；夏天傍晚蚊子多": "There's almost no shade, so bring water and sun protection. Mosquitoes are thick on summer evenings.",
   "海堤尽头的鸟类保护区不要进去，用望远镜看": "Stay out of the bird sanctuary at the end of the jetty; bring binoculars instead.",
   "旁边有皮划艇下水点，可以自带船在湾里划": "A kayak launch next to the trail lets you paddle the bay in your own boat.",

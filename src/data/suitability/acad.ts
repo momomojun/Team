@@ -29,7 +29,7 @@ export const suitability: Record<string, Suitability> = {
     wheelchair: "partial",
     seniors: "ok",
     hazards: ["water"],
-    noteZh: "下层停车场有无障碍车位和洗手间，下到沙滩要走台阶、沙地推不了车；夏天水温只有 10–15°C，有离岸流，孩子在救生员看得到的地方玩水。",
+    noteZh: "下层停车场有无障碍车位和洗手间，下到沙滩要走台阶、沙地推不了车；夏天水温只有 10–15°C，有离岸流，不一定有救生员，孩子玩水大人要跟着。",
     source: ACCESS,
   },
   "acad-beehive": {
@@ -60,7 +60,7 @@ export const suitability: Record<string, Suitability> = {
     source: ACCESS,
   },
   "acad-precipice": {
-    kidsFromAge: 14,
+    kidsFromAge: 12,
     stroller: "no",
     wheelchair: "no",
     seniors: "no",

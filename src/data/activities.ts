@@ -3406,7 +3406,7 @@ export const activities: ParkActivity[] = [
     months: [9, 10],
     summary:
       "大烟山的麋鹿是 2001 年从外地重新引进的，现在西北卡约有 270 头，其中约 150 头至少一部分时间待在园内。9–10 月发情期公鹿在 Cataloochee 谷和 Oconaluftee 游客中心旁的草地上嘶鸣、角斗，清早和傍晚最活跃，是一年里看麋鹿最精彩的时候。",
-    booking: "不用预约；发情期的公鹿有攻击性，园规是至少离 50 码（约 46 米），惊扰到麋鹿就算太近，不许喂食。",
+    booking: "不用预约；发情期的公鹿有攻击性，园规是至少离 25 码（约 23 米），惊扰到麋鹿就算太近，不许喂食。",
     status: "Cataloochee 谷 2024 年飓风 Helene 后只重开了下段（到 Beech Grove 学校），上段的草地只能走路进去。",
     url: "https://www.nps.gov/grsm/learn/nature/elk.htm",
     attraction: "grsm-cataloochee",
