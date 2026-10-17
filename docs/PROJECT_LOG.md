@@ -172,6 +172,18 @@ Shipped so far:
   - 在 Claude Code 里运行 `/clear` 会把计数清零；新版本（v2.1.290 以后）额度每小时大约回补 100 次（`CLAUDE_CODE_WEB_SEARCH_REFILLS_PER_HOUR` 可调）。
   - 用 API 计费的话，网页搜索按每 1,000 次 $10 另算。
 - 额度用完后助手改用 WebFetch 直接打开官方页面（不受这个额度限制），能核对已知网址，但找不到新的资料（比如新的明星帖子）。
+- 10-16 用户让把上限加到 500：已写进 `C:\Users\ZJ\.claude\settings.json` 的 `env`（`CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION=500`），**重启 Claude Code 之后才生效**。
+- **用户要求的交接规则**：额度快用完之前（一个会话大约用到 400 次，或者第一次碰到额度报错），不再开新的调研，先把交接写好：
+  - 做完了什么、还剩什么、文件在哪，写进本文件；没做完的任务说明留在 `docs/agent-briefs/`；
+  - 交给助手的调研任务都要求“每做完一项马上写记录”（比如每座公园一个核对记录），中途停下也不丢东西；
+  - 同时开的调研助手控制在 2–3 个，共用的额度能撑更久。
+
+### 当前交接状态（10-16 晚）
+
+- PR #3（`feature/fact-audit`）已开：事实核对 48 座、时区、电影 51 处和明星 19 条、交接文档。
+- 还在跑的：东部 5 座（acad ever bisc drto grsm）和大平原、阿巴拉契亚 5 座（thro badl wica shen neri）的事实核对。任务说明是 [agent-briefs/05-fact-audit.md](agent-briefs/05-fact-audit.md)；每座公园的记录先写在会话的临时目录里，做完复制到 `docs/audit/2026-10-16/`。如果助手中途停了：`git diff` 看哪些公园已经改了（`src/data/attractions/<代码>.ts`、`src/i18n/en/content/attractions-<代码>.ts`），没改的公园按同一份任务说明重新派。
+- 想继续扩充明星、电影同款：开新会话（额度已经加到 500），按 [agent-briefs/07](agent-briefs/07-celebrity-spots-v2.md)、[06](agent-briefs/06-film-locations-v2.md) 继续；新条目的英文按 [09](agent-briefs/09-english-films-celebrities.md) 写。
+- LLMOps 的下一步见 [LLMOPS_PLAN.md](LLMOPS_PLAN.md) 第 2 节，从阶段 1（契约和 `plan_trip` 工具）开始。
 
 ## 10. 用户的偏好（接手时注意）
 
