@@ -45,7 +45,18 @@
 
 原则不变：**LLM 负责理解需求和解释结果，事实和行程由现有的确定性引擎和数据决定**。每一阶段做完都要有能自动跑的测试。
 
-### 阶段 1：契约和工具（先做，1 周内）
+### 阶段 1：契约和工具（2026-10-17 已完成第一版）
+
+**已经做好的**（用法见 [copilot/README.md](../copilot/README.md)）：
+
+- `TripRequest` / `TripResult` v1 契约：JSON Schema 写在 `src/lib/copilot/contract.ts`，`npm run copilot:contracts` 生成到 `copilot/contracts/`，Python 那边直接用；字段和网站 `WizardInput` 一一对应，每个字段可以带来源（用户原话、用户确认、默认、推断）和原文片段。
+- `plan_trip` 工具：`src/lib/copilot/plan-tool.ts`，调网站同一个 `generateTrip` 和时间线，按时区换算；命令行 `npm run copilot:plan`，HTTP `POST /api/copilot/plan`。不联网、结果可复现（固定 `referenceDate`）。
+- 公园和机场目录 `copilot/contracts/parks.json`（59 座，简繁英名字和别名）、`airports.json`（86 个），Intake 不再手写 3 座公园的别名表。
+- 测试 `tests/copilot-plan.test.ts`：契约文件和代码一致、各种不合格请求指出字段、同样输入结果一样、输出符合 TripResult schema、跨时区的一天给当地时间、坐轮椅时去不了的不排。
+
+**还没做的**（挪到阶段 2 跟 Critic 一起做）：单独的查询工具（某天某景点关没关、季节性山路把握、要提前订的、同行适合度、时区提醒）。现在这些信息都已经在 `TripResult` 的 `warnings`、`skipped` 里，Critic 先用这些。
+
+原来的计划：
 
 - **`TripRequest` 契约**：JSON Schema，字段和 `WizardInput` 一一对应，加上每个字段的来源（用户原话、用户确认、默认值）和证据片段。放在 `copilot/contracts/`，TypeScript 和 Python 都从它生成类型（或者至少有测试检查两边一致）。
 - **`plan_trip` 工具**：把 `generateTrip` 包成一个不依赖浏览器的入口。`tests/generate-trip.test.ts` 已经演示了怎么在 Node 里构造输入和上下文，照着写一个 `scripts/plan-cli.mjs`（读 `TripRequest` JSON，输出行程、每天的时间线、警告、跳过的景点和原因），再包一个 Next 接口 `POST /api/copilot/plan`。车程表在仓库里，不联网也能跑。

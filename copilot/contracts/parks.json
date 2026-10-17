@@ -1,0 +1,1377 @@
+[
+  {
+    "code": "yose",
+    "nameZh": "优胜美地",
+    "nameEn": "Yosemite",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Los_Angeles",
+    "airports": [
+      "FAT",
+      "SFO",
+      "OAK",
+      "SJC"
+    ],
+    "nearby": [
+      "seki"
+    ],
+    "aliases": [
+      "优胜美地",
+      "優勝美地",
+      "Yosemite",
+      "yose"
+    ]
+  },
+  {
+    "code": "seki",
+    "nameZh": "红杉与国王峡谷",
+    "nameEn": "Sequoia & Kings Canyon",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Los_Angeles",
+    "airports": [
+      "FAT",
+      "LAX"
+    ],
+    "nearby": [
+      "yose"
+    ],
+    "aliases": [
+      "红杉与国王峡谷",
+      "紅杉與國王峽谷",
+      "Sequoia & Kings Canyon",
+      "seki"
+    ]
+  },
+  {
+    "code": "pinn",
+    "nameZh": "尖峰石阵",
+    "nameEn": "Pinnacles",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Los_Angeles",
+    "airports": [
+      "SJC",
+      "SFO",
+      "OAK",
+      "MRY"
+    ],
+    "nearby": [
+      "seki",
+      "yose"
+    ],
+    "aliases": [
+      "尖峰石阵",
+      "尖峰石陣",
+      "Pinnacles",
+      "pinn"
+    ]
+  },
+  {
+    "code": "chis",
+    "nameZh": "海峡群岛",
+    "nameEn": "Channel Islands",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Los_Angeles",
+    "airports": [
+      "LAX",
+      "BUR",
+      "SBA"
+    ],
+    "nearby": [],
+    "aliases": [
+      "海峡群岛",
+      "海峽群島",
+      "Channel Islands",
+      "chis"
+    ]
+  },
+  {
+    "code": "jotr",
+    "nameZh": "约书亚树",
+    "nameEn": "Joshua Tree",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Los_Angeles",
+    "airports": [
+      "PSP",
+      "ONT",
+      "LAX",
+      "SNA",
+      "LAS"
+    ],
+    "nearby": [
+      "deva"
+    ],
+    "aliases": [
+      "约书亚树",
+      "約書亞樹",
+      "Joshua Tree",
+      "jotr"
+    ]
+  },
+  {
+    "code": "redw",
+    "nameZh": "红木",
+    "nameEn": "Redwood",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Los_Angeles",
+    "airports": [
+      "ACV",
+      "CEC",
+      "MFR",
+      "SFO"
+    ],
+    "nearby": [
+      "crla",
+      "lavo"
+    ],
+    "aliases": [
+      "红木",
+      "紅木",
+      "Redwood",
+      "redw"
+    ]
+  },
+  {
+    "code": "lavo",
+    "nameZh": "拉森火山",
+    "nameEn": "Lassen Volcanic",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Los_Angeles",
+    "airports": [
+      "RDD",
+      "SMF",
+      "RNO",
+      "SFO"
+    ],
+    "nearby": [
+      "crla",
+      "redw"
+    ],
+    "aliases": [
+      "拉森火山",
+      "Lassen Volcanic",
+      "lavo"
+    ]
+  },
+  {
+    "code": "crla",
+    "nameZh": "火山口湖",
+    "nameEn": "Crater Lake",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Los_Angeles",
+    "airports": [
+      "MFR",
+      "RDM",
+      "EUG",
+      "PDX"
+    ],
+    "nearby": [
+      "redw",
+      "lavo"
+    ],
+    "aliases": [
+      "火山口湖",
+      "Crater Lake",
+      "crla"
+    ]
+  },
+  {
+    "code": "mora",
+    "nameZh": "雷尼尔山",
+    "nameEn": "Mount Rainier",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Los_Angeles",
+    "airports": [
+      "SEA",
+      "PDX"
+    ],
+    "nearby": [
+      "olym",
+      "noca"
+    ],
+    "aliases": [
+      "雷尼尔山",
+      "雷尼爾山",
+      "Mount Rainier",
+      "mora"
+    ]
+  },
+  {
+    "code": "olym",
+    "nameZh": "奥林匹克",
+    "nameEn": "Olympic",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Los_Angeles",
+    "airports": [
+      "SEA",
+      "PAE",
+      "PDX"
+    ],
+    "nearby": [
+      "mora",
+      "noca"
+    ],
+    "aliases": [
+      "奥林匹克",
+      "奧林匹克",
+      "Olympic",
+      "olym"
+    ]
+  },
+  {
+    "code": "noca",
+    "nameZh": "北瀑布",
+    "nameEn": "North Cascades",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Los_Angeles",
+    "airports": [
+      "SEA",
+      "BLI"
+    ],
+    "nearby": [
+      "mora",
+      "olym"
+    ],
+    "aliases": [
+      "北瀑布",
+      "North Cascades",
+      "noca"
+    ]
+  },
+  {
+    "code": "yell",
+    "nameZh": "黄石",
+    "nameEn": "Yellowstone",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Denver",
+    "airports": [
+      "BZN",
+      "SLC",
+      "JAC",
+      "WYS",
+      "IDA",
+      "BIL",
+      "COD"
+    ],
+    "nearby": [
+      "grte",
+      "glac"
+    ],
+    "aliases": [
+      "黄石",
+      "黃石",
+      "Yellowstone",
+      "yell"
+    ]
+  },
+  {
+    "code": "grte",
+    "nameZh": "大提顿",
+    "nameEn": "Grand Teton",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Denver",
+    "airports": [
+      "JAC",
+      "SLC",
+      "IDA",
+      "BZN"
+    ],
+    "nearby": [
+      "yell"
+    ],
+    "aliases": [
+      "大提顿",
+      "大提頓",
+      "Grand Teton",
+      "grte"
+    ]
+  },
+  {
+    "code": "glac",
+    "nameZh": "冰川",
+    "nameEn": "Glacier",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Denver",
+    "airports": [
+      "FCA",
+      "MSO",
+      "GTF",
+      "BZN",
+      "SEA"
+    ],
+    "nearby": [
+      "banf",
+      "yell"
+    ],
+    "aliases": [
+      "冰川",
+      "Glacier",
+      "glac"
+    ]
+  },
+  {
+    "code": "romo",
+    "nameZh": "落基山",
+    "nameEn": "Rocky Mountain",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Denver",
+    "airports": [
+      "DEN"
+    ],
+    "nearby": [
+      "arch",
+      "cany",
+      "grsa"
+    ],
+    "aliases": [
+      "落基山",
+      "Rocky Mountain",
+      "romo"
+    ]
+  },
+  {
+    "code": "meve",
+    "nameZh": "梅萨维德",
+    "nameEn": "Mesa Verde",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Denver",
+    "airports": [
+      "DRO",
+      "ABQ",
+      "PHX",
+      "DEN",
+      "SLC"
+    ],
+    "nearby": [
+      "mova",
+      "arch",
+      "cany",
+      "pefo",
+      "blca",
+      "grsa"
+    ],
+    "aliases": [
+      "梅萨维德",
+      "梅薩維德",
+      "Mesa Verde",
+      "meve"
+    ]
+  },
+  {
+    "code": "grsa",
+    "nameZh": "大沙丘",
+    "nameEn": "Great Sand Dunes",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Denver",
+    "airports": [
+      "ALS",
+      "COS",
+      "DEN",
+      "ABQ"
+    ],
+    "nearby": [
+      "romo",
+      "meve",
+      "blca"
+    ],
+    "aliases": [
+      "大沙丘",
+      "Great Sand Dunes",
+      "grsa"
+    ]
+  },
+  {
+    "code": "blca",
+    "nameZh": "甘尼森黑峡谷",
+    "nameEn": "Black Canyon of the Gunnison",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Denver",
+    "airports": [
+      "MTJ",
+      "GJT",
+      "GUC",
+      "DEN"
+    ],
+    "nearby": [
+      "meve",
+      "arch",
+      "cany",
+      "romo",
+      "grsa"
+    ],
+    "aliases": [
+      "甘尼森黑峡谷",
+      "甘尼森黑峽谷",
+      "Black Canyon of the Gunnison",
+      "blca"
+    ]
+  },
+  {
+    "code": "deva",
+    "nameZh": "死亡谷",
+    "nameEn": "Death Valley",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Los_Angeles",
+    "airports": [
+      "LAS"
+    ],
+    "nearby": [
+      "jotr"
+    ],
+    "aliases": [
+      "死亡谷",
+      "Death Valley",
+      "deva"
+    ]
+  },
+  {
+    "code": "zion",
+    "nameZh": "锡安",
+    "nameEn": "Zion",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Denver",
+    "airports": [
+      "LAS",
+      "SGU",
+      "SLC"
+    ],
+    "nearby": [
+      "brca",
+      "grca",
+      "care",
+      "hsbd",
+      "ante",
+      "wave"
+    ],
+    "aliases": [
+      "锡安",
+      "錫安",
+      "Zion",
+      "zion"
+    ]
+  },
+  {
+    "code": "brca",
+    "nameZh": "布莱斯峡谷",
+    "nameEn": "Bryce Canyon",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Denver",
+    "airports": [
+      "LAS",
+      "SLC",
+      "SGU"
+    ],
+    "nearby": [
+      "zion",
+      "grca",
+      "care",
+      "hsbd",
+      "ante"
+    ],
+    "aliases": [
+      "布莱斯峡谷",
+      "布萊斯峽谷",
+      "Bryce Canyon",
+      "brca"
+    ]
+  },
+  {
+    "code": "grca",
+    "nameZh": "大峡谷",
+    "nameEn": "Grand Canyon",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Phoenix",
+    "airports": [
+      "LAS",
+      "PHX",
+      "FLG"
+    ],
+    "nearby": [
+      "zion",
+      "brca",
+      "hsbd",
+      "ante",
+      "mova"
+    ],
+    "aliases": [
+      "大峡谷",
+      "大峽谷",
+      "Grand Canyon",
+      "grca"
+    ]
+  },
+  {
+    "code": "grba",
+    "nameZh": "大盆地",
+    "nameEn": "Great Basin",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Los_Angeles",
+    "airports": [
+      "SLC",
+      "LAS",
+      "SGU"
+    ],
+    "nearby": [
+      "zion",
+      "brca",
+      "care"
+    ],
+    "aliases": [
+      "大盆地",
+      "Great Basin",
+      "grba"
+    ]
+  },
+  {
+    "code": "ante",
+    "nameZh": "羚羊峡谷",
+    "nameEn": "Antelope Canyon",
+    "kind": "site",
+    "country": "US",
+    "timeZone": "America/Phoenix",
+    "airports": [
+      "LAS",
+      "PHX",
+      "PGA",
+      "FLG",
+      "SLC"
+    ],
+    "nearby": [
+      "hsbd",
+      "wave",
+      "mova",
+      "grca",
+      "zion",
+      "brca"
+    ],
+    "aliases": [
+      "羚羊峡谷",
+      "羚羊峽谷",
+      "Antelope Canyon",
+      "ante"
+    ]
+  },
+  {
+    "code": "hsbd",
+    "nameZh": "马蹄湾",
+    "nameEn": "Horseshoe Bend",
+    "kind": "site",
+    "country": "US",
+    "timeZone": "America/Phoenix",
+    "airports": [
+      "LAS",
+      "PHX",
+      "PGA",
+      "FLG",
+      "SLC"
+    ],
+    "nearby": [
+      "ante",
+      "wave",
+      "mova",
+      "grca",
+      "zion",
+      "brca"
+    ],
+    "aliases": [
+      "马蹄湾",
+      "馬蹄灣",
+      "Horseshoe Bend",
+      "hsbd"
+    ]
+  },
+  {
+    "code": "mova",
+    "nameZh": "纪念碑谷",
+    "nameEn": "Monument Valley",
+    "kind": "site",
+    "country": "US",
+    "timeZone": "America/Denver",
+    "airports": [
+      "PHX",
+      "LAS",
+      "FLG",
+      "SLC",
+      "PGA"
+    ],
+    "nearby": [
+      "ante",
+      "hsbd",
+      "grca",
+      "arch",
+      "cany"
+    ],
+    "aliases": [
+      "纪念碑谷",
+      "紀念碑谷",
+      "Monument Valley",
+      "mova"
+    ]
+  },
+  {
+    "code": "wave",
+    "nameZh": "波浪谷",
+    "nameEn": "The Wave",
+    "kind": "site",
+    "country": "US",
+    "timeZone": "America/Denver",
+    "airports": [
+      "LAS",
+      "SGU",
+      "PGA",
+      "PHX",
+      "SLC"
+    ],
+    "nearby": [
+      "ante",
+      "hsbd",
+      "zion",
+      "brca",
+      "grca"
+    ],
+    "aliases": [
+      "波浪谷",
+      "The Wave",
+      "wave"
+    ]
+  },
+  {
+    "code": "arch",
+    "nameZh": "拱门",
+    "nameEn": "Arches",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Denver",
+    "airports": [
+      "CNY",
+      "GJT",
+      "SLC",
+      "DEN",
+      "LAS"
+    ],
+    "nearby": [
+      "cany",
+      "care",
+      "mova",
+      "romo",
+      "blca"
+    ],
+    "aliases": [
+      "拱门",
+      "拱門",
+      "Arches",
+      "arch"
+    ]
+  },
+  {
+    "code": "cany",
+    "nameZh": "峡谷地",
+    "nameEn": "Canyonlands",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Denver",
+    "airports": [
+      "CNY",
+      "GJT",
+      "SLC",
+      "DEN"
+    ],
+    "nearby": [
+      "arch",
+      "care",
+      "mova",
+      "romo",
+      "blca"
+    ],
+    "aliases": [
+      "峡谷地",
+      "峽谷地",
+      "Canyonlands",
+      "cany"
+    ]
+  },
+  {
+    "code": "care",
+    "nameZh": "圆顶礁",
+    "nameEn": "Capitol Reef",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Denver",
+    "airports": [
+      "SLC",
+      "CNY",
+      "LAS",
+      "GJT"
+    ],
+    "nearby": [
+      "arch",
+      "cany",
+      "brca",
+      "zion"
+    ],
+    "aliases": [
+      "圆顶礁",
+      "圓頂礁",
+      "Capitol Reef",
+      "care"
+    ]
+  },
+  {
+    "code": "whsa",
+    "nameZh": "白沙",
+    "nameEn": "White Sands",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Denver",
+    "airports": [
+      "ELP",
+      "ABQ"
+    ],
+    "nearby": [
+      "cave"
+    ],
+    "aliases": [
+      "白沙",
+      "White Sands",
+      "whsa"
+    ]
+  },
+  {
+    "code": "cave",
+    "nameZh": "卡尔斯巴德洞窟",
+    "nameEn": "Carlsbad Caverns",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Denver",
+    "airports": [
+      "ELP",
+      "CNM",
+      "MAF"
+    ],
+    "nearby": [
+      "whsa"
+    ],
+    "aliases": [
+      "卡尔斯巴德洞窟",
+      "卡爾斯巴德洞窟",
+      "Carlsbad Caverns",
+      "cave"
+    ]
+  },
+  {
+    "code": "pefo",
+    "nameZh": "石化林",
+    "nameEn": "Petrified Forest",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Phoenix",
+    "airports": [
+      "PHX",
+      "FLG",
+      "ABQ",
+      "LAS"
+    ],
+    "nearby": [
+      "grca",
+      "mova",
+      "ante",
+      "hsbd",
+      "meve"
+    ],
+    "aliases": [
+      "石化林",
+      "Petrified Forest",
+      "pefo"
+    ]
+  },
+  {
+    "code": "sagu",
+    "nameZh": "巨人柱",
+    "nameEn": "Saguaro",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Phoenix",
+    "airports": [
+      "TUS",
+      "PHX"
+    ],
+    "nearby": [
+      "grca",
+      "pefo",
+      "whsa"
+    ],
+    "aliases": [
+      "巨人柱",
+      "Saguaro",
+      "sagu"
+    ]
+  },
+  {
+    "code": "gumo",
+    "nameZh": "瓜达卢佩山",
+    "nameEn": "Guadalupe Mountains",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Denver",
+    "airports": [
+      "ELP",
+      "CNM",
+      "MAF"
+    ],
+    "nearby": [
+      "cave",
+      "whsa"
+    ],
+    "aliases": [
+      "瓜达卢佩山",
+      "瓜達盧佩山",
+      "Guadalupe Mountains",
+      "gumo"
+    ]
+  },
+  {
+    "code": "bibe",
+    "nameZh": "大弯",
+    "nameEn": "Big Bend",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Chicago",
+    "airports": [
+      "MAF",
+      "ELP",
+      "SAT",
+      "AUS"
+    ],
+    "nearby": [
+      "gumo",
+      "cave"
+    ],
+    "aliases": [
+      "大弯",
+      "大彎",
+      "Big Bend",
+      "bibe"
+    ]
+  },
+  {
+    "code": "badl",
+    "nameZh": "恶地",
+    "nameEn": "Badlands",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Denver",
+    "airports": [
+      "RAP",
+      "DEN"
+    ],
+    "nearby": [
+      "wica",
+      "thro"
+    ],
+    "aliases": [
+      "恶地",
+      "惡地",
+      "Badlands",
+      "badl"
+    ]
+  },
+  {
+    "code": "wica",
+    "nameZh": "风洞",
+    "nameEn": "Wind Cave",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Denver",
+    "airports": [
+      "RAP",
+      "DEN"
+    ],
+    "nearby": [
+      "badl",
+      "thro"
+    ],
+    "aliases": [
+      "风洞",
+      "風洞",
+      "Wind Cave",
+      "wica"
+    ]
+  },
+  {
+    "code": "thro",
+    "nameZh": "西奥多·罗斯福",
+    "nameEn": "Theodore Roosevelt",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Denver",
+    "airports": [
+      "BIS",
+      "DIK",
+      "XWA",
+      "BIL"
+    ],
+    "nearby": [
+      "badl",
+      "wica"
+    ],
+    "aliases": [
+      "西奥多·罗斯福",
+      "西奧多·羅斯福",
+      "Theodore Roosevelt",
+      "thro"
+    ]
+  },
+  {
+    "code": "grsm",
+    "nameZh": "大烟山",
+    "nameEn": "Great Smoky Mountains",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/New_York",
+    "airports": [
+      "TYS",
+      "AVL",
+      "ATL",
+      "CLT"
+    ],
+    "nearby": [
+      "shen",
+      "neri"
+    ],
+    "aliases": [
+      "大烟山",
+      "大煙山",
+      "Great Smoky Mountains",
+      "grsm"
+    ]
+  },
+  {
+    "code": "shen",
+    "nameZh": "仙纳度",
+    "nameEn": "Shenandoah",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/New_York",
+    "airports": [
+      "IAD",
+      "DCA",
+      "CHO"
+    ],
+    "nearby": [
+      "neri",
+      "grsm"
+    ],
+    "aliases": [
+      "仙纳度",
+      "仙納度",
+      "Shenandoah",
+      "shen"
+    ]
+  },
+  {
+    "code": "neri",
+    "nameZh": "新河峡谷",
+    "nameEn": "New River Gorge",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/New_York",
+    "airports": [
+      "CRW",
+      "ROA",
+      "CLT",
+      "IAD"
+    ],
+    "nearby": [
+      "shen",
+      "grsm"
+    ],
+    "aliases": [
+      "新河峡谷",
+      "新河峽谷",
+      "New River Gorge",
+      "neri"
+    ]
+  },
+  {
+    "code": "acad",
+    "nameZh": "阿卡迪亚",
+    "nameEn": "Acadia",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/New_York",
+    "airports": [
+      "BGR",
+      "BHB",
+      "PWM",
+      "BOS"
+    ],
+    "nearby": [],
+    "aliases": [
+      "阿卡迪亚",
+      "阿卡迪亞",
+      "Acadia",
+      "acad"
+    ]
+  },
+  {
+    "code": "ever",
+    "nameZh": "大沼泽地",
+    "nameEn": "Everglades",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/New_York",
+    "airports": [
+      "MIA",
+      "FLL",
+      "RSW"
+    ],
+    "nearby": [
+      "bisc",
+      "drto"
+    ],
+    "aliases": [
+      "大沼泽地",
+      "大沼澤地",
+      "Everglades",
+      "ever"
+    ]
+  },
+  {
+    "code": "bisc",
+    "nameZh": "比斯坎",
+    "nameEn": "Biscayne",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/New_York",
+    "airports": [
+      "MIA",
+      "FLL"
+    ],
+    "nearby": [
+      "ever",
+      "drto"
+    ],
+    "aliases": [
+      "比斯坎",
+      "Biscayne",
+      "bisc"
+    ]
+  },
+  {
+    "code": "drto",
+    "nameZh": "干龟",
+    "nameEn": "Dry Tortugas",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/New_York",
+    "airports": [
+      "EYW",
+      "MIA",
+      "FLL"
+    ],
+    "nearby": [
+      "ever",
+      "bisc"
+    ],
+    "aliases": [
+      "干龟",
+      "幹龜",
+      "Dry Tortugas",
+      "drto"
+    ]
+  },
+  {
+    "code": "dena",
+    "nameZh": "德纳里",
+    "nameEn": "Denali",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Anchorage",
+    "airports": [
+      "ANC",
+      "FAI"
+    ],
+    "nearby": [
+      "kefj",
+      "wrst",
+      "gaar",
+      "lacl"
+    ],
+    "aliases": [
+      "德纳里",
+      "德納里",
+      "Denali",
+      "dena"
+    ]
+  },
+  {
+    "code": "kefj",
+    "nameZh": "基奈峡湾",
+    "nameEn": "Kenai Fjords",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Anchorage",
+    "airports": [
+      "ANC"
+    ],
+    "nearby": [
+      "dena",
+      "wrst",
+      "katm",
+      "lacl"
+    ],
+    "aliases": [
+      "基奈峡湾",
+      "基奈峽灣",
+      "Kenai Fjords",
+      "kefj"
+    ]
+  },
+  {
+    "code": "wrst",
+    "nameZh": "兰格尔–圣伊莱亚斯",
+    "nameEn": "Wrangell–St. Elias",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Anchorage",
+    "airports": [
+      "ANC",
+      "FAI"
+    ],
+    "nearby": [
+      "kefj",
+      "dena"
+    ],
+    "aliases": [
+      "兰格尔–圣伊莱亚斯",
+      "蘭格爾–聖伊萊亞斯",
+      "Wrangell–St. Elias",
+      "wrst"
+    ]
+  },
+  {
+    "code": "glba",
+    "nameZh": "冰川湾",
+    "nameEn": "Glacier Bay",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Juneau",
+    "airports": [
+      "GST"
+    ],
+    "nearby": [],
+    "aliases": [
+      "冰川湾",
+      "冰川灣",
+      "Glacier Bay",
+      "glba"
+    ]
+  },
+  {
+    "code": "gaar",
+    "nameZh": "北极之门",
+    "nameEn": "Gates of the Arctic",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Anchorage",
+    "airports": [
+      "FAI"
+    ],
+    "nearby": [
+      "dena"
+    ],
+    "aliases": [
+      "北极之门",
+      "北極之門",
+      "Gates of the Arctic",
+      "gaar"
+    ]
+  },
+  {
+    "code": "kova",
+    "nameZh": "科伯克谷",
+    "nameEn": "Kobuk Valley",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Nome",
+    "airports": [
+      "OTZ"
+    ],
+    "nearby": [],
+    "aliases": [
+      "科伯克谷",
+      "Kobuk Valley",
+      "kova"
+    ]
+  },
+  {
+    "code": "katm",
+    "nameZh": "卡特迈",
+    "nameEn": "Katmai",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Anchorage",
+    "airports": [
+      "ANC",
+      "HOM"
+    ],
+    "nearby": [
+      "lacl",
+      "kefj"
+    ],
+    "aliases": [
+      "卡特迈",
+      "卡特邁",
+      "Katmai",
+      "katm"
+    ]
+  },
+  {
+    "code": "lacl",
+    "nameZh": "克拉克湖",
+    "nameEn": "Lake Clark",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "America/Anchorage",
+    "airports": [
+      "ANC",
+      "HOM"
+    ],
+    "nearby": [
+      "katm",
+      "kefj",
+      "dena"
+    ],
+    "aliases": [
+      "克拉克湖",
+      "Lake Clark",
+      "lacl"
+    ]
+  },
+  {
+    "code": "havo",
+    "nameZh": "夏威夷火山",
+    "nameEn": "Hawaiʻi Volcanoes",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "Pacific/Honolulu",
+    "airports": [
+      "ITO",
+      "KOA"
+    ],
+    "nearby": [],
+    "aliases": [
+      "夏威夷火山",
+      "Hawaiʻi Volcanoes",
+      "havo"
+    ]
+  },
+  {
+    "code": "hale",
+    "nameZh": "哈莱阿卡拉",
+    "nameEn": "Haleakalā",
+    "kind": "park",
+    "country": "US",
+    "timeZone": "Pacific/Honolulu",
+    "airports": [
+      "OGG"
+    ],
+    "nearby": [],
+    "aliases": [
+      "哈莱阿卡拉",
+      "哈萊阿卡拉",
+      "Haleakalā",
+      "hale"
+    ]
+  },
+  {
+    "code": "banf",
+    "nameZh": "班夫",
+    "nameEn": "Banff",
+    "kind": "park",
+    "country": "CA",
+    "timeZone": "America/Edmonton",
+    "airports": [
+      "YYC",
+      "YEG",
+      "YVR"
+    ],
+    "nearby": [
+      "yoho",
+      "jasp",
+      "glac"
+    ],
+    "aliases": [
+      "班夫",
+      "Banff",
+      "banf"
+    ]
+  },
+  {
+    "code": "jasp",
+    "nameZh": "贾斯珀",
+    "nameEn": "Jasper",
+    "kind": "park",
+    "country": "CA",
+    "timeZone": "America/Edmonton",
+    "airports": [
+      "YEG",
+      "YYC",
+      "YVR"
+    ],
+    "nearby": [
+      "banf",
+      "yoho"
+    ],
+    "aliases": [
+      "贾斯珀",
+      "賈斯珀",
+      "Jasper",
+      "jasp"
+    ]
+  },
+  {
+    "code": "yoho",
+    "nameZh": "幽鹤",
+    "nameEn": "Yoho",
+    "kind": "park",
+    "country": "CA",
+    "timeZone": "America/Edmonton",
+    "airports": [
+      "YYC",
+      "YEG",
+      "YVR"
+    ],
+    "nearby": [
+      "banf",
+      "jasp"
+    ],
+    "aliases": [
+      "幽鹤",
+      "幽鶴",
+      "Yoho",
+      "yoho"
+    ]
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "contract": "trip-request/v1",
+  "parks": ["yose"],
+  "startDate": "2027-06-01",
+  "days": 4,
+  "origin": { "airport": "FAT" },
+  "pace": "normal",
+  "provenance": {
+    "parks": { "source": "user", "evidence": "优胜美地" },
+    "startDate": { "source": "user_confirmation", "evidence": "6月1日" },
+    "days": { "source": "user", "evidence": "玩4天" },
+    "origin": { "source": "user", "evidence": "从弗雷斯诺飞" },
+    "pace": { "source": "default" }
+  }
+}
