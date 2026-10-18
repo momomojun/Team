@@ -29,7 +29,7 @@ flowchart LR
 | 文件 | 内容 |
 |---|---|
 | `copilot/contracts/trip-request.v1.schema.json` | 输入（JSON Schema 2020-12）：公园（1–4 座，第一座是主公园，其余要在它的 `nearby` 里）、`startDate` 或 `month`、天数（1–14）、出发地和回程地（常用机场三字码，或者名字加坐标）、节奏、住宿偏好、同行的人（最小孩子几岁、婴儿车、老人、轮椅），以及每个字段的来源 `provenance`（用户原话 / 用户确认 / 默认值 / 推断，附原文片段）。和网站“自动生成攻略”的表单 `WizardInput` 一一对应 |
-| `copilot/contracts/trip-result.v1.schema.json` | 输出：每天的日期、时区、日出日落、出发和回住处的时间、开车和活动分钟数、当晚住处、每一站几点到几点（别的时区的景点另给 `localStart`）、提醒代码（`afterHours`、`tempClosed`、`parkingFull`……，见 `src/lib/copilot/contract.ts` 的 `STOP_WARNINGS`）、没排进去的景点和原因，以及这次计算的假设（`assumptions`） |
+| `copilot/contracts/trip-result.v1.schema.json` | 输出：每天的日期、时区、日出日落、出发和回住处的时间、开车和活动分钟数、当晚住处、每一站几点到几点（别的时区的景点另给 `localStart`）、提醒代码（`afterHours`、`tempClosed`、`parkingFull`……，见 `src/lib/copilot/contract.ts` 的 `STOP_WARNINGS`；`familySerious` 是同行适合度给的：能去，但对同行的婴儿或老人风险高、很累，Critic 当 hard，Writer 一定会说“请务必慎重考虑”）、没排进去的景点和原因，以及这次计算的假设（`assumptions`） |
 | `copilot/contracts/parks.json`、`airports.json` | 59 座公园和名胜（代码、简繁英名字和别名、时区、常用机场、常一起玩的公园）、86 个机场。Intake 认名字就用这两个，不在 Python 里另写一份 |
 | `copilot/contracts/hant-to-hans.json` | 繁简对照表：网站同一套 OpenCC，收的是公园和城市名、`copilot/nps_copilot/` 里 `.py`、提示词、`data/*.json` 出现过的汉字的台湾、香港和标准繁体写法（不是完整的繁简字典） |
 | `copilot/contracts/examples/` | 样例请求 |

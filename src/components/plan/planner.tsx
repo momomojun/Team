@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { unsuitableNote } from "@/components/attractions/family-fit";
+import { seriousNote, unsuitableNote } from "@/components/attractions/family-fit";
 import { KIND_COLORS } from "@/components/attractions/kinds";
 import { IconBed, IconClose, IconGrip } from "@/components/icons";
 import { ParkMap, type MapLeg, type MapPoint, type MapTrail } from "@/components/map/park-map";
@@ -1246,6 +1246,13 @@ export function Planner({
           text={text}
           onJump={(day) => document.getElementById(`plan-day-${day}`)?.scrollIntoView({ behavior: "smooth", block: "start" })}
           extraNotes={liveNotes}
+          seriousNote={(() => {
+            const names = allIds.flatMap((id) => {
+              const stop = byId.get(id);
+              return stop && seriousNote(trip.guide?.party, stop, text) ? [stop.nameZh] : [];
+            });
+            return names.length > 0 ? fill(t.overview.serious, { names: names.join(text.units.listSep) }) : undefined;
+          })()}
           budget={{ total: budget.total, perPerson: budget.perPerson }}
         >
           <TripAlerts
@@ -1294,6 +1301,11 @@ export function Planner({
             const stop = byId.get(id);
             return stop && unsuitableNote(trip.guide?.party, stop, text);
           }}
+          serious={allIds.flatMap((id) => {
+            const stop = byId.get(id);
+            const note = stop && seriousNote(trip.guide?.party, stop, text);
+            return note ? [{ id, note }] : [];
+          })}
           activities={activities.filter((activity) => guideParkList.some((p) => p.code === activity.park))}
           attractionExists={(id) => byId.has(id)}
           stargazing={stargazing}

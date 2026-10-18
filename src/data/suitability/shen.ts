@@ -65,10 +65,10 @@ export const suitability: Record<string, Suitability> = {
     kidsFromAge: 10,
     stroller: "no",
     wheelchair: "no",
-    seniors: "no",
+    seniors: "caution",
+    seniorsSerious: true,
     hazards: ["scramble", "dropoff"],
-    noteZh:
-      "一圈约 15 公里、7–8 小时，最后一段在巨石间手脚并用地攀爬、钻缝，要靠手臂把身体撑上去，是公园救援最多的步道。不适合小孩和体力一般的；想体验攀岩可以改走短很多的 Bearfence。",
+    noteZh: "一圈约 15 公里、7–8 小时，最后一段在巨石间手脚并用地攀爬、钻缝，要靠手臂把身体撑上去，是公园救援最多的步道。不适合小孩。老人能走，但对体力、臂力和平衡要求都很高，请务必慎重考虑；想体验攀岩可以改走短很多的 Bearfence。",
   },
   "shen-byrd-vc": {
     kidsFromAge: 0,

@@ -23,12 +23,14 @@ WARNINGS_ZH = {
     "missDeparture": "赶不上最后一班", "noService": "这天不开", "lastShuttle": "可能赶不上末班班车",
     "farTransfer": "这一段车程太长", "missSunset": "赶不上日落", "offTime": "不在它的最佳时段", "dark": "结束时天已经黑了",
     "parkingFull": "到的时候停车场多半已经满了", "overloaded": "这天安排得太满", "lateReturn": "回住处太晚",
+    "familySerious": "对同行的婴儿或老人风险高、很累，请务必慎重考虑（看这个景点的说明）",
 }
 WARNINGS_EN = {
     "tempClosed": "temporarily closed that day", "maybeClosed": "may still be temporarily closed", "afterHours": "arrives after hours or last entry",
     "missDeparture": "misses the last departure", "noService": "doesn't run that day", "lastShuttle": "may miss the last shuttle",
     "farTransfer": "a very long drive", "missSunset": "misses sunset", "offTime": "outside its best time", "dark": "ends after dark",
     "parkingFull": "the lot is likely full by then", "overloaded": "this day is packed", "lateReturn": "late return to lodging",
+    "familySerious": "risky or very strenuous for the baby or seniors in your group, please think very carefully (see the stop's notes)",
 }
 SKIP_ZH = {"permit": "要抽签的许可证", "closed": "这几天不开放", "tooHard": "太难或太长", "noTime": "排不下",
            "tooFar": "离其他景点太远", "across": "季节性山路封着、要绕很远", "unsuitable": "不适合同行的人"}

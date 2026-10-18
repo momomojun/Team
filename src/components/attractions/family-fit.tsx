@@ -18,16 +18,23 @@ export function fitReasonText(reason: FitReason, text: FamilyText): string {
     case "wheelchair":
       return f.wheelchair[reason.value];
     case "seniors":
-      return f.seniors[reason.value];
+      return reason.serious ? f.seniorsSerious : f.seniors[reason.value];
+    case "carrier":
+      return fill(f.carrier, { under: reason.under });
     case "hazard":
       return f.hazards[reason.hazard];
   }
 }
 
-/** 这群人去这个景点的原因，用“、”连起来；合适就是 null */
-export function fitSummary(party: Party | undefined, attraction: AttractionWithPhoto, text: FamilyText): string | null {
+/** 这群人去这个景点要注意的原因，用“、”连起来；serious 是要请用户务必慎重考虑的（婴儿要背着爬梯子、带老人走特别累的路线）。合适就是 null */
+export function fitSummary(
+  party: Party | undefined,
+  attraction: AttractionWithPhoto,
+  text: FamilyText,
+): { text: string; serious: boolean } | null {
   const fit = fitFor(party, attraction.family);
-  return fit.reasons.length > 0 ? fit.reasons.map((reason) => fitReasonText(reason, text)).join(text.units.listSep) : null;
+  if (fit.reasons.length === 0) return null;
+  return { text: fit.reasons.map((reason) => fitReasonText(reason, text)).join(text.units.listSep), serious: fit.serious };
 }
 
 /** 没排进去的原因：决定不去的那几条，再加上带孩子老人怎么玩的说明 */
@@ -35,6 +42,14 @@ export function unsuitableNote(party: Party | undefined, attraction: AttractionW
   const fit = fitFor(party, attraction.family);
   if (fit.blocking.length === 0) return null;
   const reasons = fit.blocking.map((reason) => fitReasonText(reason, text)).join(text.units.listSep);
+  return attraction.family?.noteZh ? `${reasons}${text.units.sentenceSep}${attraction.family.noteZh}` : reasons;
+}
+
+/** 排进了行程、但要请用户务必慎重考虑的：原因再加上官方说明（婴儿怎么背、路线多累）；不是这种情况就是 null */
+export function seriousNote(party: Party | undefined, attraction: AttractionWithPhoto, text: FamilyText): string | null {
+  const fit = fitFor(party, attraction.family);
+  if (!fit.serious) return null;
+  const reasons = fit.reasons.map((reason) => fitReasonText(reason, text)).join(text.units.listSep);
   return attraction.family?.noteZh ? `${reasons}${text.units.sentenceSep}${attraction.family.noteZh}` : reasons;
 }
 
@@ -52,7 +67,13 @@ export function FamilyFit({
   if (!s) return null;
   const f = text.attraction.family;
   const items = [
-    s.minAge !== undefined ? fill(f.minAge, { age: s.minAge }) : s.kidsFromAge === 0 ? f.babies : fill(f.kidsFrom, { age: s.kidsFromAge }),
+    s.minAge !== undefined
+      ? fill(f.minAge, { age: s.minAge })
+      : s.kidsFromAge === 0
+        ? f.babies
+        : s.carrierUnder !== undefined
+          ? fill(f.carrierItem, { under: s.carrierUnder, age: s.kidsFromAge })
+          : fill(f.kidsFrom, { age: s.kidsFromAge }),
     f.stroller[s.stroller],
     f.wheelchair[s.wheelchair],
     f.seniors[s.seniors],
@@ -62,8 +83,14 @@ export function FamilyFit({
     <div className="border-t border-line pt-3">
       <p className="text-xs tracking-[0.1em] text-mute">{f.title}</p>
       {fit && fit.reasons.length > 0 && (
-        <p className={`mt-2 text-sm leading-6 ${fit.level === "no" ? "text-clay-800" : "text-clay-700"}`}>
-          {fill(f.yourPartyLine, { reasons: fit.reasons.map((reason) => fitReasonText(reason, text)).join(text.units.listSep) })}
+        <p
+          className={`mt-2 text-sm leading-6 ${
+            fit.serious ? "bg-clay-700 px-3 py-2 font-medium text-paper" : fit.level === "no" ? "text-clay-800" : "text-clay-700"
+          }`}
+        >
+          {fill(fit.serious ? f.seriousLine : f.yourPartyLine, {
+            reasons: fit.reasons.map((reason) => fitReasonText(reason, text)).join(text.units.listSep),
+          })}
         </p>
       )}
       <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-ink-soft">

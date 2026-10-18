@@ -43,7 +43,8 @@ export interface DragHandlers {
   end: () => void;
 }
 
-type Tone = "warn" | "info";
+/** serious：要请用户务必慎重考虑的（婴儿要背着爬梯子、带老人走特别累的路线），用最醒目的样式 */
+type Tone = "serious" | "warn" | "info";
 
 /** Google 地图一条路线最多这么多个途经点 */
 const MAX_WAYPOINTS = 9;
@@ -202,7 +203,13 @@ export function DayCard({
     }
     if (stop.permit) notes.push({ text: t.warnings.permit, tone: "warn" });
     const family = fitSummary(party, stop, text);
-    if (family) notes.push({ text: fill(t.warnings.family, { reasons: family }), tone: "warn" });
+    if (family) {
+      notes.push(
+        family.serious
+          ? { text: fill(t.warnings.familySerious, { reasons: family.text }), tone: "serious" }
+          : { text: fill(t.warnings.family, { reasons: family.text }), tone: "warn" },
+      );
+    }
     // 有固定班次的游船、导览团：列出这天的班次（这天不开就说几号到几号才开），不是每天都开的提醒一下
     const schedule = tourScheduleOf(stop.id);
     const departures = departuresOn(stop.id, view.date);
@@ -571,7 +578,11 @@ export function DayCard({
                             <span
                               key={note.text}
                               className={`border px-1.5 py-0.5 text-[11px] ${
-                                note.tone === "warn" ? "border-clay-600/40 text-clay-700" : "border-line text-ink-soft"
+                                note.tone === "serious"
+                                  ? "border-clay-700 bg-clay-700 font-medium text-paper"
+                                  : note.tone === "warn"
+                                    ? "border-clay-600/40 text-clay-700"
+                                    : "border-line text-ink-soft"
                               }`}
                             >
                               {note.text}

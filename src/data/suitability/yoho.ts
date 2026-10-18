@@ -64,8 +64,9 @@ export const suitability: Record<string, Suitability> = {
     kidsFromAge: 10,
     stroller: "no",
     wheelchair: "no",
-    seniors: "no",
-    noteZh: "环线约 20 公里、爬升约 1,090 米，要 8 小时左右，开头是连续陡坡，高处没遮挡、风大；体力一般的和小孩别走全程，可以走到第一段坡顶看塔卡考瀑布就回头，或者只去塔卡考瀑布脚下。",
+    seniors: "caution",
+    seniorsSerious: true,
+    noteZh: "环线约 20 公里、爬升约 1,090 米，要 8 小时左右，开头是连续陡坡，高处没遮挡、风大。小孩别走全程。老人能走，但这是一整天的高强度徒步，走不动了也得自己走回来，请务必慎重考虑；可以走到第一段坡顶看塔卡考瀑布就回头，或者只去塔卡考瀑布脚下。",
   },
   "yoho-sherbrooke-lake": {
     kidsFromAge: 5,
@@ -79,9 +80,9 @@ export const suitability: Record<string, Suitability> = {
     minAge: 10,
     stroller: "no",
     wheelchair: "no",
-    seniors: "no",
-    noteZh:
-      "Parks Canada 规定 10 岁以下不能参加，16 岁以下要大人陪；Walcott 采石场往返约 22 公里、爬升约 900 米，要跟上团队走 11 小时，接近化石点是陡坡碎石。体力一般的、带小孩的去 Field 游客中心看化石展就好。",
+    seniors: "caution",
+    seniorsSerious: true,
+    noteZh: "Parks Canada 规定 10 岁以下不能参加，16 岁以下要大人陪；Walcott 采石场往返约 22 公里、爬升约 900 米，要跟上团队走 11 小时，接近化石点是陡坡碎石。老人能报名，但要一整天跟上团队的速度，请务必慎重考虑。带小孩的、不想走这么远的去 Field 游客中心看化石展就好。",
     source: WALCOTT,
   },
 };

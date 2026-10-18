@@ -110,9 +110,9 @@ export const suitability: Record<string, Suitability> = {
     stroller: "no",
     wheelchair: "no",
     seniors: "caution",
+    carrierUnder: 3,
     hazards: ["scramble", "dropoff"],
-    noteZh:
-      "要下石阶、爬 4 段梯子，路边有陡坎，海拔约 2,100–2,300 米；官方要求孩子能自己爬梯子，婴儿要背在背带里、大人背着也得能爬，心肺不好的先掂量。不下去的可以在太阳神庙旁的无障碍观景台看全貌。",
+    noteZh: "要下石阶、爬 4 段梯子，路边有陡坎，海拔约 2,100–2,300 米。官方要求孩子能自己爬梯子；爬不了的婴儿必须放进背带、由大人背着爬，背的人要空出双手、每段梯子都站得稳。背着孩子在梯子上失手后果很严重，请务必慎重考虑；心肺不好的也先掂量。不下去的可以在太阳神庙旁的无障碍观景台看全貌。",
     source: TOURS,
   },
   "meve-cliff-palace-overlook": {
@@ -128,9 +128,9 @@ export const suitability: Record<string, Suitability> = {
     stroller: "no",
     wheelchair: "no",
     seniors: "caution",
+    carrierUnder: 3,
     hazards: ["scramble", "dropoff"],
-    noteZh:
-      "全园最费劲的导览：爬约 10 米高的木梯、四肢着地钻约 45 厘米宽的岩缝，再踩石阶和梯子爬出约 20 米高的崖壁；官方要求孩子能自己爬梯子，恐高、幽闭恐惧、膝盖不好的别报。带小孩、老人改报悬崖宫殿，或走苏打峡谷观景步道隔着峡谷看。",
+    noteZh: "全园最费劲的导览：爬约 10 米高的木梯、四肢着地钻约 45 厘米宽、68 厘米高的岩缝，再踩石阶和梯子爬出约 20 米高的崖壁。官方要求孩子能自己爬梯子；爬不了的婴儿必须放进背带、由大人背着，背着孩子也要爬完全部梯子、钻过岩缝。这是全园对背孩子的大人要求最高的导览，请务必慎重考虑；恐高、幽闭恐惧、膝盖不好的别报。带小孩、老人改报悬崖宫殿，或走苏打峡谷观景步道隔着峡谷看。",
     source: TOURS,
   },
   "meve-soda-canyon-overlook": {
@@ -146,9 +146,9 @@ export const suitability: Record<string, Suitability> = {
     stroller: "no",
     wheelchair: "no",
     seniors: "caution",
+    carrierUnder: 3,
     hazards: ["scramble", "heat"],
-    noteZh:
-      "连走路全程约 3.6 公里、几乎没有树荫，导览里要下陡阶梯、爬两段约 4.5 米的梯子，官方说这是费力的导览。坐轮椅的可以走铺装的 Long House Loop 到长屋观景台（往返约 4.8 公里，有人协助）。",
+    noteZh: "连走路全程约 3.6 公里、几乎没有树荫，导览里要下陡阶梯、爬两段约 4.5 米的梯子，官方说这是费力的导览。官方页面没写婴儿能不能去；按悬崖宫殿、阳台屋的规定，爬不了梯子的婴儿要放进背带、由空出双手的大人背着爬，请务必慎重考虑，出发前先向公园确认。坐轮椅的可以走铺装的 Long House Loop 到长屋观景台（往返约 4.8 公里，有人协助）。",
     source: TOURS,
   },
   "meve-step-house": {

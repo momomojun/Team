@@ -50,6 +50,13 @@ export interface Suitability {
   wheelchair: "yes" | "assisted" | "partial" | "no";
   /** 老人、体力一般的：没问题 / 量力而行 / 不建议 */
   seniors: "ok" | "caution" | "no";
+  /**
+   * 这个年龄以下的孩子由大人背在背带里也能去（比 kidsFromAge 小、又不到这个年龄的照排，但要醒目提醒“请务必慎重考虑”）。
+   * 梅萨维德崖居导览：官方要求孩子能自己爬梯子，婴儿要放进背带、背着的大人爬梯子时站得稳
+   */
+  carrierUnder?: number;
+  /** 老人量力而行、但特别累的：照排，醒目提醒“请务必慎重考虑”（不是普通的“量力而行”） */
+  seniorsSerious?: boolean;
   hazards?: Hazard[];
   /** 为什么这么判断、带孩子老人怎么玩更稳妥（比如只走到哪里）；有危险、不适合哪类人的都要写 */
   noteZh?: string;

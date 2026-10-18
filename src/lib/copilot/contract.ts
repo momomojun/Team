@@ -61,7 +61,10 @@ export const LODGING_PREFS: LodgingPref[] = ["any", "hotel", "rental"];
 export const MAX_TRIP_DAYS = 14;
 export const MAX_TRIP_PARKS = 4;
 
-/** 行程里每一站的提醒（planner.ts 的 StopWarning），Critic 按这些代码判断要不要改 */
+/**
+ * 行程里每一站的提醒（planner.ts 的 StopWarning），Critic 按这些代码判断要不要改。
+ * familySerious 不是 planner 给的，是同行适合度：能去、但要请用户务必慎重考虑（婴儿要背着爬梯子、带老人走特别累的路线）
+ */
 export const STOP_WARNINGS = [
   "farTransfer",
   "noService",
@@ -74,6 +77,7 @@ export const STOP_WARNINGS = [
   "lastShuttle",
   "tempClosed",
   "maybeClosed",
+  "familySerious",
 ] as const;
 
 /** 没排进去的原因（generate-trip.ts 的 GuideSkipped） */

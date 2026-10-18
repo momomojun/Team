@@ -50,6 +50,7 @@ export function TripOverview({
   text,
   onJump,
   extraNotes = [],
+  seriousNote,
   budget,
   children,
 }: {
@@ -64,6 +65,8 @@ export function TripOverview({
   onJump: (day: number) => void;
   /** 天气、实时公告要注意的事，接在后面 */
   extraNotes?: string[];
+  /** 排进了行程、但要请用户务必慎重考虑的（婴儿要背着爬梯子、带老人走特别累的路线）：放在“要注意”的最前面、最醒目 */
+  seriousNote?: string;
   /** 预算合计（美元） */
   budget?: { total: number; perPerson: number };
   /** 接在总览下面的内容（公园实时公告） */
@@ -294,9 +297,10 @@ export function TripOverview({
             </p>
           )}
         </div>
-        {notes.length > 0 && (
+        {(notes.length > 0 || seriousNote) && (
           <div className="lg:col-span-5">
             <p className="text-xs tracking-[0.1em] text-clay-700">{t.headsUp}</p>
+            {seriousNote && <p className="mt-3 bg-clay-700 px-4 py-3 text-sm font-medium leading-6 text-paper">{seriousNote}</p>}
             <ul className="mt-3 space-y-2 border-l border-clay-600 pl-4 text-sm leading-6 text-ink-soft">
               {notes.map((note) => (
                 <li key={note}>{note}</li>
