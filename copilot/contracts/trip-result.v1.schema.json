@@ -341,7 +341,8 @@
                       "parkingFull",
                       "lastShuttle",
                       "tempClosed",
-                      "maybeClosed"
+                      "maybeClosed",
+                      "familySerious"
                     ]
                   }
                 }

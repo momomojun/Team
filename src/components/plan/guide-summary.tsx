@@ -22,6 +22,7 @@ export function GuideSummary({
   dated,
   closedNoteOf,
   unsuitableNoteOf,
+  serious = [],
   activities,
   attractionExists,
   stargazing = [],
@@ -50,6 +51,8 @@ export function GuideSummary({
   closedNoteOf: (id: string) => string | undefined;
   /** 不适合同行的人的原因（几岁以上、轮椅去不了……） */
   unsuitableNoteOf: (id: string) => string | null | undefined;
+  /** 排进了行程、但要请用户务必慎重考虑的景点（婴儿要背着爬梯子、带老人走特别累的路线）和说明 */
+  serious?: { id: string; note: string }[];
   /** 这些公园的特别活动（全部月份），这里按行程月份筛 */
   activities: ParkActivity[];
   attractionExists: (id: string) => boolean;
@@ -199,6 +202,20 @@ export function GuideSummary({
         </div>
 
         <div className="space-y-8 lg:col-span-5">
+          {serious.length > 0 && (
+            <div className="bg-clay-700 p-5 text-paper">
+              <h3 className="font-serif text-xl">{g.serious}</h3>
+              <p className="mt-1 text-xs leading-5 text-paper/85">{g.seriousHint}</p>
+              <ul className="mt-4 space-y-3">
+                {serious.map(({ id, note }) => (
+                  <li key={id} className="text-sm leading-6">
+                    <span className="font-medium">{nameOf(id)}</span>
+                    <span className="block text-xs leading-6 text-paper/85">{note}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           {closed.length > 0 && (
             <div>
               <h3 className="font-serif text-xl">{dated ? g.closedDated : fill(g.closed, { month: month ?? "" })}</h3>

@@ -8,7 +8,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-HARD = {"tempClosed", "afterHours", "missDeparture", "noService", "lastShuttle", "farTransfer"}
+# familySerious：能去，但同行的婴儿或老人去这里风险高、很累，要请用户务必慎重考虑，一定要说出来
+HARD = {"tempClosed", "afterHours", "missDeparture", "noService", "lastShuttle", "farTransfer", "familySerious"}
 SOFT = {"maybeClosed", "missSunset", "offTime", "dark", "parkingFull"}
 DAY_HARD = {"overloaded", "lateReturn"}
 

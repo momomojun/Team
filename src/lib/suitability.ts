@@ -20,7 +20,8 @@ export type FitReason =
   | { kind: "kidsAge"; age: number }
   | { kind: "stroller"; value: "partial" | "no" }
   | { kind: "wheelchair"; value: "assisted" | "partial" | "no" }
-  | { kind: "seniors"; value: "caution" | "no" }
+  | { kind: "seniors"; value: "caution" | "no"; serious?: boolean }
+  | { kind: "carrier"; under: number }
   | { kind: "hazard"; hazard: Hazard; who: "kids" | "seniors" };
 
 export interface Fit {
@@ -28,6 +29,8 @@ export interface Fit {
   reasons: FitReason[];
   /** 决定不去的原因（level 是 no 时才有） */
   blocking: FitReason[];
+  /** 能去，但要请用户务必慎重考虑（婴儿要背着爬梯子、带老人走特别累的路线）：行程里用最醒目的样式提醒 */
+  serious: boolean;
 }
 
 const SEVERITY: Record<FitLevel, number> = { ok: 0, caution: 1, no: 2 };
@@ -48,8 +51,9 @@ export const hasParty = (party: Party | undefined): party is Party =>
 export function fitFor(party: Party | undefined, suitability: Suitability | undefined): Fit {
   const reasons: FitReason[] = [];
   const blocking: FitReason[] = [];
-  if (!hasParty(party) || !suitability) return { level: "ok", reasons, blocking };
+  if (!hasParty(party) || !suitability) return { level: "ok", reasons, blocking, serious: false };
   let level: FitLevel = "ok";
+  let serious = false;
   const add = (reason: FitReason, reasonLevel: FitLevel) => {
     reasons.push(reason);
     if (reasonLevel === "no") blocking.push(reason);
@@ -58,14 +62,22 @@ export function fitFor(party: Party | undefined, suitability: Suitability | unde
   const kid = party.youngestKid;
   if (kid !== undefined) {
     if (suitability.minAge !== undefined && kid < suitability.minAge) add({ kind: "minAge", age: suitability.minAge }, "no");
-    else if (kid < suitability.kidsFromAge) add({ kind: "kidsAge", age: suitability.kidsFromAge }, "no");
+    else if (kid < suitability.kidsFromAge) {
+      // 背在背带里也能去的（梅萨维德崖居）：照排，但要醒目提醒；背不动、又爬不了的年龄照旧不排
+      if (suitability.carrierUnder !== undefined && kid < suitability.carrierUnder) {
+        add({ kind: "carrier", under: suitability.carrierUnder }, "caution");
+        serious = true;
+      } else add({ kind: "kidsAge", age: suitability.kidsFromAge }, "no");
+    }
   }
   if (party.stroller && suitability.stroller !== "yes") add({ kind: "stroller", value: suitability.stroller }, "caution");
   if (party.wheelchair && suitability.wheelchair !== "yes") {
     add({ kind: "wheelchair", value: suitability.wheelchair }, suitability.wheelchair === "no" ? "no" : "caution");
   }
   if (party.seniors && suitability.seniors !== "ok") {
-    add({ kind: "seniors", value: suitability.seniors }, suitability.seniors === "no" ? "no" : "caution");
+    const seriousSeniors = suitability.seniors === "caution" && suitability.seniorsSerious === true;
+    add({ kind: "seniors", value: suitability.seniors, ...(seriousSeniors ? { serious: true } : {}) }, suitability.seniors === "no" ? "no" : "caution");
+    if (seriousSeniors) serious = true;
   }
   const withKids = kid !== undefined || party.stroller === true;
   for (const hazard of suitability.hazards ?? []) {
@@ -74,5 +86,5 @@ export function fitFor(party: Party | undefined, suitability: Suitability | unde
       add({ kind: "hazard", hazard, who: "seniors" }, "caution");
     }
   }
-  return { level, reasons, blocking };
+  return { level, reasons, blocking, serious: serious && blocking.length === 0 };
 }

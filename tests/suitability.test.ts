@@ -50,8 +50,8 @@ const riverside: Suitability = { kidsFromAge: 0, stroller: "yes", wheelchair: "a
 const cave: Suitability = { kidsFromAge: 12, minAge: 12, stroller: "no", wheelchair: "no", seniors: "caution", hazards: ["scramble"] };
 
 test("没有同行的人就都合适", () => {
-  assert.deepEqual(fitFor(undefined, angels), { level: "ok", reasons: [], blocking: [] });
-  assert.deepEqual(fitFor({}, angels), { level: "ok", reasons: [], blocking: [] });
+  assert.deepEqual(fitFor(undefined, angels), { level: "ok", reasons: [], blocking: [], serious: false });
+  assert.deepEqual(fitFor({}, angels), { level: "ok", reasons: [], blocking: [], serious: false });
 });
 
 test("孩子不到建议年龄、官方年龄下限不排", () => {
@@ -73,5 +73,45 @@ test("老人：不建议的不排，量力而行的提醒，体力相关的危�
   assert.equal(fitFor({ seniors: true }, { ...riverside, seniors: "caution" }).level, "caution");
   assert.deepEqual(fitFor({ seniors: true }, { ...riverside, hazards: ["altitude", "dropoff"] }).reasons, [
     { kind: "hazard", hazard: "altitude", who: "seniors" },
+  ]);
+});
+
+// 2026-10-18 仓库主人定的：官方允许的就照排，但醒目提醒“请务必慎重考虑”
+const cliffPalace: Suitability = { kidsFromAge: 4, carrierUnder: 3, stroller: "no", wheelchair: "no", seniors: "caution", hazards: ["scramble", "dropoff"] };
+const iceline: Suitability = { kidsFromAge: 10, stroller: "no", wheelchair: "no", seniors: "caution", seniorsSerious: true };
+
+test("背在背带里能去的：婴儿照排但要慎重考虑，背不动、又爬不了梯子的年龄照旧不排", () => {
+  const baby = fitFor({ youngestKid: 0 }, cliffPalace);
+  assert.equal(baby.level, "caution");
+  assert.equal(baby.serious, true);
+  assert.deepEqual(baby.reasons[0], { kind: "carrier", under: 3 });
+  assert.equal(fitFor({ youngestKid: 3 }, cliffPalace).level, "no");
+  assert.equal(fitFor({ youngestKid: 3 }, cliffPalace).serious, false);
+  assert.equal(fitFor({ youngestKid: 5 }, cliffPalace).serious, false);
+  // 还带了坐轮椅的：去不了，就不算“慎重考虑”
+  assert.equal(fitFor({ youngestKid: 0, wheelchair: true }, cliffPalace).level, "no");
+  assert.equal(fitFor({ youngestKid: 0, wheelchair: true }, cliffPalace).serious, false);
+});
+
+test("特别累、带老人要慎重考虑的路线：照排，醒目提醒", () => {
+  const fit = fitFor({ seniors: true }, iceline);
+  assert.equal(fit.level, "caution");
+  assert.equal(fit.serious, true);
+  assert.deepEqual(fit.reasons, [{ kind: "seniors", value: "caution", serious: true }]);
+  assert.equal(fitFor({ seniors: true }, { ...iceline, seniorsSerious: undefined }).serious, false);
+  assert.equal(fitFor({ youngestKid: 8 }, iceline).level, "no");
+});
+
+test("要慎重考虑的景点：说明里都写了“请务必慎重考虑”，中英文都有", () => {
+  for (const [id, s] of Object.entries(suitability)) {
+    if (s.carrierUnder === undefined && !s.seniorsSerious) continue;
+    assert.ok(s.noteZh?.includes("请务必慎重考虑"), id);
+    if (s.carrierUnder !== undefined) assert.ok(s.carrierUnder <= s.kidsFromAge, id);
+    if (s.seniorsSerious) assert.equal(s.seniors, "caution", id);
+  }
+  const marked = Object.entries(suitability).filter(([, s]) => s.carrierUnder !== undefined || s.seniorsSerious).map(([id]) => id).sort();
+  assert.deepEqual(marked, [
+    "chis-san-miguel-island", "meve-balcony-house", "meve-cliff-palace", "meve-long-house",
+    "shen-old-rag", "yoho-burgess-shale", "yoho-iceline",
   ]);
 });

@@ -82,10 +82,10 @@ export const suitability: Record<string, Suitability> = {
     kidsFromAge: 8,
     stroller: "no",
     wheelchair: "no",
-    seniors: "no",
+    seniors: "caution",
+    seniorsSerious: true,
     hazards: ["motion", "remote", "water"],
-    noteZh:
-      "单程坐船 3–4 小时，外海风浪最大；要从船上爬 4–5 英尺的梯子换小艇，再从小艇跳进浪里涉水上沙滩，上岛后还要爬一段陡坡，岛上可能有未爆弹。来回十几个小时，不适合体力一般的老人和小孩，可以改去 Santa Cruz 岛蝎子湾。",
+    noteZh: "单程坐船 3–4 小时，外海风浪最大；要从船上爬 4–5 英尺的梯子换小艇，再从小艇跳进浪里涉水上沙滩，上岛后还要爬一段陡坡，岛上可能有未爆弹。来回十几个小时，不适合小孩。老人能去，但上下小艇、涉水上岸都要手脚利索，请务必慎重考虑；也可以改去 Santa Cruz 岛蝎子湾。",
     source: MOBILITY,
   },
 };

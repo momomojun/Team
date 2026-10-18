@@ -6,6 +6,7 @@ import { addDays, nominalDate } from "../dates";
 import { generateTrip, type GuideSkipped, type LiveClosures } from "../generate-trip";
 import { buildTimeline, buildTransferTimeline, NOMINAL_SUN, type LodgingPoint, type PlanStop, type SunWindow } from "../planner";
 import { formatClock, minutesOfDay, sunTimes } from "../sun";
+import { fitFor, type Party } from "../suitability";
 import { zoneOf } from "../time-zone";
 import { airportMinutes, gatewayNode, travelMinutes } from "../travel";
 import type { Trip, TripLodging } from "../trip-store";
@@ -153,7 +154,7 @@ export function planTrip(input: unknown, options: PlanOptions) {
     engine: ENGINE,
     request: normalized,
     referenceDate: options.referenceDate,
-    days: describeDays(trip, dateFor, Boolean(normalized.startDate), { origin, destination }),
+    days: describeDays(trip, dateFor, Boolean(normalized.startDate), { origin, destination }, normalized.party),
     skipped: describeSkipped(guide.skipped),
     assumptions: [...new Set(assumptions)],
   };
@@ -167,6 +168,7 @@ function describeDays(
   dateFor: (day: number) => string,
   exact: boolean,
   endpoints: Record<"origin" | "destination", LodgingPoint & { name: string }>,
+  party: Party | undefined,
 ) {
   const resolve = (night: TripLodging | null | undefined): (LodgingPoint & { nameZh: string; nameEn: string; kind: "option" | "endpoint" }) | undefined => {
     if (!night) return undefined;
@@ -221,7 +223,7 @@ function describeDays(
           waitMin: Math.round(entry.waitMin),
           slot: entry.slot,
           ...(entry.shuttle ? { shuttle: entry.shuttle.line } : {}),
-          warnings: entry.warnings,
+          warnings: [...entry.warnings, ...(fitFor(party, stop.family).serious ? (["familySerious"] as const) : [])],
         };
       }),
     };
