@@ -294,3 +294,14 @@ def test_relative_date_when_model_misses_it(make_intake):
     assert turn.question["kind"] != "dates"
     assert "date" in turn.trace["rule_filled"]
     assert intake.start_date.value == "2026-10-17"
+
+
+def test_park_name_inside_a_place_name_is_not_a_park(make_intake, request_schema):
+    # 2026-10-18 试用：“冰川点现在开着吗”被当成要改去冰川国家公园。“冰川点”是优胜美地的景点
+    message = "2027年6月1日从弗雷斯诺飞，去优胜美地玩4天，节奏适中"
+    intake = make_intake(extraction(parks=["优胜美地"], dates=["2027年6月1日"], duration="4天", origin="弗雷斯诺", preferences=["节奏适中"]),
+                         extraction(parks=["冰川点"]))
+    ready_request(intake.step(message), request_schema)
+    turn = intake.step("冰川点现在开着吗")
+    assert ready_request(turn, request_schema)["parks"] == ["yose"]
+    assert turn.trace["ignored_parks"] == [{"park": "glac", "alias": "冰川", "place": "冰川点"}]

@@ -21,6 +21,7 @@ from typing import Any
 
 from . import catalog, prompts
 from .dates import DAYS_RE, DAYS_RI, WEEK_RE, DateParts, date_range_days, merge, next_occurrence, parse_date_spans, parse_days, relative_date, relative_month
+from .knowledge import inside_place_name
 from .providers import Provider
 from .text import contains, normalize
 
@@ -146,6 +147,8 @@ class Intake:
     history: list[str] = field(default_factory=list)
     # 这一轮自己定下来的事，回复时先说一句（“按 2026 年 10 月 19 日出发排”）
     notes: list[str] = field(default_factory=list)
+    # 这一轮没当成公园的叫法（“冰川点”里的“冰川”），写进 trace
+    ignored: list[dict] = field(default_factory=list)
 
     # ---------- 对外 ----------
     def step(self, message: str) -> Turn:
@@ -164,6 +167,8 @@ class Intake:
             had_days = self.days.value
             self._absorb(kept, message)
             trace["rule_filled"] = self._rule_fill(message, had_days)
+            if self.ignored:
+                trace["ignored_parks"], self.ignored = self.ignored, []
         notices.extend(self.notes)
         self.notes = []
         return self._render(notices, trace)
@@ -293,7 +298,7 @@ class Intake:
 
     def _absorb(self, kept: dict, message: str) -> None:
         if kept["parks"]:
-            self._read_parks(kept["parks"])
+            self._read_parks(kept["parks"], message)
         range_days = self._read_dates(kept["dates"], message) if kept["dates"] else None
         # 模型常把“三天”“一周”“five days”放进 dates 而不是 duration：天数从哪个片段读到都算
         stated = None
@@ -341,17 +346,28 @@ class Intake:
                 filled.append("date")
         # 公园名：模型一个都没摘、而整句话里能按目录认出公园的（9B 常漏“黄石”“大峡谷”），按目录补
         if not self.parks.value and not self.unsupported:
-            hits = catalog.find_all(message, catalog.parks())
+            hits = self._park_hits(message, message)
             if hits:
                 self.parks = Field(self._order_parks([code for code, _ in hits][:4]), "user", "、".join(alias for _, alias in hits))
                 filled.append("parks")
         return filled
 
-    def _read_parks(self, spans: list[str]) -> None:
+    def _park_hits(self, text: str, message: str) -> list[tuple[str, str]]:
+        """认出的公园；叫法只是别的公园里某个地方名字的一部分的（“冰川点”里的“冰川”）不算，记下来"""
+        hits = []
+        for code, alias in catalog.find_all(text, catalog.parks()):
+            place = inside_place_name(alias, code, message)
+            if place:
+                self.ignored.append({"park": code, "alias": alias, "place": place})
+            else:
+                hits.append((code, alias))
+        return hits
+
+    def _read_parks(self, spans: list[str], message: str) -> None:
         table = catalog.parks()
         codes: list[str] = []
         for span in spans:
-            codes.extend(code for code, _ in catalog.find_all(span, table) if code not in codes)
+            codes.extend(code for code, _ in self._park_hits(span, message) if code not in codes)
             rest = catalog.leftover(span, table)
             if rest and not codes:
                 self.unsupported.append(span)

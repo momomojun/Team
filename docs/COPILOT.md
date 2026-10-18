@@ -17,13 +17,17 @@ flowchart LR
     P -- TripResult --> C[Critic<br>代码检查提醒代码<br>必要时改一次再排]
     C --> W[Writer<br>模板，或模型改写 + 忠实度检查]
     W --> A[回复]
+    A -. 排好以后接着问 .-> R[QA<br>在网站资料里查几条<br>模型只按查到的回答 + 检查数字]
+    R --> A
 ```
 
 - **Intake**：模型只从当前这条消息里逐字摘片段（公园、日期、天数、出发地、回程地、同行的人、偏好），代码检查片段确实在原话里（先规范化，“6天”“6 天”算一样；摘了原话里没有的就丢掉，记 `dropped_spans`），再读成代码、日期、天数，管对话状态，决定下一句问什么。“今天、明天、这周六、下周末、19号、下个月5号、tomorrow”按“今天”（`reference_date`）算成具体日期（`dates.relative_date`），模型没摘到时规则补；没说年份的月日：今年还没到的按今年、过去两个月以上的按明年，回复里说一句按哪天排，只有刚过去不久的才问是哪一年；否定过的候选不会被后来的“是的”确认；先说的年份和后来补的月日合起来；“我选第二种”“缅因那个”都能对上选项。
 - **规则补**：模型漏了、但原话写得毫不含糊的天数（“N天 / N日 / N晚 / 一周”各最多一处）和公园名（模型一个都没摘时按目录认），用规则补上，trace 里记 `rule_filled`，评测时和模型的成绩分开算。
 - **Critic**：把每天、每站的提醒代码整理成 findings（hard / soft）；节奏是默认值、又有几天太满时改成轻松再排一次。用户自己说的节奏、天数、公园不擅自改；最多改一次。
 - **Writer**：默认按模板写（只用结果里的事实）：每天几点从哪出发、开多久，晚上住哪，最后一天开回机场要多久、几点到；第一站超过 4 小时的提醒、列出近一些的常用机场；住民宿附 Airbnb 链接；没排进去的写清楚原因（季节性的写一年里什么时候才有）。打开模型改写时，再检查说明里的时间、数字都在结果里，对不上就退回模板。
-- **多轮**：排出行程以后再说话，条件变了先说改了什么、哪几晚换了住处；条件没变（提问、闲聊）不重印行程。回答问题还在做（从网站的数据里查资料再回答）。
+- **多轮**：排出行程以后再说话，条件变了先说改了什么、哪几晚换了住处，再给新行程；条件没变的不重印行程：“好的、谢谢”简短回一句，提问交给 QA。是改行程还是提问不另外让模型判断：Intake 从这句话里摘不出任何新条件、行程没变，才算提问。
+- **QA（回答问题，RAG）**：`knowledge.search` 在 `knowledge.jsonl`（网站数据整理成的 1639 条短文：景点、住处、公园、特别活动、临时关闭）里找 4 条，只在这次行程的公园里找（问题里点名了别的公园就加上那座）。问题里直接出现了某条的名字（“El Portal”）的排最前面，“雾径 · 弗纳尔瀑布”只说“雾径”也算；其余按 BM25（中文按相邻两个字切，英文按单词）。模型只看“行程 + 这 4 条”回答，输出 `{found, answer, sources}`；代码检查回答里的时间、数字都在行程或资料里出现过（按整个数比）、引用的编号是给过的，对不上就不用模型写的、改成摘资料原文（问题里点了名的那条），资料里没有就说不知道。回答后面注明用了哪几条资料。不用向量检索、不另外下载模型；以后可以换成嵌入模型做对照实验，接口不变。
+- **公园名在别的地方名字里**：“冰川点”是优胜美地的景点，里面的“冰川”不当成冰川国家公园（`knowledge.inside_place_name`，记在 trace 的 `ignored_parks`）；只在那个地方属于别的公园时才不算（“大峡谷村”还是大峡谷）。
 
 ## 契约：Copilot 和行程引擎之间的约定
 
@@ -32,10 +36,11 @@ flowchart LR
 | `copilot/contracts/trip-request.v1.schema.json` | 输入（JSON Schema 2020-12）：公园（1–4 座，第一座是主公园，其余要在它的 `nearby` 里）、`startDate` 或 `month`、天数（1–14）、出发地和回程地（常用机场三字码，或者名字加坐标）、节奏、住宿偏好、同行的人（最小孩子几岁、婴儿车、老人、轮椅），以及每个字段的来源 `provenance`（用户原话 / 用户确认 / 默认值 / 推断，附原文片段）。和网站“自动生成攻略”的表单 `WizardInput` 一一对应 |
 | `copilot/contracts/trip-result.v1.schema.json` | 输出：每天的日期、时区、日出日落、出发和回住处的时间、开车和活动分钟数、当晚住处、每一站几点到几点（别的时区的景点另给 `localStart`）、提醒代码（`afterHours`、`tempClosed`、`parkingFull`……，见 `src/lib/copilot/contract.ts` 的 `STOP_WARNINGS`；`familySerious` 是同行适合度给的：能去，但对同行的婴儿或老人风险高、很累，Critic 当 hard，Writer 一定会说“请务必慎重考虑”）、没排进去的景点和原因，以及这次计算的假设（`assumptions`） |
 | `copilot/contracts/parks.json`、`airports.json` | 59 座公园和名胜（代码、简繁英名字和别名、时区、常用机场和开过去的分钟数 `airportMinutes`、常一起玩的公园）、86 个机场。Intake 认名字就用这两个，不在 Python 里另写一份 |
-| `copilot/contracts/hant-to-hans.json` | 繁简对照表：网站同一套 OpenCC，收的是公园和城市名、`copilot/nps_copilot/` 里 `.py`、提示词、`data/*.json` 出现过的汉字的台湾、香港和标准繁体写法（不是完整的繁简字典） |
+| `copilot/contracts/hant-to-hans.json` | 繁简对照表：网站同一套 OpenCC，收的是公园和城市名、`copilot/nps_copilot/` 里 `.py`、提示词、`data/*.json`、`knowledge.jsonl` 出现过的汉字的台湾、香港和标准繁体写法（不是完整的繁简字典）；本身就是简体字的不收（OpenCC 把“么”当成“幺”的繁体，以前“什么”会被转成“什幺”） |
+| `copilot/contracts/knowledge.jsonl` | QA 用的资料，一行一条 `{id, type, park, title, names, text}`：公园（介绍、最适合的月份、季节、片区、机场）、景点（介绍、停留、步道长度和爬升、开放月份、关闭说明、许可、开放时间、提示、带小孩老人）、住处（说明、开到这座公园必去景点各要多久）、特别活动、临时关闭。由 `scripts/build-copilot-knowledge.mjs` 从网站数据生成 |
 | `copilot/contracts/examples/` | 样例请求 |
 
-- 这些 JSON 都是 `npm run copilot:contracts`（`scripts/build-copilot-contracts.mjs`）从 TypeScript 生成的，来源是 `src/lib/copilot/contract.ts`、`src/data/parks.ts`、`src/data/airports.ts`，不要手改；`tests/copilot-plan.test.ts` 检查文件和代码一致。**改了 Copilot 的 Python 文件、加了新汉字也要重跑**，不然网站测试会失败。
+- 这些 JSON 都是 `npm run copilot:contracts`（`scripts/build-copilot-contracts.mjs`）从 TypeScript 生成的，来源是 `src/lib/copilot/contract.ts`、`src/data/parks.ts`、`src/data/airports.ts`，`knowledge.jsonl` 还用到景点、住宿、活动、临时关闭、同行适合度和车程表，不要手改；`tests/copilot-plan.test.ts` 检查文件和代码一致。**改了 Copilot 的 Python 文件、加了新汉字、改了景点住宿这些数据都要重跑**，不然网站测试会失败。
 - 改契约字段要升版本号（`trip-request/v2`），旧的评测记录才对得上。只加可选字段不升（10-18 给 TripResult 加了每天的 `returnDriveMin`、住处的 `rental` 和 `airbnbUrl`、没排进去的 `openMonths` 和 `noteZh`）。
 
 ### plan_trip 工具
@@ -61,6 +66,7 @@ flowchart LR
 | `copilot/nps_copilot/dates.py`、`text.py` | 读日期（中文、英文的几种顺序、“二〇二七年”、“下个月”）和天数（“5天”“五日”“四日三夜”“一周”）；文本规范化（NFKC、繁转简、空格） |
 | `copilot/nps_copilot/plan_client.py` | 调 plan_trip：默认直接跑仓库里的 Node 命令行（不用开网站），设了 `COPILOT_PLAN_URL` 走 HTTP |
 | `copilot/nps_copilot/critic.py`、`writer.py` | Critic、Writer（模板和忠实度检查 `faithful`） |
+| `copilot/nps_copilot/knowledge.py`、`qa.py` | QA：在 `knowledge.jsonl` 里检索（名字命中 + BM25）、让模型只按查到的资料回答、检查回答里的数字，对不上就摘原文 |
 | `copilot/nps_copilot/providers.py` | 模型提供方：本机 Ollama（默认）、回放录好的输出（CI 用，没录到的请求直接报错）、录音、测试用的脚本、云端（留接口、默认关） |
 | `copilot/nps_copilot/prompts.py`、`prompts/` | 提示词版本，见下一节 |
 | `copilot/nps_copilot/pipeline.py` | 把上面串起来；每轮写一条 JSONL 日志到 `copilot/runs/<日期>.jsonl`（Docker 里是 `/data/runs`） |
@@ -85,10 +91,10 @@ flowchart LR
 
 ### 提示词版本
 
-- 任务有 `intake`、`writer` 两个，文件是 `prompts/<任务>_v<n>.txt`。
+- 任务有 `intake`、`writer`、`qa` 三个，文件是 `prompts/<任务>_v<n>.txt`。
 - **不改旧文件，新建下一版**：旧版留着才能回滚，也才能和旧的评测录音对上（回放按“任务 + 提示词全文 + 消息 + schema”的 hash 找录音，提示词改一个字就对不上）。
-- 默认版本改 `defaults.json`，走 PR；已经部署的服务可以不改代码临时切换：`COPILOT_PROMPT_INTAKE=v1`、`COPILOT_PROMPT_WRITER=v1`。
-- 现在默认 `intake/v1`、`writer/v1`。`intake_v2.txt` 是没采用的实验版本（回归集变好、开发集变差，门禁挡住了），留着演示回滚，见 [RESULTS.md](../copilot/eval/RESULTS.md)。
+- 默认版本改 `defaults.json`，走 PR；已经部署的服务可以不改代码临时切换：`COPILOT_PROMPT_INTAKE=v1`、`COPILOT_PROMPT_WRITER=v1`、`COPILOT_PROMPT_QA=v1`。
+- 现在默认 `intake/v1`、`writer/v1`、`qa/v1`。`intake_v2.txt` 是没采用的实验版本（回归集变好、开发集变差，门禁挡住了），留着演示回滚，见 [RESULTS.md](../copilot/eval/RESULTS.md)。
 - 怎么试一个新版本见 [GUIDE.md](GUIDE.md#改提示词)。
 
 ## 评测
@@ -116,6 +122,7 @@ flowchart LR
 | dropped_spans | 模型摘了原话里没有的东西、被代码丢掉 | 模型在编造 |
 | rule_fills | 模型漏了、靠规则补上的条件 | 模型漏得多了 |
 | writer_fallback | 模型改写的说明没通过忠实度检查、退回模板 | Writer 编造 |
+| questions / qa_model / qa_not_found / qa_fallback | 排好以后的提问；用了模型的回答 / 资料里没有、说了不知道 / 回答里有资料里没有的数字，改成摘原文 | qa_fallback 变多：QA 在编造；qa_not_found 变多：资料不够或检索变差 |
 
 什么时候该回滚、怎么回滚见 [GUIDE.md](GUIDE.md#回滚)。
 
@@ -129,7 +136,7 @@ flowchart LR
 | `COPILOT_REPLAY` | — | 回放用的录音文件 |
 | `COPILOT_PLAN_URL` | — | 设了就用 HTTP 调 plan_trip，不跑 Node 命令行 |
 | `COPILOT_RUNS` | `copilot/runs` | 运行日志目录 |
-| `COPILOT_PROMPT_INTAKE`、`COPILOT_PROMPT_WRITER` | `defaults.json` 里的 | 临时换提示词版本，比如 `v1` |
+| `COPILOT_PROMPT_INTAKE`、`COPILOT_PROMPT_WRITER`、`COPILOT_PROMPT_QA` | `defaults.json` 里的 | 临时换提示词版本，比如 `v1` |
 | `COPILOT_ALLOW_CLOUD` | — | 设成 `1` 才允许云端模型（还没实现） |
 | `COPILOT_BUILD_SHA` | — | 镜像构建时写入，`/health` 显示 |
 | `COPILOT_TAG`、`COPILOT_PORT`、`OLLAMA_MODELS` | `latest`、`8765`、Docker 卷 | 只给 docker compose 用：用哪个版本的镜像、本机端口、已经下好的模型目录 |

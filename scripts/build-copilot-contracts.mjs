@@ -5,6 +5,7 @@ import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import * as OpenCC from "opencc-js";
 import { airports } from "../src/data/airports.ts";
 import { parks } from "../src/data/parks.ts";
+import { knowledge } from "./build-copilot-knowledge.mjs";
 import { localize } from "../src/i18n/convert.ts";
 import { airportMinutes } from "../src/lib/travel.ts";
 import { tripRequestSchema, tripResultSchema } from "../src/lib/copilot/contract.ts";
@@ -59,6 +60,8 @@ export function hantToHans() {
   const texts = [
     ...parkList.flatMap((park) => [park.nameZh, ...park.aliases]),
     ...airportList.flatMap((airport) => [airport.nameZh, airport.city]),
+    // 回答问题用的资料：繁体提问也要认得出景点、住处的名字
+    ...knowledge().flatMap((doc) => [...doc.names, doc.text]),
   ];
   for (const dir of ["../copilot/nps_copilot/", "../copilot/nps_copilot/prompts/", "../copilot/nps_copilot/data/"]) {
     const url = new URL(dir, import.meta.url);
@@ -74,6 +77,8 @@ export function hantToHans() {
       const traditional = convert(char);
       if (traditional !== char && [...traditional].length === 1 && !(traditional in map)) map[traditional] = char;
     }
+    // 本身就是简体字的不再转（OpenCC 把“么”当成“幺”的繁体，“什么”会变成“什幺”）
+    if (toTraditional.some((convert) => convert(char) !== char)) continue;
     for (const convert of toSimplified) {
       const simplified = convert(char);
       if (simplified !== char && [...simplified].length === 1 && !(char in map)) map[char] = simplified;
@@ -88,7 +93,9 @@ if (process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, "
   const { parks: parkList, airports: airportList } = catalog();
   write("parks.json", parkList);
   write("airports.json", airportList);
+  const docs = knowledge();
+  writeFileSync(new URL("knowledge.jsonl", OUT), docs.map((doc) => JSON.stringify(doc)).join("\n") + "\n");
   const map = hantToHans();
   write("hant-to-hans.json", map);
-  console.log(`写好了：2 个 schema、${parkList.length} 座公园、${airportList.length} 个机场、${Object.keys(map).length} 个繁简对照字`);
+  console.log(`写好了：2 个 schema、${parkList.length} 座公园、${airportList.length} 个机场、${docs.length} 条资料、${Object.keys(map).length} 个繁简对照字`);
 }

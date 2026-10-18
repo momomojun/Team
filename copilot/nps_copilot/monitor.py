@@ -6,6 +6,8 @@ Writer 退回模板的比例、耗时有没有变差。指标的意思：
 - dropped_spans：模型摘了用户原话里没有的东西，被代码丢掉（越少越好）
 - rule_fills：模型漏了、靠规则补上的条件
 - writer_fallback：模型改写的说明没通过忠实度检查、退回模板
+- questions：排出行程以后的提问；qa_model 用了模型的回答，qa_not_found 资料里没有、说了不知道，
+  qa_fallback 模型的回答里有资料里没有的数字（或者出错），改成摘资料原文
 """
 from __future__ import annotations
 
@@ -42,6 +44,7 @@ def summarize(rows: list[dict]) -> dict[str, dict]:
         latencies = [item["latency_ms"] for item in items if isinstance(item.get("latency_ms"), (int, float))]
         intake = [item.get("intake", {}) for item in items]
         writers = [item["writer"] for item in items if item.get("writer")]
+        answers = [item["qa"].get("answer") for item in items if item.get("qa")]
         summary[key] = {
             "turns": len(items),
             "sessions": len({item.get("session") for item in items}),
@@ -54,6 +57,10 @@ def summarize(rows: list[dict]) -> dict[str, dict]:
             "rule_fills": sum(len(trace.get("rule_filled", [])) for trace in intake),
             "writer_model": sum(1 for writer in writers if writer.get("prompt")),
             "writer_fallback": sum(1 for writer in writers if writer.get("fallback")),
+            "questions": len(answers),
+            "qa_model": answers.count("model"),
+            "qa_not_found": answers.count("not_found"),
+            "qa_fallback": answers.count("fallback"),
         }
     return summary
 
@@ -69,4 +76,7 @@ def report(days: int = 7, runs: Path = RUNS) -> str:
         lines.append(f"  耗时中位 {item['median_latency_ms']} ms" + (f"，P90 {item['p90_latency_ms']} ms" if item["p90_latency_ms"] else ""))
         lines.append(f"  模型编造被丢掉的片段 {item['dropped_spans']}，规则补的 {item['rule_fills']}，"
                      f"Writer 用模型 {item['writer_model']} 次、退回模板 {item['writer_fallback']} 次")
+        if item["questions"]:
+            lines.append(f"  提问 {item['questions']} 次：模型回答 {item['qa_model']}，资料里没有 {item['qa_not_found']}，"
+                         f"回答对不上资料、改成摘原文 {item['qa_fallback']}")
     return "\n".join(lines)
