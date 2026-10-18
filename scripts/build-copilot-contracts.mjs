@@ -6,6 +6,7 @@ import * as OpenCC from "opencc-js";
 import { airports } from "../src/data/airports.ts";
 import { parks } from "../src/data/parks.ts";
 import { localize } from "../src/i18n/convert.ts";
+import { airportMinutes } from "../src/lib/travel.ts";
 import { tripRequestSchema, tripResultSchema } from "../src/lib/copilot/contract.ts";
 
 const OUT = new URL("../copilot/contracts/", import.meta.url);
@@ -24,6 +25,13 @@ export function catalog() {
       country: park.country ?? "US",
       timeZone: park.timeZone,
       airports: park.airports,
+      // 常用机场开到公园定位点要几分钟（Copilot 提醒“从这个机场过去太远、这几个近”时用）
+      airportMinutes: Object.fromEntries(
+        park.airports.flatMap((code) => {
+          const minutes = airportMinutes(code, park.code);
+          return minutes === null ? [] : [[code, Math.round(minutes)]];
+        }),
+      ),
       nearby: (park.nearby ?? []).filter((code) => parks.some((other) => other.code === code)),
       // Intake 认公园名用：简体、繁体、英文全名和去掉 National Park 的短名，都按小写比较
       aliases: [...new Set([park.nameZh, hant, park.nameEn, shortEn, park.code])],

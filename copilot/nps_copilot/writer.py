@@ -7,6 +7,8 @@
 """
 from __future__ import annotations
 
+import calendar
+
 import re
 
 from . import catalog, prompts
@@ -53,17 +55,49 @@ def template(request: dict, result: dict, critique: Critique, language: str, pre
         lines.append(f"{'、'.join(names)} {len(days)} 天，从 {when} 开始，节奏{pace}。")
     else:
         lines.append(f"{len(days)} days in {', '.join(names)} starting {when}, at a {pace} pace.")
+    origin = place_name(request.get("origin"), zh)
+    previous = origin
     for day in days:
         stops = day["stops"]
+        lodging = day.get("lodging")
+        endpoint = bool(lodging) and lodging.get("kind") == "endpoint"
+        # 早上几点从哪出发、开多久到第一站；晚上住哪；最后一天是开回机场（不是“住机场”）
+        drive = stops[0]["driveMin"] if stops else 0
+        leave = ""
+        if day.get("departAt") and previous:
+            leave = f"{day['departAt']} 从{spaced(previous)}出发" if zh else f"leave {previous} at {day['departAt']}"
+            if drive >= 45:
+                leave += f"（开车{duration(drive, zh)}）" if zh else f" ({duration(drive, zh)} drive)"
+            leave += " → "
         if zh:
             head = f"第 {day['day']} 天（{day['date']}）："
             body = "、".join(f"{stop['start']} {stop['nameZh']}" + (f"（当地 {stop['localStart']}）" if stop.get("localStart") else "") for stop in stops) or "路上 / 休息"
-            lodging = f"；晚上住 {day['lodging']['nameZh']}" if day.get("lodging") else ""
+            if endpoint:
+                end = f"；最后开回{spaced(lodging['nameZh'])}"
+                if day.get("returnAt"):
+                    end += f"，开车{duration(day.get('returnDriveMin', 0), zh)}，{day['returnAt']} 到"
+            else:
+                end = f"；晚上住{spaced(lodging['nameZh'])}" if lodging else ""
         else:
             head = f"Day {day['day']} ({day['date']}): "
             body = ", ".join(f"{stop['start']} {stop['nameEn']}" + (f" ({stop['localStart']} local)" if stop.get("localStart") else "") for stop in stops) or "travel / rest"
-            lodging = f"; overnight at {day['lodging']['nameEn']}" if day.get("lodging") else ""
-        lines.append(head + body + lodging)
+            if endpoint:
+                name = place_name(request.get("destination") or request.get("origin"), zh)
+                end = f"; drive back to {name}"
+                if day.get("returnAt"):
+                    end += f" ({duration(day.get('returnDriveMin', 0), zh)}, arriving {day['returnAt']})"
+            else:
+                end = f"; overnight at {lodging['nameEn']}" if lodging else ""
+        lines.append(head + leave + body + end)
+        if lodging and not endpoint:
+            previous = lodging["nameZh"] if zh else lodging["nameEn"]
+    lines.extend(long_drive_notes(request, days, origin, zh))
+    if request.get("lodgingPref") == "rental":
+        links = [(day["day"], day["lodging"]) for day in days if day.get("lodging") and day["lodging"].get("airbnbUrl")]
+        if links:
+            lines.append("找民宿（Airbnb，已经填好日期）：" if zh else "Vacation rentals on Airbnb (dates filled in):")
+            for night, place in links:
+                lines.append(f"- 第 {night} 晚 {place['nameZh']}：{place['airbnbUrl']}" if zh else f"- Night {night}, {place['nameEn']}: {place['airbnbUrl']}")
     hard = critique.hard
     if hard:
         lines.append("要注意：" if zh else "Heads-up:")
@@ -75,8 +109,8 @@ def template(request: dict, result: dict, critique: Critique, language: str, pre
     if skipped:
         reasons = SKIP_ZH if zh else SKIP_EN
         sample = skipped[:6]
-        text = "；".join(f"{item['nameZh']}（{reasons[item['reason']]}）" for item in sample) if zh else \
-            "; ".join(f"{item['nameEn']} ({reasons[item['reason']]})" for item in sample)
+        text = "；".join(f"{item['nameZh']}（{skip_reason(item, zh)}）" for item in sample) if zh else \
+            "; ".join(f"{item['nameEn']} ({skip_reason(item, zh)})" for item in sample)
         more = f" 等 {len(skipped)} 处" if zh and len(skipped) > len(sample) else (f" and {len(skipped) - len(sample)} more" if len(skipped) > len(sample) else "")
         lines.append(("没排进去的：" if zh else "Not included: ") + text + more)
     if critique.reason == "relaxed_pace":
@@ -88,6 +122,123 @@ def template(request: dict, result: dict, critique: Critique, language: str, pre
         if note.startswith("drive-times") and "直线" in note:
             lines.append("出发地不是常用机场，车程是按直线距离估的。" if zh else "Your starting point isn't a common airport, so drive times are straight-line estimates.")
     return "\n".join(lines)
+
+
+def spaced(name: str) -> str:
+    """中文句子里夹英文名字时两边补空格（“从 El Portal 出发”），中文名字原样"""
+    if not name:
+        return name
+    left = " " if name[0].isascii() and name[0].isalnum() else ""
+    right = " " if name[-1].isascii() and name[-1].isalnum() else ""
+    return f"{left}{name}{right}"
+
+
+def describe_changes(before: dict, after: dict, zh: bool) -> list[str]:
+    """用户改了条件以后先说改了什么（“住宿改成民宿”），再给新的行程"""
+    items: list[str] = []
+    table = catalog.parks()
+
+    def park_names(request: dict) -> str:
+        return ("、" if zh else ", ").join(table[code].name_zh if zh else table[code].name_en for code in request["parks"])
+
+    if before.get("parks") != after.get("parks"):
+        items.append(f"公园改成{park_names(after)}" if zh else f"parks: {park_names(after)}")
+    if (before.get("startDate"), before.get("month")) != (after.get("startDate"), after.get("month")):
+        when = after.get("startDate") or (f"{after.get('month')} 月" if zh else calendar.month_name[after.get("month") or 1])
+        items.append(f"出发日期改成 {when}" if zh else f"start: {when}")
+    if before.get("days") != after.get("days"):
+        items.append(f"天数改成 {after['days']} 天" if zh else f"{after['days']} days")
+    if before.get("origin") != after.get("origin"):
+        items.append(f"出发地改成{place_name(after.get('origin'), zh)}" if zh else f"starting from {place_name(after.get('origin'), zh)}")
+    if before.get("destination") != after.get("destination"):
+        items.append(f"回程改成{place_name(after.get('destination') or after.get('origin'), zh)}" if zh else
+                     f"returning via {place_name(after.get('destination') or after.get('origin'), zh)}")
+    if before.get("pace") != after.get("pace"):
+        items.append(f"节奏改成{PACE_ZH[after['pace']]}" if zh else f"{PACE_EN[after['pace']]} pace")
+    if before.get("lodgingPref") != after.get("lodgingPref"):
+        pref = after.get("lodgingPref", "any")
+        items.append({"rental": "住宿改成民宿", "hotel": "住宿改成酒店", "any": "住宿不限"}[pref] if zh else
+                     {"rental": "vacation rentals", "hotel": "hotels only", "any": "any lodging"}[pref])
+    if before.get("party") != after.get("party"):
+        items.append("同行的人更新了" if zh else "updated who's coming")
+    return items
+
+
+def lodging_changes(before: dict, after: dict, zh: bool) -> list[str]:
+    """哪几晚换了住处：“第 1 晚：阿瓦尼酒店 → El Portal”"""
+    changes = []
+    for old, new in zip(before.get("days", []), after.get("days", [])):
+        a, b = old.get("lodging"), new.get("lodging")
+        if a and b and a.get("id") != b.get("id") and b.get("kind") != "endpoint":
+            changes.append(f"第 {new['day']} 晚：{a['nameZh']} → {b['nameZh']}" if zh else f"Night {new['day']}: {a['nameEn']} → {b['nameEn']}")
+    return changes
+
+
+def duration(minutes: int, zh: bool) -> str:
+    """“约 6 小时”“约 2 小时 30 分”“约 40 分钟”：按 10 分钟取整，别给人精确到分钟的错觉"""
+    minutes = int(round(minutes / 10) * 10) if minutes >= 60 else int(round(minutes / 5) * 5)
+    hours, rest = divmod(minutes, 60)
+    if zh:
+        if hours == 0:
+            return f"约 {rest} 分钟"
+        return f"约 {hours} 小时" + (f" {rest} 分" if rest else "")
+    if hours == 0:
+        return f"about {rest} min"
+    return f"about {hours} h" + (f" {rest} min" if rest else "")
+
+
+def place_name(place: dict | None, zh: bool) -> str:
+    """出发地、回程地：机场写名字和三字码，任意地点写它的名字"""
+    if not place:
+        return ""
+    code = place.get("airport")
+    if code:
+        airport = catalog.airports().get(code)
+        if zh:
+            return f"{airport.name_zh}（{code}）" if airport else code
+        city = catalog.english_city(code)
+        return f"{city} ({code})" if city else code
+    return place.get("name", "")
+
+
+def long_drive_notes(request: dict, days: list[dict], origin: str, zh: bool) -> list[str]:
+    """从出发地开到第一站超过 4 小时：说清楚第一天几点才开始玩，列出去这座公园近一些的常用机场"""
+    first = next((day["stops"][0] for day in days if day["stops"]), None)
+    if not first or first["driveMin"] < 240 or not origin:
+        return []
+    park = catalog.parks()[request["parks"][0]]
+    chosen = (request.get("origin") or {}).get("airport")
+    closer = sorted((minutes, code) for code, minutes in park.airport_minutes if code != chosen and minutes < first["driveMin"] - 60)[:3]
+    if zh:
+        note = f"从{spaced(origin)}到第一站开车{duration(first['driveMin'], zh)}，第一天 {first['start']} 才开始玩。"
+        if closer:
+            note += f"去{park.name_zh}近一些的机场：" + "、".join(f"{place_name({'airport': code}, zh)}{duration(minutes, zh)}" for minutes, code in closer) + "。"
+        return [note]
+    note = f"It's {duration(first['driveMin'], zh)} from {origin} to the first stop, so day 1 starts at {first['start']}."
+    if closer:
+        note += f" Closer airports for {park.name_en}: " + ", ".join(f"{place_name({'airport': code}, zh)} {duration(minutes, zh)}" for minutes, code in closer) + "."
+    return [note]
+
+
+def skip_reason(item: dict, zh: bool) -> str:
+    """没排进去的原因；季节性的说清楚一年里什么时候才有（“火瀑只在 2 月中下旬……出现”），别说得像过几天就开"""
+    reason = item["reason"]
+    if reason == "closed" and zh and item.get("noteZh") and "月" in item["noteZh"]:
+        return item["noteZh"]
+    months = item.get("openMonths")
+    if reason == "closed" and months:
+        span = month_span(months, zh)
+        return f"只在 {span}开放" if zh else f"only in {span}"
+    return (SKIP_ZH if zh else SKIP_EN)[reason]
+
+
+def month_span(months: list[int], zh: bool) -> str:
+    months = sorted(months)
+    contiguous = months == list(range(months[0], months[-1] + 1))
+    if zh:
+        return f"{months[0]}–{months[-1]} 月" if contiguous and len(months) > 1 else "、".join(f"{m} 月" for m in months)
+    names = [calendar.month_name[m] for m in months]
+    return f"{names[0]}–{names[-1]}" if contiguous and len(months) > 1 else ", ".join(names)
 
 
 def facts(result: dict) -> set[str]:

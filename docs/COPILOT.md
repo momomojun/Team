@@ -19,10 +19,11 @@ flowchart LR
     W --> A[回复]
 ```
 
-- **Intake**：模型只从当前这条消息里逐字摘片段（公园、日期、天数、出发地、回程地、同行的人、偏好），代码检查片段确实在原话里（先规范化，“6天”“6 天”算一样；摘了原话里没有的就丢掉，记 `dropped_spans`），再读成代码、日期、天数，管对话状态，决定下一句问什么。没说年份的按“今天”（`reference_date`）给候选年份让用户确认；否定过的候选不会被后来的“是的”确认；先说的年份和后来补的月日合起来；“我选第二种”“缅因那个”都能对上选项。
+- **Intake**：模型只从当前这条消息里逐字摘片段（公园、日期、天数、出发地、回程地、同行的人、偏好），代码检查片段确实在原话里（先规范化，“6天”“6 天”算一样；摘了原话里没有的就丢掉，记 `dropped_spans`），再读成代码、日期、天数，管对话状态，决定下一句问什么。“今天、明天、这周六、下周末、19号、下个月5号、tomorrow”按“今天”（`reference_date`）算成具体日期（`dates.relative_date`），模型没摘到时规则补；没说年份的月日：今年还没到的按今年、过去两个月以上的按明年，回复里说一句按哪天排，只有刚过去不久的才问是哪一年；否定过的候选不会被后来的“是的”确认；先说的年份和后来补的月日合起来；“我选第二种”“缅因那个”都能对上选项。
 - **规则补**：模型漏了、但原话写得毫不含糊的天数（“N天 / N日 / N晚 / 一周”各最多一处）和公园名（模型一个都没摘时按目录认），用规则补上，trace 里记 `rule_filled`，评测时和模型的成绩分开算。
 - **Critic**：把每天、每站的提醒代码整理成 findings（hard / soft）；节奏是默认值、又有几天太满时改成轻松再排一次。用户自己说的节奏、天数、公园不擅自改；最多改一次。
-- **Writer**：默认按模板写（只用结果里的事实）；打开模型改写时，再检查说明里的时间、数字都在结果里，对不上就退回模板。
+- **Writer**：默认按模板写（只用结果里的事实）：每天几点从哪出发、开多久，晚上住哪，最后一天开回机场要多久、几点到；第一站超过 4 小时的提醒、列出近一些的常用机场；住民宿附 Airbnb 链接；没排进去的写清楚原因（季节性的写一年里什么时候才有）。打开模型改写时，再检查说明里的时间、数字都在结果里，对不上就退回模板。
+- **多轮**：排出行程以后再说话，条件变了先说改了什么、哪几晚换了住处；条件没变（提问、闲聊）不重印行程。回答问题还在做（从网站的数据里查资料再回答）。
 
 ## 契约：Copilot 和行程引擎之间的约定
 
@@ -30,12 +31,12 @@ flowchart LR
 |---|---|
 | `copilot/contracts/trip-request.v1.schema.json` | 输入（JSON Schema 2020-12）：公园（1–4 座，第一座是主公园，其余要在它的 `nearby` 里）、`startDate` 或 `month`、天数（1–14）、出发地和回程地（常用机场三字码，或者名字加坐标）、节奏、住宿偏好、同行的人（最小孩子几岁、婴儿车、老人、轮椅），以及每个字段的来源 `provenance`（用户原话 / 用户确认 / 默认值 / 推断，附原文片段）。和网站“自动生成攻略”的表单 `WizardInput` 一一对应 |
 | `copilot/contracts/trip-result.v1.schema.json` | 输出：每天的日期、时区、日出日落、出发和回住处的时间、开车和活动分钟数、当晚住处、每一站几点到几点（别的时区的景点另给 `localStart`）、提醒代码（`afterHours`、`tempClosed`、`parkingFull`……，见 `src/lib/copilot/contract.ts` 的 `STOP_WARNINGS`；`familySerious` 是同行适合度给的：能去，但对同行的婴儿或老人风险高、很累，Critic 当 hard，Writer 一定会说“请务必慎重考虑”）、没排进去的景点和原因，以及这次计算的假设（`assumptions`） |
-| `copilot/contracts/parks.json`、`airports.json` | 59 座公园和名胜（代码、简繁英名字和别名、时区、常用机场、常一起玩的公园）、86 个机场。Intake 认名字就用这两个，不在 Python 里另写一份 |
+| `copilot/contracts/parks.json`、`airports.json` | 59 座公园和名胜（代码、简繁英名字和别名、时区、常用机场和开过去的分钟数 `airportMinutes`、常一起玩的公园）、86 个机场。Intake 认名字就用这两个，不在 Python 里另写一份 |
 | `copilot/contracts/hant-to-hans.json` | 繁简对照表：网站同一套 OpenCC，收的是公园和城市名、`copilot/nps_copilot/` 里 `.py`、提示词、`data/*.json` 出现过的汉字的台湾、香港和标准繁体写法（不是完整的繁简字典） |
 | `copilot/contracts/examples/` | 样例请求 |
 
 - 这些 JSON 都是 `npm run copilot:contracts`（`scripts/build-copilot-contracts.mjs`）从 TypeScript 生成的，来源是 `src/lib/copilot/contract.ts`、`src/data/parks.ts`、`src/data/airports.ts`，不要手改；`tests/copilot-plan.test.ts` 检查文件和代码一致。**改了 Copilot 的 Python 文件、加了新汉字也要重跑**，不然网站测试会失败。
-- 改契约字段要升版本号（`trip-request/v2`），旧的评测记录才对得上。
+- 改契约字段要升版本号（`trip-request/v2`），旧的评测记录才对得上。只加可选字段不升（10-18 给 TripResult 加了每天的 `returnDriveMin`、住处的 `rental` 和 `airbnbUrl`、没排进去的 `openMonths` 和 `noteZh`）。
 
 ### plan_trip 工具
 

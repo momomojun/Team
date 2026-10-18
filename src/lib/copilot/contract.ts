@@ -189,11 +189,17 @@ export const tripResultSchema = {
           sunset: { type: ["string", "null"], pattern: CLOCK_PATTERN },
           departAt: { type: ["string", "null"], pattern: CLOCK_PATTERN },
           returnAt: { type: ["string", "null"], pattern: CLOCK_PATTERN },
+          /** 最后一站开回当晚住处（最后一天是回程机场、城市）要多久 */
+          returnDriveMin: { type: "integer", minimum: 0 },
           driveMin: { type: "integer", minimum: 0 },
           activeMin: { type: "integer", minimum: 0 },
           warnings: { type: "array", items: { enum: ["overloaded", "lateReturn"] } },
           lodging: {
-            oneOf: [{ type: "null" }, { ...named, properties: { kind: { enum: ["option", "endpoint"] } } }],
+            oneOf: [
+              { type: "null" },
+              // airbnbUrl：民宿区（rental）按这一晚的日期搜 Airbnb 的链接
+              { ...named, properties: { kind: { enum: ["option", "endpoint"] }, rental: { type: "boolean" }, airbnbUrl: { type: "string" } } },
+            ],
           },
           stops: {
             type: "array",
@@ -224,7 +230,12 @@ export const tripResultSchema = {
       items: {
         type: "object",
         required: ["id", "park", "nameZh", "nameEn", "reason"],
-        properties: { reason: { enum: [...SKIP_REASONS] } },
+        // closed 的：openMonths 是一年里开放（出现）的月份，noteZh 是为什么不开的一句话（“火瀑只在 2 月中下旬……出现”）
+        properties: {
+          reason: { enum: [...SKIP_REASONS] },
+          openMonths: { type: "array", items: { type: "integer", minimum: 1, maximum: 12 } },
+          noteZh: { type: "string" },
+        },
       },
     },
     assumptions: { type: "array", items: { type: "string" } },

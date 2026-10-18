@@ -166,6 +166,10 @@
             ],
             "pattern": "^\\d{2}:\\d{2}$"
           },
+          "returnDriveMin": {
+            "type": "integer",
+            "minimum": 0
+          },
           "driveMin": {
             "type": "integer",
             "minimum": 0
@@ -201,6 +205,12 @@
                       "option",
                       "endpoint"
                     ]
+                  },
+                  "rental": {
+                    "type": "boolean"
+                  },
+                  "airbnbUrl": {
+                    "type": "string"
                   }
                 }
               }
@@ -374,6 +384,17 @@
               "across",
               "unsuitable"
             ]
+          },
+          "openMonths": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 12
+            }
+          },
+          "noteZh": {
+            "type": "string"
           }
         }
       }

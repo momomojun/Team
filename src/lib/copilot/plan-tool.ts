@@ -2,6 +2,7 @@ import { airports } from "../../data/airports";
 import { attractions, type AttractionWithPhoto } from "../../data/attractions";
 import { lodgingOptions } from "../../data/lodging";
 import { parks } from "../../data/parks";
+import { airbnbUrl } from "../airbnb";
 import { addDays, nominalDate } from "../dates";
 import { generateTrip, type GuideSkipped, type LiveClosures } from "../generate-trip";
 import { buildTimeline, buildTransferTimeline, NOMINAL_SUN, type LodgingPoint, type PlanStop, type SunWindow } from "../planner";
@@ -170,14 +171,16 @@ function describeDays(
   endpoints: Record<"origin" | "destination", LodgingPoint & { name: string }>,
   party: Party | undefined,
 ) {
-  const resolve = (night: TripLodging | null | undefined): (LodgingPoint & { nameZh: string; nameEn: string; kind: "option" | "endpoint" }) | undefined => {
+  const resolve = (
+    night: TripLodging | null | undefined,
+  ): (LodgingPoint & { nameZh: string; nameEn: string; kind: "option" | "endpoint"; rental?: boolean; airbnb?: string }) | undefined => {
     if (!night) return undefined;
     if (night.kind === "custom") {
       const point = night.id.startsWith("custom-origin") ? endpoints.origin : endpoints.destination;
       return { ...point, nameZh: point.name, nameEn: point.name, kind: "endpoint" };
     }
     const option = lodgingById.get(night.id);
-    return option && { id: option.id, lat: option.lat, lon: option.lon, nameZh: option.nameZh, nameEn: option.nameEn, kind: "option" };
+    return option && { id: option.id, lat: option.lat, lon: option.lon, nameZh: option.nameZh, nameEn: option.nameEn, kind: "option", ...(option.rental ? { rental: true } : {}), ...(option.airbnb ? { airbnb: option.airbnb } : {}) };
   };
   let previous: PlanStop | undefined;
   return trip.days.map((items, d) => {
@@ -204,10 +207,21 @@ function describeDays(
       sunset: sun === NOMINAL_SUN ? null : clock(sun.sunset),
       departAt: clock(timeline.departAt),
       returnAt: clock(timeline.returnAt),
+      returnDriveMin: Math.round(timeline.returnDriveMin),
       driveMin: Math.round(timeline.driveMin),
       activeMin: Math.round(timeline.activeMin),
       warnings: [...(timeline.overloaded ? ["overloaded" as const] : []), ...(timeline.lateReturn ? ["lateReturn" as const] : [])],
-      lodging: to ? { id: to.id, nameZh: to.nameZh, nameEn: to.nameEn, kind: to.kind } : null,
+      lodging: to
+        ? {
+            id: to.id,
+            nameZh: to.nameZh,
+            nameEn: to.nameEn,
+            kind: to.kind,
+            ...(to.rental ? { rental: true } : {}),
+            // 民宿区：按这一晚的日期搜 Airbnb（只定了月份的不带日期）
+            ...(to.airbnb ? { airbnbUrl: airbnbUrl(to.airbnb, exact ? date : null, exact ? dateFor(d + 1) : null) } : {}),
+          }
+        : null,
       stops: timeline.entries.map((entry, k) => {
         const stop = dayStops[k];
         return {
@@ -234,7 +248,22 @@ function describeSkipped(skipped: GuideSkipped) {
   return SKIP_REASONS.flatMap((reason) =>
     (skipped[reason] ?? []).flatMap((id) => {
       const stop = stopById.get(id);
-      return stop ? [{ id, park: stop.park, nameZh: stop.nameZh, nameEn: stop.nameEn, reason }] : [];
+      if (!stop) return [];
+      // 季节性关闭的：一年里哪几个月开，和为什么不开的第一句（“火瀑只在 2 月中下旬……出现”），Writer 照着说，别说得像是过几天就开
+      const months = stop.openMonths ?? [];
+      const seasonal = reason === "closed" && months.length > 0 && months.length < 12;
+      const note = reason === "closed" ? stop.closedNote?.split(/[，；。]/)[0] : undefined;
+      return [
+        {
+          id,
+          park: stop.park,
+          nameZh: stop.nameZh,
+          nameEn: stop.nameEn,
+          reason,
+          ...(seasonal ? { openMonths: months } : {}),
+          ...(note ? { noteZh: note } : {}),
+        },
+      ];
     }),
   );
 }

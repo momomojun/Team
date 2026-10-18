@@ -12,6 +12,12 @@
       "OAK",
       "SJC"
     ],
+    "airportMinutes": {
+      "FAT": 150,
+      "SFO": 258,
+      "OAK": 246,
+      "SJC": 263
+    },
     "nearby": [
       "seki"
     ],
@@ -33,6 +39,10 @@
       "FAT",
       "LAX"
     ],
+    "airportMinutes": {
+      "FAT": 92,
+      "LAX": 199
+    },
     "nearby": [
       "yose"
     ],
@@ -56,6 +66,12 @@
       "OAK",
       "MRY"
     ],
+    "airportMinutes": {
+      "SJC": 86,
+      "SFO": 111,
+      "OAK": 113,
+      "MRY": 106
+    },
     "nearby": [
       "seki",
       "yose"
@@ -79,6 +95,11 @@
       "BUR",
       "SBA"
     ],
+    "airportMinutes": {
+      "LAX": 67,
+      "BUR": 60,
+      "SBA": 42
+    },
     "nearby": [],
     "aliases": [
       "海峡群岛",
@@ -101,6 +122,13 @@
       "SNA",
       "LAS"
     ],
+    "airportMinutes": {
+      "PSP": 49,
+      "ONT": 87,
+      "LAX": 135,
+      "SNA": 111,
+      "LAS": 261
+    },
     "nearby": [
       "deva"
     ],
@@ -124,6 +152,12 @@
       "MFR",
       "SFO"
     ],
+    "airportMinutes": {
+      "ACV": 50,
+      "CEC": 58,
+      "MFR": 171,
+      "SFO": 325
+    },
     "nearby": [
       "crla",
       "lavo"
@@ -148,6 +182,12 @@
       "RNO",
       "SFO"
     ],
+    "airportMinutes": {
+      "RDD": 96,
+      "SMF": 153,
+      "RNO": 154,
+      "SFO": 230
+    },
     "nearby": [
       "crla",
       "redw"
@@ -171,6 +211,12 @@
       "EUG",
       "PDX"
     ],
+    "airportMinutes": {
+      "MFR": 119,
+      "RDM": 141,
+      "EUG": 202,
+      "PDX": 266
+    },
     "nearby": [
       "redw",
       "lavo"
@@ -192,6 +238,10 @@
       "SEA",
       "PDX"
     ],
+    "airportMinutes": {
+      "SEA": 158,
+      "PDX": 177
+    },
     "nearby": [
       "olym",
       "noca"
@@ -215,6 +265,11 @@
       "PAE",
       "PDX"
     ],
+    "airportMinutes": {
+      "SEA": 158,
+      "PAE": 180,
+      "PDX": 234
+    },
     "nearby": [
       "mora",
       "noca"
@@ -237,6 +292,10 @@
       "SEA",
       "BLI"
     ],
+    "airportMinutes": {
+      "SEA": 169,
+      "BLI": 119
+    },
     "nearby": [
       "mora",
       "olym"
@@ -263,6 +322,15 @@
       "BIL",
       "COD"
     ],
+    "airportMinutes": {
+      "BZN": 160,
+      "SLC": 376,
+      "JAC": 185,
+      "WYS": 89,
+      "IDA": 153,
+      "BIL": 208,
+      "COD": 160
+    },
     "nearby": [
       "grte",
       "glac"
@@ -287,6 +355,12 @@
       "IDA",
       "BZN"
     ],
+    "airportMinutes": {
+      "JAC": 10,
+      "SLC": 276,
+      "IDA": 128,
+      "BZN": 319
+    },
     "nearby": [
       "yell"
     ],
@@ -311,6 +385,13 @@
       "BZN",
       "SEA"
     ],
+    "airportMinutes": {
+      "FCA": 42,
+      "MSO": 149,
+      "GTF": 189,
+      "BZN": 361,
+      "SEA": 511
+    },
     "nearby": [
       "banf",
       "yell"
@@ -331,6 +412,9 @@
     "airports": [
       "DEN"
     ],
+    "airportMinutes": {
+      "DEN": 92
+    },
     "nearby": [
       "arch",
       "cany",
@@ -356,6 +440,13 @@
       "DEN",
       "SLC"
     ],
+    "airportMinutes": {
+      "DRO": 81,
+      "ABQ": 237,
+      "PHX": 403,
+      "DEN": 399,
+      "SLC": 339
+    },
     "nearby": [
       "mova",
       "arch",
@@ -384,6 +475,12 @@
       "DEN",
       "ABQ"
     ],
+    "airportMinutes": {
+      "ALS": 52,
+      "COS": 158,
+      "DEN": 270,
+      "ABQ": 241
+    },
     "nearby": [
       "romo",
       "meve",
@@ -408,6 +505,12 @@
       "GUC",
       "DEN"
     ],
+    "airportMinutes": {
+      "MTJ": 36,
+      "GJT": 98,
+      "GUC": 91,
+      "DEN": 299
+    },
     "nearby": [
       "meve",
       "arch",
@@ -432,6 +535,9 @@
     "airports": [
       "LAS"
     ],
+    "airportMinutes": {
+      "LAS": 167
+    },
     "nearby": [
       "jotr"
     ],
@@ -453,6 +559,11 @@
       "SGU",
       "SLC"
     ],
+    "airportMinutes": {
+      "LAS": 175,
+      "SGU": 71,
+      "SLC": 330
+    },
     "nearby": [
       "brca",
       "grca",
@@ -480,6 +591,11 @@
       "SLC",
       "SGU"
     ],
+    "airportMinutes": {
+      "LAS": 248,
+      "SLC": 298,
+      "SGU": 134
+    },
     "nearby": [
       "zion",
       "grca",
@@ -506,6 +622,11 @@
       "PHX",
       "FLG"
     ],
+    "airportMinutes": {
+      "LAS": 267,
+      "PHX": 252,
+      "FLG": 86
+    },
     "nearby": [
       "zion",
       "brca",
@@ -532,6 +653,11 @@
       "LAS",
       "SGU"
     ],
+    "airportMinutes": {
+      "SLC": 226,
+      "LAS": 302,
+      "SGU": 188
+    },
     "nearby": [
       "zion",
       "brca",
@@ -557,6 +683,13 @@
       "FLG",
       "SLC"
     ],
+    "airportMinutes": {
+      "LAS": 283,
+      "PHX": 289,
+      "PGA": 19,
+      "FLG": 135,
+      "SLC": 410
+    },
     "nearby": [
       "hsbd",
       "wave",
@@ -586,6 +719,13 @@
       "FLG",
       "SLC"
     ],
+    "airportMinutes": {
+      "LAS": 273,
+      "PHX": 287,
+      "PGA": 17,
+      "FLG": 134,
+      "SLC": 418
+    },
     "nearby": [
       "ante",
       "wave",
@@ -615,6 +755,13 @@
       "SLC",
       "PGA"
     ],
+    "airportMinutes": {
+      "PHX": 308,
+      "LAS": 400,
+      "FLG": 175,
+      "SLC": 366,
+      "PGA": 135
+    },
     "nearby": [
       "ante",
       "hsbd",
@@ -643,6 +790,13 @@
       "PHX",
       "SLC"
     ],
+    "airportMinutes": {
+      "LAS": 248,
+      "SGU": 128,
+      "PGA": 53,
+      "PHX": 304,
+      "SLC": 391
+    },
     "nearby": [
       "ante",
       "hsbd",
@@ -670,6 +824,13 @@
       "DEN",
       "LAS"
     ],
+    "airportMinutes": {
+      "CNY": 25,
+      "GJT": 116,
+      "SLC": 214,
+      "DEN": 415,
+      "LAS": 496
+    },
     "nearby": [
       "cany",
       "care",
@@ -697,6 +858,12 @@
       "SLC",
       "DEN"
     ],
+    "airportMinutes": {
+      "CNY": 52,
+      "GJT": 120,
+      "SLC": 235,
+      "DEN": 400
+    },
     "nearby": [
       "arch",
       "care",
@@ -724,6 +891,12 @@
       "LAS",
       "GJT"
     ],
+    "airportMinutes": {
+      "SLC": 212,
+      "CNY": 122,
+      "LAS": 325,
+      "GJT": 216
+    },
     "nearby": [
       "arch",
       "cany",
@@ -748,6 +921,10 @@
       "ELP",
       "ABQ"
     ],
+    "airportMinutes": {
+      "ELP": 96,
+      "ABQ": 209
+    },
     "nearby": [
       "cave"
     ],
@@ -769,6 +946,11 @@
       "CNM",
       "MAF"
     ],
+    "airportMinutes": {
+      "ELP": 132,
+      "CNM": 39,
+      "MAF": 174
+    },
     "nearby": [
       "whsa"
     ],
@@ -792,6 +974,12 @@
       "ABQ",
       "LAS"
     ],
+    "airportMinutes": {
+      "PHX": 199,
+      "FLG": 126,
+      "ABQ": 223,
+      "LAS": 366
+    },
     "nearby": [
       "grca",
       "mova",
@@ -816,6 +1004,10 @@
       "TUS",
       "PHX"
     ],
+    "airportMinutes": {
+      "TUS": 17,
+      "PHX": 120
+    },
     "nearby": [
       "grca",
       "pefo",
@@ -839,6 +1031,11 @@
       "CNM",
       "MAF"
     ],
+    "airportMinutes": {
+      "ELP": 100,
+      "CNM": 49,
+      "MAF": 175
+    },
     "nearby": [
       "cave",
       "whsa"
@@ -863,6 +1060,12 @@
       "SAT",
       "AUS"
     ],
+    "airportMinutes": {
+      "MAF": 207,
+      "ELP": 330,
+      "SAT": 452,
+      "AUS": 508
+    },
     "nearby": [
       "gumo",
       "cave"
@@ -885,6 +1088,10 @@
       "RAP",
       "DEN"
     ],
+    "airportMinutes": {
+      "RAP": 83,
+      "DEN": 466
+    },
     "nearby": [
       "wica",
       "thro"
@@ -907,6 +1114,10 @@
       "RAP",
       "DEN"
     ],
+    "airportMinutes": {
+      "RAP": 80,
+      "DEN": 388
+    },
     "nearby": [
       "badl",
       "thro"
@@ -931,6 +1142,12 @@
       "XWA",
       "BIL"
     ],
+    "airportMinutes": {
+      "BIS": 148,
+      "DIK": 39,
+      "XWA": 126,
+      "BIL": 302
+    },
     "nearby": [
       "badl",
       "wica"
@@ -955,6 +1172,12 @@
       "ATL",
       "CLT"
     ],
+    "airportMinutes": {
+      "TYS": 82,
+      "AVL": 124,
+      "ATL": 255,
+      "CLT": 208
+    },
     "nearby": [
       "shen",
       "neri"
@@ -978,6 +1201,11 @@
       "DCA",
       "CHO"
     ],
+    "airportMinutes": {
+      "IAD": 101,
+      "DCA": 100,
+      "CHO": 76
+    },
     "nearby": [
       "neri",
       "grsm"
@@ -1002,6 +1230,12 @@
       "CLT",
       "IAD"
     ],
+    "airportMinutes": {
+      "CRW": 91,
+      "ROA": 136,
+      "CLT": 225,
+      "IAD": 270
+    },
     "nearby": [
       "shen",
       "grsm"
@@ -1026,6 +1260,12 @@
       "PWM",
       "BOS"
     ],
+    "airportMinutes": {
+      "BGR": 81,
+      "BHB": 19,
+      "PWM": 182,
+      "BOS": 261
+    },
     "nearby": [],
     "aliases": [
       "阿卡迪亚",
@@ -1046,6 +1286,11 @@
       "FLL",
       "RSW"
     ],
+    "airportMinutes": {
+      "MIA": 64,
+      "FLL": 72,
+      "RSW": 160
+    },
     "nearby": [
       "bisc",
       "drto"
@@ -1068,6 +1313,10 @@
       "MIA",
       "FLL"
     ],
+    "airportMinutes": {
+      "MIA": 55,
+      "FLL": 67
+    },
     "nearby": [
       "ever",
       "drto"
@@ -1090,6 +1339,11 @@
       "MIA",
       "FLL"
     ],
+    "airportMinutes": {
+      "EYW": 12,
+      "MIA": 243,
+      "FLL": 255
+    },
     "nearby": [
       "ever",
       "bisc"
@@ -1112,6 +1366,10 @@
       "ANC",
       "FAI"
     ],
+    "airportMinutes": {
+      "ANC": 239,
+      "FAI": 124
+    },
     "nearby": [
       "kefj",
       "wrst",
@@ -1135,6 +1393,9 @@
     "airports": [
       "ANC"
     ],
+    "airportMinutes": {
+      "ANC": 127
+    },
     "nearby": [
       "dena",
       "wrst",
@@ -1159,6 +1420,10 @@
       "ANC",
       "FAI"
     ],
+    "airportMinutes": {
+      "ANC": 195,
+      "FAI": 249
+    },
     "nearby": [
       "kefj",
       "dena"
@@ -1180,6 +1445,9 @@
     "airports": [
       "GST"
     ],
+    "airportMinutes": {
+      "GST": 23
+    },
     "nearby": [],
     "aliases": [
       "冰川湾",
@@ -1198,6 +1466,9 @@
     "airports": [
       "FAI"
     ],
+    "airportMinutes": {
+      "FAI": 396
+    },
     "nearby": [
       "dena"
     ],
@@ -1218,6 +1489,9 @@
     "airports": [
       "OTZ"
     ],
+    "airportMinutes": {
+      "OTZ": 0
+    },
     "nearby": [],
     "aliases": [
       "科伯克谷",
@@ -1236,6 +1510,10 @@
       "ANC",
       "HOM"
     ],
+    "airportMinutes": {
+      "ANC": 251,
+      "HOM": 3
+    },
     "nearby": [
       "lacl",
       "kefj"
@@ -1258,6 +1536,10 @@
       "ANC",
       "HOM"
     ],
+    "airportMinutes": {
+      "ANC": 5,
+      "HOM": 251
+    },
     "nearby": [
       "katm",
       "kefj",
@@ -1280,6 +1562,10 @@
       "ITO",
       "KOA"
     ],
+    "airportMinutes": {
+      "ITO": 47,
+      "KOA": 191
+    },
     "nearby": [],
     "aliases": [
       "夏威夷火山",
@@ -1297,6 +1583,9 @@
     "airports": [
       "OGG"
     ],
+    "airportMinutes": {
+      "OGG": 58
+    },
     "nearby": [],
     "aliases": [
       "哈莱阿卡拉",
@@ -1317,6 +1606,11 @@
       "YEG",
       "YVR"
     ],
+    "airportMinutes": {
+      "YYC": 94,
+      "YEG": 236,
+      "YVR": 516
+    },
     "nearby": [
       "yoho",
       "jasp",
@@ -1340,6 +1634,11 @@
       "YYC",
       "YVR"
     ],
+    "airportMinutes": {
+      "YEG": 229,
+      "YYC": 320,
+      "YVR": 465
+    },
     "nearby": [
       "banf",
       "yoho"
@@ -1363,6 +1662,11 @@
       "YEG",
       "YVR"
     ],
+    "airportMinutes": {
+      "YYC": 138,
+      "YEG": 268,
+      "YVR": 461
+    },
     "nearby": [
       "banf",
       "jasp"

@@ -27,6 +27,8 @@ class Park:
     airports: tuple[str, ...]
     nearby: tuple[str, ...]
     aliases: tuple[str, ...]
+    # 常用机场开到公园定位点的分钟数
+    airport_minutes: tuple[tuple[str, int], ...] = ()
 
 
 @dataclass(frozen=True)
@@ -87,6 +89,7 @@ def parks() -> dict[str, Park]:
             airports=tuple(row["airports"]),
             nearby=tuple(row["nearby"]),
             aliases=tuple(dict.fromkeys(aliases)),
+            airport_minutes=tuple(row.get("airportMinutes", {}).items()),
         )
     return result
 

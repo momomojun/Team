@@ -8,6 +8,7 @@ from __future__ import annotations
 import datetime as dt
 import json
 import os
+import re
 import time
 import uuid
 from dataclasses import dataclass, field
@@ -50,6 +51,9 @@ class Session:
     def __post_init__(self) -> None:
         self.intake = Intake(self.provider, dt.date.fromisoformat(self.reference_date))
         self.turn = 0
+        # 上一次排出来的行程：用户再说话时，条件变了就先说改了什么，没变就不把整个行程再印一遍
+        self.last_request: dict | None = None
+        self.last_result: dict | None = None
 
     def send(self, message: str) -> Reply:
         self.turn += 1
@@ -63,6 +67,14 @@ class Session:
             return self._done(reply, start)
         request = turn.request
         trace["request"] = request
+        zh = (self.intake.language or "zh") != "en"
+        if self.last_request is not None and same_request(self.last_request, request):
+            # 条件没变（提问、闲聊、“好的”）：现在还不会回答问题，老实说，不把同一个行程再印一遍
+            trace["unchanged"] = True
+            text = "\n".join([*turn.notices, unchanged_reply(message, zh)])
+            return self._done(Reply("planned", text, None, request, self.last_result, trace), start)
+        changes = writer_module.describe_changes(self.last_request, request, zh) if self.last_request else []
+        user_request = request
         try:
             call = plan_trip(request, self.reference_date)
         except PlanError as error:
@@ -87,8 +99,14 @@ class Session:
         text, writer_trace = writer_module.write(request, result, review, language, self.provider,
                                                  self.intake.preferences, use_model=self.writer_model)
         trace["writer"] = writer_trace
-        notices = "\n".join(turn.notices)
-        return self._done(Reply("planned", (notices + "\n" if notices else "") + text, None, request, result, trace), start)
+        head = list(turn.notices)
+        if changes:
+            head.append(("好，改了：" + "、".join(changes) + "。") if zh else ("Done. Changed: " + "; ".join(changes) + "."))
+            if self.last_result:
+                head.extend(writer_module.lodging_changes(self.last_result, result, zh))
+            trace["changes"] = changes
+        self.last_request, self.last_result = user_request, result
+        return self._done(Reply("planned", "\n".join([*head, text]), None, request, result, trace), start)
 
     def _done(self, reply: Reply, start: float) -> Reply:
         reply.trace["status"] = reply.status
@@ -99,3 +117,24 @@ class Session:
             with path.open("a", encoding="utf-8") as handle:
                 handle.write(json.dumps(reply.trace, ensure_ascii=False, default=str) + "\n")
         return reply
+
+
+def same_request(before: dict, after: dict) -> bool:
+    """两次的条件一样（不看 provenance：同样的条件，来源说法可以不同）"""
+    strip = lambda request: {key: value for key, value in request.items() if key != "provenance"}  # noqa: E731
+    return strip(before) == strip(after)
+
+
+ACK = re.compile(r"\s*(好的?|好吧|行|可以|谢谢|多谢|感谢|收到|明白|ok|okay|thanks|thank you|great|cool|got it)[\s!！。.~啦呀啊了]*", re.I)
+
+
+def unchanged_reply(message: str, zh: bool) -> str:
+    if ACK.fullmatch(message):
+        return "好的。想改什么直接说就行，比如“住民宿”“轻松一点”“玩 4 天”。" if zh else \
+            "Sure. Tell me anything you'd like to change, e.g. “vacation rentals”, “a slower pace”, or “4 days”."
+    if zh:
+        return ("这句话我还答不上来：现在我能按你给的条件排行程、改行程，还不会回答景点、住宿、车程这类问题（正在做）。"
+                "想改行程可以直接说，比如“住民宿”“改成从弗雷斯诺出发”“轻松一点”“玩 4 天”。")
+    return ("I can't answer that yet. Right now I can plan and change the trip from your conditions, but not answer questions "
+            "about places, lodging, or drive times (coming soon). To change the plan, say something like “vacation rentals”, "
+            "“start from Fresno”, “a slower pace”, or “4 days”.")

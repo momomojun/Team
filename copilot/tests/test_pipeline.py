@@ -76,3 +76,28 @@ def test_session_end_to_end(tmp_path, monkeypatch):
     assert reply.request["parks"] == ["yose"] and len(reply.result["days"]) == 4
     assert "第 1 天" in reply.text
     assert reply.trace["writer"]["writer"] == "template"
+
+
+def test_owner_trial_conversation():
+    """2026-10-18 仓库主人试用的那段对话：明天出发、从安大略机场、改住民宿、再问问题"""
+    provider = ScriptedProvider([
+        extraction(parks=["优胜美地"], dates=["明天"], duration="3天"),  # 第 1 句
+        extraction(preferences=["我想住airbnb"]),                          # 第 4 句（第 2、3 句是回答追问，不调模型）
+        extraction(),                                                      # 第 5 句是提问，什么条件都没有
+    ])
+    session = Session(provider, "2026-10-18", log=False)
+    first = session.send("我想在明天出发去优胜美地玩，你给我规划一下，大概3天左右吧")
+    assert "2026 年 10 月 19 日" in first.text and first.question["kind"] == "choose"
+    session.send("我从ont出发")
+    planned = session.send("2")
+    assert planned.status == "planned"
+    assert "08:00 从安大略国际机场（ONT）出发" in planned.text
+    assert "最后开回安大略国际机场（ONT）" in planned.text and "晚上住 安大略" not in planned.text
+    assert "弗雷斯诺机场（FAT）" in planned.text  # 太远了，提一下近一些的机场
+    assert "火瀑只在 2 月中下旬" in planned.text
+    changed = session.send("我想住airbnb")
+    assert changed.text.startswith("好，改了：住宿改成民宿。")
+    assert "airbnb.com" in changed.text
+    asked = session.send("El Portal是什么地方，离园区多远啊")
+    assert "答不上来" in asked.text and "第 1 天" not in asked.text
+    assert asked.result == changed.result
