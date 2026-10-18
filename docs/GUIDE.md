@@ -299,7 +299,15 @@ python copilot/scripts/smoke.py http://127.0.0.1:8765 --expect-version 0.2.0
 COPILOT_TAG=copilot-v0.2.0 COPILOT_PROMPT_INTAKE=v1 docker compose -f copilot/docker-compose.yml up -d
 ```
 
-回滚以后在代码里把 `prompts/defaults.json` 改回去（或者修好提示词出下一版），走 PR，再发版。2026-10-17 的回滚演示过程见 [RESULTS.md](../copilot/eval/RESULTS.md)。
+回滚以后在代码里把 `prompts/defaults.json` 改回去（或者修好提示词出下一版），走 PR，再发版。
+
+演示用：`copilot/scripts/rollback_demo.py` 按顺序启动几个版本，每个都确认 `/health` 的版本、发同一句话，最后列出每个版本的回复有什么不同（要开着本机 Ollama）：
+
+```bash
+python copilot/scripts/rollback_demo.py copilot-v0.2.1 copilot-v0.2.0 copilot-v0.2.1
+```
+
+2026-10-17 的提示词回滚、10-18 的换镜像回滚，过程和结果见 [RESULTS.md](../copilot/eval/RESULTS.md)。
 
 ### 监控：什么时候该回滚
 
