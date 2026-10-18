@@ -1,0 +1,21 @@
+# 在本机跑某个发布版本的 Copilot。版本由 COPILOT_TAG 决定，回滚就是换成上一个 tag 再 up 一次：
+#   COPILOT_TAG=copilot-v0.2.0 docker compose -f copilot/docker-compose.yml up -d
+#   COPILOT_TAG=copilot-v0.1.0 docker compose -f copilot/docker-compose.yml up -d   # 回滚
+# 提示词也能单独回滚，不换镜像：COPILOT_PROMPT_INTAKE=v1 docker compose ... up -d
+# 模型跑在宿主机的 Ollama 上（experiments/local-model-validation/start-local.ps1），容器通过 host.docker.internal 连过去
+services:
+  copilot:
+    image: ghcr.io/momomojun/team-copilot:${COPILOT_TAG:-latest}
+    ports:
+      - "127.0.0.1:${COPILOT_PORT:-8765}:8765"   # 本机 8765 被占了就换：COPILOT_PORT=8766
+    environment:
+      COPILOT_PROVIDER: ${COPILOT_PROVIDER:-ollama}
+      COPILOT_MODEL: ${COPILOT_MODEL:-qwen3.5:4b-q4_K_M}
+      OLLAMA_HOST_URL: ${OLLAMA_HOST_URL:-http://host.docker.internal:11435}
+      COPILOT_PROMPT_INTAKE: ${COPILOT_PROMPT_INTAKE:-}
+      COPILOT_PROMPT_WRITER: ${COPILOT_PROMPT_WRITER:-}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./runs:/data/runs
+    restart: unless-stopped

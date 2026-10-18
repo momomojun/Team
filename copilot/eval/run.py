@@ -23,7 +23,8 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 
 from nps_copilot.critic import critique  # noqa: E402
-from nps_copilot.intake import PROMPT_VERSION, Intake  # noqa: E402
+from nps_copilot import prompts  # noqa: E402
+from nps_copilot.intake import Intake  # noqa: E402
 from nps_copilot.writer import template, write  # noqa: E402
 from nps_copilot.pipeline import prompt_hashes  # noqa: E402
 from nps_copilot.plan_client import PlanError, plan_trip  # noqa: E402
@@ -123,6 +124,9 @@ def main() -> int:
             # 默认样例录到 recordings/<模型>.jsonl，别的样例文件录到 recordings/<模型>-<样例文件名>.jsonl
             stem = Path(args.cases).stem
             suffix = "" if stem == "intake-v1" else f"-{stem}"
+            # 不是默认版本的提示词另外录一份，不覆盖默认版的录音（回放门禁用的是默认版）
+            if prompts.version("intake") != prompts.defaults()["intake"]:
+                suffix += f"-intake_{prompts.version('intake')}"
             path = HERE / "recordings" / (provider.model.replace(":", "_") + suffix + ".jsonl")
             path.unlink(missing_ok=True)
             provider = RecordingProvider(provider, path)
@@ -153,7 +157,7 @@ def main() -> int:
             "stop_coverage": round(statistics.mean(d["stop_coverage"] for d in drafts), 2) if drafts else None,
             "skipped_kept": round(statistics.mean(d["skipped_kept"] for d in drafts if d["skipped_kept"] is not None), 2) if drafts else None,
         }
-    report = {"run_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"), "model": model, "prompt": PROMPT_VERSION,
+    report = {"run_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"), "model": model, "prompt": prompts.load("intake").id,
               "prompt_hashes": prompt_hashes(), "cases_file": Path(args.cases).name, "seconds": round(time.perf_counter() - start, 1),
               "summary": summary, "results": results}
     out = Path(args.out)

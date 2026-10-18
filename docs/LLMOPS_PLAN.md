@@ -1,6 +1,6 @@
 # LLMOps 现状评估和下一步计划 / LLMOps Review and Roadmap
 
-更新：2026-10-16。写给接手的组员和 AI 助手：先读这一份，再看 [LLMOPS_WORK_LOG.md](LLMOPS_WORK_LOG.md)（另一个助手的实验记录）和 [experiments/](../experiments/README.md)。
+更新：2026-10-17（阶段 1–3 已完成第一版，见第 2 节）。写给接手的组员和 AI 助手：先读这一份，再看 [LLMOPS_WORK_LOG.md](LLMOPS_WORK_LOG.md)（另一个助手的实验记录）和 [experiments/](../experiments/README.md)。
 
 ## English summary
 
@@ -8,6 +8,8 @@
 - **What's good**: honest claims, clean separation between what the LLM does and what code does, reproducible runs, and no cloud dependency.
 - **What's missing for the course**: there is no CI/CD at all (no GitHub Actions). The Copilot is not connected to the trip engine or the website. There is no tool calling and no Retriever, Critic, or Writer. The test sets are small and written by the same author, the Python intake schema doesn't match the site's `WizardInput`, and three known state-machine bugs are still open.
 - **Next**: (1) freeze a shared `TripRequest` contract that matches `WizardInput`, and expose the TypeScript engine as a `plan_trip` tool; (2) build a minimal FastAPI Copilot: Intake → `plan_trip` → deterministic Critic → evidence-grounded Writer, with an Ollama provider and a replay provider; (3) add GitHub Actions: lint/types/tests, Python unit tests, and an offline replay eval gate on every PR, plus a Docker image; (4) grow the golden set to about 150 bilingual cases, version prompts, and log runs (MLflow or JSONL); (5) add a chat panel on the plan page; (6) run ablations (single agent vs. multi-role, with and without Critic) for the final report.
+
+- **Status (Oct 17)**: phases 1–3 have a first version. Phase 1 added the contracts and the `plan_trip` tool. Phase 2 added the Python Copilot, evals and the CI replay gates. Phase 3 added a Docker image (with a CI smoke test), a tag-driven release workflow to GHCR, versioned prompts with env-var rollback, run-log monitoring, and a rollback demo: prompt v2 was blocked by the gate and rolled back in a live deployment. No release has been tagged yet. Details: [copilot/RELEASE.md](../copilot/RELEASE.md).
 
 ## 1. 另一个助手做了什么
 
@@ -81,9 +83,14 @@
 - **Provider 接口**：`OllamaProvider`（默认，本机）、`ReplayProvider`（读录好的模型输出，CI 用）、`CloudProvider`（留接口，默认关，不自动退到云端）。
 - 每次调用记日志：prompt 版本、模型 digest、参数、输入、输出、延迟、校验结果（JSONL，后面再接 MLflow）。
 
-### 阶段 3：CI/CD（GitHub Actions 已加，Docker 和回滚还没做）
+### 阶段 3：CI/CD（2026-10-17 已完成第一版）
 
-**已经做好的**：`.github/workflows/ci.yml`，每个 PR 跑网站的 lint、类型检查、测试和 Copilot 的 pytest、回放评测门禁（`copilot/eval/baseline.json`，现在是 25/25），报告作为 artifact 上传。**还没做的**：Docker 镜像、按 tag 发版、回滚演示、提示词版本切换。
+**已经做好的**：
+- `.github/workflows/ci.yml`：每个 PR 跑网站的 lint、类型检查、测试，Copilot 的 pytest、两组回放评测门禁（开发集 25/25、回归集 37/40），还构建 Docker 镜像、用回放模型冒烟测试。
+- `.github/workflows/release.yml`：推 `copilot-v*` tag 发版：测试和门禁 → 构建 → 冒烟 → 推 `ghcr.io/momomojun/team-copilot` → 拉回来再冒烟 → GitHub Release 附评测报告。**还没真的发过版**（打 tag、推镜像要用户同意）。
+- 提示词版本（`copilot/nps_copilot/prompts.py`）、监控统计（`python -m nps_copilot stats`）、`docker-compose.yml`（`COPILOT_TAG` 选版本）。
+- 回滚演示：intake 提示词 v2 回归集 39/40、开发集 24/25，门禁挡住了；本机部署 v2 再只用环境变量切回 v1，同一句英文从追问天数变成排出行程。步骤和结果见 [copilot/RELEASE.md](../copilot/RELEASE.md)。
+- 换镜像的回滚要等发过两个版本才能演示。
 
 原来的计划：
 

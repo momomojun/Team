@@ -8,14 +8,11 @@
 from __future__ import annotations
 
 import re
-from pathlib import Path
 
-from . import catalog
+from . import catalog, prompts
 from .critic import Critique
 from .providers import Provider, ProviderError
 
-PROMPT_PATH = Path(__file__).resolve().parent / "prompts" / "writer_v1.txt"
-PROMPT_VERSION = "writer/v1"
 WRITER_SCHEMA = {
     "type": "object", "additionalProperties": False, "required": ["summary"],
     "properties": {"summary": {"type": "string", "minLength": 1, "maxLength": 1200}},
@@ -135,10 +132,10 @@ def write(request: dict, result: dict, critique: Critique, language: str, provid
     trace: dict = {"writer": "template", "prompt": None}
     if not use_model or provider is None:
         return base, trace
-    trace.update(writer="model", prompt=PROMPT_VERSION)
+    prompt = prompts.load("writer")
+    trace.update(writer="model", prompt=prompt.id)
     try:
-        system = PROMPT_PATH.read_text(encoding="utf-8").replace("\r\n", "\n")
-        completion = provider.complete_json("writer", system, base, WRITER_SCHEMA)
+        completion = provider.complete_json("writer", prompt.text, base, WRITER_SCHEMA)
     except ProviderError as error:
         trace.update(writer="template", fallback="provider_error", error=str(error))
         return base, trace

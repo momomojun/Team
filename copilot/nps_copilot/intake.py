@@ -17,16 +17,13 @@ import copy
 import datetime as dt
 import re
 from dataclasses import dataclass, field
-from pathlib import Path
 from typing import Any
 
-from . import catalog
+from . import catalog, prompts
 from .dates import DateParts, date_range_days, merge, next_occurrence, parse_date_spans, parse_days, relative_month
 from .providers import Provider
 from .text import contains, normalize
 
-PROMPT_PATH = Path(__file__).resolve().parent / "prompts" / "intake_v1.txt"
-PROMPT_VERSION = "intake/v1"
 LIST_FIELDS = ("parks", "dates", "party", "preferences")
 TEXT_FIELDS = ("duration", "origin", "destination")
 FIELDS = LIST_FIELDS + TEXT_FIELDS
@@ -53,8 +50,8 @@ ORDINALS = {"一": 1, "二": 2, "两": 2, "三": 3, "四": 4, "五": 5, "六": 6
 
 
 def prompt() -> str:
-    # Windows 上 git 可能把换行转成 CRLF；统一成 LF，回放的 key 才和 CI 上一样
-    return PROMPT_PATH.read_text(encoding="utf-8").replace("\r\n", "\n")
+    """当前用的 Intake 提示词（用哪一版见 prompts.py：defaults.json，或者环境变量 COPILOT_PROMPT_INTAKE）"""
+    return prompts.load("intake").text
 
 
 def is_english(text: str) -> bool:
@@ -152,7 +149,7 @@ class Intake:
         self.history.append(message)
         if self.language is None:
             self.language = "en" if is_english(message) else "zh"
-        trace: dict[str, Any] = {"prompt": PROMPT_VERSION, "model_called": False}
+        trace: dict[str, Any] = {"prompt": prompts.load("intake").id, "model_called": False}
         notices: list[str] = []
         handled = self._answer_pending(message, notices)
         trace["route"] = handled or "extraction"
