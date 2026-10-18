@@ -68,7 +68,7 @@ flowchart LR
 | `copilot/nps_copilot/data/regional_names.json` | 各地中文叫法（三藩市、卡加利、愛民頓、洛磯山、班芙、宰恩、傑克森……），`copilot/scripts/regional_names.py` 从维基数据和中文维基各地区的标题、重定向生成；人工补的（`MANUAL`）和排除的（`EXCLUDE`：太泛的巨杉、冰河，和网站用词冲突的红杉）写在脚本里，附原因。只用来认名字，回答用户时用网站自己的中文名 |
 | `copilot/tests/` | pytest：Intake 每个修好的问题各有测试、各地写法、Critic、Writer 的忠实度检查、提示词切换、监控统计、接真行程引擎的端到端 |
 | `copilot/eval/` | 评测，见下面“评测” |
-| `copilot/Dockerfile`、`.dockerignore`（仓库根目录）、`docker-compose*.yml`、`scripts/smoke.py` | 镜像（Node 24 + Python，行程引擎和 Copilot 都在里面，模型不在）、启动配置、冒烟测试 |
+| `copilot/Dockerfile`、`.dockerignore`（仓库根目录）、`docker-compose*.yml`、`scripts/smoke.py`、`scripts/rollback_demo.py` | 镜像（Node 24 + Python，行程引擎和 Copilot 都在里面，模型不在）、启动配置、冒烟测试、换镜像回滚演示 |
 | `.github/workflows/ci.yml`、`release.yml` | 每个 PR 的检查；推 `copilot-v*` tag 发版 |
 
 ## 版本：一个 Copilot 版本由什么组成
