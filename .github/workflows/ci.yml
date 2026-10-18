@@ -1,6 +1,6 @@
 # 每个 PR 和推到 main 时跑：网站的 lint / 类型检查 / 测试，Copilot 的单元测试和回放评测门禁。
 # CI 上没有 GPU、不调真模型：Copilot 的评测回放 copilot/eval/recordings/ 里录好的本机模型输出，
-# 分数低于 copilot/eval/baseline.json 就失败。改了提示词或样例，要先在本机用真模型重新录（见 copilot/README.md）。
+# 分数低于 copilot/eval/baseline.json 就失败。改了提示词或样例，要先在本机用真模型重新录（见 docs/GUIDE.md 的“改提示词”）。
 name: CI
 
 on:

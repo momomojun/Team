@@ -3,7 +3,7 @@
 #   2. 构建镜像，用回放模型冒烟测试
 #   3. 推到 ghcr.io/momomojun/team-copilot:<tag> 和 :latest
 #   4. 拉回刚推上去的镜像再冒烟测试一次，建 GitHub Release，附上评测报告
-# 回滚不用重新发版：部署的地方把 COPILOT_TAG 换成上一个 tag（见 copilot/RELEASE.md）。
+# 回滚不用重新发版：部署的地方把 COPILOT_TAG 换成上一个 tag（见 docs/GUIDE.md 第 7 节）。
 name: Copilot release
 
 on:
@@ -81,7 +81,7 @@ jobs:
             echo
             echo "提示词 / Prompts: \`$(python3 -c 'import json;print(json.load(open("copilot/nps_copilot/prompts/defaults.json")))')\`"
             echo
-            echo "评测报告在附件里（回放门禁）/ Replay eval reports are attached. 部署和回滚 / Deploy and rollback: copilot/RELEASE.md"
+            echo "评测报告在附件里（回放门禁）/ Replay eval reports are attached. 部署和回滚 / Deploy and rollback: docs/GUIDE.md"
           } > notes.md
           tar czf eval-reports.tgz -C copilot/eval reports
           gh release create "$GITHUB_REF_NAME" --title "Copilot $GITHUB_REF_NAME" --notes-file notes.md eval-reports.tgz

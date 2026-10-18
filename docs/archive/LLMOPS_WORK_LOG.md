@@ -148,7 +148,7 @@ LLMOps 管理链路：保存版本 → 自动评测 → 质量门禁 → 部署 
 - 用户明确要求全部验证材料归入 Team，已将完整实验目录（含模型权重、便携运行库、原始结果与脚本）搬入 `experiments/local-model-validation/`；原来的 Team 外实验目录已不存在。
 - 搬迁前停止了旧路径的验证服务，首轮服务日志单独归档保留；历史原始日志中的旧路径是当时环境证据，不是新配置。
 - 搬迁检查：原有 106 个文件全部存在，完整 16 条结果保留；所有操作文档与脚本不再引用旧运行目录。已从 Team 新路径重启本机服务，版本与模型 digest 和原验证一致，`/api/show` 可正常读取模型。健康检查记录见 `experiments/local-model-validation/migration-verification.json`；未重跑或覆盖首轮评测。
-- 交接总入口为 [experiments/README.md](../experiments/README.md)，新机器的准备与复测步骤见该目录的运行说明。新增脚本使用自身所在目录定位文件。
+- 交接总入口为 [experiments/README.md](../../experiments/README.md)，新机器的准备与复测步骤见该目录的运行说明。新增脚本使用自身所在目录定位文件。
 
 - 阅读本文件时，先区分计划与已经验证的事实；不要把本地小样本通过当作项目验收通过。
 - 对 Team 做实现前，读取 AGENTS.md 和相关目录说明；此仓库 Next 版本要求参考本地 Next 文档。
@@ -194,13 +194,13 @@ LLMOps 管理链路：保存版本 → 自动评测 → 质量门禁 → 部署 
 
 8 个规则单元测试通过，其中包括 32 条 gold 原文输入的子测试。模型仍会遗漏天数（六天、两天、four days），以及把出发城市误填为公园。部分错误被规则拦住，但遗漏可选字段与字段语义混淆仍是风险。上述提升属于完整工作流改进，不代表模型本身通用能力提升，也不能当作生产质量证明。
 
-V2 运行 ID：`20261017T020042Z`（UTC）。可读报告见 [v2/RESULTS.md](../experiments/local-model-validation/v2/RESULTS.md)，全部 48 次原始调用、差异和 metadata 见该报告链接。原 V1 报告 hash 已核对未变。推理只访问本机 Ollama，没有调用云端模型。
+V2 运行 ID：`20261017T020042Z`（UTC）。可读报告见 [v2/RESULTS.md](../../experiments/local-model-validation/v2/RESULTS.md)，全部 48 次原始调用、差异和 metadata 见该报告链接。原 V1 报告 hash 已核对未变。推理只访问本机 Ollama，没有调用云端模型。
 
 后续尚未执行：字段级修复实验、思考模式/8B 对比、CloudProvider、网站和规划引擎接入、独立评测集与 CI 门禁。若继续改进，另建版本保留本轮冻结文件和失败记录。
 
 ### 用户要求查看实际输入输出
 
-已从原 V2 报告导出 [全部 32 条输入输出](../experiments/local-model-validation/v2/INPUT_OUTPUTS.md)，失败项排在前面，保留模型原文、代码结果、期望与差异，没有重新运行或修改标签。
+已从原 V2 报告导出 [全部 32 条输入输出](../../experiments/local-model-validation/v2/INPUT_OUTPUTS.md)，失败项排在前面，保留模型原文、代码结果、期望与差异，没有重新运行或修改标签。
 
 4 个完整流程失败的归因：1 个是把盐湖城填为公园，代码又将此当作不支持的公园；3 个是漏提取已提供的天数，导致多余追问。英文 packed 与标注 packed pace 的覆盖差异仅是引用长度差异，两者规范化相同，不应描述为真实节奏理解错误。当前状态与 missing_fields 只是验证输出，没有已接入的聊天 UI 或已发送的追问。
 
@@ -238,7 +238,7 @@ V2 运行 ID：`20261017T020042Z`（UTC）。可读报告见 [v2/RESULTS.md](../
 
 优先建议：修确认状态机和日期分量合并，再做可选字段异常的自然追问、自然选项指代、独立压力对话测试，之后才接行程引擎验证偏好生效。尚未进行这些后续修复，V3 冻结代码、失败与 V1/V2 历史报告均保留。
 
-交接入口：[V3 RESULTS](../experiments/local-model-validation/v3/RESULTS.md)，链接包含 36 轮真实输入输出、完整原始记录和探索性检查。
+交接入口：[V3 RESULTS](../../experiments/local-model-validation/v3/RESULTS.md)，链接包含 36 轮真实输入输出、完整原始记录和探索性检查。
 
 ## 13. 模型能力与参数规模的讨论（尚未下载 8B）
 
@@ -304,4 +304,4 @@ V2 运行 ID：`20261017T020042Z`（UTC）。可读报告见 [v2/RESULTS.md](../
 
 结论：Qwen3.5 4B 是可运行且值得继续测试的候选，并非所有任务全面胜出。此前 3 个代码状态边界问题仍在。推荐未来加入独立自然表达和真实工具任务，或另测 8B/官方推荐采样，不再通过零散样本或空格差异决定模型优劣。
 
-交接入口：[模型对照 RESULTS](../experiments/local-model-validation/model-comparison/RESULTS.md)，其中包含双方所有实际输入输出、参数、原始响应、字段差异及复测命令。
+交接入口：[模型对照 RESULTS](../../experiments/local-model-validation/model-comparison/RESULTS.md)，其中包含双方所有实际输入输出、参数、原始响应、字段差异及复测命令。
