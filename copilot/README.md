@@ -63,7 +63,8 @@ flowchart LR
 | `nps_copilot/pipeline.py` | 把上面串起来；每轮写一条 JSONL 日志到 `copilot/runs/`（提示词版本和 hash、模型、各步耗时、模型输出、丢掉的片段、规则补的、Critic 的发现、Writer 有没有退回模板） |
 | `nps_copilot/api.py`、`__main__.py` | HTTP 服务（FastAPI）和命令行对话 |
 | `tests/` | pytest：Intake 每个修好的问题各有测试、Critic、Writer 的忠实度检查、接真行程引擎的端到端 |
-| `eval/` | 评测：`cases/intake-v1.jsonl` 25 组对话和期望结果，`run.py` 跑分，`recordings/` 录好的本机模型输出，`baseline.json` 门禁基线，结果见 [eval/RESULTS.md](eval/RESULTS.md) |
+| `eval/` | 评测：`cases/intake-v1.jsonl` 25 组对话（开发集）、`holdout-v1.jsonl` 40 组复杂对话、`regional-v1.jsonl` 17 组香港 / 台湾 / 新马的写法，`run.py` 跑分，`recordings/` 录好的本机模型输出，`baseline*.json` 门禁基线，结果见 [eval/RESULTS.md](eval/RESULTS.md) |
+| `nps_copilot/data/regional_names.json`、`scripts/regional_names.py` | 各地中文叫法（三藩市、卡加利、愛民頓、洛磯山、班芙、宰恩、傑克森……）：从维基数据和中文维基各地区的标题、重定向生成，人工补的和排除的写在脚本里（附原因）。认公园和出发地时当别名用；回答用户时还是用网站自己的中文名 |
 
 ### 怎么跑
 

@@ -268,6 +268,8 @@ Built with Next.js 16, React 19, TypeScript, Tailwind CSS 4 and MapLibre GL, mos
 
 ## LLMOps 开发与交接
 
+**组员第一次上手先看 [ONBOARDING.md](ONBOARDING.md)**：装什么、怎么跑网站和 Copilot、怎么改、怎么开 PR。
+
 Copilot 的本地模型验证与课程开发记录统一放在本仓库：
 
 - [项目工作记录：全部对话要点、决定和已做的工作 / Project log](docs/PROJECT_LOG.md)

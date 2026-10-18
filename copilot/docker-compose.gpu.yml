@@ -1,0 +1,12 @@
+# 让容器里的 Ollama 用 NVIDIA 显卡（Windows 要 Docker Desktop + WSL2 和最新的 NVIDIA 驱动；Linux 要装 nvidia-container-toolkit）。
+# 只在用了 docker-compose.ollama.yml 时加：
+#   docker compose -f copilot/docker-compose.yml -f copilot/docker-compose.ollama.yml -f copilot/docker-compose.gpu.yml up -d --build
+services:
+  ollama:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

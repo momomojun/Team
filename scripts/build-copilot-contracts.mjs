@@ -44,25 +44,34 @@ export function catalog() {
  * 只收用得到的字：公园和机场的名字、Intake 代码和提示词里出现的汉字
  */
 export function hantToHans() {
-  const toTraditional = OpenCC.Converter({ from: "cn", to: "tw" });
+  // 台湾、香港和 OpenCC 标准繁体的写法都收（“線 / 綫”“裡 / 裏”“著 / 着”）：各地用户打字不一样
+  const toTraditional = ["tw", "hk", "t"].map((to) => OpenCC.Converter({ from: "cn", to }));
+  const toSimplified = ["tw", "hk", "t"].map((from) => OpenCC.Converter({ from, to: "cn" }));
   const { parks: parkList, airports: airportList } = catalog();
   const texts = [
     ...parkList.flatMap((park) => [park.nameZh, ...park.aliases]),
     ...airportList.flatMap((airport) => [airport.nameZh, airport.city]),
   ];
-  for (const dir of ["../copilot/nps_copilot/", "../copilot/nps_copilot/prompts/"]) {
+  for (const dir of ["../copilot/nps_copilot/", "../copilot/nps_copilot/prompts/", "../copilot/nps_copilot/data/"]) {
     const url = new URL(dir, import.meta.url);
-    for (const name of readdirSync(url).filter((file) => /\.(py|txt)$/.test(file)).sort()) {
+    for (const name of readdirSync(url).filter((file) => /\.(py|txt|json)$/.test(file)).sort()) {
       texts.push(readFileSync(new URL(name, url), "utf8"));
     }
   }
   const chars = [...new Set(texts.join("").match(/[一-鿿]/g) ?? [])].sort();
   const map = {};
   for (const char of chars) {
-    const traditional = toTraditional(char);
-    if (traditional !== char && [...traditional].length === 1) map[traditional] = char;
+    // 简体字 → 各地繁体写法；各地名表里本来就是繁体的字 → 简体
+    for (const convert of toTraditional) {
+      const traditional = convert(char);
+      if (traditional !== char && [...traditional].length === 1 && !(traditional in map)) map[traditional] = char;
+    }
+    for (const convert of toSimplified) {
+      const simplified = convert(char);
+      if (simplified !== char && [...simplified].length === 1 && !(char in map)) map[char] = simplified;
+    }
   }
-  return map;
+  return Object.fromEntries(Object.entries(map).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)));
 }
 
 if (process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, "/").split("/").pop())) {

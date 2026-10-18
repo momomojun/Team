@@ -32,6 +32,16 @@ GHCR 的包第一次推上去默认是私有的：别的机器要拉，先 `dock
 
 ## 部署（本机）
 
+电脑上没有 Ollama 的（比如组员），用一键启动：Docker 同时起 Ollama 和 Copilot，第一次自动下载模型（Ollama 镜像约 3.8 GB + 模型约 3.4 GB），有 NVIDIA 显卡的加上 `docker-compose.gpu.yml`：
+
+```bash
+docker compose -f D:/LLM/Team/copilot/docker-compose.yml -f D:/LLM/Team/copilot/docker-compose.ollama.yml -f D:/LLM/Team/copilot/docker-compose.gpu.yml up -d --build
+```
+
+`--build` 是按这份代码在本机构建 Copilot 镜像；已经发过版、想用 GHCR 上的某个版本，去掉 `--build`、设 `COPILOT_TAG`。
+
+已经开着本机 Ollama 的（momomojun 的电脑），只起 Copilot：
+
 ```bash
 powershell -File D:/LLM/Team/experiments/local-model-validation/start-local.ps1
 ```

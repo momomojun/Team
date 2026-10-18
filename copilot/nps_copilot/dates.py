@@ -56,10 +56,12 @@ PATTERNS = [
     (re.compile(r"(?P<y>\d{4})\s*年\s*" + NUM.replace("(", "(?P<m>", 1) + r"\s*月(?:\s*" + NUM.replace("(", "(?P<d>", 1) + r"\s*[日号])?"), "zh"),
     # 明年6月1日、今年十二月、6月1号、五月
     (re.compile(r"(?P<rel>今年|明年|后年)?\s*" + NUM.replace("(", "(?P<m>", 1) + r"\s*月(?:份)?(?:\s*" + NUM.replace("(", "(?P<d>", 1) + r"\s*[日号])?"), "zh"),
+    # 2027 June 8 / 2027 Jun 8：年份写在前面（新加坡、香港用户夹英文时常这么写）
+    (re.compile(r"\b(?P<y>\d{4})\s+(?P<mn>" + MONTH_EN + r")\b\.?(?:\s+(?P<d>\d{1,2})(?!\d)(?:st|nd|rd|th)?)?", re.I), "en"),
+    # 1 June 2027 / 8th June：要在“June 1, 2027”前面，不然“8 June 2027”会被读成“June 2027”、丢了日子
+    (re.compile(r"\b(?P<d>\d{1,2})(?:st|nd|rd|th)?\s+(?:of\s+)?(?P<mn>" + MONTH_EN + r")\b(?:,?\s+(?P<y>\d{4}))?", re.I), "en"),
     # June 1, 2027 / June 1 / June 2027 / next June
     (re.compile(r"(?P<rel>next|this)?\s*\b(?P<mn>" + MONTH_EN + r")\b\.?\s*(?:(?P<d>\d{1,2})(?!\d)(?:st|nd|rd|th)?)?(?:,?\s*(?P<y>\d{4}))?", re.I), "en"),
-    # 1 June 2027
-    (re.compile(r"\b(?P<d>\d{1,2})\s+(?P<mn>" + MONTH_EN + r")\b(?:\s+(?P<y>\d{4}))?", re.I), "en"),
     # 只有年份：2027年、明年（和前面的月日合起来用）
     (re.compile(r"(?P<y>\d{4})\s*年(?!\s*\d)|(?P<rel>今年|明年|后年)(?!\s*[\d零一二两三四五六七八九十]+\s*月)"), "year"),
 ]
@@ -134,6 +136,8 @@ def next_occurrence(month: int, day: int, reference: dt.date) -> dt.date | None:
 
 
 DAYS_RE = re.compile(r"(?<!第)(\d+|" + ZH_NUMBER + r"|" + "|".join(EN_NUMBERS) + r")\s*(?:个)?\s*(天|days?\b|晚|夜|nights?\b)", re.I)
+# 台湾、香港常说“玩五日”“三日游”：“日”也是天数，但不能把日期（6月5日、1日到5日）当成天数
+DAYS_RI = re.compile(r"(?<![第月号\d零一二两三四五六七八九十到至~\-–—])(\d+|" + ZH_NUMBER + r")\s*(?:个)?\s*日(?![本程期子])")
 WEEK_RE = re.compile(r"(?<!第)(\d+|[一二两三]|a|one|two|three)\s*(?:个)?\s*(周|星期|礼拜|weeks?\b)", re.I)
 
 
@@ -144,11 +148,11 @@ def parse_days(span: str | None) -> int | None:
         return None
     text = normalize(span)
     weeks = WEEK_RE.findall(text)
-    if weeks and not DAYS_RE.search(text):
+    if weeks and not DAYS_RE.search(text) and not DAYS_RI.search(text):
         token = weeks[0][0].lower()
         count = 1 if token in ("a", "one") else zh_number(token)
         return count * 7 if count and len(weeks) == 1 else None
-    matches = DAYS_RE.findall(text)
+    matches = DAYS_RE.findall(text) + [(number, "天") for number in DAYS_RI.findall(text)]
     if not matches:
         return None
     # “5天4晚”：按天算

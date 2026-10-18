@@ -205,6 +205,12 @@ Shipped so far:
 - 本机 8765 端口被用户另一个项目（ski-deals）占着，没动它；compose 加了 `COPILOT_PORT`，演示用 8766。
 - **还没做、要用户点头的**：打 tag（比如 `copilot-v0.2.0`）、推镜像到 GHCR、建 GitHub Release；GHCR 包默认私有，要不要公开也是用户决定。换镜像的回滚要等发过两个版本。
 - 之前提过、用户还没回答的：删掉已经合并的远程分支、打开“合并后自动删除分支”。
+- PR #6 第一次 CI 没过：网站测试检查 `copilot/contracts/hant-to-hans.json` 和代码一致，新加的 Python 文件里有新汉字、没重新生成。重跑 `npm run copilot:contracts` 修好，README 里写明“改了 Copilot 的 Python 文件也要重新生成”。
+- 用户说第三步“一点都没看懂”，要按初学者解释：用手机 App、箱子、便利贴、网盘打比方讲了 Docker、tag、推送、GHCR、拉回来再测、Release。用户又问了几个问题：
+  1. **繁简对照表不一定对，香港、台湾、新加坡、大马用词不一样**：用户说得对。实测三藩市、卡加利、洛磯山、班芙、賭城、“玩五日”、香港字形都认不出。做了各地叫法表（维基数据 + 中文维基各地区标题和重定向，`copilot/scripts/regional_names.py`）、香港字形、粤语说法、“N日”、英文日期顺序；另写 17 组各地写法的评测（先提交期望再跑：第一次 14/17，修完 17/17，当回归门禁）。见 [copilot/eval/RESULTS.md](../copilot/eval/RESULTS.md)。
+  2. **Docker 为什么连 Ollama、别人没有 Ollama 怎么办**：Ollama 是在本机跑模型的程序（像视频播放器，模型是视频文件）；模型几 GB、要显卡，所以没放进 Copilot 的镜像。别人没有 Ollama 时网站照常用，Copilot 听不懂话。用户要求做一键启动：`copilot/docker-compose.ollama.yml`（连官方 Ollama 镜像 0.40.5 一起起，第一次自动下载模型）、`docker-compose.gpu.yml`（用 NVIDIA 显卡）；`docker-compose.yml` 加了 `build`，没发过版也能 `--build` 按源码构建。
+  3. **组员想运行和改这个项目要怎么做**：写了根目录的 [ONBOARDING.md](../ONBOARDING.md)（装什么、怎么跑网站和 Copilot 的三种方式、改东西的流程、5 项检查、改了什么要多跑什么、用 AI 助手、常见问题），README 里链过去。
+- 发现：`main` 分支没有保护，协作者可以直接推到 `main`。建议用户在 GitHub 设置里打开“合并前必须走 PR、检查必须通过”（要用户自己决定、自己改设置）。
 
 ## 9. 搜索额度（10-16）
 

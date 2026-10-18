@@ -20,7 +20,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from . import catalog, prompts
-from .dates import DateParts, date_range_days, merge, next_occurrence, parse_date_spans, parse_days, relative_month
+from .dates import DAYS_RE, DAYS_RI, WEEK_RE, DateParts, date_range_days, merge, next_occurrence, parse_date_spans, parse_days, relative_month
 from .providers import Provider
 from .text import contains, normalize
 
@@ -60,7 +60,8 @@ def is_english(text: str) -> bool:
     return letters > 0 and han == 0
 
 
-YES_WORDS = r"是的|是啊|是滴|是|对的|对呀|对啊|对|没错|没问题|确认|嗯嗯|嗯|好的|好|可以|行|就这天|就是|yes|yeah|yep|yup|correct|right|ok|okay|sure|exactly"
+# 后半是粤语（香港）的说法：系、啱、冇错、得
+YES_WORDS = r"是的|是啊|是滴|是|对的|对呀|对啊|对|没错|没问题|确认|嗯嗯|嗯|好的|好|可以|行|就这天|就是|yes|yeah|yep|yup|correct|right|ok|okay|sure|exactly|系呀|系啊|系|啱啊|啱|冇错|得"
 
 
 def yes(text: str) -> bool:
@@ -318,13 +319,17 @@ class Intake:
 
     def _rule_fill(self, message: str, had_days) -> list[str]:
         """模型漏掉、但原话里写得毫不含糊的条件，用规则补上（小模型常漏“玩4天”）。
-        只补天数：整句话里只有一处“N天 / N晚 / 一周”才补。补了的写进 trace，评测时和模型的成绩分开算"""
+        只补天数：整句话里“N天 / N日”“N晚 / N夜”“一周”各最多一处（“5天4晚”“四日三夜”可以，“30天……3天”不补）。
+        补了的写进 trace，评测时和模型的成绩分开算"""
         filled = []
         if self.days.value is None and had_days is None:
             days = parse_days(message)
-            matches = re.findall(r"\d+\s*(?:天|days?|晚|nights?)|[一二两三四五六七八九十]+\s*(?:天|晚)|一周|一个星期|a week", normalize(message), re.I)
-            if days is not None and len(matches) == 1:
-                self.days = Field(days, "user", matches[0])
+            text = normalize(message)
+            nights = [m.group(0) for m in DAYS_RE.finditer(text) if re.search(r"晚|夜|night", m.group(2), re.I)]
+            day_like = [m.group(0) for m in DAYS_RE.finditer(text) if m.group(0) not in nights] + [m.group(0) for m in DAYS_RI.finditer(text)]
+            weeks = [m.group(0) for m in WEEK_RE.finditer(text)]
+            if days is not None and len(day_like) <= 1 and len(nights) <= 1 and len(weeks) <= 1 and (day_like or nights or weeks):
+                self.days = Field(days, "user", (day_like or nights or weeks)[0])
                 filled.append("days")
         # 公园名：模型一个都没摘、而整句话里能按目录认出公园的（9B 常漏“黄石”“大峡谷”），按目录补
         if not self.parks.value and not self.unsupported:
@@ -406,8 +411,9 @@ class Intake:
 
     def _read_party(self, span: str) -> None:
         text = normalize(span)
-        negated = re.search(r"不带|没有|不跟|without|\bno\b", text, re.I)
-        if re.search(r"老人|爸妈|父母|长辈|爷爷|奶奶|外公|外婆|老爸|老妈|senior|elderly|parents|grand(?:parents?|ma|pa|mother|father)|granny", text, re.I):
+        negated = re.search(r"不带|没有|不跟|唔带|冇带|冇|唔跟|without|\bno\b", text, re.I)
+        # 阿爸、阿妈、老豆、两老、公公、婆婆是香港、新马常见的叫法
+        if re.search(r"老人|爸妈|父母|长辈|爷爷|奶奶|外公|外婆|老爸|老妈|阿爸|阿妈|老豆|两老|公公|婆婆|阿嫲|阿公|阿婆|senior|elderly|parents|grand(?:parents?|ma|pa|mother|father)|granny", text, re.I):
             self.party["seniors"] = not negated
         from .dates import EN_NUMBERS, zh_number
         words = "|".join(sorted(EN_NUMBERS, key=len, reverse=True))
@@ -417,27 +423,29 @@ class Intake:
             self.party["youngestKid"] = min(min(values), self.party.get("youngestKid", 99))
             self.party.pop("_kidAgeUnknown", None)
         # “婴儿车”只说明带推车，不说明孩子多大
-        elif re.search(r"婴儿(?!车)|宝宝|baby(?! ?(?:stroller|carrier))|infant", text, re.I) and not negated:
+        # 香港说的 BB 是婴儿，BB车是婴儿车
+        elif re.search(r"婴儿(?!车)|宝宝|(?<![a-z])bb(?![a-z]|车)|baby(?! ?(?:stroller|carrier))|infant", text, re.I) and not negated:
             self.party["youngestKid"] = 0
         elif re.search(r"toddler|幼儿", text, re.I) and not negated:
             self.party["youngestKid"] = min(2, self.party.get("youngestKid", 99))
         age = bool(values)
-        if re.search(r"婴儿车|推车|stroller", text, re.I):
+        if re.search(r"婴儿车|推车|bb车|stroller", text, re.I):
             self.party["stroller"] = not negated
         if re.search(r"轮椅|wheelchair", text, re.I):
             self.party["wheelchair"] = not negated
-        if re.search(r"孩子|小孩|儿子|女儿|kids?|child|children|\bson\b|daughter", text, re.I) and "youngestKid" not in self.party and not negated and not age:
+        if re.search(r"孩子|小孩|儿子|女儿|小朋友|细路|仔女|囝囝|囡囡|kids?|child|children|\bson\b|daughter", text, re.I) and "youngestKid" not in self.party and not negated and not age:
             self.party.setdefault("_kidAgeUnknown", True)
         self.party_evidence.append(span)
 
     def _read_preference(self, span: str) -> None:
         text = normalize(span)
         pace = None
-        if re.search(r"轻松|不要太累|不想太累|别安排太满|别排太满|少安排|慢慢|悠闲|relax|easy|leisurely|not too (busy|packed)", text, re.I):
+        # 后面是台湾、香港（粤语）、新马的说法：不要太赶、唔好太赶、唔想太攰（累）、休闲
+        if re.search(r"轻松|不要太累|不想太累|别安排太满|别排太满|少安排|慢慢|悠闲|悠哉|休闲|不要太赶|别太赶|不想赶|唔好太赶|唔想太赶|唔使赶|唔好太攰|唔想太攰|relax|easy|leisurely|chill|laid[- ]back|not too (busy|packed)", text, re.I):
             pace = "relaxed"
-        elif re.search(r"适中|普通|一般就行|balanced|moderate|normal", text, re.I):
+        elif re.search(r"适中|普通|一般就行|正常|中等|balanced|moderate|normal", text, re.I):
             pace = "normal"
-        elif re.search(r"多看|紧凑|多去几个|尽量多|see as much|packed|as many", text, re.I):
+        elif re.search(r"多看|紧凑|多去几个|尽量多|睇多啲|多睇|去多啲|see as much|packed|as many", text, re.I):
             pace = "packed"
         if pace and not re.search(r"不想多看|别太紧凑", text):
             self.pace = Field(pace, "user", span)

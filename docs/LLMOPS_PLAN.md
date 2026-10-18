@@ -91,6 +91,8 @@
 - 提示词版本（`copilot/nps_copilot/prompts.py`）、监控统计（`python -m nps_copilot stats`）、`docker-compose.yml`（`COPILOT_TAG` 选版本）。
 - 回滚演示：intake 提示词 v2 回归集 39/40、开发集 24/25，门禁挡住了；本机部署 v2 再只用环境变量切回 v1，同一句英文从追问天数变成排出行程。步骤和结果见 [copilot/RELEASE.md](../copilot/RELEASE.md)。
 - 换镜像的回滚要等发过两个版本才能演示。
+- 一键启动（`copilot/docker-compose.ollama.yml`、`docker-compose.gpu.yml`）：组员电脑上没有 Ollama 也能跑，第一次自动下载模型。组员上手见根目录的 [ONBOARDING.md](../ONBOARDING.md)。
+- 各地中文写法（香港、台湾、新马）：各地叫法表、香港字形、粤语说法，另加一组 17 条的回放门禁（`baseline-regional.json`）。
 
 原来的计划：
 

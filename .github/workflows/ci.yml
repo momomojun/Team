@@ -54,6 +54,8 @@ jobs:
         run: python copilot/eval/run.py --replay copilot/eval/recordings/qwen3.5_4b-q4_K_M.jsonl --gate copilot/eval/baseline.json --plan
       - name: Replay eval gate (held-out v1, now a regression set)
         run: python copilot/eval/run.py --cases copilot/eval/cases/holdout-v1.jsonl --replay copilot/eval/recordings/qwen3.5_4b-q4_K_M-holdout-v1.jsonl --gate copilot/eval/baseline-holdout.json --plan
+      - name: Replay eval gate (regional wording - Hong Kong, Taiwan, Singapore, Malaysia)
+        run: python copilot/eval/run.py --cases copilot/eval/cases/regional-v1.jsonl --replay copilot/eval/recordings/qwen3.5_4b-q4_K_M-regional-v1.jsonl --gate copilot/eval/baseline-regional.json --plan
       - uses: actions/upload-artifact@v4
         if: always()
         with:

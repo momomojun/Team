@@ -237,6 +237,7 @@ README 里的截图用 `npm run docs:screenshots` 重新生成（`scripts/screen
 | 餐饮、住宿成本基准 | GSA Per Diem API | api.data.gov |
 | 景点坐标、加油站、亚洲超市等 POI | OpenStreetMap（Overpass） | 不需要 |
 | 亚洲超市补漏 | Overture Maps places（AWS 上的公开 GeoParquet，duckdb 按范围读；CDLA Permissive 2.0，页面上注明来源） | 不需要 |
+| Copilot 认各地中文叫法 | 维基数据（机场 IATA 代码 → 服务的城市）和中文维基各地区标题（varianttitles）、重定向（CC BY-SA 4.0），`python copilot/scripts/regional_names.py` 生成 `copilot/nps_copilot/data/regional_names.json` | 不需要 |
 | 景点照片 | Wikimedia Commons（按授权署名） | 不需要 |
 | 车程 | OSRM 公共服务（景点和推荐住宿预先生成车程表；自定义住处在浏览器里实时查） | 不需要 |
 | 搜索酒店 / 地址 | Photon（基于 OpenStreetMap） | 不需要 |
