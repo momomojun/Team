@@ -251,7 +251,7 @@ cd copilot && COPILOT_PROMPT_INTAKE=v2 python eval/run.py --record --plan
 
 ### 启动一个版本
 
-- 电脑上没有 Ollama：用第 4 节的一键启动 B。已经发过版、想用 GHCR 上的某个版本，去掉 `--build`、设 `COPILOT_TAG=copilot-v0.2.0`。
+- 电脑上没有 Ollama：用第 4 节的一键启动 B。不想自己构建、直接用发布好的版本，去掉 `--build`、设 `COPILOT_TAG=copilot-v0.2.0`（会从 GHCR 下载约 500 MB 的镜像）。
 - 已经开着本机 Ollama（momomojun 的电脑）：只起 Copilot，容器通过 `host.docker.internal` 连宿主机的 Ollama（Ollama 只监听 127.0.0.1 也连得上）：
 
 ```bash
@@ -279,7 +279,7 @@ git -C D:/LLM/Team push origin copilot-v0.2.0
 
 3. `Copilot release` workflow 会检查 tag 和代码里的版本一致，再跑一遍测试和三组门禁，构建镜像、冒烟测试、推到 `ghcr.io/momomojun/team-copilot:<tag>` 和 `:latest`，从 GHCR 拉回来再冒烟一次，最后建 GitHub Release（附评测报告、镜像 digest、默认提示词版本）。任何一步没过都不发。
 
-GHCR 的包第一次推上去默认是私有的：别的机器要拉，先 `docker login ghcr.io`（用有 `read:packages` 权限的 token，自己在终端里登录），或者在 GitHub 包的设置里改成公开。
+镜像在 GHCR 上是公开的（仓库公开，包跟着公开），任何人不用登录就能拉。发过的版本见仓库的 [Releases](https://github.com/momomojun/Team/releases)。
 
 ### 回滚
 

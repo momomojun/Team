@@ -45,7 +45,7 @@ export const suitability: Record<string, Suitability> = {
     stroller: "yes",
     wheelchair: "yes",
     seniors: "ok",
-    noteZh: "官方说休息区的环线是压实碎石、符合 ADA，最大坡度 5%，有无障碍厕所；德纳里峰夏天大约只有三分之一的日子能看到。",
+    noteZh: "官方说休息区的环线是压实碎石、符合 ADA，最大坡度 5%，有无障碍厕所；麦金利山夏天大约只有三分之一的日子能看到。",
     source: PHYS,
   },
   "dena-savage-river": {
@@ -70,7 +70,7 @@ export const suitability: Record<string, Suitability> = {
     stroller: "yes",
     wheelchair: "yes",
     seniors: "ok",
-    noteZh: "3 号公路边的观景点，下车或在车上就能看德纳里峰。",
+    noteZh: "3 号公路边的观景点，下车或在车上就能看麦金利山。",
   },
   "dena-talkeetna": {
     kidsFromAge: 3,
@@ -79,7 +79,7 @@ export const suitability: Record<string, Suitability> = {
     seniors: "caution",
     hazards: ["motion", "remote"],
     noteZh:
-      "官网说婴儿也能坐，每人一个座位，2 岁以下要用 FAA 认证的安全座椅（可以向 K2 借）；小飞机颠簸、耳压变化大，K2 建议带小孩选短航线、加冰川降落，别选绕德纳里峰的高空航线。上下小飞机要自己爬，行动不便的先问航空公司。",
+      "官网说婴儿也能坐，每人一个座位，2 岁以下要用 FAA 认证的安全座椅（可以向 K2 借）；小飞机颠簸、耳压变化大，K2 建议带小孩选短航线、加冰川降落，别选绕麦金利山的高空航线。上下小飞机要自己爬，行动不便的先问航空公司。",
     source: "https://flyk2.com/flying-with-kids",
   },
   "dena-mckinley-station": {

@@ -1024,7 +1024,7 @@ export const activities: ParkActivity[] = [
     nameZh: "德纳里观光飞行",
     nameEn: "Denali Flightseeing",
     months: [5, 6, 7, 8, 9],
-    summary: "从 Talkeetna 或公园入口附近坐小飞机绕北美最高峰飞行，可以加选降落在 Ruth 冰川上站 20–30 分钟；德纳里峰常被云遮住，从空中看到的机会比地面大得多。",
+    summary: "从 Talkeetna 或公园入口附近坐小飞机绕北美最高峰飞行，可以加选降落在 Ruth 冰川上站 20–30 分钟；麦金利山常被云遮住，从空中看到的机会比地面大得多。",
     booking:
       "Talkeetna 的 K2 Aviation、Talkeetna Air Taxi 等公司约 $285–615/人，含冰川降落一般 $475 以上；天气不好会改期或取消（降落不成会退冰川降落的差价），行程里留一两天机动。",
     attraction: "dena-talkeetna",

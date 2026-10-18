@@ -2,33 +2,31 @@
 
 做到哪了、下一步做什么、有哪些事等仓库主人决定、做过哪些决定和为什么，以及按时间的完整记录。**怎么做事**见 [GUIDE.md](GUIDE.md)。
 
-**English summary.** This repository (`momomojun/Team`) is the CSYE 7374 (LLMOps, Fall 2026) team project. It builds on **NPS Guide**, a Chinese-language U.S. national park trip planner that Jun Zhai built before the course (copied from `momomojun/NPS-guide` at commit `4590c45`, without history). The course work adds **NPS Guide Copilot**, an LLM layer that understands trip requests and explains plans while the deterministic engine does the planning, plus the LLMOps pipeline around it. Phases 1–3 are done as of 2026-10-17: contracts and the `plan_trip` tool; the Python Copilot (Intake → plan_trip → Critic → Writer) on a local Qwen3.5 4B with three replay eval gates in CI (dev 25/25, regression 37/40, regional wording 17/17); and Docker images, a tag-driven release workflow to GHCR, versioned prompts with env-var rollback, run-log monitoring and a rollback demo. No release has been tagged yet. Next: a fresh unseen eval set, ablations, and a chat panel on the website.
+**English summary.** This repository (`momomojun/Team`) is the CSYE 7374 (LLMOps, Fall 2026) team project. It builds on **NPS Guide**, a Chinese-language U.S. national park trip planner that Jun Zhai built before the course (copied from `momomojun/NPS-guide` at commit `4590c45`, without history). The course work adds **NPS Guide Copilot**, an LLM layer that understands trip requests and explains plans while the deterministic engine does the planning, plus the LLMOps pipeline around it. Phases 1–3 are done as of 2026-10-17: contracts and the `plan_trip` tool; the Python Copilot (Intake → plan_trip → Critic → Writer) on a local Qwen3.5 4B with three replay eval gates in CI (dev 25/25, regression 37/40, regional wording 17/17); and Docker images, a tag-driven release workflow to GHCR, versioned prompts with env-var rollback, run-log monitoring and a rollback demo. The first release, `copilot-v0.2.0`, was published on 2026-10-18 (public image on GHCR). Next: a fresh unseen eval set, ablations, and a chat panel on the website.
 
 ## 现状（2026-10-17）
 
 | 部分 | 状态 |
 |---|---|
-| 网站 NPS Guide | 能用：52 座美国国家公园、加拿大 3 座、4 处园外名胜，871 个景点；英文版、同行适合度、时区、59 座全部按官方资料核对过。部署在 Vercel（https://team-peach-five.vercel.app ，没设访问密码） |
+| 网站 NPS Guide | 能用：52 座美国国家公园、加拿大 3 座、4 处园外名胜，871 个景点；英文版、同行适合度、时区、59 座全部按官方资料核对过。部署在 Vercel（https://team-peach-five.vercel.app ，不设访问密码） |
 | 阶段 1：契约和工具 | 完成（PR #4）：`TripRequest` / `TripResult` v1、`plan_trip` 工具 |
 | 阶段 2：Python Copilot | 完成（PR #5）：Intake、Critic、Writer、Provider、日志；默认本机 Qwen3.5 4B |
-| 阶段 3：CI/CD | 完成（PR #6）：5 项 PR 检查（3 项必需）、Docker 镜像、`release.yml` 发版流程、提示词版本和回滚、监控、Ollama 一键启动；**还没真的发过版** |
+| 阶段 3：CI/CD | 完成（PR #6）：5 项 PR 检查（3 项必需）、Docker 镜像、`release.yml` 发版流程、提示词版本和回滚、监控、Ollama 一键启动。**10-18 发了第一个版本 [`copilot-v0.2.0`](https://github.com/momomojun/Team/releases/tag/copilot-v0.2.0)**，镜像 `ghcr.io/momomojun/team-copilot:copilot-v0.2.0` 公开可拉 |
 | 阶段 4：评测和对照实验 | 进行中：开发集 25、复杂情况 40、各地写法 17 组都当回归门禁；还缺一批没见过的、对照实验 |
 | 阶段 5：接进网站 | 没开始 |
-| 仓库 | `main` 受保护（必须走 PR、3 项检查通过）；协作者 JadenChen10、huilingfu95-source |
+| 仓库 | `main` 受保护（必须走 PR、3 项检查通过）；合并后自动删除分支；协作者 JadenChen10、huilingfu95-source |
 
 ## 等仓库主人决定的事
 
-- **发第一个版本 `copilot-v0.2.0`**：打 tag、推镜像到 GHCR、建 GitHub Release；GHCR 的包要不要公开。换镜像的回滚要等发过两个版本才能演示。
-- **清理分支**：删掉已经合并的远程分支，打开“合并后自动删除分支”。
-- **网站要不要设访问密码**（`SITE_PASSWORD`）：现在网址谁都能打开，而 Google 评分快照、自用抓取不适合公开。
-- **德纳里的山名**：NPS 2025 年起写 Mount McKinley，网站现在写德纳里。
-- **同行适合度两处判断**：梅萨维德崖居导览官方允许背着婴儿去，数据写的是“建议 4–6 岁以上”；几条很累、但没有悬崖窄脊的路线判成了“不建议老人”。
+- **同行适合度两处判断**（10-18 已经向仓库主人解释，等回复）：
+  - 梅萨维德的崖居导览（悬崖宫殿、阳台屋、长屋）：官方允许用背带背着婴儿去，但数据写的是“建议 4–6 岁以上”，所以带婴儿的家庭自动生成攻略不会排它们。改成“0 岁可去、提醒要爬梯子”，还是保持现在这样。
+  - 几条特别累、但没有悬崖窄脊的路线（幽鹤的 Iceline 和伯吉斯页岩、仙纳度的 Old Rag、海峡群岛的圣米格尔岛）判成了“不建议老人”，带老人时不排。改成“老人量力而行”（照排、提醒），还是保持。
 
 ## 下一步
 
 1. 另写一批没看过的评测样例（holdout-v2），**先提交期望再跑**；逐步扩到约 150 条（中英文和混合；日期冲突；多公园；带小孩、老人、轮椅；改口、否定、错别字；提示注入；要求去关闭、要抽签的景点）。
 2. 对照实验（期末报告要用）：单个模型直接回答 vs 流水线；有 Critic vs 没有；Qwen3.5 4B vs 9B。固定数据下的回归和“关闭数据更新后答案跟着变”分开测。
-3. 发版（等决定）、做一次换镜像的回滚演示。
+3. 发下一个版本（比如 0.2.1）以后，做一次换镜像的回滚演示。
 4. 阶段 5：行程页加对话面板。用户用自然语言说需求 → Copilot 追问、确认 → 生成行程（就是现在“自动生成攻略”的结果）→ 用户可以继续说“第二天轻松一点”“换成住 Jackson”；显示每条说明的来源，没把握时明说；没有 Copilot 时页面照旧能用。
 5. 一个很合适的 LLM 用途：从 NPS 公告里提取封路信息，取代现在手动维护的 `closures.ts`。
 6. 网站这边的待办：[archive/audit/2026-10-16/_followups.md](archive/audit/2026-10-16/_followups.md)（北瀑布、奥林匹克、黄石、加州各园的施工延误和次要关闭；大峡谷南缘住宿暂停、红杉营地季节；锡安 2026 年 6 月起取消隧道通行证）；按日期的设施开放、充电桩打卡（[DEVELOPMENT.md](DEVELOPMENT.md#路线图)）。
@@ -72,6 +70,8 @@
 - **事实以英文官方资料为准**（NPS、Parks Canada、运营商官网）；中文是当初转述的，可能有误差，中英文一起改。
 - **英文版**（`/en`）按英语母语的写法另写，不是逐句翻译；英制单位、12 小时制。
 - **所有提交说明、PR 标题和描述写中英双语**（10-16 起）。
+- 网站不设访问密码（10-18 仓库主人定的）。注意：Google 评分快照按 Google 条款不能公开展示，正式公开前要换成 Google Places API 或去掉数字（[DEVELOPMENT.md](DEVELOPMENT.md#注意事项)）。
+- 地名用官方名称：北美最高峰叫**麦金利山 / Mount McKinley**（NPS 2025 年起的写法），公园仍叫德纳里国家公园 / Denali National Park（10-18 仓库主人定的）。
 - 不爬小红书；不登录任何网站；不替用户填写密钥或密码；`DATA_GOV_API_KEY` 由用户自己在 Vercel 和 `.env.local` 里设置，不写进任何文件或聊天记录。
 - Copilot 认各地中文写法（香港、台湾、新马），名字从维基数据和中文维基生成、可以重跑，不凭记忆手写。
 
@@ -189,3 +189,10 @@
 
 - 用户觉得文档太散、要维护的太多。原来要靠人维护的有 12 份，同一件事写在三四个地方（“怎么跑 Copilot”写了 4 遍，“做到哪一步”写了 3 遍）。
 - 收成：[GUIDE.md](GUIDE.md)（怎么做事）、本文件（现状和记录）、[DEVELOPMENT.md](DEVELOPMENT.md)（网站技术参考）、[COPILOT.md](COPILOT.md)（Copilot 技术参考）、[ENGLISH.md](ENGLISH.md)，加上评测成绩 [RESULTS.md](../copilot/eval/RESULTS.md)。原来的 `ONBOARDING.md`、`copilot/RELEASE.md`、`docs/PROJECT_LOG.md`、`docs/LLMOPS_PLAN.md` 并进去以后删了；核对记录、任务说明和另一个助手的讨论记录移到 [archive/](archive/)。规则：一件事只写一处，别处放链接。
+
+### 10-18：第一次发版、清理分支、麦金利山
+
+- 仓库主人对待决定的事：发版、删分支、网站不设密码、山名改回官方名称 Mount McKinley，所有语言都改；同行适合度那两处没看懂，重新解释了。
+- 发版：在 `main`（PR #7 合并后）打 `copilot-v0.2.0`，发版流程一次跑通（测试、三组门禁、构建、冒烟、推 GHCR、拉回再冒烟、建 Release）。镜像是公开的，不登录也能拉。
+- 删掉了 7 个已经合并的远程分支和本地分支，打开了“合并后自动删除分支”。
+- 山名：按 NPS 官网（首页写 “North America's tallest peak, 20,310' Mount McKinley”），把指山的地方改成麦金利山 / Mount McKinley：中文 7 处、英文 7 处（繁体自动转成麥金利山），公园介绍里加一句“2015–2025 年官方名称是德纳里峰”。公园名、德纳里游客中心、阿拉斯加州立公园的 Denali Viewpoint South 这些不是山名，没改。
