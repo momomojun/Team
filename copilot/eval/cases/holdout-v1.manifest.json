@@ -11,5 +11,15 @@
   "nps_copilot/prompts/intake_v1.txt": "79d3b5f861f097f04fb47c92326cb6f6bf46cf21e1af1f32e820636feff6fd08",
   "nps_copilot/writer.py": "1b40afb37727216e7a4993608516f92f16e0f331a8096b8f0e7278390b8c5e40",
   "nps_copilot/critic.py": "5e4ba626d8c3a83d1b1b08e3e7314d00686c869653350c7eac2a4e2b49ad8c72"
- }
+ },
+ "changes_after_freeze": [
+  {
+   "date": "2026-10-18",
+   "cases": [
+    "H23-casual-yes → H23-assume-next-year",
+    "H24-this-year → H24-assume-this-year"
+   ],
+   "why": "仓库主人试用后改了规则：没说年份的月日不再问是哪一年（今年还没到的按今年、过去两个月以上的按明年）。这两组原来测“确认年份”的第二句，新规则下第一句就排出来，去掉第二句，期望的结果不变。上面的 sha256 是冻结时的版本。"
+  }
+ ]
 }

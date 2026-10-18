@@ -165,6 +165,76 @@ def parse_days(span: str | None) -> int | None:
     return None
 
 
+WEEKDAY_ZH = {"一": 0, "二": 1, "三": 2, "四": 3, "五": 4, "六": 5, "日": 6, "天": 6, "末": 5}
+WEEKDAY_EN = {name.lower(): i for i, name in enumerate(calendar.day_name)}
+WEEKDAY_EN.update({name.lower(): i for i, name in enumerate(calendar.day_abbr)})
+_EN_DAYS = "|".join(sorted(WEEKDAY_EN, key=len, reverse=True))
+RELATIVE_DAY = [  # 先长后短：“大后天”在“后天”前面
+    (re.compile(r"大后天"), 3), (re.compile(r"后天|day after tomorrow", re.I), 2),
+    (re.compile(r"明天|明日|tomorrow", re.I), 1), (re.compile(r"今天|今日|today", re.I), 0),
+]
+WEEK_ZH = re.compile(r"(下下|下个?|这个?|本)?\s*(?:周|星期|礼拜)\s*([一二三四五六日天末])|(下下|下个?|这个?|本)?\s*(周末)")
+WEEK_EN = re.compile(r"\b(next|this|on)?\s*(" + _EN_DAYS + r"|weekend)\b", re.I)
+MONTH_DAY_REL = re.compile(r"(下下个?|下个?|这个?|本)\s*月\s*(\d{1,2}|" + ZH_NUMBER + r")\s*[号日]")
+DAY_ONLY = re.compile(r"(?<![月\d])(\d{1,2}|" + ZH_NUMBER + r")\s*(?:号|日(?=\s*(?:出发|走|开始|到|飞|动身|启程|去)))")
+
+
+def relative_date(text: str, reference: dt.date) -> tuple[dt.date, str] | None:
+    """“今天”“明天”“后天”“这周六”“下周末”“19号”“下个月5号”“tomorrow”“next Saturday” → 具体哪一天（按 reference 算）和原话。
+    写了月份的（“10月19号”）不归这里管，交给 parse_date_spans；“玩五日”不是日期"""
+    text = normalize(text)
+    for pattern, offset in RELATIVE_DAY:
+        match = pattern.search(text)
+        if match:
+            return reference + dt.timedelta(days=offset), match.group(0)
+    match = WEEK_ZH.search(text)
+    if match:
+        prefix = match.group(1) or match.group(3) or ""
+        weekday = WEEKDAY_ZH[match.group(2)] if match.group(2) else 5  # 周末按周六算
+        return _weekday(reference, weekday, prefix), match.group(0).strip()
+    match = WEEK_EN.search(text)
+    if match and not re.search(MONTH_EN, text, re.I):
+        word = match.group(2).lower()
+        weekday = 5 if word == "weekend" else WEEKDAY_EN[word]
+        prefix = {"next": "下", "this": "这"}.get((match.group(1) or "").lower(), "")
+        return _weekday(reference, weekday, prefix), match.group(0).strip()
+    match = MONTH_DAY_REL.search(text)
+    if match:
+        offset = 2 if match.group(1).startswith("下下") else 1 if match.group(1).startswith("下") else 0
+        return _month_day(reference, offset, zh_number(match.group(2)), match.group(0).strip())
+    match = DAY_ONLY.search(text)
+    if match:
+        day = zh_number(match.group(1))
+        # 只说“5号”：这个月的 5 号已经过了就是下个月
+        return _month_day(reference, 1 if day is not None and day < reference.day else 0, day, match.group(0).strip())
+    return None
+
+
+def _month_day(reference: dt.date, offset: int, day: int | None, said: str) -> tuple[dt.date, str] | None:
+    if day is None or not 1 <= day <= 31:
+        return None
+    year, month = reference.year, reference.month + offset
+    while month > 12:
+        year, month = year + 1, month - 12
+    try:
+        return dt.date(year, month, day), said
+    except ValueError:
+        return None
+
+
+def _weekday(reference: dt.date, weekday: int, prefix: str) -> dt.date:
+    """“这周六”是这个星期（周一到周日）的周六，已经过了就算下一个；“下周六”是下个星期的；只说“周六”是今天以后最近的周六"""
+    monday = reference - dt.timedelta(days=reference.weekday())
+    if prefix.startswith("下下"):
+        return monday + dt.timedelta(days=14 + weekday)
+    if prefix.startswith("下"):
+        return monday + dt.timedelta(days=7 + weekday)
+    date = monday + dt.timedelta(days=weekday)
+    if prefix:  # 这周、本周
+        return date if date >= reference else date + dt.timedelta(days=7)
+    return date if date > reference else date + dt.timedelta(days=7)
+
+
 def relative_month(span: str, reference: dt.date) -> int | None:
     """“下个月”“下下个月”“这个月”“next month”“this month” → 几月（按 reference 算）"""
     text = normalize(span).lower()

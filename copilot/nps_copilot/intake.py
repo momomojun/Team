@@ -20,7 +20,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from . import catalog, prompts
-from .dates import DAYS_RE, DAYS_RI, WEEK_RE, DateParts, date_range_days, merge, next_occurrence, parse_date_spans, parse_days, relative_month
+from .dates import DAYS_RE, DAYS_RI, WEEK_RE, DateParts, date_range_days, merge, next_occurrence, parse_date_spans, parse_days, relative_date, relative_month
 from .providers import Provider
 from .text import contains, normalize
 
@@ -144,6 +144,8 @@ class Intake:
     asked_pace: bool = False
     unsupported: list[str] = field(default_factory=list)
     history: list[str] = field(default_factory=list)
+    # 这一轮自己定下来的事，回复时先说一句（“按 2026 年 10 月 19 日出发排”）
+    notes: list[str] = field(default_factory=list)
 
     # ---------- 对外 ----------
     def step(self, message: str) -> Turn:
@@ -162,6 +164,8 @@ class Intake:
             had_days = self.days.value
             self._absorb(kept, message)
             trace["rule_filled"] = self._rule_fill(message, had_days)
+        notices.extend(self.notes)
+        self.notes = []
         return self._render(notices, trace)
 
     def request(self) -> dict:
@@ -331,6 +335,10 @@ class Intake:
             if days is not None and len(day_like) <= 1 and len(nights) <= 1 and len(weeks) <= 1 and (day_like or nights or weeks):
                 self.days = Field(days, "user", (day_like or nights or weeks)[0])
                 filled.append("days")
+        # 日期：模型没摘到、原话里有“明天”“这周六”“19号”这种说法
+        if not self.start_date.value and not self.month.value and not (self.date and self.date.month) and self.pending is None:
+            if not parse_date_spans([message])[0] and self._read_relative_date(message):
+                filled.append("date")
         # 公园名：模型一个都没摘、而整句话里能按目录认出公园的（9B 常漏“黄石”“大峡谷”），按目录补
         if not self.parks.value and not self.unsupported:
             hits = catalog.find_all(message, catalog.parks())
@@ -362,10 +370,47 @@ class Intake:
                 return [main] + [code for code in codes if code != main]
         return codes  # 凑不到一起：留给 _render 问
 
+    def _read_relative_date(self, text: str, source: str = "user") -> bool:
+        """“明天”“这周六”“19号”“下个月5号”：按“今天”算出具体日期，直接定下来（不再问年份）"""
+        hit = relative_date(text, self.reference)
+        if hit is None:
+            return False
+        date, said = hit
+        unchanged = self.start_date.value == date.isoformat()
+        self.date = DateParts(date.year, date.month, date.day)
+        self.date_evidence = said
+        self.start_date = Field(date.isoformat(), source, said)
+        self.month = Field()
+        if not unchanged:  # 又说了一遍同一天（“19号早上几点出发”）就不再报一次
+            self.notes.append(self._date_note(date, said))
+        return True
+
+    def _assumed_year(self, month: int, day: int) -> int | None:
+        """没说年份的月日：今年还没到的就是今年；今年已经过了两个月以上的就是明年（“1月5日”在 10 月说，就是明年）。
+        刚过去不久的（今天 10 月 18 日说“10 月 15 日”）可能是说错了，返回 None，让对话去确认"""
+        candidate = next_occurrence(month, day, self.reference)
+        if candidate is None:
+            return None
+        if candidate.year == self.reference.year:
+            return candidate.year
+        try:
+            passed = (self.reference - dt.date(self.reference.year, month, day)).days
+        except ValueError:  # 2 月 29 日
+            return None
+        return candidate.year if passed > 60 else None
+
+    def _date_note(self, date: dt.date, said: str | None) -> str:
+        if self.language == "en":
+            return f"I'll plan from {calendar_name(date.month)} {date.day}, {date.year}" + (f" ({said})." if said else ".")
+        weekday = "一二三四五六日"[date.weekday()]
+        return f"按 {date.year} 年 {date.month} 月 {date.day} 日（周{weekday}）出发排" + (f"，就是你说的“{said}”。" if said else "。")
+
     def _read_dates(self, spans: list[str], message: str) -> int | None:
         """读日期；返回日期范围算出来的天数（“6月1日到6月5日”是 5），没有范围是 None"""
         found, _ = parse_date_spans(spans)
         joined = normalize(" ".join(spans))
+        if not found and self._read_relative_date(joined):
+            return None
         if not found:
             # “下个月”“next month”：按 reference 算出是几月（只给月份）
             month = relative_month(joined, self.reference)
@@ -382,6 +427,12 @@ class Intake:
         self.start_date = Field()
         self.month = Field()
         year = parts.resolved_year(self.reference)
+        assumed = False
+        if parts.month is not None and parts.day is not None and year is None:
+            year = self._assumed_year(parts.month, parts.day)
+            assumed = year is not None
+            if assumed:
+                self.notes.append(self._date_note(dt.date(year, parts.month, parts.day), None))
         if parts.month is not None and parts.day is not None:
             if year is not None:
                 try:
@@ -389,7 +440,8 @@ class Intake:
                     # “6月15日到盐湖城，第二天开始玩”：从第二天算
                     if re.search(r"第二天开始|次日开始|第二天才开始|next day|the day after", normalize(message), re.I):
                         start += dt.timedelta(days=1)
-                    self.start_date = Field(start.isoformat(), "user", joined)
+                    # 年份是按“今天”推断的（用户只说了月日）：记成 inferred
+                    self.start_date = Field(start.isoformat(), "inferred" if assumed else "user", joined)
                 except ValueError:
                     self.pending = {"kind": "bad_date", "text": f"{year} 年没有 {parts.month} 月 {parts.day} 日"}
         elif parts.month is not None:
