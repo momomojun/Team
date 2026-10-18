@@ -60,23 +60,39 @@ class Session:
     def send(self, message: str) -> Reply:
         self.turn += 1
         start = time.perf_counter()
+        restarted = bool(RESTART.search(message)) and self.turn > 1
+        if restarted:
+            # “帮我安排一个新的行程”：前面说过的条件全部清掉，从头问（这句话里有新条件的照样读）
+            self.intake = Intake(self.provider, dt.date.fromisoformat(self.reference_date))
+            self.last_request = self.last_result = None
+            self.last_text = ""
         turn = self.intake.step(message)
+        if restarted:
+            turn.notices.insert(0, "好，重新排一个新的行程，前面说的条件都不算了。" if (self.intake.language or "zh") != "en" else
+                                "Sure, starting a new trip from scratch.")
         trace = {"session": self.id, "turn": self.turn, "version": VERSION, "prompts": prompt_hashes(),
                  "reference_date": self.reference_date, "message": message, "intake": turn.trace}
+        zh = (self.intake.language or "zh") != "en"
         if turn.status != "ready":
-            text = "\n".join([*turn.notices, turn.question["text"]]) if turn.question else "\n".join(turn.notices)
+            head = list(turn.notices)
+            if qa.is_question(message) and not is_ack(message):
+                # 还没排出行程时也能问（“西雅图附近的三个国家公园是哪三个”）：先回答，再接着追问。
+                # 这句话里读到了条件的，只在查到了才回答；什么条件都没有的，查不到也说一声
+                said, trace["qa"] = qa.answer(message, self.intake.parks.value or [], self.last_text, self.provider, zh)
+                if trace["qa"].get("answer") == "model" or not turn.trace.get("absorbed"):
+                    head.append(said)
+            text = "\n".join([*head, turn.question["text"]]) if turn.question else "\n".join(head)
             reply = Reply("needs_input", text, turn.question, None, None, trace)
             return self._done(reply, start)
         request = turn.request
         trace["request"] = request
-        zh = (self.intake.language or "zh") != "en"
         if self.last_request is not None and same_request(self.last_request, request):
             # 条件没变：是提问就在网站资料里查着回答，“好的”、闲聊就简短回一句；都不把同一个行程再印一遍
             trace["unchanged"] = True
             if is_ack(message) or not qa.is_question(message):
                 said = unchanged_reply(message, zh)
             else:
-                said, trace["qa"] = qa.answer(message, request["parks"], self.last_text, self.provider, zh)
+                said, trace["qa"] = qa.answer(message, request["parks"], self.last_text, self.provider, zh, stop_ids(self.last_result))
             text = "\n".join([*turn.notices, said])
             return self._done(Reply("planned", text, None, request, self.last_result, trace), start)
         changes = writer_module.describe_changes(self.last_request, request, zh) if self.last_request else []
@@ -112,7 +128,13 @@ class Session:
                 head.extend(writer_module.lodging_changes(self.last_result, result, zh))
             trace["changes"] = changes
         self.last_request, self.last_result, self.last_text = user_request, result, text
-        return self._done(Reply("planned", "\n".join([*head, text]), None, request, result, trace), start)
+        tail = []
+        if changes and qa.is_question(message):
+            # 一句话里既改了条件又在问（“三座都去，要几天？”）：先给新行程，再回答查得到的那部分；查不到就不多说
+            said, trace["qa"] = qa.answer(message, request["parks"], text, self.provider, zh, stop_ids(result))
+            if trace["qa"].get("answer") == "model":
+                tail.append(said)
+        return self._done(Reply("planned", "\n".join([*head, text, *tail]), None, request, result, trace), start)
 
     def _done(self, reply: Reply, start: float) -> Reply:
         reply.trace["status"] = reply.status
@@ -123,6 +145,14 @@ class Session:
             with path.open("a", encoding="utf-8") as handle:
                 handle.write(json.dumps(reply.trace, ensure_ascii=False, default=str) + "\n")
         return reply
+
+
+RESTART = re.compile(r"新的?(行程|旅行|计划|攻略)|另(一|外一?)个(行程|旅行|计划|攻略)|重新开始|从头(开始|来)|换个(行程|旅行|计划)|"
+                     r"start over|from scratch|new (trip|plan|itinerary)|another trip", re.I)
+
+
+def stop_ids(result: dict | None) -> list[str]:
+    return [stop["id"] for day in (result or {}).get("days", []) for stop in day["stops"] if stop.get("id")]
 
 
 def same_request(before: dict, after: dict) -> bool:

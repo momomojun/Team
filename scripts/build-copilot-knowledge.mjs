@@ -5,8 +5,10 @@ import { activities } from "../src/data/activities.ts";
 import { attractions } from "../src/data/attractions/index.ts";
 import { tempClosures as closures } from "../src/data/closures.ts";
 import { lodgingOptions } from "../src/data/lodging.ts";
+import { nationalParks } from "../src/data/national-parks.ts";
 import { parks } from "../src/data/parks.ts";
 import { suitability } from "../src/data/suitability/index.ts";
+import { getDictionary } from "../src/i18n/dictionaries.ts";
 import { travelMinutes } from "../src/lib/travel.ts";
 
 const DIFFICULTY = { easy: "轻松", moderate: "中等", hard: "难" };
@@ -28,6 +30,7 @@ const sentence = (text) => (text && !/[。！？]$/.test(text) ? `${text}。` : 
 
 export function knowledge() {
   const parkById = new Map(parks.map((park) => [park.code, park]));
+  const regions = getDictionary("zh-Hans").regions;
   const docs = [];
 
   for (const park of parks) {
@@ -45,7 +48,47 @@ export function knowledge() {
         sentence(park.seasonNote),
         areas ? `片区：${areas}。` : "",
         `常用机场：${park.airports.join("、")}。`,
+        `所在片区：${regions[park.region]}。`,
       ].join(""),
+    });
+  }
+
+  // 片区：“西雅图附近有哪几座国家公园”“介绍一下西雅图周边”。park 是空的：不管行程是哪座公园都查得到
+  for (const [region, area] of Object.entries(regions)) {
+    const members = parks.filter((park) => park.region === region);
+    if (!members.length) continue;
+    const base = area.endsWith("周边") ? area.slice(0, -2) : null;
+    docs.push({
+      id: `region:${region}`,
+      type: "region",
+      park: "",
+      members: members.map((park) => park.code),
+      title: area,
+      names: [...new Set([area, ...(base ? [`${base}附近`, `${base}一带`] : [])])],
+      text: [
+        `${area}（网站上的片区）一共 ${members.length} 处：`,
+        members.map((park) => `${label(park.nameZh, park.nameEn)}，${park.stateEn}，${park.tagline}${park.bestMonths?.length ? `，最适合 ${months(park.bestMonths)}` : ""}`).join("；") + "。",
+        ...members.filter((park) => park.nearby?.length).map((park) => `${park.nameZh}常和${park.nearby.map((code) => parkById.get(code)?.nameZh ?? code).join("、")}一起玩。`),
+      ].join(""),
+    });
+  }
+
+  // 州：“华盛顿州有哪些国家公园”。按美国 63 座国家公园算，网站没收录的也列出来
+  const byState = new Map();
+  for (const park of nationalParks) {
+    for (const state of park.statesZh.split("、")) byState.set(state, [...(byState.get(state) ?? []), park]);
+  }
+  for (const [state, members] of byState) {
+    const full = state.endsWith("州") || state === "加州" ? state : `${state}州`;
+    docs.push({
+      id: `state:${state}`,
+      type: "state",
+      park: "",
+      members: [...new Set(members.map((park) => park.page).filter(Boolean))],
+      title: `${full}的国家公园`,
+      names: [...new Set([full, state === "加州" ? "加利福尼亚州" : full.replace(/州$/, "")])],
+      text: `${full}有 ${members.length} 座国家公园（美国一共 63 座）：` +
+        members.map((park) => `${park.nameZh}（${park.nameEn}，${park.established.slice(0, 4)} 年成为国家公园${park.page ? "" : "，网站还没收录"}）`).join("、") + "。",
     });
   }
 

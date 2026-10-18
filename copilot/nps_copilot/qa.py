@@ -11,7 +11,7 @@ from __future__ import annotations
 import re
 
 from . import prompts
-from .knowledge import Doc, search
+from .knowledge import Doc, get, search
 from .providers import Provider, ProviderError
 from .text import normalize
 from .writer import NUMBER_RE, TIME_RE
@@ -25,7 +25,10 @@ QA_SCHEMA = {
     },
 }
 QUESTION = re.compile(r"[?？]|吗|呢|么|怎|什么|啥|多远|多久|多长|多少|几|哪|如何|是否|能不能|可不可以|有没有|要不要|是不是|"
-                      r"\b(what|when|where|which|who|why|how|is|are|can|could|do|does|should|will)\b", re.I)
+                      r"介绍|讲讲|说说|聊聊|告诉我|推荐|"
+                      r"\b(what|when|where|which|who|why|how|is|are|can|could|do|does|should|will|tell me|describe|recommend|explain)\b", re.I)
+# 问的是行程里的景点整体（“这些景点好看吗”“哪个最值得去”）：把每一站的一句介绍也给模型
+ABOUT_TRIP = re.compile(r"这些|这几个|行程|安排的|排的|哪个|哪些|哪一个|最值得|值不值|好看|好玩|有意思|怎么样|these|which|worth|best", re.I)
 SNIPPET = 260
 
 
@@ -35,11 +38,24 @@ def is_question(message: str) -> bool:
 
 def trip_context(plan_text: str) -> str:
     """给模型看的行程：上一次回复里的行程，去掉 Airbnb 链接（很长、对回答没用）"""
-    return "\n".join(line for line in plan_text.splitlines() if "http" not in line)
+    return "\n".join(line for line in plan_text.splitlines() if "http" not in line) or "（还没排出行程）"
 
 
-def build_user(question: str, trip: str, docs: list[Doc]) -> str:
-    parts = [f"问题：{question}", "", "[0] 行程：", trip, "", "资料："]
+def stop_briefs(stops: list[str]) -> list[str]:
+    """行程里每一站的一句介绍（资料的第二句就是景点介绍的第一句）"""
+    lines = []
+    for doc in filter(None, map(get, dict.fromkeys(stops))):
+        sentences = [s for s in doc.text.split("。") if s]
+        brief = sentences[1] if len(sentences) > 1 else sentences[0]
+        lines.append(f"- {doc.title}：{brief[:70]}")
+    return lines
+
+
+def build_user(question: str, trip: str, docs: list[Doc], briefs: list[str] | None = None) -> str:
+    parts = [f"问题：{question}", "", "[0] 行程：", trip]
+    if briefs:
+        parts += ["行程里的景点：", *briefs]
+    parts += ["", "资料："]
     parts += [f"[{i}] {doc.title}：{doc.text}" for i, doc in enumerate(docs, 1)]
     return "\n".join(parts)
 
@@ -73,16 +89,19 @@ def fallback(question: str, docs: list[Doc], zh: bool) -> str:
             "That isn't in the site's data, and I'd rather not guess. Check the park page or the NPS website.")
 
 
-def answer(question: str, parks: list[str], plan_text: str, provider: Provider | None, zh: bool) -> tuple[str, dict]:
+def answer(question: str, parks: list[str], plan_text: str, provider: Provider | None, zh: bool,
+           stops: list[str] | None = None) -> tuple[str, dict]:
     docs = search(question, parks)
     trace: dict = {"retrieved": [doc.id for doc in docs]}
+    briefs = stop_briefs(stops) if stops and ABOUT_TRIP.search(normalize(question)) else []
     trip = trip_context(plan_text)
     if provider is None:
         trace["answer"] = "fallback"
         return fallback(question, docs, zh), trace
     prompt = prompts.load("qa")
     trace["prompt"] = prompt.id
-    user = build_user(question, trip, docs)
+    user = build_user(question, trip, docs, briefs)
+    trace["stop_briefs"] = len(briefs)
     try:
         completion = provider.complete_json("qa", prompt.text, user, QA_SCHEMA)
     except ProviderError as error:

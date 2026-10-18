@@ -62,6 +62,11 @@ def index() -> tuple[list[Doc], list[Counter], dict[str, int], float]:
     return docs, counts, dict(df), average
 
 
+def get(doc_id: str) -> Doc | None:
+    docs = index()[0]
+    return next((doc for doc in docs if doc.id == doc_id), None)
+
+
 def _name_hit(name: str, query: str) -> bool:
     name = normalize(name).lower()
     if len(name) < 2 or (name.isascii() and len(name) < 4):
@@ -81,7 +86,8 @@ def search(question: str, parks: list[str], k: int = 4) -> list[Doc]:
     n = len(docs)
     scored: list[tuple[float, int]] = []
     for i, doc in enumerate(docs):
-        if scope and doc.park not in scope:
+        # 片区、州的资料（park 是空的）不分公园，都查
+        if scope and doc.park and doc.park not in scope:
             continue
         score = 0.0
         length = sum(counts[i].values())
@@ -93,6 +99,8 @@ def search(question: str, parks: list[str], k: int = 4) -> list[Doc]:
             score += q * idf * f * 2.2 / (f + 1.2 * (0.25 + 0.75 * length / average))
         # 问题里直接说了名字的：排最前面（名字越长越可信）
         hits = [name for name in doc.names if _name_hit(name, query)]
+        if not doc.park and not hits:
+            continue  # 片区、州的资料只在问题里说了它的名字时才用
         if hits:
             score += 50 + max(len(name) for name in hits)
         elif parts := [part for part in doc.parts if _name_hit(part, query)]:
@@ -107,7 +115,7 @@ def search(question: str, parks: list[str], k: int = 4) -> list[Doc]:
 def place_names() -> tuple[tuple[str, str], ...]:
     """景点、住处、活动的名字和所在公园（不含公园本身）：[("冰川点", "yose"), ...]"""
     rows = [json.loads(line) for line in PATH.read_text(encoding="utf-8").splitlines() if line.strip()]
-    return tuple(dict.fromkeys((normalize(name).lower(), row["park"]) for row in rows if row["type"] != "park"
+    return tuple(dict.fromkeys((normalize(name).lower(), row["park"]) for row in rows if row["park"] and row["type"] != "park"
                                for name in row["names"] if len(name) >= 2))
 
 
@@ -119,3 +127,26 @@ def inside_place_name(alias: str, code: str, message: str) -> str | None:
             return name
     return None
 
+
+@lru_cache(maxsize=1)
+def groups() -> tuple[tuple[tuple[str, ...], tuple[str, ...]], ...]:
+    """片区和州：(叫法, 网站上的公园代码)。“西雅图附近的三个国家公园都去”用"""
+    rows = [json.loads(line) for line in PATH.read_text(encoding="utf-8").splitlines() if line.strip()]
+    return tuple((tuple(normalize(name).lower() for name in row["names"]), tuple(row["members"]))
+                 for row in rows if row.get("members"))
+
+
+GROUP_GO = re.compile(r"都(去|玩|逛|走|要|想)|全(部|都)(去|玩)?|一起(去|玩)|安排|规划|排一|\ball (of them|three|four)\b", re.I)
+
+
+def group_parks(message: str) -> tuple[str, list[str]] | None:
+    """“西雅图附近的三个国家公园都玩”“华盛顿州的国家公园都去”：(说法, 公园代码)；只是问问（“是哪三个”）的不算"""
+    text = normalize(message).lower()
+    if not GROUP_GO.search(text):
+        return None
+    for names, members in groups():
+        for name in sorted(names, key=len, reverse=True):
+            at = text.find(name)
+            if at >= 0 and re.match(r".{0,8}?(国家公园|national parks)", text[at + len(name):]) and 1 <= len(members) <= 4:
+                return name, list(members)
+    return None

@@ -305,3 +305,31 @@ def test_park_name_inside_a_place_name_is_not_a_park(make_intake, request_schema
     turn = intake.step("冰川点现在开着吗")
     assert ready_request(turn, request_schema)["parks"] == ["yose"]
     assert turn.trace["ignored_parks"] == [{"park": "glac", "alias": "冰川", "place": "冰川点"}]
+
+
+def test_bare_number_answers_the_last_question(make_intake, request_schema):
+    # 10-18 第二次试用：问“这次一共玩几天？”回“5”，连问三遍
+    intake = make_intake(extraction(parks=["雷尼尔山"], dates=["后天"]), extraction())
+    assert intake.step("我要去雷尼尔山国家公园，后天出发").question["kind"] == "days"
+    turn = intake.step("5")
+    assert intake.days.value == 5 and turn.trace["rule_filled"] == ["days"]
+    intake.step("1")  # SEA
+    assert ready_request(intake.step("3"), request_schema)["days"] == 5
+
+
+def test_bare_number_answers_the_kid_age_question(make_intake):
+    intake = make_intake(extraction(parks=["优胜美地"], dates=["2027年6月1日"], duration="4天", origin="弗雷斯诺", party=["带孩子"]), extraction())
+    assert intake.step("2027年6月1日从弗雷斯诺去优胜美地4天，带孩子").question["kind"] == "party"
+    intake.step("五")
+    assert intake.party["youngestKid"] == 5
+
+
+def test_parks_by_region_or_state(make_intake):
+    # “西雅图附近的三个国家公园都玩”：按网站的片区换成具体的公园；只是问“是哪三个”的不换
+    intake = make_intake(extraction(parks=["西雅图附近的三个国家公园"]), extraction())
+    intake.step("我要去西雅图附近的三个国家公园都玩，安排紧凑一点")
+    assert sorted(intake.parks.value) == ["mora", "noca", "olym"] and intake.parks.evidence == "西雅图附近"
+    assert not intake.unsupported
+    other = make_intake(extraction())
+    other.step("你知道西雅图附近的三个国家公园是哪三个吗？")
+    assert other.parks.value is None

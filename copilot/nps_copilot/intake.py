@@ -20,8 +20,8 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from . import catalog, prompts
-from .dates import DAYS_RE, DAYS_RI, WEEK_RE, DateParts, date_range_days, merge, next_occurrence, parse_date_spans, parse_days, relative_date, relative_month
-from .knowledge import inside_place_name
+from .dates import EN_NUMBERS, ZH_NUMBER, zh_number, DAYS_RE, DAYS_RI, WEEK_RE, DateParts, date_range_days, merge, next_occurrence, parse_date_spans, parse_days, relative_date, relative_month
+from .knowledge import group_parks, inside_place_name
 from .providers import Provider
 from .text import contains, normalize
 
@@ -149,6 +149,8 @@ class Intake:
     notes: list[str] = field(default_factory=list)
     # 这一轮没当成公园的叫法（“冰川点”里的“冰川”），写进 trace
     ignored: list[dict] = field(default_factory=list)
+    # 上一句问的是什么（days / party / ...）：只回一个数字（“5”）时按它读
+    asked: str | None = None
 
     # ---------- 对外 ----------
     def step(self, message: str) -> Turn:
@@ -159,6 +161,7 @@ class Intake:
         notices: list[str] = []
         handled = self._answer_pending(message, notices)
         trace["route"] = handled or "extraction"
+        trace["absorbed"] = handled not in (None, "partial")
         if handled in (None, "partial"):
             completion = self.provider.complete_json("intake", prompt(), message, EXTRACTION_SCHEMA)
             trace.update(model_called=True, model=completion.model, latency_ms=completion.latency_ms, model_output=completion.data)
@@ -167,6 +170,8 @@ class Intake:
             had_days = self.days.value
             self._absorb(kept, message)
             trace["rule_filled"] = self._rule_fill(message, had_days)
+            # 这句话里有没有读到任何条件（没有的话多半是在提问）
+            trace["absorbed"] = trace["absorbed"] or bool(trace["rule_filled"]) or any(kept.values())
             if self.ignored:
                 trace["ignored_parks"], self.ignored = self.ignored, []
         notices.extend(self.notes)
@@ -297,7 +302,16 @@ class Intake:
         return kept, dropped
 
     def _absorb(self, kept: dict, message: str) -> None:
-        if kept["parks"]:
+        group = group_parks(message)
+        if group:
+            # 按片区、州说的一组公园（“西雅图附近的三个国家公园都玩”）：按网站的片区和州换成具体的公园
+            self.parks = Field(self._order_parks(group[1]), "user", group[0])
+            table = catalog.parks()
+            if self.language == "en":
+                self.notes.append(f"Going by the site's regions, that's {', '.join(table[code].name_en for code in self.parks.value)}.")
+            else:
+                self.notes.append(f"“{group[0]}”按网站的片区算是{'、'.join(table[code].name_zh for code in self.parks.value)}这 {len(self.parks.value)} 座。")
+        elif kept["parks"]:
             self._read_parks(kept["parks"], message)
         range_days = self._read_dates(kept["dates"], message) if kept["dates"] else None
         # 模型常把“三天”“一周”“five days”放进 dates 而不是 duration：天数从哪个片段读到都算
@@ -331,6 +345,14 @@ class Intake:
         只补天数：整句话里“N天 / N日”“N晚 / N夜”“一周”各最多一处（“5天4晚”“四日三夜”可以，“30天……3天”不补）。
         补了的写进 trace，评测时和模型的成绩分开算"""
         filled = []
+        # 刚问了“玩几天”“孩子几岁”，只回了一个数（“5”“五”“five”）
+        bare = re.fullmatch(r"\s*(\d{1,2}|" + ZH_NUMBER + "|" + "|".join(EN_NUMBERS) + r")\s*[。.!！~]?\s*", normalize(message), re.I)
+        if bare and self.asked == "days" and self.days.value is None and (days := zh_number(bare.group(1))):
+            self.days = Field(days, "user", message.strip())
+            filled.append("days")
+        elif bare and self.asked == "party" and "youngestKid" not in self.party:
+            self._read_party(f"{bare.group(1)}岁")
+            filled.append("party")
         if self.days.value is None and had_days is None:
             days = parse_days(message)
             text = normalize(message)
@@ -578,8 +600,10 @@ class Intake:
                         "options": copy.deepcopy(PACE_OPTIONS)}
         if question is not None:
             self.pending = question if question.get("kind") in ("choose", "confirm_date", "ask_year") else None
+            self.asked = question.get("kind")
             return Turn("needs_input", self._public(question, zh), None, notices, trace)
         self.pending = None
+        self.asked = None
         return Turn("ready", None, self.request(), notices, trace)
 
     def _special_pending(self, zh: bool) -> dict | None:

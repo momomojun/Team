@@ -60,3 +60,23 @@ def test_not_found_says_so_instead_of_guessing():
 def test_question_detection():
     assert qa.is_question("El Portal是什么地方") and qa.is_question("how far is El Portal")
     assert not qa.is_question("太棒了") and not qa.is_question("great")
+
+
+def test_regions_and_states_are_answerable_from_any_trip():
+    assert ids("你知道西雅图附近的三个国家公园是哪三个吗？", ["mora"])[0] == "region:seattle"
+    assert ids("你介绍一下华盛顿州的国家公园", ["mora"])[0] == "state:华盛顿州"
+    # 没说片区、州的名字时不拿它们凑数
+    assert not any(doc.park == "" for doc in search("哪里看日落最好", ["yose"]))
+
+
+def test_questions_about_the_whole_trip_get_each_stop_briefly():
+    provider = ScriptedProvider([{"found": True, "answer": "隧道观景点能看到酋长岩和半穹顶。", "sources": [0]}])
+    text, trace = qa.answer("你安排的这些景点怎么样，好看吗？", ["yose"], TRIP, provider, zh=True,
+                            stops=["yose-tunnel-view", "yose-el-capitan"])
+    assert trace["stop_briefs"] == 2
+    user = provider.calls[0][1]
+    assert "行程里的景点：" in user and "- 隧道观景点：" in user and "- 酋长岩：" in user
+
+
+def test_introduce_counts_as_a_question():
+    assert qa.is_question("你介绍一下华盛顿州的国家公园") and qa.is_question("推荐一个看日落的地方")
