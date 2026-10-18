@@ -86,11 +86,13 @@ class ReplayProvider:
 
     def __post_init__(self) -> None:
         self.records: dict[str, dict] = {}
-        if self.path.exists():
-            for line in self.path.read_text(encoding="utf-8").splitlines():
-                if line.strip():
-                    record = json.loads(line)
-                    self.records[record["key"]] = record
+        # 文件不存在就直接报错：悄悄当成“没有录音”会让每次调用都失败，还看不出是路径写错了
+        if not self.path.exists():
+            raise ProviderError(f"回放文件不存在：{self.path}")
+        for line in self.path.read_text(encoding="utf-8").splitlines():
+            if line.strip():
+                record = json.loads(line)
+                self.records[record["key"]] = record
 
     def complete_json(self, task: str, system: str, user: str, schema: dict) -> Completion:
         key = request_key(task, system, user, schema)

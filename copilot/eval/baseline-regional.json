@@ -1,0 +1,6 @@
+{
+  "note": "各地写法（香港、台湾、新马）的回放门禁：cases/regional-v1.jsonl 是 2026-10-17 先写期望、提交以后才第一次跑的（第一次 14/17），之后按失败修了代码，所以现在的 17/17 不是没见过的数据上的成绩，当回归门禁用。",
+  "recording": "recordings/qwen3.5_4b-q4_K_M-regional-v1.jsonl",
+  "cases": "cases/regional-v1.jsonl",
+  "min_passed": 17
+}

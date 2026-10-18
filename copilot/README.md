@@ -13,7 +13,7 @@ LLMOps 课程项目的 Copilot 部分。总体计划见 [docs/LLMOPS_PLAN.md](..
 | `contracts/parks.json`、`contracts/airports.json` | 59 座公园和名胜（代码、简繁英名字和别名、时区、常用机场、常一起玩的公园）、86 个机场。Intake 认公园名、机场就用这两个，不要在 Python 里另写一份 |
 | `contracts/examples/` | 样例请求 |
 
-这些 JSON 都是 `npm run copilot:contracts` 从 TypeScript 生成的（来源是 `src/lib/copilot/contract.ts`、`src/data/parks.ts`、`src/data/airports.ts`），不要手改；`tests/copilot-plan.test.ts` 检查文件和代码一致。改契约字段要升版本号（`trip-request/v2`），旧的评测记录才对得上。
+这些 JSON 都是 `npm run copilot:contracts` 从 TypeScript 生成的（来源是 `src/lib/copilot/contract.ts`、`src/data/parks.ts`、`src/data/airports.ts`），不要手改；`tests/copilot-plan.test.ts` 检查文件和代码一致。繁简对照表 `hant-to-hans.json` 收的是 `copilot/nps_copilot/` 里 `.py` 和提示词文件出现过的汉字，**改了这些文件、加了新汉字也要重跑**，不然 CI 的网站测试会失败（PR #6 碰到过）。改契约字段要升版本号（`trip-request/v2`），旧的评测记录才对得上。
 
 ## 怎么调用 plan_trip
 
@@ -63,7 +63,8 @@ flowchart LR
 | `nps_copilot/pipeline.py` | 把上面串起来；每轮写一条 JSONL 日志到 `copilot/runs/`（提示词版本和 hash、模型、各步耗时、模型输出、丢掉的片段、规则补的、Critic 的发现、Writer 有没有退回模板） |
 | `nps_copilot/api.py`、`__main__.py` | HTTP 服务（FastAPI）和命令行对话 |
 | `tests/` | pytest：Intake 每个修好的问题各有测试、Critic、Writer 的忠实度检查、接真行程引擎的端到端 |
-| `eval/` | 评测：`cases/intake-v1.jsonl` 25 组对话和期望结果，`run.py` 跑分，`recordings/` 录好的本机模型输出，`baseline.json` 门禁基线，结果见 [eval/RESULTS.md](eval/RESULTS.md) |
+| `eval/` | 评测：`cases/intake-v1.jsonl` 25 组对话（开发集）、`holdout-v1.jsonl` 40 组复杂对话、`regional-v1.jsonl` 17 组香港 / 台湾 / 新马的写法，`run.py` 跑分，`recordings/` 录好的本机模型输出，`baseline*.json` 门禁基线，结果见 [eval/RESULTS.md](eval/RESULTS.md) |
+| `nps_copilot/data/regional_names.json`、`scripts/regional_names.py` | 各地中文叫法（三藩市、卡加利、愛民頓、洛磯山、班芙、宰恩、傑克森……）：从维基数据和中文维基各地区的标题、重定向生成，人工补的和排除的写在脚本里（附原因）。认公园和出发地时当别名用；回答用户时还是用网站自己的中文名 |
 
 ### 怎么跑
 
@@ -80,14 +81,28 @@ python eval/run.py --record                                    # 真模型评测
 python eval/run.py --replay eval/recordings/qwen3.5_4b-q4_K_M.jsonl --gate eval/baseline.json --plan   # CI 跑的门禁
 ```
 
-环境变量：`COPILOT_PROVIDER`（`ollama` / `replay` / `cloud`）、`COPILOT_MODEL`、`OLLAMA_HOST_URL`（默认 `http://127.0.0.1:11435`）、`COPILOT_REPLAY`、`COPILOT_PLAN_URL`、`COPILOT_RUNS`、`COPILOT_ALLOW_CLOUD`。
+环境变量：`COPILOT_PROVIDER`（`ollama` / `replay` / `cloud`）、`COPILOT_MODEL`、`OLLAMA_HOST_URL`（默认 `http://127.0.0.1:11435`）、`COPILOT_REPLAY`、`COPILOT_PLAN_URL`、`COPILOT_RUNS`、`COPILOT_ALLOW_CLOUD`、`COPILOT_PROMPT_INTAKE`、`COPILOT_PROMPT_WRITER`（提示词版本，比如 `v1`）、`COPILOT_BUILD_SHA`（镜像构建时写入）。
 
 ### CI
 
 `.github/workflows/ci.yml`：每个 PR 跑网站的 lint、类型检查、测试，和 Copilot 的 pytest、回放评测门禁（低于 `eval/baseline.json` 就失败），评测报告作为 artifact 上传。CI 上不调真模型。**改了提示词、样例或模型**，回放记录就对不上了（门禁会报“回放记录里没有这次调用”）：先在本机用真模型 `--record` 重新录，看分数，再更新 `baseline.json` 一起提交。
 
-## 下一步（阶段 3、4）
+## 阶段 3：Docker、发版、回滚、提示词版本（2026-10-17）
 
-- Docker 镜像、按 tag 发版、回滚演示；提示词版本切换。
+详细步骤见 [RELEASE.md](RELEASE.md)。
+
+| 位置 | 内容 |
+|---|---|
+| `nps_copilot/prompts.py`、`prompts/defaults.json` | 提示词版本：`<任务>_v<n>.txt`，默认版本写在 `defaults.json`，`COPILOT_PROMPT_INTAKE` / `COPILOT_PROMPT_WRITER` 临时换版本；日志和 `/health` 都记版本和 hash |
+| `prompts/intake_v2.txt` | 没采用的实验版本：回归集 39/40（v1 是 37/40），开发集 24/25（v1 是 25/25），门禁挡住了，留着演示回滚 |
+| `nps_copilot/monitor.py` | `python -m nps_copilot stats [--days 7]`：按 Copilot 版本和提示词版本统计运行日志，决定要不要回滚 |
+| `Dockerfile`、`../.dockerignore`、`docker-compose.yml` | 镜像（Node 24 + Python，行程引擎和 Copilot 都在里面，模型在宿主机的 Ollama）；`COPILOT_TAG` 选版本，`COPILOT_PORT` 换端口 |
+| `scripts/smoke.py` | 冒烟测试：`/health`、版本对不对、一句完整的需求能不能排出行程（`--message`、`--days` 换一句话） |
+| `../.github/workflows/release.yml` | 推 `copilot-v*` tag 发版：测试和门禁 → 构建 → 冒烟 → 推 GHCR → 拉回来再冒烟 → GitHub Release |
+
+CI 也多了一个 `docker` job：每个 PR 构建镜像、用回放模型冒烟测试。命令行多了 `python -m nps_copilot version`、`stats`，`serve` 可以指定 `--host`、`--port`。
+
+## 下一步（阶段 4、5）
+
 - 另写一批改代码时不看的评测样例（现在的 25 组是开发集），加上 Writer 的成批评测、对照实验（单模型直接回答 vs 流水线，有没有 Critic）。
 - 网站行程页上的对话面板。

@@ -54,8 +54,27 @@ jobs:
         run: python copilot/eval/run.py --replay copilot/eval/recordings/qwen3.5_4b-q4_K_M.jsonl --gate copilot/eval/baseline.json --plan
       - name: Replay eval gate (held-out v1, now a regression set)
         run: python copilot/eval/run.py --cases copilot/eval/cases/holdout-v1.jsonl --replay copilot/eval/recordings/qwen3.5_4b-q4_K_M-holdout-v1.jsonl --gate copilot/eval/baseline-holdout.json --plan
+      - name: Replay eval gate (regional wording - Hong Kong, Taiwan, Singapore, Malaysia)
+        run: python copilot/eval/run.py --cases copilot/eval/cases/regional-v1.jsonl --replay copilot/eval/recordings/qwen3.5_4b-q4_K_M-regional-v1.jsonl --gate copilot/eval/baseline-regional.json --plan
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: copilot-eval-report
           path: copilot/eval/reports/
+
+  docker:
+    name: Copilot image (build, smoke test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -f copilot/Dockerfile --build-arg COPILOT_BUILD_SHA=${GITHUB_SHA::7} -t team-copilot:ci .
+      # CI 上没有模型：容器里用回放（录音在镜像里），验证镜像能起来、Node 行程引擎在、一句完整的需求能排出行程
+      - name: Smoke test (replay provider)
+        run: |
+          docker run -d --name copilot -p 127.0.0.1:8765:8765 \
+            -e COPILOT_PROVIDER=replay -e COPILOT_REPLAY=/app/copilot/eval/recordings/qwen3.5_4b-q4_K_M.jsonl \
+            team-copilot:ci
+          python3 copilot/scripts/smoke.py http://127.0.0.1:8765 --expect-version repo
+      - if: failure()
+        run: docker logs copilot

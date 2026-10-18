@@ -1,0 +1,13 @@
+# 只有 copilot/Dockerfile 用这个目录当构建上下文：只放进镜像要用的东西
+*
+!package.json
+!tests/register.mjs
+!tests/resolve.mjs
+!scripts/plan-trip.mjs
+!src/
+!copilot/
+copilot/runs/
+copilot/eval/reports/
+**/__pycache__/
+**/*.egg-info/
+**/.pytest_cache/

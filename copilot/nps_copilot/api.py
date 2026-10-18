@@ -2,19 +2,22 @@
 
 POST /sessions                   → {"session": "...", "greeting": "..."}
 POST /sessions/{id}/messages     {"text": "..."} → 这一轮的回复（status、text、question、request、result）
-GET  /health                     → 模型、提示词版本
+GET  /health                     → 版本、构建的 commit、提示词版本和 hash、模型、行程引擎能不能用
 """
 from __future__ import annotations
 
 import datetime as dt
+import os
+import shutil
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
+from . import __version__
 from .pipeline import VERSION, Session, prompt_hashes
 from .providers import ProviderError, from_env
 
-app = FastAPI(title="NPS Guide Copilot", version=VERSION)
+app = FastAPI(title="NPS Guide Copilot", version=__version__)
 sessions: dict[str, Session] = {}
 
 
@@ -30,7 +33,14 @@ class Message(BaseModel):
 @app.get("/health")
 def health() -> dict:
     provider = from_env()
-    return {"version": VERSION, "provider": provider.name, "model": getattr(provider, "model", None), "prompts": prompt_hashes()}
+    return {
+        "version": VERSION,
+        "build": os.environ.get("COPILOT_BUILD_SHA"),
+        "provider": provider.name,
+        "model": getattr(provider, "model", None),
+        "prompts": prompt_hashes(),
+        "plan_tool": "http" if os.environ.get("COPILOT_PLAN_URL") else ("cli" if shutil.which("node") else "missing"),
+    }
 
 
 @app.post("/sessions")

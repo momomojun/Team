@@ -1,6 +1,6 @@
 [project]
 name = "nps-copilot"
-version = "0.1.0"
+version = "0.2.0"
 description = "NPS Guide Copilot: LLM intake and explanation on top of the deterministic NPS Guide trip engine (CSYE 7374 LLMOps)"
 requires-python = ">=3.11"
 dependencies = []

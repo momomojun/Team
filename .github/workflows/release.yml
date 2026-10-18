@@ -1,0 +1,89 @@
+# Copilot 发版：推一个 copilot-v<版本> 的 tag 触发（版本要和 copilot/nps_copilot/__init__.py 的 __version__ 一样）。
+#   1. 跑单元测试和两组回放评测门禁，没过就不发
+#   2. 构建镜像，用回放模型冒烟测试
+#   3. 推到 ghcr.io/momomojun/team-copilot:<tag> 和 :latest
+#   4. 拉回刚推上去的镜像再冒烟测试一次，建 GitHub Release，附上评测报告
+# 回滚不用重新发版：部署的地方把 COPILOT_TAG 换成上一个 tag（见 copilot/RELEASE.md）。
+name: Copilot release
+
+on:
+  push:
+    tags: ["copilot-v*"]
+
+permissions:
+  contents: write
+  packages: write
+
+env:
+  IMAGE: ghcr.io/momomojun/team-copilot
+  REPLAY: /app/copilot/eval/recordings/qwen3.5_4b-q4_K_M.jsonl
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tag matches package version
+        run: |
+          version=$(python3 -c 'import re;print(re.search(r"__version__ = \"(.+?)\"", open("copilot/nps_copilot/__init__.py").read()).group(1))')
+          test "$GITHUB_REF_NAME" = "copilot-v$version" || { echo "::error::tag $GITHUB_REF_NAME 和代码里的版本 $version 对不上"; exit 1; }
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci || { echo "::warning::npm ci 不认锁文件，改用 npm install"; npm install --no-audit --no-fund; }
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: copilot/pyproject.toml
+      - run: pip install -e "copilot[dev]"
+      - run: python -m pytest -q copilot/tests
+      - name: Replay eval gates
+        run: |
+          python copilot/eval/run.py --replay copilot/eval/recordings/qwen3.5_4b-q4_K_M.jsonl --gate copilot/eval/baseline.json --plan
+          python copilot/eval/run.py --cases copilot/eval/cases/holdout-v1.jsonl --replay copilot/eval/recordings/qwen3.5_4b-q4_K_M-holdout-v1.jsonl --gate copilot/eval/baseline-holdout.json --plan
+          python copilot/eval/run.py --cases copilot/eval/cases/regional-v1.jsonl --replay copilot/eval/recordings/qwen3.5_4b-q4_K_M-regional-v1.jsonl --gate copilot/eval/baseline-regional.json --plan
+
+      - name: Build image
+        run: docker build -f copilot/Dockerfile --build-arg COPILOT_BUILD_SHA=${GITHUB_SHA::7} -t "$IMAGE:$GITHUB_REF_NAME" -t "$IMAGE:latest" .
+      - name: Smoke test before push
+        run: |
+          docker run -d --name before -p 127.0.0.1:8765:8765 -e COPILOT_PROVIDER=replay -e COPILOT_REPLAY=$REPLAY "$IMAGE:$GITHUB_REF_NAME"
+          python3 copilot/scripts/smoke.py http://127.0.0.1:8765 --expect-version repo
+          docker rm -f before
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push
+        run: |
+          docker push "$IMAGE:$GITHUB_REF_NAME"
+          docker push "$IMAGE:latest"
+      - name: Smoke test the pushed image
+        run: |
+          docker rmi "$IMAGE:$GITHUB_REF_NAME" "$IMAGE:latest"
+          docker pull "$IMAGE:$GITHUB_REF_NAME"
+          docker run -d --name after -p 127.0.0.1:8765:8765 -e COPILOT_PROVIDER=replay -e COPILOT_REPLAY=$REPLAY "$IMAGE:$GITHUB_REF_NAME"
+          python3 copilot/scripts/smoke.py http://127.0.0.1:8765 --expect-version repo
+
+      - name: GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          digest=$(docker inspect --format '{{index .RepoDigests 0}}' "$IMAGE:$GITHUB_REF_NAME")
+          {
+            echo "镜像 / Image: \`$IMAGE:$GITHUB_REF_NAME\`"
+            echo
+            echo "Digest: \`$digest\`"
+            echo
+            echo "提示词 / Prompts: \`$(python3 -c 'import json;print(json.load(open("copilot/nps_copilot/prompts/defaults.json")))')\`"
+            echo
+            echo "评测报告在附件里（回放门禁）/ Replay eval reports are attached. 部署和回滚 / Deploy and rollback: copilot/RELEASE.md"
+          } > notes.md
+          tar czf eval-reports.tgz -C copilot/eval reports
+          gh release create "$GITHUB_REF_NAME" --title "Copilot $GITHUB_REF_NAME" --notes-file notes.md eval-reports.tgz
+      - if: failure()
+        run: docker logs before 2>/dev/null; docker logs after 2>/dev/null; true

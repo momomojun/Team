@@ -6,7 +6,6 @@
 from __future__ import annotations
 
 import datetime as dt
-import hashlib
 import json
 import os
 import time
@@ -14,22 +13,20 @@ import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from . import intake as intake_module
+from . import __version__, prompts
 from . import writer as writer_module
 from .critic import critique
 from .intake import Intake
 from .plan_client import PlanError, plan_trip
 from .providers import Provider
 
-VERSION = "copilot/0.1"
+VERSION = f"copilot/{__version__}"
 RUNS = Path(os.environ.get("COPILOT_RUNS", Path(__file__).resolve().parents[1] / "runs"))
 
 
 def prompt_hashes() -> dict[str, str]:
-    return {
-        intake_module.PROMPT_VERSION: hashlib.sha256(intake_module.PROMPT_PATH.read_bytes().replace(b"\r\n", b"\n")).hexdigest()[:12],
-        writer_module.PROMPT_VERSION: hashlib.sha256(writer_module.PROMPT_PATH.read_bytes().replace(b"\r\n", b"\n")).hexdigest()[:12],
-    }
+    """现在用的提示词版本和 hash，写进每条日志（见 prompts.py）"""
+    return prompts.current()
 
 
 @dataclass

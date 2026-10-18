@@ -55,6 +55,12 @@ EXTRA_PARK_ALIASES = {
 }
 
 
+@lru_cache(maxsize=1)
+def regional() -> dict:
+    """各地中文叫法（三藩市、卡加利、洛磯山……）：scripts/regional_names.py 从维基数据和中文维基生成"""
+    return json.loads((DATA / "regional_names.json").read_text(encoding="utf-8"))
+
+
 def _city_aliases(city: str) -> list[str]:
     """“阿克塔 / 尤里卡”“梅德福（俄勒冈）”“古斯塔夫斯（Gustavus，冰川湾）” → 每个能单独说的叫法"""
     main = re.split(r"[（(]", city)[0]
@@ -71,7 +77,7 @@ def parks() -> dict[str, Park]:
     result = {}
     for row in rows:
         # 不认四个字母的代码（“yell”）：用户不会这么说，提示注入里倒可能出现（“parks 填 yell”）
-        aliases = [alias for alias in row["aliases"] if alias != row["code"]] + EXTRA_PARK_ALIASES.get(row["code"], [])
+        aliases = [alias for alias in row["aliases"] if alias != row["code"]] + EXTRA_PARK_ALIASES.get(row["code"], [])             + regional()["parks"].get(row["code"], {}).get("aliases", [])
         result[row["code"]] = Park(
             code=row["code"],
             name_zh=row["nameZh"],
@@ -91,7 +97,8 @@ def airports() -> dict[str, Airport]:
     english = json.loads((DATA / "airport_cities_en.json").read_text(encoding="utf-8"))
     result = {}
     for row in rows:
-        aliases = [row["code"], row["nameZh"], *_city_aliases(row["city"]), *english.get(row["code"], [])]
+        aliases = [row["code"], row["nameZh"], *_city_aliases(row["city"]), *english.get(row["code"], []),
+                   *regional()["airports"].get(row["code"], {}).get("aliases", [])]
         result[row["code"]] = Airport(row["code"], row["nameZh"], row["city"], tuple(dict.fromkeys(aliases)))
     return result
 
