@@ -10,7 +10,7 @@
 
 A Chinese-language trip planner for U.S. national parks and the Canadian Rockies — date-aware openings, auto-generated day-by-day itineraries,<br>lodging, EV charging, budgets and creator routes. Works offline on your phone.
 
-[功能](#功能) · [截图](#截图) · [覆盖的公园](#覆盖的公园) · [快速开始](#快速开始) · [数据来源](#数据来源) · [路线图](#路线图) · [开发文档](docs/DEVELOPMENT.md) · [English](#english)
+[功能](#功能) · [截图](#截图) · [覆盖的公园](#覆盖的公园) · [快速开始](#快速开始) · [数据来源](#数据来源) · [路线图](#路线图) · [文档](#文档--docs) · [English](#english)
 
 ![Next.js 16](https://img.shields.io/badge/Next.js-16-1c1b18?logo=nextdotjs&logoColor=white)
 ![React 19](https://img.shields.io/badge/React-19-1c1b18?logo=react&logoColor=61DAFB)
@@ -188,8 +188,8 @@ NPS Guide 把这些按日期串起来：选好公园和日子，它告诉你那�
 ## 快速开始
 
 ```bash
-git clone https://github.com/momomojun/NPS-guide.git
-cd NPS-guide
+git clone https://github.com/momomojun/Team.git
+cd Team
 npm install
 cp .env.example .env.local   # 可选：填 key，不填也能跑
 npm run dev                  # 打开 http://localhost:3000
@@ -204,7 +204,7 @@ npm run dev                  # 打开 http://localhost:3000
 | `DEEPL_API_KEY` | 质量更好的公告中文翻译 | [DeepL API Free](https://www.deepl.com/pro-api)，免费每月 50 万字符 |
 | `SITE_PASSWORD` | 访问密码：设了之后打开网站要先输密码（部署到公网时用） | 自己定 |
 
-构建版：`npm run build && npm run start`。代码结构、重新生成数据的脚本、截图脚本和整理数据时的注意事项见 [开发文档](docs/DEVELOPMENT.md)。
+构建版：`npm run build && npm run start`。测试、Copilot、改代码和开 PR 的完整步骤见 [docs/GUIDE.md](docs/GUIDE.md)；代码结构、数据脚本见 [开发文档](docs/DEVELOPMENT.md)。
 
 ## 部署到手机上用
 
@@ -266,21 +266,19 @@ npm run dev                  # 打开 http://localhost:3000
 
 Built with Next.js 16, React 19, TypeScript, Tailwind CSS 4 and MapLibre GL, mostly on open data (NPS API, OpenStreetMap, Open-Meteo, Wikimedia Commons). No keys are required to run it locally: `npm install && npm run dev`.
 
-## LLMOps 开发与交接
+## 文档 / Docs
 
-**组员第一次上手先看 [ONBOARDING.md](ONBOARDING.md)**：装什么、怎么跑网站和 Copilot、怎么改、怎么开 PR。
+这个仓库也是 CSYE 7374 LLMOps 课程的团队项目：在网站上加了一个用本机模型理解需求、调用行程引擎的 Copilot（`copilot/`）。
 
-Copilot 的本地模型验证与课程开发记录统一放在本仓库：
-
-- [项目工作记录：全部对话要点、决定和已做的工作 / Project log](docs/PROJECT_LOG.md)
-- [LLMOps 现状评估和下一步计划（新人先看这个）/ LLMOps review and roadmap](docs/LLMOPS_PLAN.md)
-- [讨论记录、技术路线与后续待办](docs/LLMOPS_WORK_LOG.md)
-- [Copilot：契约、plan_trip 工具、Python 服务、评测和 CI 怎么用 / Copilot usage](copilot/README.md)
-- [Copilot 评测结果 / Copilot eval results](copilot/eval/RESULTS.md)
-- [实验入口与完整验证材料](experiments/README.md)
-- [本地模型验证结果](experiments/local-model-validation/RESULTS.md)
-
-模型权重和运行库已在本机实验目录保存，通过 Git 忽略规则排除；验证脚本、样本、原始结果和说明可随仓库交接。
+| 文档 | 写什么 |
+|---|---|
+| [docs/GUIDE.md](docs/GUIDE.md) | **组员从这里开始**：安装、运行网站和 Copilot、改代码、开 PR、部署、发版、回滚 |
+| [docs/PROJECT.md](docs/PROJECT.md) | 项目现状：做到哪、下一步、待决定的事、做过的决定、按时间的记录 |
+| [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | 网站的技术参考：代码结构、数据脚本、数据源和注意事项 |
+| [docs/COPILOT.md](docs/COPILOT.md) | Copilot 的技术参考：设计、契约、提示词版本、评测方法 |
+| [docs/ENGLISH.md](docs/ENGLISH.md) | 英文版怎么写 |
+| [copilot/eval/RESULTS.md](copilot/eval/RESULTS.md) | Copilot 评测成绩 |
+| [docs/archive/](docs/archive/) | 存档：事实核对记录、交给 AI 助手的任务说明、早期模型实验的讨论 |
 
 ## 声明
 

@@ -1,28 +1,8 @@
 # NPS Guide 开发文档
 
-项目介绍和截图见 [README](../README.md)。这里是本地运行、代码结构、数据脚本、数据源和整理数据时的注意事项。
+网站的技术参考：代码结构、数据脚本、数据源和整理数据时的注意事项。项目介绍见 [README](../README.md)；**怎么安装、运行、测试、部署**见 [GUIDE.md](GUIDE.md)；项目现状见 [PROJECT.md](PROJECT.md)；Copilot 的技术参考见 [COPILOT.md](COPILOT.md)。
 
-## 本地运行
-
-```bash
-npm install
-cp .env.example .env.local   # 填入 DATA_GOV_API_KEY；不填则用 DEMO_KEY（每小时 30 次）；SERPAPI_API_KEY、DEEPL_API_KEY 可选
-npm run dev                  # http://localhost:3000
-```
-
-| 环境变量 | 用途 | 不填时 |
-|---|---|---|
-| `DATA_GOV_API_KEY` | NPS、NLR 充电桩、GSA 接口通用的免费 key（https://api.data.gov/signup/） | 用 `DEMO_KEY`，每个 IP 每小时 30 次、每天 50 次 |
-| `SERPAPI_API_KEY` | 机票实时价格（SerpApi 的 Google Flights 接口，免费每月 250 次） | 开发模式直接低频抓取 Google Flights 页面，部署后只给比价链接 |
-| `DEEPL_API_KEY` | NPS 公告的中文翻译（DeepL API Free，每月 50 万字符） | 用免费的 MyMemory，额度用完时自用阶段再退到 Google 网页翻译 |
-| `SELF_USE_SCRAPE` | 设成 `1`：部署后也打开自用抓取（Google Flights、AAA 油价、Google 网页翻译）；旧名 `PRICE_SCRAPE` 也认 | 开发模式开，构建版关 |
-
-## 测试
-
-```bash
-npm run check:closures       # 临时关闭核对：NPS 最新公告和 src/data/closures.ts 对一遍，列出要人工看的地方（联网）
-npm test                     # 自动生成攻略、季节性山路、个人配速、预约开放日期、班车、车程校正、行程分享、文案空格、游客人次、停车场、月亮、博主路线、明星同款数据的测试，几秒跑完，不联网
-```
+## 测试是怎么写的
 
 用 Node 自带的测试工具（`node --test`），Node 24 能直接跑 TypeScript；`tests/register.mjs` 补上项目里不写扩展名的相对路径和 `@/` 别名（测试只能引用 `.ts`，不能引用带 JSX 的 `.tsx`）。自动生成攻略的测试和行程页用一样的输入，弗雷斯诺到优胜美地、盐湖城到拱门和峡谷地各景点的车程（OSRM 查好、按车速校正过）存在 `tests/fixtures/`，其他机场按直线估算。改了排行程、生成攻略的逻辑，或者整理了景点数据之后跑一下；数据变了导致个别断言不再成立时（比如某个景点改了停留时间），看清楚是不是真的退步了再改测试。
 
@@ -33,7 +13,7 @@ npm test                     # 自动生成攻略、季节性山路、个人配�
 | `src/app/[locale]/` | 页面：首页、公园页 `parks/[code]`、行程页 `plan`、什么时候去 `when`、博主路线 `routes`、机票租车油价 `prices`。`zh-Hans` 简体、`zh-Hant` 繁体；`src/proxy.ts` 按浏览器语言跳转 |
 | `src/proxy.ts`、`src/lib/site-auth.ts`、`src/app/[locale]/login/`、`src/app/api/login/` | 访问密码：设了 `SITE_PASSWORD`，没登录的页面跳到登录页、接口返回 401；登录后存一个一年有效的 HttpOnly cookie（值是密码的哈希，改密码就全部失效）。图标、manifest、service worker 这些静态文件不拦 |
 | `src/i18n/en/`、`scripts/i18n-en.mjs`、`docs/ENGLISH.md` | 英文版（`/en`）：给英语母语读者另写的，不是逐句翻译，写法见 [ENGLISH.md](ENGLISH.md)。界面文案在 `en/dictionary.ts`（和中文字典同样的结构，类型检查保证不漏键）；数据里的中文（景点介绍、提示、同行适合度、公园介绍、封路、住宿……）按原文查 `en/content/<组>.ts`（中文原文 → 英文），`localize(text, "en")` 查不到时先显示中文。`npm run i18n:en` 从数据里找出要显示的中文、给每组补上待写的空条目（中文改了就会多出新的空条目），`tests/i18n-en.test.ts` 检查已经写完的批次没有漏写、英文里没有混进汉字。英文模板里 `{n|day|days}` 按数字选单复数，`{m:month}` 写英文月份名；单位用英制（`units.km` 用 `{mi}`、`units.meters` 用 `{ft}`、温度用华氏那组占位符）；顿号、冒号、括号、星期这些都在 `units` 里，代码里不要写死中文标点。英文版的 NPS 公告直接显示原文 |
-| `scripts/rekey-zh.py`、`scripts/check-en.mjs`、`docs/audit/`、`docs/agent-briefs/` | 改中文原文时用 `rekey-zh.py` 同时改英文表里的键（直接改中文会让英文失效）；`check-en.mjs` 检查某几组英文有没有空值、汉字、没换英制的数；`docs/audit/` 是按官方资料核对事实的逐园记录（改了什么、来源），`docs/agent-briefs/` 是交给 AI 助手做数据整理、翻译、核对时的任务说明（等于这些数据的 prompt 版本） |
+| `scripts/rekey-zh.py`、`scripts/check-en.mjs`、`docs/archive/audit/`、`docs/archive/agent-briefs/` | 改中文原文时用 `rekey-zh.py` 同时改英文表里的键（直接改中文会让英文失效）；`check-en.mjs` 检查某几组英文有没有空值、汉字、没换英制的数；`docs/archive/audit/` 是按官方资料核对事实的逐园记录（改了什么、来源），`docs/archive/agent-briefs/` 是交给 AI 助手做数据整理、翻译、核对时的任务说明（等于这些数据的 prompt 版本） |
 | `src/i18n/` | 界面文案。简体撰写，繁体用 OpenCC 自动转换（台湾用语，“米”转“公尺”）。`fill` 填占位符时，汉字紧挨着英文字母、数字开头或结尾的值会自动补空格（“要走{road}” → “要走 Stevens Canyon Road”），模板里中文地名、景点名前后不用再写空格；数字、金额两边照旧写空格 |
 | `src/data/parks.ts` | 所有公园：特色介绍、园内片区、定位点、时区、常用机场、常一起玩的公园（`nearby`）、非居民附加费、住宿建议。`kind: "site"` 是园外名胜（羚羊峡谷、马蹄湾、纪念碑谷、波浪谷），页面上和国家公园分开列；`country: "CA"` 是加拿大的公园；`agency` 写归谁管；只能飞进去的公园（卡特迈、科伯克谷）gateway 是开车能到的出发城镇，首页地图的圆点画在 `mapAt` |
 | `src/data/fees-manual.ts` | NPS 门票接口里没有的门票：加拿大的国家公园（按天收、加元，汇率 `CAD_TO_USD`）和园外名胜（部落公园、BLM、城市停车场）；预算里按一车和按人取便宜的 |
@@ -51,7 +31,7 @@ npm test                     # 自动生成攻略、季节性山路、个人配�
 | `src/data/bookings.ts`、`src/lib/booking.ts` | 要提前订的：园内住宿、营地、许可证抽签、入园预约、船票和团，各自的开放规则（滚动开放、每月整段放、按季抽签、按月抽签、提前几天、固定日期）；按行程日期算出哪天开订、还剩几天，生成 .ics 日历提醒。针对没收录的地方（营地等）的规则只在公园页列出 |
 | `src/lib/generate-trip.ts` | 自动生成攻略：可以几个顺路的公园一起排（比如盐湖城进出，先大提顿再黄石）。同一件事的两种去法（干龟的渡轮和水上飞机、羚羊峡谷水上部分的皮划艇和游船）在景点上写 `alternativeTo`，主选项能去就不排另一个。按月份去掉关闭和要抽签的景点（要订票的照排、提醒提前订），按必去、热度、当月最佳和节奏挑景点，路线从出发地排到回程地，再按车程和住宿偏好（不限 / 酒店 / 民宿）选每晚住处（车程最省的前三家再看前后两天会不会因此太满、赶不上班次）；太满的一天去掉最不重要的景点；偏远片区只为一两个不是必去的小景点专门绕路的（比如摩押几天里顺带去峡谷地的 Needles，为它们当天多开的车超过它们停留时间的 1.5 倍、至少 1 小时；一整天只去它们的也算，和直接开到当晚住处比，比如瓜达卢佩山最后一天专门绕去 Dog Canyon 再回埃尔帕索；住处最后定下来以后再查一遍）也去掉，攻略说明里写“离其他景点太远”；有空的天再补（先整趟重排，放不下再直接放进某一天试；只能在某几天去的（定了日期的满月徒步、山路通了才能去的）那几天都放不下，就把那天的一个景点挪去别的天再试；补的景点让那天多开的车不能超过它本身的停留，至少 30 分钟；回住处太晚按晚了多少分钟算；天黑以后才去的星空不算进每天的节奏上限，但超过 11 小时、回住处太晚照样算）。开回机场、城市的最后一天，回程超过 1 小时就不等日落；季节性山路上的景点排到了往年通车不到一半的日子、这几天里又有把握大的一天时（比如 6 月下旬去冰川），把这两天整天对调（每天的顺序和住处重新排，整趟多开的车不超过 1.5 小时）；对调完还剩的单个景点挪到把握大的那天，那天放不下就把那天的一个景点挪去别的天（比如冰川的隐湖观景点挪到走向阳大道的那天，雪松步道挪到同在西边的另一天），把握至少多两成、多开的车不超过它本身的停留才挪；赶不上班次、过了入场时间、日落和晚上的体验排到了别的时间（日落漫步赶不上日落也算）的也这样挪，挪了还不行的去掉、列为没时间。多公园的行程里，景点只在同一座公园的日子之间挪、补，整天对调也只在同一座公园的日子之间（往别的公园的日子挪只会白算，4 座公园 9 天的行程原来要算十几秒）；每天的日出日落、日期算一次存起来。只定了月份时，按每年公布的日期举行的导览（满月徒步、卢塞罗湖导览）不知道那个月哪天有，不自动排，特别活动里列了日期。定了日期时，看星空的景点排到了月亮很亮、日落后一两个小时还在天上的晚上，同一座公园别的晚上月亮小得多（月亮亮度 × 在天上的时间少 0.3 以上），就挪过去，同样不能变得更满、多开的车不超过它本身的停留。去掉景点以后第一天空了（北极之门 + 德纳里第一天排的 Anaktuvuk Pass 飞行排不开），就把第二天整天挪到第一天、空出来的一天留在住处，不让第二天从 Coldfoot 折回去看路上的景点 |
 | `src/lib/time-zone.ts`、`src/data/park-zones.ts`、`src/data/time-notes.ts`、`src/components/park/time-zone-block.tsx` | 时区：景点的时区（`zoneOf`：景点写了 `timeZone` 用它，不然用公园的）、某天某时区比 UTC 快多少（`utcOffset`，补上艾伯塔、BC 2026 年的新规则）、当地时间比这天行程用的时间快多少（`zoneShift`）。排行程时别的时区的景点的开门、班次、停车场时间先换算到这天的时区，行程卡片上另写当地时间；`time-notes.ts` 是各公园时区的坑（按什么时间计时、手机在哪会跳时区），公园页的“时区”和行程里第一次去那座公园的那天显示 |
-| `src/lib/copilot/`、`src/app/api/copilot/plan/`、`scripts/plan-trip.mjs`、`scripts/build-copilot-contracts.mjs`、`copilot/` | LLMOps 课程的 Copilot（计划见 [LLMOPS_PLAN.md](LLMOPS_PLAN.md)）：`contract.ts` 是 Copilot 和行程引擎之间的契约（TripRequest / TripResult 的 JSON Schema 和一个只实现用到的关键字的校验器），`plan-tool.ts` 是 `plan_trip` 工具（调同一个 `generateTrip` 和时间线，不联网、固定 `referenceDate` 就能复现）；`npm run copilot:plan -- <request.json>` 命令行调用，`POST /api/copilot/plan` HTTP 调用；`npm run copilot:contracts` 把 schema 和公园、机场目录写到 `copilot/contracts/` 给 Python 用。用法见 [copilot/README.md](../copilot/README.md)。`copilot/nps_copilot/` 是 Python 的 Copilot（Intake → plan_trip → Critic → Writer，默认本机 Ollama），`copilot/tests/` 是 pytest，`copilot/eval/` 是评测和回放门禁；`.github/workflows/ci.yml` 每个 PR 跑网站和 Copilot 的测试、构建 Copilot 镜像做冒烟测试，`release.yml` 按 `copilot-v*` tag 发版到 GHCR；提示词按版本放在 `copilot/nps_copilot/prompts/`，部署、回滚和监控见 [copilot/RELEASE.md](../copilot/RELEASE.md) |
+| `src/lib/copilot/`、`src/app/api/copilot/plan/`、`scripts/plan-trip.mjs`、`scripts/build-copilot-contracts.mjs`、`copilot/` | LLMOps 课程的 Copilot：`contract.ts` 是 Copilot 和行程引擎之间的契约（TripRequest / TripResult 的 JSON Schema 和一个只实现用到的关键字的校验器），`plan-tool.ts` 是 `plan_trip` 工具（调同一个 `generateTrip` 和时间线，不联网、固定 `referenceDate` 就能复现），`npm run copilot:contracts` 把 schema 和公园、机场目录写到 `copilot/contracts/` 给 Python 用；`copilot/` 是 Python 的 Copilot、评测和 Docker。详见 [COPILOT.md](COPILOT.md) |
 | `src/lib/moon.ts` | 月亮：月相（按距上一次新月的天数）和某个晚上几点升起、落下（低精度月球历表，升落时间差几分钟）。行程里看星空的景点下面说这晚月亮碍不碍事（很细、已经落下、半夜才升起都算不碍事，亮了一半以上还在天上用警告色）；攻略说明的“看星空”按月亮说暗夜公园哪几晚适合看星空，园里看星空的景点可以一键加进行程；自动生成攻略按月亮挑看星空的晚上 |
 | `src/lib/trip-store.ts` | 行程（含每晚住处）存在浏览器 localStorage，自用阶段不需要账号 |
 | `src/lib/trip-share.ts`、`src/components/plan/trip-share.tsx` | 电脑和手机之间传行程：整个行程压缩（fflate）后放在链接的 `#trip=` 里，附二维码，打开链接先问要不要换掉现在的行程；也能导出、导入 JSON 文件 |
@@ -80,22 +60,6 @@ npm test                     # 自动生成攻略、季节性山路、个人配�
 | `src/app/globals.css` | 设计基调：纸色底、墨色字、砂岩红强调色；标题 Cormorant Garamond + 思源宋体，正文 Jost；开场动画、滚动渐显、换页时整页淡入淡出（`src/components/site/page-transition.tsx`）、换页过渡（从首页公园目录点进公园页时，目录的大图放大成公园页首图，用 React 的 `ViewTransition`，两边的 `name` 都是 `park-photo-公园代码`）；浅灰字 `mute` 的对比度按 WCAG AA（4.5:1）定；屏幕外的大区块和景点卡片用 `cv-auto`（content-visibility，`--cv-h` 是估计高度；只能估高度，写成 contain-intrinsic-size 会连宽度一起撑开）先不排版，中文字体每加载一片都要整页重排，手机上主线程能省下一大半 |
 | `src/components/home/` | 首页：开场动画、全屏轮播、公园目录、线描地图（`src/data/map.generated.ts`：西部一张大图，下面是美国东部、阿拉斯加、夏威夷三张小图，东部按范围自动画州界、有公园的州自动填底色；公园名放在圆点哪边写在 `west-map.tsx` 的 `LABEL_SIDE`，屏幕窄、名字挤在一起时按各景点 Google 评论数加起来的热门程度先后摆：尽量留在定好的一侧，放不下才换到完全不碰别的圆点和名字、离自己的圆点最近的一侧，还不行就只留圆点；英文名最先让；手机上压住冷门得多的公园的圆点，就让那个公园不显示，平板和电脑上每座公园的圆点都留着。见 `map-declutter.tsx`、`map-sides.ts`） |
 | `src/components/site/` | 页头（压在大图上时透明，滚动后变纸色；1024 像素以上放 6 项导航，手机和平板用全屏菜单）、页脚（公园按片区分栏）、滚动渐显、内页页头 `page-header.tsx`（大标题 + 一张照片，照片用 `header-photo.ts` 按景点 id 取；行程页用行程里第一座公园的首图） |
-
-## 部署
-
-推荐 Vercel（个人用免费，推送到 GitHub 自动部署）：Vercel 用 GitHub 登录 → Add New → Project → 导入这个仓库 → 填环境变量 → Deploy。构建命令、输出目录都用默认的（`npm run build` 前会自动复制 MapLibre worker）。
-
-| 环境变量 | 部署时 |
-|---|---|
-| `SITE_PASSWORD` | 建议设。部署后的网址是公开的，而自用阶段的 Google Maps 评分快照、自用抓取都不适合公开 |
-| `DATA_GOV_API_KEY` | 基本必填。`DEMO_KEY` 按 IP 限次数，Vercel 的出口 IP 是很多网站共用的 |
-| `SELF_USE_SCRAPE` | 设了密码、只有自己用时才设成 `1`。Google 对云服务器的请求拦得更严，机票价格可能查不到，查不到就只给比价链接 |
-| `DEEPL_API_KEY`、`SERPAPI_API_KEY` | 可选。MyMemory 的免费额度也是按 IP 算的，部署后翻译更容易用完，配 DeepL 更稳 |
-
-- 手机上用：HTTPS 下 service worker 才能注册，所以离线功能要部署后才有；iPhone 用 Safari“添加到主屏幕”，安卓用 Chrome“安装应用”。
-- 在微信里直接点 `*.vercel.app` 的链接可能会被拦，用手机浏览器打开，或者给项目绑一个自己的域名。
-- `vercel.app` 在中国大陆经常打不开；自用阶段人在美国不受影响，以后要给国内用户用，需要国内的服务器和备案（见下一节）。
-- 本机和手机连同一个 Wi-Fi 时也能临时看：`npm run build && npm run start`，手机打开 `http://电脑的局域网 IP:3000`。前提是电脑把这个网络设成“专用网络”并允许 Node.js 通过防火墙；公共 Wi-Fi 下别这么做。这种方式是 HTTP，离线功能不可用。
 
 ## 以后做成微信小程序
 
@@ -274,7 +238,7 @@ README 里的截图用 `npm run docs:screenshots` 重新生成（`scripts/screen
 - 冰川 2026 年进园不用预约；7 月 1 日到 9 月 7 日洛根山口私家车限停 3 小时，Logan Pass 班车改成凭票（Recreation.gov，每张 $1）。2027 年会不会继续还没公布，预约规则按 2026 年写
 - 同行适合度（`src/data/suitability/`）是 2026-10-16 逐个景点整理的：先按徒步数据生成草稿，再按各公园 NPS 无障碍页面（加拿大按 Parks Canada，园外名胜按导览公司和部落公园）、导览团和游船运营方写明的年龄下限、景点原来的提示逐个改。官方写明的才附 `source`（450 个）；没有官方页面的（纪念碑谷全部、班夫和幽鹤的无障碍页 404、很多路边观景点）是按路面、坡度和常识判断的。轮椅 `yes` 只给官方写明无障碍、或者路边停车在车上就能看的；老人 `no` 只给窄脊铁链、要过夜、爬升或距离远超一般水平的（19 个）。拿不准的地方：梅萨维德崖居导览官方允许背着婴儿去，数据按“建议 4–6 岁以上”写，带婴儿的家庭自动生成攻略不排；Iceline、伯吉斯页岩、Old Rag、圣米格尔岛按体力判成老人不建议，没有悬崖窄脊；风洞、大盆地等洞穴导览按 NPS 写的年龄；Laurel Falls 按整修前的路况
 - 园外名胜不是国家公园：羚羊峡谷只能跟纳瓦霍授权的向导团进，波浪谷要抽签，马蹄湾的停车场归佩吉市；这些地方都不收国家公园年卡，门票写在 `src/data/fees-manual.ts`
-- 时区（2026-10-16 整理，调研记录见 [audit/2026-10-16/timezones.md](audit/2026-10-16/timezones.md)）：每座公园的 `timeZone` 写在 `parks.ts`，另抄一份到 `src/data/park-zones.ts`（排行程的代码在浏览器里跑，不要把一百多 KB 的 `parks.ts` 打包进去；`tests/time-zone.test.ts` 检查两边一致）。园内有一块用别的时区的，在景点上写 `timeZone`：西奥多·罗斯福 North Unit 是 `America/Chicago`，罗布森山是 `America/Vancouver`。一天的时间线按当天第一站的时区写（`SunWindow.zone`），别的时区的景点写的 `hours`、班次、停车场时间都是当地时间，`planner.ts` 的 `localShifts` 先换算过来，行程卡片上另写当地时间。时区的坑（羚羊峡谷各家导览按亚利桑那时间、纪念碑谷按纳瓦霍时间、波浪谷抽签按犹他时间、瓜达卢佩山手机常显示中部时间……）写在 `src/data/time-notes.ts`，公园页的“时区”和行程里第一次去那座公园的那天显示。艾伯塔 2026 年 11 月 1 日起全年 UTC-6、BC 省 2026 年 3 月 8 日起全年 UTC-7，时区数据库 2026c 才有，Node 24 自带的 2025b 和很多浏览器还没有，`time-zone.ts` 的 `PERMANENT` 手动补上（`minutesOfDay` 也用它）；`moon.ts` 还是直接用 Intl，冬天班夫的月亮升落时间在旧数据下会差一小时。幽鹤所在的 Field：Golden 镇议会 9 月 22 日复议后决定全年 UTC-6（和艾伯塔一样），Field 本身没找到官方说法，按 `America/Edmonton` 算
+- 时区（2026-10-16 整理，调研记录见 [archive/audit/2026-10-16/timezones.md](archive/audit/2026-10-16/timezones.md)）：每座公园的 `timeZone` 写在 `parks.ts`，另抄一份到 `src/data/park-zones.ts`（排行程的代码在浏览器里跑，不要把一百多 KB 的 `parks.ts` 打包进去；`tests/time-zone.test.ts` 检查两边一致）。园内有一块用别的时区的，在景点上写 `timeZone`：西奥多·罗斯福 North Unit 是 `America/Chicago`，罗布森山是 `America/Vancouver`。一天的时间线按当天第一站的时区写（`SunWindow.zone`），别的时区的景点写的 `hours`、班次、停车场时间都是当地时间，`planner.ts` 的 `localShifts` 先换算过来，行程卡片上另写当地时间。时区的坑（羚羊峡谷各家导览按亚利桑那时间、纪念碑谷按纳瓦霍时间、波浪谷抽签按犹他时间、瓜达卢佩山手机常显示中部时间……）写在 `src/data/time-notes.ts`，公园页的“时区”和行程里第一次去那座公园的那天显示。艾伯塔 2026 年 11 月 1 日起全年 UTC-6、BC 省 2026 年 3 月 8 日起全年 UTC-7，时区数据库 2026c 才有，Node 24 自带的 2025b 和很多浏览器还没有，`time-zone.ts` 的 `PERMANENT` 手动补上（`minutesOfDay` 也用它）；`moon.ts` 还是直接用 Intl，冬天班夫的月亮升落时间在旧数据下会差一小时。幽鹤所在的 Field：Golden 镇议会 9 月 22 日复议后决定全年 UTC-6（和艾伯塔一样），Field 本身没找到官方说法，按 `America/Edmonton` 算
 - 白沙、卡尔斯巴德洞窟、梅萨维德、石化林是 2026-10-01 加的：
   - 白沙：2024 年 4 月 F-16 坠毁后沙丘大道第 3–5.5 英里是安全走廊（只能开车通过），木栈道 2026 年仍关闭；导弹试验时沙丘大道会封最多 3 小时，出发前一天查 NPS 的 Park Closures 页面；满月月光徒步、卢塞罗湖导览按 2026 年（卢塞罗湖到 2027 年 3 月）公布的日期收在 `tours.ts`，之后的年份等公布了再补
   - 卡尔斯巴德洞窟：进洞要 Recreation.gov 分时段预约（30 天前早上 8 点开放），坐电梯、走天然入口进洞都是 9:30–14:30；国王宫殿导览 2026 年只卖当天现场票，屠宰峡谷洞导览 2025 年起因人手停办（只收了到洞口的步道），胡桃峡谷沙漠景观道 2022 年洪水后关闭、预计 2027 财年修
@@ -335,7 +299,8 @@ README 里的截图用 `npm run docs:screenshots` 重新生成（`scripts/screen
 
 ## 待办
 
-- [ ] 申请 api.data.gov 免费 key：https://api.data.gov/signup/ （NPS、NLR、GSA 通用；DEMO_KEY 每小时只有 30 次）
+- [x] 申请 api.data.gov 免费 key：https://api.data.gov/signup/ （NPS、NLR、GSA 通用；DEMO_KEY 每小时只有 30 次；已在 Vercel 和本机 `.env.local` 设好）
 - [ ] （可选）申请 SerpApi 免费 key：https://serpapi.com （每月 250 次，机票价格更稳定，部署后也能用）
 - [x] 初始化项目骨架：Next.js 16 + TypeScript + Tailwind
-- [ ] 部署到 Vercel；需要存数据时再上 Postgres + PostGIS（如 Supabase）
+- [x] 部署到 Vercel（https://team-peach-five.vercel.app ，见 [GUIDE.md](GUIDE.md#6-部署网站)）
+- [ ] 需要存数据时再上 Postgres + PostGIS（如 Supabase）

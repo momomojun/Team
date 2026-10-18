@@ -1,0 +1,138 @@
+# Copilot 技术参考 / Copilot Reference
+
+Copilot 是怎么设计的、每个文件做什么、提示词和评测怎么管。**怎么安装、运行、发版、回滚**见 [GUIDE.md](GUIDE.md)；**做到哪一步、为什么这么定**见 [PROJECT.md](PROJECT.md)；**评测成绩**见 [copilot/eval/RESULTS.md](../copilot/eval/RESULTS.md)。
+
+**English summary.** The LLM understands the request and explains the result; the website's deterministic engine plans the trip. Intake has the model quote spans verbatim, and code validates them, reads dates and places, and owns the dialogue state. A complete `TripRequest` goes to the `plan_trip` tool, which wraps the same `generateTrip` the website uses. A code-only Critic checks the `TripResult` and may revise once. The Writer uses a template by default, or a model rewrite behind a faithfulness check. Contracts are JSON Schema generated from TypeScript. Prompts are versioned files. Every turn is logged as JSONL with versions and hashes, and CI gates on replayed recordings because there is no GPU there.
+
+## 原则和流程
+
+**LLM 负责理解需求和解释结果，行程由网站现有的确定性引擎排。** Copilot 把用户的话整理成一个 `TripRequest`，交给 `plan_trip` 工具，拿回 `TripResult` 再检查、解释。
+
+```mermaid
+flowchart LR
+    U[用户的话] --> I[Intake<br>模型逐字摘片段<br>代码读日期、认公园和机场、决定追问]
+    I -- 条件不齐 --> Q[追问 / 选项]
+    Q --> U
+    I -- TripRequest --> P[plan_trip<br>网站的行程引擎]
+    P -- TripResult --> C[Critic<br>代码检查提醒代码<br>必要时改一次再排]
+    C --> W[Writer<br>模板，或模型改写 + 忠实度检查]
+    W --> A[回复]
+```
+
+- **Intake**：模型只从当前这条消息里逐字摘片段（公园、日期、天数、出发地、回程地、同行的人、偏好），代码检查片段确实在原话里（先规范化，“6天”“6 天”算一样；摘了原话里没有的就丢掉，记 `dropped_spans`），再读成代码、日期、天数，管对话状态，决定下一句问什么。没说年份的按“今天”（`reference_date`）给候选年份让用户确认；否定过的候选不会被后来的“是的”确认；先说的年份和后来补的月日合起来；“我选第二种”“缅因那个”都能对上选项。
+- **规则补**：模型漏了、但原话写得毫不含糊的天数（“N天 / N日 / N晚 / 一周”各最多一处）和公园名（模型一个都没摘时按目录认），用规则补上，trace 里记 `rule_filled`，评测时和模型的成绩分开算。
+- **Critic**：把每天、每站的提醒代码整理成 findings（hard / soft）；节奏是默认值、又有几天太满时改成轻松再排一次。用户自己说的节奏、天数、公园不擅自改；最多改一次。
+- **Writer**：默认按模板写（只用结果里的事实）；打开模型改写时，再检查说明里的时间、数字都在结果里，对不上就退回模板。
+
+## 契约：Copilot 和行程引擎之间的约定
+
+| 文件 | 内容 |
+|---|---|
+| `copilot/contracts/trip-request.v1.schema.json` | 输入（JSON Schema 2020-12）：公园（1–4 座，第一座是主公园，其余要在它的 `nearby` 里）、`startDate` 或 `month`、天数（1–14）、出发地和回程地（常用机场三字码，或者名字加坐标）、节奏、住宿偏好、同行的人（最小孩子几岁、婴儿车、老人、轮椅），以及每个字段的来源 `provenance`（用户原话 / 用户确认 / 默认值 / 推断，附原文片段）。和网站“自动生成攻略”的表单 `WizardInput` 一一对应 |
+| `copilot/contracts/trip-result.v1.schema.json` | 输出：每天的日期、时区、日出日落、出发和回住处的时间、开车和活动分钟数、当晚住处、每一站几点到几点（别的时区的景点另给 `localStart`）、提醒代码（`afterHours`、`tempClosed`、`parkingFull`……，见 `src/lib/copilot/contract.ts` 的 `STOP_WARNINGS`）、没排进去的景点和原因，以及这次计算的假设（`assumptions`） |
+| `copilot/contracts/parks.json`、`airports.json` | 59 座公园和名胜（代码、简繁英名字和别名、时区、常用机场、常一起玩的公园）、86 个机场。Intake 认名字就用这两个，不在 Python 里另写一份 |
+| `copilot/contracts/hant-to-hans.json` | 繁简对照表：网站同一套 OpenCC，收的是公园和城市名、`copilot/nps_copilot/` 里 `.py`、提示词、`data/*.json` 出现过的汉字的台湾、香港和标准繁体写法（不是完整的繁简字典） |
+| `copilot/contracts/examples/` | 样例请求 |
+
+- 这些 JSON 都是 `npm run copilot:contracts`（`scripts/build-copilot-contracts.mjs`）从 TypeScript 生成的，来源是 `src/lib/copilot/contract.ts`、`src/data/parks.ts`、`src/data/airports.ts`，不要手改；`tests/copilot-plan.test.ts` 检查文件和代码一致。**改了 Copilot 的 Python 文件、加了新汉字也要重跑**，不然网站测试会失败。
+- 改契约字段要升版本号（`trip-request/v2`），旧的评测记录才对得上。
+
+### plan_trip 工具
+
+`src/lib/copilot/plan-tool.ts`：调网站同一个 `generateTrip` 和时间线。命令行 `npm run copilot:plan`（`scripts/plan-trip.mjs`），HTTP `POST /api/copilot/plan`（`src/app/api/copilot/plan/route.ts`）。
+
+- `reference` / `REFERENCE_DATE` 是“今天”：只给了月份时按它算最近的那个月（2026-10-16 时说 3 月就是 2027 年 3 月）。评测时一定要固定，结果才能复现。
+- 请求不合格：命令行退出码 2，HTTP 返回 400，内容是 `{"error": "invalid_request", "issues": [{"path": "/days", "message": "不能大于 14"}]}`。`path` 是 JSON Pointer，Copilot 按它追问用户。
+- 网站设了 `SITE_PASSWORD` 时，HTTP 接口和别的接口一样要先登录。
+
+和行程页不一样的地方（结果的 `assumptions` 里会写，Writer 要照实说）：
+
+- 行程页从机场到各景点的车程是浏览器里现查 OSRM；这里用预先算好的“机场 → 公园定位点 → 景点”，可能差几十分钟。不是常用机场的地点按直线距离估算。
+- 不读 NPS 实时公告，只按仓库里整理的临时关闭（`src/data/closures.ts`）。要的话调用方查好，用 `live` 传进 `planTrip`。
+- 只给了月份时，日出日落、班次、临时关闭按那个月 15 号起算。
+
+## 文件
+
+| 位置 | 内容 |
+|---|---|
+| `copilot/nps_copilot/intake.py` | Intake：调模型、检查片段、对话状态、追问和选项、规则补；各地说法（粤语的同行人员、节奏、确认）也在这里 |
+| `copilot/nps_copilot/catalog.py` | 按 `parks.json`、`airports.json` 认公园和机场，加上常用简称（`EXTRA_PARK_ALIASES`）、英文城市名（`data/airport_cities_en.json`）、各地中文叫法（`data/regional_names.json`）；同一个叫法对上两个机场时（两个波特兰、华盛顿的两个机场）交给 Intake 追问 |
+| `copilot/nps_copilot/dates.py`、`text.py` | 读日期（中文、英文的几种顺序、“二〇二七年”、“下个月”）和天数（“5天”“五日”“四日三夜”“一周”）；文本规范化（NFKC、繁转简、空格） |
+| `copilot/nps_copilot/plan_client.py` | 调 plan_trip：默认直接跑仓库里的 Node 命令行（不用开网站），设了 `COPILOT_PLAN_URL` 走 HTTP |
+| `copilot/nps_copilot/critic.py`、`writer.py` | Critic、Writer（模板和忠实度检查 `faithful`） |
+| `copilot/nps_copilot/providers.py` | 模型提供方：本机 Ollama（默认）、回放录好的输出（CI 用，没录到的请求直接报错）、录音、测试用的脚本、云端（留接口、默认关） |
+| `copilot/nps_copilot/prompts.py`、`prompts/` | 提示词版本，见下一节 |
+| `copilot/nps_copilot/pipeline.py` | 把上面串起来；每轮写一条 JSONL 日志到 `copilot/runs/<日期>.jsonl`（Docker 里是 `/data/runs`） |
+| `copilot/nps_copilot/monitor.py` | `python -m nps_copilot stats`：按版本统计运行日志 |
+| `copilot/nps_copilot/api.py`、`__main__.py` | HTTP 服务（FastAPI：`GET /health`、`POST /sessions`、`POST /sessions/{id}/messages`）和命令行（`chat`、`serve`、`stats`、`version`） |
+| `copilot/nps_copilot/data/regional_names.json` | 各地中文叫法（三藩市、卡加利、愛民頓、洛磯山、班芙、宰恩、傑克森……），`copilot/scripts/regional_names.py` 从维基数据和中文维基各地区的标题、重定向生成；人工补的（`MANUAL`）和排除的（`EXCLUDE`：太泛的巨杉、冰河，和网站用词冲突的红杉）写在脚本里，附原因。只用来认名字，回答用户时用网站自己的中文名 |
+| `copilot/tests/` | pytest：Intake 每个修好的问题各有测试、各地写法、Critic、Writer 的忠实度检查、提示词切换、监控统计、接真行程引擎的端到端 |
+| `copilot/eval/` | 评测，见下面“评测” |
+| `copilot/Dockerfile`、`.dockerignore`（仓库根目录）、`docker-compose*.yml`、`scripts/smoke.py` | 镜像（Node 24 + Python，行程引擎和 Copilot 都在里面，模型不在）、启动配置、冒烟测试 |
+| `.github/workflows/ci.yml`、`release.yml` | 每个 PR 的检查；推 `copilot-v*` tag 发版 |
+
+## 版本：一个 Copilot 版本由什么组成
+
+| 部分 | 在哪 | 怎么定版本 |
+|---|---|---|
+| 代码 | `copilot/nps_copilot/`、行程引擎 `src/` | `nps_copilot/__init__.py` 的 `__version__`（和 `pyproject.toml` 一起改），git tag `copilot-v<版本>` |
+| 镜像 | `ghcr.io/momomojun/team-copilot:<tag>` | 和 git tag 同名；镜像里记着构建的提交（`/health` 的 `build`，本机按源码构建的是 `local-build`） |
+| 提示词 | `copilot/nps_copilot/prompts/<任务>_v<n>.txt` | 默认用哪一版写在 `prompts/defaults.json`；部署时可以用环境变量临时换 |
+| 模型 | Ollama，不在镜像里 | `COPILOT_MODEL`（默认 `qwen3.5:4b-q4_K_M`） |
+
+每轮对话的日志都记着 Copilot 版本、每个提示词的版本和 hash、模型，事后能对上是哪个组合出的问题；`GET /health` 也报这几样。
+
+### 提示词版本
+
+- 任务有 `intake`、`writer` 两个，文件是 `prompts/<任务>_v<n>.txt`。
+- **不改旧文件，新建下一版**：旧版留着才能回滚，也才能和旧的评测录音对上（回放按“任务 + 提示词全文 + 消息 + schema”的 hash 找录音，提示词改一个字就对不上）。
+- 默认版本改 `defaults.json`，走 PR；已经部署的服务可以不改代码临时切换：`COPILOT_PROMPT_INTAKE=v1`、`COPILOT_PROMPT_WRITER=v1`。
+- 现在默认 `intake/v1`、`writer/v1`。`intake_v2.txt` 是没采用的实验版本（回归集变好、开发集变差，门禁挡住了），留着演示回滚，见 [RESULTS.md](../copilot/eval/RESULTS.md)。
+- 怎么试一个新版本见 [GUIDE.md](GUIDE.md#改提示词)。
+
+## 评测
+
+| 样例 | 条数 | 是什么 | 门禁 |
+|---|---:|---|---|
+| `copilot/eval/cases/intake-v1.jsonl` | 25 | 开发集：改代码时一直在看的 | `baseline.json` |
+| `copilot/eval/cases/holdout-v1.jsonl` | 40 | 复杂情况（改口、矛盾、节假日、繁体、注入、复杂同行人员……），冻结后才跑；看过失败、修了代码，所以现在也算回归集 | `baseline-holdout.json` |
+| `copilot/eval/cases/regional-v1.jsonl` | 17 | 香港、台湾、新马的写法，先提交期望再跑；同样修过，当回归集 | `baseline-regional.json` |
+
+- `copilot/eval/run.py`：逐轮跑对话，比较最后的状态和 `TripRequest` 是否符合期望。`--replay` 回放录音（CI 用，不要 GPU）、`--record` 用真模型并录音、`--gate` 低于基线就失败、`--plan` 条件齐了再真的调 plan_trip、`--writer` 加 Writer 的成批评测、`--cases` 换样例文件。报告写到 `copilot/eval/reports/`（不提交）。
+- 录音在 `copilot/eval/recordings/<模型>[-<样例>][-intake_v<n>].jsonl`：默认样例不加后缀，不是默认版本的提示词另加后缀，不会互相覆盖。
+- `copilot/eval/plan_quality.py`：排出来的行程有没有硬问题（关闭、抽签、过了入场时间、太满）。
+- 分开报：对话是否达到期望、追问类型对不对、模型调用次数和耗时、被丢掉的片段数、规则补的条数。成绩是“这一版提示词 + 代码 + 模型”组合的结果，不是模型的通用能力。
+- **新样例先写期望、提交，再第一次跑**；看过失败再修代码的那一批就不再是没见过的数据，当回归门禁用，下一批要另写。
+
+## 监控指标
+
+`python -m nps_copilot stats [--days 7]` 读运行日志，按“Copilot 版本 · 提示词版本”分组：
+
+| 指标 | 意思 | 变差说明 |
+|---|---|---|
+| planned / needs_input / error | 这一轮排出了行程 / 还在追问 / plan_trip 拒绝了请求 | 排出的比例降、追问变多：Intake 变差；出错变多：请求拼错了 |
+| 耗时中位数、P90 | 每轮从收到消息到回复 | 模型或提示词变慢 |
+| dropped_spans | 模型摘了原话里没有的东西、被代码丢掉 | 模型在编造 |
+| rule_fills | 模型漏了、靠规则补上的条件 | 模型漏得多了 |
+| writer_fallback | 模型改写的说明没通过忠实度检查、退回模板 | Writer 编造 |
+
+什么时候该回滚、怎么回滚见 [GUIDE.md](GUIDE.md#回滚)。
+
+## 环境变量
+
+| 变量 | 默认 | 作用 |
+|---|---|---|
+| `COPILOT_PROVIDER` | `ollama` | `ollama` / `replay` / `cloud` |
+| `COPILOT_MODEL` | `qwen3.5:4b-q4_K_M` | Ollama 里的模型名 |
+| `OLLAMA_HOST_URL` | `http://127.0.0.1:11435` | Ollama 地址（momomojun 电脑上的便携版用 11435；自己装的默认 11434；Docker 里是 `http://ollama:11434` 或 `http://host.docker.internal:11435`） |
+| `COPILOT_REPLAY` | — | 回放用的录音文件 |
+| `COPILOT_PLAN_URL` | — | 设了就用 HTTP 调 plan_trip，不跑 Node 命令行 |
+| `COPILOT_RUNS` | `copilot/runs` | 运行日志目录 |
+| `COPILOT_PROMPT_INTAKE`、`COPILOT_PROMPT_WRITER` | `defaults.json` 里的 | 临时换提示词版本，比如 `v1` |
+| `COPILOT_ALLOW_CLOUD` | — | 设成 `1` 才允许云端模型（还没实现） |
+| `COPILOT_BUILD_SHA` | — | 镜像构建时写入，`/health` 显示 |
+| `COPILOT_TAG`、`COPILOT_PORT`、`OLLAMA_MODELS` | `latest`、`8765`、Docker 卷 | 只给 docker compose 用：用哪个版本的镜像、本机端口、已经下好的模型目录 |
+
+## 模型参数
+
+和 `experiments/local-model-validation` 的实验一样：温度 0、种子 42、`num_ctx` 4096、`num_predict` 512（Writer 1536，7 天的行程说明 512 会被截断）、`top_k` 20、`top_p` 0.95、关思考（`think: false`），输出用 JSON Schema 约束。为什么用 Qwen3.5 4B 见 [PROJECT.md](PROJECT.md#模型)。

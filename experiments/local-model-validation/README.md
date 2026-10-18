@@ -72,7 +72,7 @@ python .\unload-model.py
 
 存在擅自补出日期/天数/公园、遗漏老人条件、未发现天数冲突等问题。硬件运行可行；这一套非思考模式、prompt 与模型组合尚不能直接作为可靠业务入口。不要把 JSON Schema 约束误认为语义正确性保证。
 
-讨论记录：[LLMOPS_WORK_LOG.md](../../docs/LLMOPS_WORK_LOG.md)。
+讨论记录：[LLMOPS_WORK_LOG.md](../../docs/archive/LLMOPS_WORK_LOG.md)。
 
 ## 交接与版本管理
 

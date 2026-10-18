@@ -26,7 +26,7 @@
 
 ### 两个模型比较
 
-同一版代码、同一套样例：Qwen3.5 4B 23/25、没有编造；Qwen3 4B 20/25、编造了 6 个片段（都被代码丢掉了），但快约 0.6 秒。所以默认用 Qwen3.5 4B（和 [LLMOPS_PLAN](../../docs/LLMOPS_PLAN.md) 第 3 节的结论一致）。2026-10-17 用户决定本机只留 Qwen3.5 4B（默认）和 Qwen3.5 9B（对照），删掉 Qwen3 4B（`qwen3:4b`）。它的录音 `recordings/qwen3_4b.jsonl` 留着，回放不需要模型；要重新跑真模型得先 `ollama pull qwen3:4b`。
+同一版代码、同一套样例：Qwen3.5 4B 23/25、没有编造；Qwen3 4B 20/25、编造了 6 个片段（都被代码丢掉了），但快约 0.6 秒。所以默认用 Qwen3.5 4B（和 [PROJECT.md](../../docs/PROJECT.md#模型) 第 3 节的结论一致）。2026-10-17 用户决定本机只留 Qwen3.5 4B（默认）和 Qwen3.5 9B（对照），删掉 Qwen3 4B（`qwen3:4b`）。它的录音 `recordings/qwen3_4b.jsonl` 留着，回放不需要模型；要重新跑真模型得先 `ollama pull qwen3:4b`。
 
 ### Writer
 
@@ -142,7 +142,15 @@
 | intake v1（默认） | **25/25** | 37/40 |
 | intake v2 | 24/25 | **39/40** |
 
-v2 修好了 H20、H38，但开发集的 `en-full-glacier`（英文，冰川 4 天、飞 Kalispell）出发地和天数都没摘出来（把“4 days”放进了同行人员）。开发集门禁没过，所以默认还是 v1；v2 的录音留着（`recordings/*-intake_v2.jsonl`），用来演示上线后只回滚提示词（[../RELEASE.md](../RELEASE.md)）。也说明 4B 模型对提示词很敏感：多加两句中文说明，英文输入就变差了；下一步要改提示词，先扩大英文样例。
+v2 修好了 H20、H38，但开发集的 `en-full-glacier`（英文，冰川 4 天、飞 Kalispell）出发地和天数都没摘出来（把“4 days”放进了同行人员）。开发集门禁没过，所以默认还是 v1；v2 的录音留着（`recordings/*-intake_v2.jsonl`），用来演示上线后只回滚提示词。也说明 4B 模型对提示词很敏感：多加两句中文说明，英文输入就变差了；下一步要改提示词，先扩大英文样例。
+
+回滚演示（本机构建的镜像，`COPILOT_TAG=dev`；回滚的命令见 [GUIDE.md](../../docs/GUIDE.md#回滚)）：
+
+1. `COPILOT_PROMPT_INTAKE=v2` 启动：`/health` 报 `intake/v2`；发那句英文 → 追问 “How many days do you have for the trip?”，冒烟测试失败。
+2. 同一个镜像改成 `COPILOT_PROMPT_INTAKE=v1` 再启动：`/health` 报 `intake/v1`；同一句 → 排出冰川 4 天；默认的优胜美地冒烟测试也通过。
+3. `python -m nps_copilot stats` 分成两组：`intake/v2` 1 轮、排出 0、追问 1；`intake/v1` 2 轮、排出 2。
+
+换镜像的回滚要等至少发过两个版本（第一个有镜像的版本会是 `copilot-v0.2.0`），步骤一样，只是换 `COPILOT_TAG`。
 
 ## 香港、台湾、新马的写法（10-17）
 
