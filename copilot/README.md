@@ -13,7 +13,7 @@ LLMOps 课程项目的 Copilot 部分。总体计划见 [docs/LLMOPS_PLAN.md](..
 | `contracts/parks.json`、`contracts/airports.json` | 59 座公园和名胜（代码、简繁英名字和别名、时区、常用机场、常一起玩的公园）、86 个机场。Intake 认公园名、机场就用这两个，不要在 Python 里另写一份 |
 | `contracts/examples/` | 样例请求 |
 
-这些 JSON 都是 `npm run copilot:contracts` 从 TypeScript 生成的（来源是 `src/lib/copilot/contract.ts`、`src/data/parks.ts`、`src/data/airports.ts`），不要手改；`tests/copilot-plan.test.ts` 检查文件和代码一致。改契约字段要升版本号（`trip-request/v2`），旧的评测记录才对得上。
+这些 JSON 都是 `npm run copilot:contracts` 从 TypeScript 生成的（来源是 `src/lib/copilot/contract.ts`、`src/data/parks.ts`、`src/data/airports.ts`），不要手改；`tests/copilot-plan.test.ts` 检查文件和代码一致。繁简对照表 `hant-to-hans.json` 收的是 `copilot/nps_copilot/` 里 `.py` 和提示词文件出现过的汉字，**改了这些文件、加了新汉字也要重跑**，不然 CI 的网站测试会失败（PR #6 碰到过）。改契约字段要升版本号（`trip-request/v2`），旧的评测记录才对得上。
 
 ## 怎么调用 plan_trip
 
