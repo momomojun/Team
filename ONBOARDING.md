@@ -84,7 +84,9 @@ cd copilot && python eval/run.py --replay eval/recordings/qwen3.5_4b-q4_K_M.json
 docker compose -f copilot/docker-compose.yml -f copilot/docker-compose.ollama.yml up -d --build
 ```
 
-有 NVIDIA 显卡的，在 `up` 前面多加一个 `-f copilot/docker-compose.gpu.yml`，快很多。第一次要下载约 7 GB（Ollama 镜像约 3.8 GB + 模型约 3.4 GB），之后就不用了。起来以后测一下：
+有 NVIDIA 显卡的，在 `up` 前面多加一个 `-f copilot/docker-compose.gpu.yml`，快很多。第一次要下载约 7 GB（Ollama 镜像约 3.8 GB + 模型约 3.4 GB），之后就不用了。
+
+这条命令会等模型下载完、装进显卡（“预热”）才启动 Copilot，所以每次启动都要等几分钟（在 momomojun 的电脑上：第一次连下载 17 分钟，之后每次约 3.5 分钟）；起来以后每句话几秒。起来以后测一下：
 
 ```bash
 python copilot/scripts/smoke.py http://127.0.0.1:8765 --wait 900

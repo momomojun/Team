@@ -11,6 +11,8 @@ services:
     build:
       context: ..
       dockerfile: copilot/Dockerfile
+      args:
+        COPILOT_BUILD_SHA: ${COPILOT_BUILD_SHA:-local-build}
     ports:
       - "127.0.0.1:${COPILOT_PORT:-8765}:8765"   # 本机 8765 被占了就换：COPILOT_PORT=8766
     environment:
