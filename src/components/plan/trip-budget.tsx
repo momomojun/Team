@@ -61,6 +61,9 @@ export function TripBudget({
         ...(fees.freeParks.length > 0 ? [fill(t.free, { parks: fees.freeParks.map(parkName).join(text.units.listSep) })] : []),
         ...(fees.canada > 0 ? [fill(fees.canadaPass ? t.canadaPass : t.canadaDaily, { amount: money(fees.canada) })] : []),
         ...(fees.sites > 0 ? [fill(t.sites, { amount: money(fees.sites) })] : []),
+        ...(fees.parking > 0
+          ? [fill(t.parkingTag, { parks: fees.parkingParks.map(parkName).join(text.units.listSep), amount: money(fees.parking) })]
+          : []),
       ],
     },
     {

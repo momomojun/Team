@@ -3,6 +3,8 @@
 // 淡旺季差很多（夏天常贵一倍），异地还车另算，只当参考；实际价格点比价链接看。
 // 西黄石（WYS）是季节性机场，10 月基本没车；卡尔斯巴德（CNM）、阿拉莫萨（ALS）的小机场在 Kayak 上查不到车。这几个没有参考价。
 // 新加公园的机场是 2026-09-28 / 09-29 / 10-02 查的同一段日期。
+// 2026-10-15 补查的机场用的是 11 月 5–13 日（8 天）。迈阿密、劳德代尔堡排在最前面的全是机场外接驳车小公司 8 天 $29–$105 的离谱报价，
+// 没法取有代表性的数，不给参考价；巴港（BHB，季节性）、Gustavus、Kotzebue 在 Kayak 上查不到车。
 export const carRatesDate = "2026-09-26";
 export const carRatesSource = "Kayak";
 
@@ -69,6 +71,35 @@ export const carRates: Record<string, CarRate> = {
   COS: { car: 46, suv: 51 },
   MTJ: { car: 58, suv: 67 },
   GUC: { car: 59, suv: 60 },
+  // 2026-10-15 补的（东部和之前新加公园的机场）：原来那段日期已经过了，改查 11 月 5–13 日（同样 8 天）
+  TYS: { car: 55, suv: 62 },
+  AVL: { car: 39, suv: 48 },
+  ATL: { car: 37, suv: 37 },
+  CLT: { car: 25, suv: 35 },
+  IAD: { car: 51, suv: 50 },
+  DCA: { car: 36, suv: 31 },
+  CHO: { car: 42, suv: 31 },
+  CRW: { car: 58, suv: 59 },
+  ROA: { car: 41, suv: 46 },
+  LWB: { car: 63, suv: 65 },
+  BGR: { car: 48, suv: 40 },
+  PWM: { car: 55, suv: 50 },
+  BOS: { car: 50, suv: 42 },
+  RSW: { car: 34, suv: 36 },
+  EYW: { car: 50, suv: 38 },
+  ITO: { car: 29, suv: 31 },
+  KOA: { car: 31, suv: 35 },
+  OGG: { car: 38, suv: 50 },
+  MRY: { car: 37, suv: 33 },
+  SAT: { car: 26, suv: 25 },
+  AUS: { car: 33, suv: 35 },
+  BIS: { car: 110, suv: 85 },
+  DIK: { car: 106, suv: 118 },
+  XWA: { car: 63, suv: 72 },
+  RAP: { car: 57, suv: 63 },
+  TUS: { car: 46, suv: 59 },
+  // Homer 只有 SUV、厢式车，按最便宜的 SUV 算
+  HOM: { car: 188, suv: 188 },
 };
 
 /** 没有这个机场的参考价时按这个估（上面各机场轿车价的中位数左右） */
