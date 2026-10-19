@@ -84,6 +84,8 @@ def test_owner_trial_conversation():
         extraction(parks=["优胜美地"], dates=["明天"], duration="3天"),  # 第 1 句
         extraction(preferences=["我想住airbnb"]),                          # 第 4 句（第 2、3 句是回答追问，不调模型）
         extraction(),                                                      # 第 5 句是提问，什么条件都没有
+        {"found": True, "answer": "El Portal 是优胜美地西侧园外最近的住处，到山谷约 20 分钟。", "sources": [1]},
+        extraction(),                                                      # 第 6 句：“好的”
     ])
     session = Session(provider, "2026-10-18", log=False)
     first = session.send("我想在明天出发去优胜美地玩，你给我规划一下，大概3天左右吧")
@@ -99,5 +101,26 @@ def test_owner_trial_conversation():
     assert changed.text.startswith("好，改了：住宿改成民宿。")
     assert "airbnb.com" in changed.text
     asked = session.send("El Portal是什么地方，离园区多远啊")
-    assert "答不上来" in asked.text and "第 1 天" not in asked.text
-    assert asked.result == changed.result
+    assert asked.text.startswith("El Portal 是优胜美地西侧园外最近的住处") and "（资料：El Portal）" in asked.text
+    assert "第 1 天" not in asked.text and asked.result == changed.result
+    assert asked.trace["qa"]["retrieved"][0] == "yose-stay-el-portal"
+    assert session.send("好的").text.startswith("好的。想改什么直接说")
+
+
+def test_restart_and_change_with_a_question():
+    """10-18 第二次试用：“帮我安排一个新的行程”要从头来；“三座都玩，要几天”先给新行程，查得到的再回答"""
+    provider = ScriptedProvider([
+        extraction(parks=["雷尼尔山"], dates=["2027年7月10日"], duration="3天", origin="SEA", preferences=["适中"]),
+        extraction(parks=["西雅图附近的三个国家公园"]),
+        {"found": True, "answer": "西雅图周边一共 3 处：雷尼尔山、奥林匹克、北瀑布。", "sources": [1]},
+        extraction(),
+    ])
+    session = Session(provider, "2026-10-18", log=False)
+    assert session.send("2027年7月10日从SEA去雷尼尔山3天，节奏适中").status == "planned"
+    changed = session.send("西雅图附近的三个国家公园都玩，要几天？")
+    assert changed.status == "planned" and sorted(changed.request["parks"]) == ["mora", "noca", "olym"]
+    assert changed.text.startswith("“西雅图附近”按网站的片区算是雷尼尔山、奥林匹克、北瀑布这 3 座。\n好，改了：公园改成")
+    assert changed.text.endswith("西雅图周边一共 3 处：雷尼尔山、奥林匹克、北瀑布。\n（资料：西雅图周边）")
+    fresh = session.send("帮我安排一个新的行程")
+    assert fresh.status == "needs_input" and fresh.text.startswith("好，重新排一个新的行程")
+    assert session.last_result is None and fresh.question["kind"] == "parks"

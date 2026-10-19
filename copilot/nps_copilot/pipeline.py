@@ -1,4 +1,5 @@
-"""Copilot 流水线：Intake →（条件齐了）plan_trip → Critic（必要时改一次再排）→ Writer。
+"""Copilot 流水线：Intake →（条件齐了）plan_trip → Critic（必要时改一次再排）→ Writer；
+行程排好以后，条件没变的提问交给 qa（在网站资料里查、只按查到的回答）。
 
 每轮对话写一条日志（JSONL，默认 copilot/runs/，已在 .gitignore 里）：提示词版本、模型、各步耗时、
 模型输出、丢掉的片段、Critic 的发现、Writer 有没有被换成模板。评测和监控都读这份日志。
@@ -14,7 +15,7 @@ import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from . import __version__, prompts
+from . import __version__, prompts, qa
 from . import writer as writer_module
 from .critic import critique
 from .intake import Intake
@@ -54,24 +55,45 @@ class Session:
         # 上一次排出来的行程：用户再说话时，条件变了就先说改了什么，没变就不把整个行程再印一遍
         self.last_request: dict | None = None
         self.last_result: dict | None = None
+        self.last_text = ""
 
     def send(self, message: str) -> Reply:
         self.turn += 1
         start = time.perf_counter()
+        restarted = bool(RESTART.search(message)) and self.turn > 1
+        if restarted:
+            # “帮我安排一个新的行程”：前面说过的条件全部清掉，从头问（这句话里有新条件的照样读）
+            self.intake = Intake(self.provider, dt.date.fromisoformat(self.reference_date))
+            self.last_request = self.last_result = None
+            self.last_text = ""
         turn = self.intake.step(message)
+        if restarted:
+            turn.notices.insert(0, "好，重新排一个新的行程，前面说的条件都不算了。" if (self.intake.language or "zh") != "en" else
+                                "Sure, starting a new trip from scratch.")
         trace = {"session": self.id, "turn": self.turn, "version": VERSION, "prompts": prompt_hashes(),
                  "reference_date": self.reference_date, "message": message, "intake": turn.trace}
+        zh = (self.intake.language or "zh") != "en"
         if turn.status != "ready":
-            text = "\n".join([*turn.notices, turn.question["text"]]) if turn.question else "\n".join(turn.notices)
+            head = list(turn.notices)
+            if qa.is_question(message) and not is_ack(message):
+                # 还没排出行程时也能问（“西雅图附近的三个国家公园是哪三个”）：先回答，再接着追问。
+                # 这句话里读到了条件的，只在查到了才回答；什么条件都没有的，查不到也说一声
+                said, trace["qa"] = qa.answer(message, self.intake.parks.value or [], self.last_text, self.provider, zh)
+                if trace["qa"].get("answer") == "model" or not turn.trace.get("absorbed"):
+                    head.append(said)
+            text = "\n".join([*head, turn.question["text"]]) if turn.question else "\n".join(head)
             reply = Reply("needs_input", text, turn.question, None, None, trace)
             return self._done(reply, start)
         request = turn.request
         trace["request"] = request
-        zh = (self.intake.language or "zh") != "en"
         if self.last_request is not None and same_request(self.last_request, request):
-            # 条件没变（提问、闲聊、“好的”）：现在还不会回答问题，老实说，不把同一个行程再印一遍
+            # 条件没变：是提问就在网站资料里查着回答，“好的”、闲聊就简短回一句；都不把同一个行程再印一遍
             trace["unchanged"] = True
-            text = "\n".join([*turn.notices, unchanged_reply(message, zh)])
+            if is_ack(message) or not qa.is_question(message):
+                said = unchanged_reply(message, zh)
+            else:
+                said, trace["qa"] = qa.answer(message, request["parks"], self.last_text, self.provider, zh, stop_ids(self.last_result))
+            text = "\n".join([*turn.notices, said])
             return self._done(Reply("planned", text, None, request, self.last_result, trace), start)
         changes = writer_module.describe_changes(self.last_request, request, zh) if self.last_request else []
         user_request = request
@@ -105,8 +127,14 @@ class Session:
             if self.last_result:
                 head.extend(writer_module.lodging_changes(self.last_result, result, zh))
             trace["changes"] = changes
-        self.last_request, self.last_result = user_request, result
-        return self._done(Reply("planned", "\n".join([*head, text]), None, request, result, trace), start)
+        self.last_request, self.last_result, self.last_text = user_request, result, text
+        tail = []
+        if changes and qa.is_question(message):
+            # 一句话里既改了条件又在问（“三座都去，要几天？”）：先给新行程，再回答查得到的那部分；查不到就不多说
+            said, trace["qa"] = qa.answer(message, request["parks"], text, self.provider, zh, stop_ids(result))
+            if trace["qa"].get("answer") == "model":
+                tail.append(said)
+        return self._done(Reply("planned", "\n".join([*head, text, *tail]), None, request, result, trace), start)
 
     def _done(self, reply: Reply, start: float) -> Reply:
         reply.trace["status"] = reply.status
@@ -119,22 +147,34 @@ class Session:
         return reply
 
 
+RESTART = re.compile(r"新的?(行程|旅行|计划|攻略)|另(一|外一?)个(行程|旅行|计划|攻略)|重新开始|从头(开始|来)|换个(行程|旅行|计划)|"
+                     r"start over|from scratch|new (trip|plan|itinerary)|another trip", re.I)
+
+
+def stop_ids(result: dict | None) -> list[str]:
+    return [stop["id"] for day in (result or {}).get("days", []) for stop in day["stops"] if stop.get("id")]
+
+
 def same_request(before: dict, after: dict) -> bool:
     """两次的条件一样（不看 provenance：同样的条件，来源说法可以不同）"""
     strip = lambda request: {key: value for key, value in request.items() if key != "provenance"}  # noqa: E731
     return strip(before) == strip(after)
 
 
-ACK = re.compile(r"\s*(好的?|好吧|行|可以|谢谢|多谢|感谢|收到|明白|ok|okay|thanks|thank you|great|cool|got it)[\s!！。.~啦呀啊了]*", re.I)
+# “好的谢谢”“ok thanks”这种几个连在一起的也算
+ACK = re.compile(r"(\s*(好的?|好吧|行|可以|谢谢你?|多谢|感谢|收到|明白了?|ok|okay|thanks|thank you|great|cool|got it)[\s,，!！。.~啦呀啊了]*)+", re.I)
+
+
+def is_ack(message: str) -> bool:
+    return ACK.fullmatch(message) is not None
 
 
 def unchanged_reply(message: str, zh: bool) -> str:
-    if ACK.fullmatch(message):
+    if is_ack(message):
         return "好的。想改什么直接说就行，比如“住民宿”“轻松一点”“玩 4 天”。" if zh else \
             "Sure. Tell me anything you'd like to change, e.g. “vacation rentals”, “a slower pace”, or “4 days”."
     if zh:
-        return ("这句话我还答不上来：现在我能按你给的条件排行程、改行程，还不会回答景点、住宿、车程这类问题（正在做）。"
-                "想改行程可以直接说，比如“住民宿”“改成从弗雷斯诺出发”“轻松一点”“玩 4 天”。")
-    return ("I can't answer that yet. Right now I can plan and change the trip from your conditions, but not answer questions "
-            "about places, lodging, or drive times (coming soon). To change the plan, say something like “vacation rentals”, "
-            "“start from Fresno”, “a slower pace”, or “4 days”.")
+        return ("想改行程可以直接说，比如“住民宿”“改成从弗雷斯诺出发”“轻松一点”“玩 4 天”；"
+                "也可以问景点、住宿、车程，比如“El Portal 离园区多远”。")
+    return ("To change the plan, say something like “vacation rentals”, “start from Fresno”, “a slower pace”, or “4 days”. "
+            "You can also ask about places, lodging, or drive times.")
