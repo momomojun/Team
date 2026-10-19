@@ -3,6 +3,7 @@
   python -m nps_copilot serve [--host 127.0.0.1] [--port 8765]           HTTP 服务（要 pip install -e copilot[api]）
   python -m nps_copilot stats [--days 7]                                 看运行日志：按版本统计成功率、耗时、编造、退回模板
   python -m nps_copilot version                                          版本、提示词版本和 hash、模型
+  python -m nps_copilot alerts [--snapshot copilot/data/alerts/latest.json]   读公告快照、提取临时关闭（快照用 npm run alerts:fetch 抓）
 """
 from __future__ import annotations
 
@@ -15,6 +16,8 @@ import sys
 from . import __version__, prompts
 from .pipeline import Session
 from .providers import ProviderError, from_env
+
+DATA = __import__("pathlib").Path(__file__).resolve().parents[1] / "data"
 
 
 def main() -> None:
@@ -29,6 +32,9 @@ def main() -> None:
     stats = sub.add_parser("stats")
     stats.add_argument("--days", type=int, default=7)
     sub.add_parser("version")
+    alerts_cmd = sub.add_parser("alerts")
+    alerts_cmd.add_argument("--snapshot", default=str(DATA / "alerts" / "latest.json"))
+    alerts_cmd.add_argument("--out", default=str(DATA / "alerts" / "closures-latest.json"))
     args = parser.parse_args()
     sys.stdout.reconfigure(encoding="utf-8")
 
@@ -41,6 +47,25 @@ def main() -> None:
         print(json.dumps({"version": __version__, "build": os.environ.get("COPILOT_BUILD_SHA"), "prompts": prompts.current(),
                           "provider": os.environ.get("COPILOT_PROVIDER", "ollama"), "model": os.environ.get("COPILOT_MODEL", "qwen3.5:4b-q4_K_M")},
                          ensure_ascii=False, indent=1))
+        return
+    if args.command == "alerts":
+        from .alerts import combined, extract, rules_extract
+
+        snapshot = json.loads(open(args.snapshot, encoding="utf-8").read())
+        reference = dt.date.fromisoformat(snapshot["fetched"])
+        provider = from_env()
+        closures = []
+        for alert in snapshot["alerts"]:
+            # 模型和规则一起（评测里漏得最少）；每条记下是谁找到的
+            result = combined(extract(alert, provider, reference), rules_extract(alert))
+            if result.type == "full" and result.closed:
+                closures.append({"alert": result.alert, "park": result.park, "attractions": result.closed, "from": result.start,
+                                 "reopen": result.reopen, "evidence": result.evidence, "found_by": result.trace.get("found_by", []),
+                                 "title": alert["title"], "url": alert.get("url")})
+        out = {"fetched": snapshot["fetched"], "prompts": prompts.current(), "closures": closures}
+        with open(args.out, "w", encoding="utf-8") as handle:
+            json.dump(out, handle, ensure_ascii=False, indent=1)
+        print(f"{len(snapshot['alerts'])} 条公告，{len(closures)} 条关了网站上的景点，写到 {args.out}")
         return
     if args.command == "stats":
         from .monitor import report

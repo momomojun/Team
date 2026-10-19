@@ -1,0 +1,6970 @@
+[
+  {
+    "id": "yose-tunnel-view",
+    "park": "yose",
+    "nameEn": "Tunnel View",
+    "nameZh": "隧道观景点",
+    "area": "valley",
+    "areaZh": "优胜美地山谷"
+  },
+  {
+    "id": "yose-bridalveil-fall",
+    "park": "yose",
+    "nameEn": "Bridalveil Fall",
+    "nameZh": "新娘面纱瀑布",
+    "area": "valley",
+    "areaZh": "优胜美地山谷"
+  },
+  {
+    "id": "yose-el-capitan",
+    "park": "yose",
+    "nameEn": "El Capitan",
+    "nameZh": "酋长岩",
+    "area": "valley",
+    "areaZh": "优胜美地山谷"
+  },
+  {
+    "id": "yose-yosemite-falls",
+    "park": "yose",
+    "nameEn": "Yosemite Falls",
+    "nameZh": "优胜美地瀑布",
+    "area": "valley",
+    "areaZh": "优胜美地山谷"
+  },
+  {
+    "id": "yose-mist-trail",
+    "park": "yose",
+    "nameEn": "Mist Trail – Vernal Fall",
+    "nameZh": "雾径 · 弗纳尔瀑布",
+    "area": "valley",
+    "areaZh": "优胜美地山谷"
+  },
+  {
+    "id": "yose-mirror-lake",
+    "park": "yose",
+    "nameEn": "Mirror Lake",
+    "nameZh": "镜湖",
+    "area": "valley",
+    "areaZh": "优胜美地山谷"
+  },
+  {
+    "id": "yose-half-dome",
+    "park": "yose",
+    "nameEn": "Half Dome",
+    "nameZh": "半穹顶",
+    "area": "valley",
+    "areaZh": "优胜美地山谷"
+  },
+  {
+    "id": "yose-horsetail-fall",
+    "park": "yose",
+    "nameEn": "Horsetail Fall (Firefall)",
+    "nameZh": "马尾瀑布火瀑",
+    "area": "valley",
+    "areaZh": "优胜美地山谷"
+  },
+  {
+    "id": "yose-glacier-point",
+    "park": "yose",
+    "nameEn": "Glacier Point",
+    "nameZh": "冰川点",
+    "area": "glacier-point",
+    "areaZh": "冰川点路"
+  },
+  {
+    "id": "yose-taft-point",
+    "park": "yose",
+    "nameEn": "Taft Point",
+    "nameZh": "塔夫特点",
+    "area": "glacier-point",
+    "areaZh": "冰川点路"
+  },
+  {
+    "id": "yose-tuolumne-meadows",
+    "park": "yose",
+    "nameEn": "Tuolumne Meadows",
+    "nameZh": "图奥勒米草甸",
+    "area": "tioga",
+    "areaZh": "Tioga Road 高山区"
+  },
+  {
+    "id": "yose-olmsted-point",
+    "park": "yose",
+    "nameEn": "Olmsted Point",
+    "nameZh": "奥姆斯特德观景点",
+    "area": "tioga",
+    "areaZh": "Tioga Road 高山区"
+  },
+  {
+    "id": "yose-tenaya-lake",
+    "park": "yose",
+    "nameEn": "Tenaya Lake",
+    "nameZh": "特纳亚湖",
+    "area": "tioga",
+    "areaZh": "Tioga Road 高山区"
+  },
+  {
+    "id": "yose-mariposa-grove",
+    "park": "yose",
+    "nameEn": "Mariposa Grove",
+    "nameZh": "马里波萨巨杉林",
+    "area": "wawona",
+    "areaZh": "Wawona / 巨杉林"
+  },
+  {
+    "id": "yose-sentinel-dome",
+    "park": "yose",
+    "nameEn": "Sentinel Dome",
+    "nameZh": "哨兵穹顶",
+    "area": "glacier-point",
+    "areaZh": "冰川点路"
+  },
+  {
+    "id": "yose-washburn-point",
+    "park": "yose",
+    "nameEn": "Washburn Point",
+    "nameZh": "沃什伯恩观景点",
+    "area": "glacier-point",
+    "areaZh": "冰川点路"
+  },
+  {
+    "id": "yose-valley-view",
+    "park": "yose",
+    "nameEn": "Valley View",
+    "nameZh": "山谷景观点",
+    "area": "valley",
+    "areaZh": "优胜美地山谷"
+  },
+  {
+    "id": "yose-swinging-bridge",
+    "park": "yose",
+    "nameEn": "Swinging Bridge",
+    "nameZh": "摇摆桥",
+    "area": "valley",
+    "areaZh": "优胜美地山谷"
+  },
+  {
+    "id": "yose-cooks-meadow",
+    "park": "yose",
+    "nameEn": "Cook's Meadow Loop",
+    "nameZh": "库克草甸环线",
+    "area": "valley",
+    "areaZh": "优胜美地山谷"
+  },
+  {
+    "id": "yose-sentinel-bridge",
+    "park": "yose",
+    "nameEn": "Sentinel Bridge",
+    "nameZh": "哨兵桥",
+    "area": "valley",
+    "areaZh": "优胜美地山谷"
+  },
+  {
+    "id": "yose-upper-yosemite-fall",
+    "park": "yose",
+    "nameEn": "Upper Yosemite Fall Trail",
+    "nameZh": "上优胜美地瀑布步道",
+    "area": "valley",
+    "areaZh": "优胜美地山谷"
+  },
+  {
+    "id": "yose-four-mile-trail",
+    "park": "yose",
+    "nameEn": "Four Mile Trail",
+    "nameZh": "四英里步道",
+    "area": "valley",
+    "areaZh": "优胜美地山谷"
+  },
+  {
+    "id": "yose-nevada-fall",
+    "park": "yose",
+    "nameEn": "Nevada Fall",
+    "nameZh": "内华达瀑布",
+    "area": "valley",
+    "areaZh": "优胜美地山谷"
+  },
+  {
+    "id": "yose-valley-visitor-center",
+    "park": "yose",
+    "nameEn": "Yosemite Exploration Center",
+    "nameZh": "优胜美地山谷探索中心",
+    "area": "valley",
+    "areaZh": "优胜美地山谷"
+  },
+  {
+    "id": "yose-tuolumne-grove",
+    "park": "yose",
+    "nameEn": "Tuolumne Grove",
+    "nameZh": "图奥勒米巨杉林",
+    "area": "tioga",
+    "areaZh": "Tioga Road 高山区"
+  },
+  {
+    "id": "yose-hetch-hetchy",
+    "park": "yose",
+    "nameEn": "Hetch Hetchy (Wapama Falls)",
+    "nameZh": "赫奇赫奇 · 瓦帕玛瀑布",
+    "area": "hetch-hetchy",
+    "areaZh": "Hetch Hetchy（西北角）"
+  },
+  {
+    "id": "yose-lembert-dome",
+    "park": "yose",
+    "nameEn": "Lembert Dome",
+    "nameZh": "兰伯特穹顶",
+    "area": "tioga",
+    "areaZh": "Tioga Road 高山区"
+  },
+  {
+    "id": "yose-cathedral-lakes",
+    "park": "yose",
+    "nameEn": "Cathedral Lakes",
+    "nameZh": "大教堂湖",
+    "area": "tioga",
+    "areaZh": "Tioga Road 高山区"
+  },
+  {
+    "id": "yose-gaylor-lakes",
+    "park": "yose",
+    "nameEn": "Gaylor Lakes",
+    "nameZh": "盖勒湖",
+    "area": "tioga",
+    "areaZh": "Tioga Road 高山区"
+  },
+  {
+    "id": "yose-may-lake",
+    "park": "yose",
+    "nameEn": "May Lake",
+    "nameZh": "五月湖",
+    "area": "tioga",
+    "areaZh": "Tioga Road 高山区"
+  },
+  {
+    "id": "yose-pothole-dome",
+    "park": "yose",
+    "nameEn": "Pothole Dome",
+    "nameZh": "坑洼穹顶",
+    "area": "tioga",
+    "areaZh": "Tioga Road 高山区"
+  },
+  {
+    "id": "yose-chilnualna-falls",
+    "park": "yose",
+    "nameEn": "Chilnualna Falls",
+    "nameZh": "奇尔努阿尔纳瀑布",
+    "area": "wawona",
+    "areaZh": "Wawona / 巨杉林"
+  },
+  {
+    "id": "yose-pioneer-history-center",
+    "park": "yose",
+    "nameEn": "Pioneer Yosemite History Center",
+    "nameZh": "优胜美地先驱历史中心",
+    "area": "wawona",
+    "areaZh": "Wawona / 巨杉林"
+  },
+  {
+    "id": "seki-giant-forest-museum",
+    "park": "seki",
+    "nameEn": "Giant Forest Museum",
+    "nameZh": "巨人森林博物馆",
+    "area": "giant-forest",
+    "areaZh": "Giant Forest（红杉）"
+  },
+  {
+    "id": "seki-general-sherman",
+    "park": "seki",
+    "nameEn": "General Sherman Tree",
+    "nameZh": "谢尔曼将军树",
+    "area": "giant-forest",
+    "areaZh": "Giant Forest（红杉）"
+  },
+  {
+    "id": "seki-moro-rock",
+    "park": "seki",
+    "nameEn": "Moro Rock",
+    "nameZh": "莫罗岩",
+    "area": "giant-forest",
+    "areaZh": "Giant Forest（红杉）"
+  },
+  {
+    "id": "seki-tunnel-log",
+    "park": "seki",
+    "nameEn": "Tunnel Log",
+    "nameZh": "隧道树",
+    "area": "giant-forest",
+    "areaZh": "Giant Forest（红杉）"
+  },
+  {
+    "id": "seki-crescent-meadow",
+    "park": "seki",
+    "nameEn": "Crescent Meadow",
+    "nameZh": "新月草甸",
+    "area": "giant-forest",
+    "areaZh": "Giant Forest（红杉）"
+  },
+  {
+    "id": "seki-tokopah-falls",
+    "park": "seki",
+    "nameEn": "Tokopah Falls",
+    "nameZh": "托科帕瀑布",
+    "area": "lodgepole",
+    "areaZh": "Lodgepole"
+  },
+  {
+    "id": "seki-general-grant",
+    "park": "seki",
+    "nameEn": "General Grant Tree",
+    "nameZh": "格兰特将军树",
+    "area": "grant-grove",
+    "areaZh": "Grant Grove（国王峡谷）"
+  },
+  {
+    "id": "seki-kings-canyon",
+    "park": "seki",
+    "nameEn": "Kings Canyon Scenic Byway",
+    "nameZh": "国王峡谷景观道",
+    "area": "cedar-grove",
+    "areaZh": "Cedar Grove（峡谷底）"
+  },
+  {
+    "id": "seki-zumwalt-meadow",
+    "park": "seki",
+    "nameEn": "Zumwalt Meadow",
+    "nameZh": "祖姆沃尔特草甸",
+    "area": "cedar-grove",
+    "areaZh": "Cedar Grove（峡谷底）"
+  },
+  {
+    "id": "seki-congress-trail",
+    "park": "seki",
+    "nameEn": "Congress Trail",
+    "nameZh": "国会步道",
+    "area": "giant-forest",
+    "areaZh": "Giant Forest（红杉）"
+  },
+  {
+    "id": "seki-big-trees-trail",
+    "park": "seki",
+    "nameEn": "Big Trees Trail",
+    "nameZh": "大树步道",
+    "area": "giant-forest",
+    "areaZh": "Giant Forest（红杉）"
+  },
+  {
+    "id": "seki-mist-falls",
+    "park": "seki",
+    "nameEn": "Mist Falls",
+    "nameZh": "雾瀑",
+    "area": "cedar-grove",
+    "areaZh": "Cedar Grove（峡谷底）"
+  },
+  {
+    "id": "seki-roaring-river-falls",
+    "park": "seki",
+    "nameEn": "Roaring River Falls",
+    "nameZh": "咆哮河瀑布",
+    "area": "cedar-grove",
+    "areaZh": "Cedar Grove（峡谷底）"
+  },
+  {
+    "id": "seki-panoramic-point",
+    "park": "seki",
+    "nameEn": "Panoramic Point",
+    "nameZh": "全景点",
+    "area": "grant-grove",
+    "areaZh": "Grant Grove（国王峡谷）"
+  },
+  {
+    "id": "seki-hospital-rock",
+    "park": "seki",
+    "nameEn": "Hospital Rock",
+    "nameZh": "医院岩",
+    "area": "foothills",
+    "areaZh": "Foothills（山脚）"
+  },
+  {
+    "id": "chis-scorpion-anchorage",
+    "park": "chis",
+    "nameEn": "Santa Cruz Island – Scorpion Anchorage",
+    "nameZh": "圣克鲁斯岛 · 蝎子湾一日游",
+    "area": "santa-cruz",
+    "areaZh": "圣克鲁斯岛（Santa Cruz）"
+  },
+  {
+    "id": "chis-anacapa-island",
+    "park": "chis",
+    "nameEn": "Anacapa Island",
+    "nameZh": "阿纳卡帕岛一日游",
+    "area": "anacapa",
+    "areaZh": "阿纳卡帕岛（Anacapa）"
+  },
+  {
+    "id": "chis-sea-cave-kayak",
+    "park": "chis",
+    "nameEn": "Sea Cave Kayak Tour",
+    "nameZh": "海蚀洞皮划艇团",
+    "area": "santa-cruz",
+    "areaZh": "圣克鲁斯岛（Santa Cruz）"
+  },
+  {
+    "id": "chis-prisoners-harbor",
+    "park": "chis",
+    "nameEn": "Santa Cruz Island – Prisoners Harbor",
+    "nameZh": "圣克鲁斯岛 · 囚犯港一日游",
+    "area": "santa-cruz",
+    "areaZh": "圣克鲁斯岛（Santa Cruz）"
+  },
+  {
+    "id": "chis-visitor-center",
+    "park": "chis",
+    "nameEn": "Robert J. Lagomarsino Visitor Center",
+    "nameZh": "海峡群岛游客中心",
+    "area": "mainland",
+    "areaZh": "Ventura 港（大陆）"
+  },
+  {
+    "id": "chis-whale-watching",
+    "park": "chis",
+    "nameEn": "Whale Watching Cruise",
+    "nameZh": "观鲸船",
+    "area": "mainland",
+    "areaZh": "Ventura 港（大陆）"
+  },
+  {
+    "id": "chis-santa-rosa-island",
+    "park": "chis",
+    "nameEn": "Santa Rosa Island",
+    "nameZh": "圣罗莎岛一日游",
+    "area": "santa-rosa",
+    "areaZh": "圣罗莎岛（Santa Rosa）"
+  },
+  {
+    "id": "chis-san-miguel-island",
+    "park": "chis",
+    "nameEn": "San Miguel Island",
+    "nameZh": "圣米格尔岛一日游",
+    "area": "san-miguel",
+    "areaZh": "圣米格尔岛（San Miguel）"
+  },
+  {
+    "id": "redw-lady-bird-johnson-grove",
+    "park": "redw",
+    "nameEn": "Lady Bird Johnson Grove",
+    "nameZh": "伯德·约翰逊夫人林",
+    "area": "orick",
+    "areaZh": "Orick / Bald Hills（南端）"
+  },
+  {
+    "id": "redw-tall-trees-grove",
+    "park": "redw",
+    "nameEn": "Tall Trees Grove",
+    "nameZh": "高树林",
+    "area": "orick",
+    "areaZh": "Orick / Bald Hills（南端）"
+  },
+  {
+    "id": "redw-fern-canyon",
+    "park": "redw",
+    "nameEn": "Fern Canyon",
+    "nameZh": "蕨类峡谷",
+    "area": "prairie-creek",
+    "areaZh": "Prairie Creek（草原溪）"
+  },
+  {
+    "id": "redw-newton-b-drury-parkway",
+    "park": "redw",
+    "nameEn": "Newton B. Drury Scenic Parkway",
+    "nameZh": "牛顿·德鲁里风景道",
+    "area": "prairie-creek",
+    "areaZh": "Prairie Creek（草原溪）"
+  },
+  {
+    "id": "redw-stout-grove",
+    "park": "redw",
+    "nameEn": "Stout Memorial Grove",
+    "nameZh": "斯托特纪念林",
+    "area": "crescent-city",
+    "areaZh": "Crescent City / Jedediah Smith（北端）"
+  },
+  {
+    "id": "redw-howland-hill-road",
+    "park": "redw",
+    "nameEn": "Howland Hill Road",
+    "nameZh": "豪兰山路",
+    "area": "crescent-city",
+    "areaZh": "Crescent City / Jedediah Smith（北端）"
+  },
+  {
+    "id": "redw-kuchel-visitor-center",
+    "park": "redw",
+    "nameEn": "Thomas H. Kuchel Visitor Center",
+    "nameZh": "Kuchel 游客中心",
+    "area": "orick",
+    "areaZh": "Orick / Bald Hills（南端）"
+  },
+  {
+    "id": "redw-redwood-creek-overlook",
+    "park": "redw",
+    "nameEn": "Redwood Creek Overlook",
+    "nameZh": "红杉溪观景台",
+    "area": "orick",
+    "areaZh": "Orick / Bald Hills（南端）"
+  },
+  {
+    "id": "redw-elk-prairie",
+    "park": "redw",
+    "nameEn": "Elk Prairie",
+    "nameZh": "马鹿草原",
+    "area": "prairie-creek",
+    "areaZh": "Prairie Creek（草原溪）"
+  },
+  {
+    "id": "redw-big-tree",
+    "park": "redw",
+    "nameEn": "Big Tree Wayside",
+    "nameZh": "大树（Big Tree）",
+    "area": "prairie-creek",
+    "areaZh": "Prairie Creek（草原溪）"
+  },
+  {
+    "id": "redw-gold-bluffs-beach",
+    "park": "redw",
+    "nameEn": "Gold Bluffs Beach",
+    "nameZh": "金崖海滩",
+    "area": "prairie-creek",
+    "areaZh": "Prairie Creek（草原溪）"
+  },
+  {
+    "id": "redw-klamath-river-overlook",
+    "park": "redw",
+    "nameEn": "Klamath River Overlook",
+    "nameZh": "克拉马斯河口观景台",
+    "area": "klamath",
+    "areaZh": "Klamath（克拉马斯河口）"
+  },
+  {
+    "id": "redw-coastal-drive",
+    "park": "redw",
+    "nameEn": "Coastal Drive Loop",
+    "nameZh": "海岸环线",
+    "area": "klamath",
+    "areaZh": "Klamath（克拉马斯河口）"
+  },
+  {
+    "id": "redw-grove-of-titans",
+    "park": "redw",
+    "nameEn": "Grove of Titans",
+    "nameZh": "泰坦巨人林",
+    "area": "crescent-city",
+    "areaZh": "Crescent City / Jedediah Smith（北端）"
+  },
+  {
+    "id": "redw-boy-scout-tree",
+    "park": "redw",
+    "nameEn": "Boy Scout Tree Trail",
+    "nameZh": "童子军树步道",
+    "area": "crescent-city",
+    "areaZh": "Crescent City / Jedediah Smith（北端）"
+  },
+  {
+    "id": "redw-enderts-beach",
+    "park": "redw",
+    "nameEn": "Enderts Beach",
+    "nameZh": "恩德茨海滩",
+    "area": "crescent-city",
+    "areaZh": "Crescent City / Jedediah Smith（北端）"
+  },
+  {
+    "id": "redw-avenue-of-the-giants",
+    "park": "redw",
+    "nameEn": "Avenue of the Giants",
+    "nameZh": "巨人大道",
+    "area": "south",
+    "areaZh": "园外南侧（巨人大道）"
+  },
+  {
+    "id": "lavo-sulphur-works",
+    "park": "lavo",
+    "nameEn": "Sulphur Works",
+    "nameZh": "硫磺厂地热区",
+    "area": "southwest",
+    "areaZh": "西南入口区"
+  },
+  {
+    "id": "lavo-lake-helen",
+    "park": "lavo",
+    "nameEn": "Lake Helen",
+    "nameZh": "海伦湖",
+    "area": "lassen-peak",
+    "areaZh": "拉森峰周边"
+  },
+  {
+    "id": "lavo-bumpass-hell",
+    "park": "lavo",
+    "nameEn": "Bumpass Hell",
+    "nameZh": "邦帕斯地狱",
+    "area": "lassen-peak",
+    "areaZh": "拉森峰周边"
+  },
+  {
+    "id": "lavo-lassen-peak",
+    "park": "lavo",
+    "nameEn": "Lassen Peak",
+    "nameZh": "拉森峰",
+    "area": "lassen-peak",
+    "areaZh": "拉森峰周边"
+  },
+  {
+    "id": "lavo-manzanita-lake",
+    "park": "lavo",
+    "nameEn": "Manzanita Lake",
+    "nameZh": "曼萨尼塔湖",
+    "area": "northwest",
+    "areaZh": "公路北段 / 曼萨尼塔湖"
+  },
+  {
+    "id": "lavo-cinder-cone",
+    "park": "lavo",
+    "nameEn": "Cinder Cone",
+    "nameZh": "火山渣锥",
+    "area": "butte-lake",
+    "areaZh": "Butte Lake（东北角）"
+  },
+  {
+    "id": "lavo-kohm-yah-mah-nee",
+    "park": "lavo",
+    "nameEn": "Kohm Yah-mah-nee Visitor Center",
+    "nameZh": "Kohm Yah-mah-nee 游客中心",
+    "area": "southwest",
+    "areaZh": "西南入口区"
+  },
+  {
+    "id": "lavo-mill-creek-falls",
+    "park": "lavo",
+    "nameEn": "Mill Creek Falls",
+    "nameZh": "磨坊溪瀑布",
+    "area": "southwest",
+    "areaZh": "西南入口区"
+  },
+  {
+    "id": "lavo-brokeoff-mountain",
+    "park": "lavo",
+    "nameEn": "Brokeoff Mountain",
+    "nameZh": "布罗克奥夫山",
+    "area": "southwest",
+    "areaZh": "西南入口区"
+  },
+  {
+    "id": "lavo-kings-creek-falls",
+    "park": "lavo",
+    "nameEn": "Kings Creek Falls",
+    "nameZh": "国王溪瀑布",
+    "area": "lassen-peak",
+    "areaZh": "拉森峰周边"
+  },
+  {
+    "id": "lavo-summit-lake",
+    "park": "lavo",
+    "nameEn": "Summit Lake",
+    "nameZh": "顶峰湖",
+    "area": "northwest",
+    "areaZh": "公路北段 / 曼萨尼塔湖"
+  },
+  {
+    "id": "lavo-devastated-area",
+    "park": "lavo",
+    "nameEn": "Devastated Area",
+    "nameZh": "火山毁灭区",
+    "area": "northwest",
+    "areaZh": "公路北段 / 曼萨尼塔湖"
+  },
+  {
+    "id": "lavo-hot-rock",
+    "park": "lavo",
+    "nameEn": "Hot Rock",
+    "nameZh": "热石",
+    "area": "northwest",
+    "areaZh": "公路北段 / 曼萨尼塔湖"
+  },
+  {
+    "id": "lavo-chaos-crags",
+    "park": "lavo",
+    "nameEn": "Chaos Crags & Chaos Jumbles",
+    "nameZh": "混沌岩峰与乱石滩",
+    "area": "northwest",
+    "areaZh": "公路北段 / 曼萨尼塔湖"
+  },
+  {
+    "id": "lavo-loomis-museum",
+    "park": "lavo",
+    "nameEn": "Loomis Museum",
+    "nameZh": "卢米斯博物馆",
+    "area": "northwest",
+    "areaZh": "公路北段 / 曼萨尼塔湖"
+  },
+  {
+    "id": "lavo-burney-falls",
+    "park": "lavo",
+    "nameEn": "Burney Falls",
+    "nameZh": "伯尼瀑布",
+    "area": "north-outside",
+    "areaZh": "园外北侧（Old Station / Burney）"
+  },
+  {
+    "id": "lavo-subway-cave",
+    "park": "lavo",
+    "nameEn": "Subway Cave",
+    "nameZh": "地铁熔岩洞",
+    "area": "north-outside",
+    "areaZh": "园外北侧（Old Station / Burney）"
+  },
+  {
+    "id": "crla-rim-village",
+    "park": "crla",
+    "nameEn": "Rim Village & Sinnott Memorial Overlook",
+    "nameZh": "Rim Village · 辛诺特观景台",
+    "area": "rim-village",
+    "areaZh": "Rim Village / 公园总部"
+  },
+  {
+    "id": "crla-garfield-peak",
+    "park": "crla",
+    "nameEn": "Garfield Peak Trail",
+    "nameZh": "加菲尔德峰步道",
+    "area": "rim-village",
+    "areaZh": "Rim Village / 公园总部"
+  },
+  {
+    "id": "crla-steel-visitor-center",
+    "park": "crla",
+    "nameEn": "Steel Visitor Center",
+    "nameZh": "斯蒂尔游客中心",
+    "area": "rim-village",
+    "areaZh": "Rim Village / 公园总部"
+  },
+  {
+    "id": "crla-snowshoe-walk",
+    "park": "crla",
+    "nameEn": "Ranger-Guided Snowshoe Walk",
+    "nameZh": "护林员雪鞋徒步",
+    "area": "rim-village",
+    "areaZh": "Rim Village / 公园总部"
+  },
+  {
+    "id": "crla-watchman-peak",
+    "park": "crla",
+    "nameEn": "Watchman Peak Trail",
+    "nameZh": "守望者峰步道",
+    "area": "west-rim",
+    "areaZh": "西环湖路"
+  },
+  {
+    "id": "crla-discovery-point",
+    "park": "crla",
+    "nameEn": "Discovery Point",
+    "nameZh": "发现点",
+    "area": "west-rim",
+    "areaZh": "西环湖路"
+  },
+  {
+    "id": "crla-cloudcap-overlook",
+    "park": "crla",
+    "nameEn": "Cloudcap Overlook",
+    "nameZh": "云顶观景台",
+    "area": "east-rim-north",
+    "areaZh": "东环湖路北段"
+  },
+  {
+    "id": "crla-mount-scott",
+    "park": "crla",
+    "nameEn": "Mount Scott Trail",
+    "nameZh": "斯科特山步道",
+    "area": "east-rim-north",
+    "areaZh": "东环湖路北段"
+  },
+  {
+    "id": "crla-cleetwood-cove",
+    "park": "crla",
+    "nameEn": "Cleetwood Cove Trail",
+    "nameZh": "克利特伍德湾步道",
+    "area": "east-rim-north",
+    "areaZh": "东环湖路北段"
+  },
+  {
+    "id": "crla-phantom-ship-overlook",
+    "park": "crla",
+    "nameEn": "Phantom Ship Overlook",
+    "nameZh": "幽灵船观景台",
+    "area": "east-rim-south",
+    "areaZh": "东环湖路南段"
+  },
+  {
+    "id": "crla-plaikni-falls",
+    "park": "crla",
+    "nameEn": "Plaikni Falls Trail",
+    "nameZh": "普莱克尼瀑布",
+    "area": "east-rim-south",
+    "areaZh": "东环湖路南段"
+  },
+  {
+    "id": "crla-sun-notch",
+    "park": "crla",
+    "nameEn": "Sun Notch Trail",
+    "nameZh": "太阳垭口步道",
+    "area": "east-rim-south",
+    "areaZh": "东环湖路南段"
+  },
+  {
+    "id": "crla-vidae-falls",
+    "park": "crla",
+    "nameEn": "Vidae Falls",
+    "nameZh": "维代瀑布",
+    "area": "east-rim-south",
+    "areaZh": "东环湖路南段"
+  },
+  {
+    "id": "crla-pinnacles",
+    "park": "crla",
+    "nameEn": "Pinnacles Overlook",
+    "nameZh": "火山尖塔观景点",
+    "area": "east-rim-south",
+    "areaZh": "东环湖路南段"
+  },
+  {
+    "id": "mora-skyline-trail",
+    "park": "mora",
+    "nameEn": "Skyline Trail – Panorama Point",
+    "nameZh": "天际线步道 · 全景点",
+    "area": "paradise",
+    "areaZh": "Paradise（天堂区）"
+  },
+  {
+    "id": "mora-myrtle-falls",
+    "park": "mora",
+    "nameEn": "Myrtle Falls",
+    "nameZh": "默特尔瀑布",
+    "area": "paradise",
+    "areaZh": "Paradise（天堂区）"
+  },
+  {
+    "id": "mora-reflection-lakes",
+    "park": "mora",
+    "nameEn": "Reflection Lakes",
+    "nameZh": "倒影湖",
+    "area": "paradise",
+    "areaZh": "Paradise（天堂区）"
+  },
+  {
+    "id": "mora-narada-falls",
+    "park": "mora",
+    "nameEn": "Narada Falls",
+    "nameZh": "纳拉达瀑布",
+    "area": "paradise",
+    "areaZh": "Paradise（天堂区）"
+  },
+  {
+    "id": "mora-sunrise-visitor-center",
+    "park": "mora",
+    "nameEn": "Sunrise Visitor Center",
+    "nameZh": "日出游客中心",
+    "area": "sunrise",
+    "areaZh": "Sunrise / White River（东北）"
+  },
+  {
+    "id": "mora-naches-peak-loop",
+    "park": "mora",
+    "nameEn": "Tipsoo Lake & Naches Peak Loop",
+    "nameZh": "蒂普苏湖 · 纳奇斯峰环线",
+    "area": "chinook-pass",
+    "areaZh": "Chinook Pass（东侧 410 号公路）"
+  },
+  {
+    "id": "mora-paradise-visitor-center",
+    "park": "mora",
+    "nameEn": "Henry M. Jackson Memorial Visitor Center",
+    "nameZh": "天堂游客中心",
+    "area": "paradise",
+    "areaZh": "Paradise（天堂区）"
+  },
+  {
+    "id": "mora-nisqually-vista",
+    "park": "mora",
+    "nameEn": "Nisqually Vista Trail",
+    "nameZh": "尼斯阔利冰川观景步道",
+    "area": "paradise",
+    "areaZh": "Paradise（天堂区）"
+  },
+  {
+    "id": "mora-christine-falls",
+    "park": "mora",
+    "nameEn": "Christine Falls",
+    "nameZh": "克里斯汀瀑布",
+    "area": "paradise",
+    "areaZh": "Paradise（天堂区）"
+  },
+  {
+    "id": "mora-comet-falls",
+    "park": "mora",
+    "nameEn": "Comet Falls",
+    "nameZh": "彗星瀑布",
+    "area": "paradise",
+    "areaZh": "Paradise（天堂区）"
+  },
+  {
+    "id": "mora-trail-of-the-shadows",
+    "park": "mora",
+    "nameEn": "Trail of the Shadows",
+    "nameZh": "影子步道",
+    "area": "longmire",
+    "areaZh": "Longmire（西南入口）"
+  },
+  {
+    "id": "mora-longmire",
+    "park": "mora",
+    "nameEn": "Longmire Historic District & Museum",
+    "nameZh": "朗迈尔历史区 · 博物馆",
+    "area": "longmire",
+    "areaZh": "Longmire（西南入口）"
+  },
+  {
+    "id": "mora-box-canyon",
+    "park": "mora",
+    "nameEn": "Box Canyon",
+    "nameZh": "箱形峡谷",
+    "area": "stevens-canyon",
+    "areaZh": "Stevens Canyon / Ohanapecosh（东南）"
+  },
+  {
+    "id": "mora-silver-falls",
+    "park": "mora",
+    "nameEn": "Silver Falls",
+    "nameZh": "银瀑布",
+    "area": "stevens-canyon",
+    "areaZh": "Stevens Canyon / Ohanapecosh（东南）"
+  },
+  {
+    "id": "mora-sunrise-point",
+    "park": "mora",
+    "nameEn": "Sunrise Point",
+    "nameZh": "日出观景点",
+    "area": "sunrise",
+    "areaZh": "Sunrise / White River（东北）"
+  },
+  {
+    "id": "mora-sourdough-ridge",
+    "park": "mora",
+    "nameEn": "Sourdough Ridge Trail",
+    "nameZh": "酸面团山脊步道",
+    "area": "sunrise",
+    "areaZh": "Sunrise / White River（东北）"
+  },
+  {
+    "id": "mora-fremont-lookout",
+    "park": "mora",
+    "nameEn": "Mount Fremont Lookout",
+    "nameZh": "弗里蒙特山火警瞭望塔",
+    "area": "sunrise",
+    "areaZh": "Sunrise / White River（东北）"
+  },
+  {
+    "id": "mora-burroughs-mountain",
+    "park": "mora",
+    "nameEn": "Burroughs Mountain Trail",
+    "nameZh": "巴勒斯山步道",
+    "area": "sunrise",
+    "areaZh": "Sunrise / White River（东北）"
+  },
+  {
+    "id": "olym-hurricane-ridge",
+    "park": "olym",
+    "nameEn": "Hurricane Ridge",
+    "nameZh": "飓风岭",
+    "area": "hurricane-ridge",
+    "areaZh": "飓风岭 / 天使港"
+  },
+  {
+    "id": "olym-hurricane-hill",
+    "park": "olym",
+    "nameEn": "Hurricane Hill Trail",
+    "nameZh": "飓风山步道",
+    "area": "hurricane-ridge",
+    "areaZh": "飓风岭 / 天使港"
+  },
+  {
+    "id": "olym-visitor-center",
+    "park": "olym",
+    "nameEn": "Olympic National Park Visitor Center",
+    "nameZh": "奥林匹克国家公园游客中心",
+    "area": "hurricane-ridge",
+    "areaZh": "飓风岭 / 天使港"
+  },
+  {
+    "id": "olym-lake-crescent",
+    "park": "olym",
+    "nameEn": "Lake Crescent",
+    "nameZh": "新月湖",
+    "area": "lake-crescent",
+    "areaZh": "新月湖 / Sol Duc"
+  },
+  {
+    "id": "olym-marymere-falls",
+    "park": "olym",
+    "nameEn": "Marymere Falls",
+    "nameZh": "玛丽米尔瀑布",
+    "area": "lake-crescent",
+    "areaZh": "新月湖 / Sol Duc"
+  },
+  {
+    "id": "olym-mount-storm-king",
+    "park": "olym",
+    "nameEn": "Mount Storm King Trail",
+    "nameZh": "风暴王山步道",
+    "area": "lake-crescent",
+    "areaZh": "新月湖 / Sol Duc"
+  },
+  {
+    "id": "olym-spruce-railroad",
+    "park": "olym",
+    "nameEn": "Spruce Railroad Trail – Devil's Punchbowl",
+    "nameZh": "云杉铁路步道 · 魔鬼潘趣碗",
+    "area": "lake-crescent",
+    "areaZh": "新月湖 / Sol Duc"
+  },
+  {
+    "id": "olym-sol-duc-falls",
+    "park": "olym",
+    "nameEn": "Sol Duc Falls",
+    "nameZh": "索尔达克瀑布",
+    "area": "lake-crescent",
+    "areaZh": "新月湖 / Sol Duc"
+  },
+  {
+    "id": "olym-sol-duc-hot-springs",
+    "park": "olym",
+    "nameEn": "Sol Duc Hot Springs",
+    "nameZh": "索尔达克温泉",
+    "area": "lake-crescent",
+    "areaZh": "新月湖 / Sol Duc"
+  },
+  {
+    "id": "olym-rialto-beach",
+    "park": "olym",
+    "nameEn": "Rialto Beach – Hole-in-the-Wall",
+    "nameZh": "里亚托海滩 · 墙洞",
+    "area": "north-coast",
+    "areaZh": "北部海岸（La Push / Rialto）"
+  },
+  {
+    "id": "olym-second-beach",
+    "park": "olym",
+    "nameEn": "Second Beach",
+    "nameZh": "第二海滩",
+    "area": "north-coast",
+    "areaZh": "北部海岸（La Push / Rialto）"
+  },
+  {
+    "id": "olym-cape-flattery",
+    "park": "olym",
+    "nameEn": "Cape Flattery",
+    "nameZh": "弗拉特里角",
+    "area": "north-coast",
+    "areaZh": "北部海岸（La Push / Rialto）"
+  },
+  {
+    "id": "olym-hall-of-mosses",
+    "park": "olym",
+    "nameEn": "Hall of Mosses",
+    "nameZh": "苔藓大厅",
+    "area": "hoh",
+    "areaZh": "霍河雨林"
+  },
+  {
+    "id": "olym-spruce-nature-trail",
+    "park": "olym",
+    "nameEn": "Spruce Nature Trail",
+    "nameZh": "云杉自然步道",
+    "area": "hoh",
+    "areaZh": "霍河雨林"
+  },
+  {
+    "id": "olym-hoh-visitor-center",
+    "park": "olym",
+    "nameEn": "Hoh Rain Forest Visitor Center",
+    "nameZh": "霍河雨林游客中心",
+    "area": "hoh",
+    "areaZh": "霍河雨林"
+  },
+  {
+    "id": "olym-ruby-beach",
+    "park": "olym",
+    "nameEn": "Ruby Beach",
+    "nameZh": "红宝石海滩",
+    "area": "kalaloch",
+    "areaZh": "Kalaloch / 红宝石海滩"
+  },
+  {
+    "id": "olym-tree-of-life",
+    "park": "olym",
+    "nameEn": "Tree of Life",
+    "nameZh": "生命之树",
+    "area": "kalaloch",
+    "areaZh": "Kalaloch / 红宝石海滩"
+  },
+  {
+    "id": "olym-maple-glade",
+    "park": "olym",
+    "nameEn": "Maple Glade Rain Forest Trail",
+    "nameZh": "枫林步道",
+    "area": "quinault",
+    "areaZh": "奎诺尔特湖"
+  },
+  {
+    "id": "olym-lake-quinault",
+    "park": "olym",
+    "nameEn": "Lake Quinault",
+    "nameZh": "奎诺尔特湖",
+    "area": "quinault",
+    "areaZh": "奎诺尔特湖"
+  },
+  {
+    "id": "olym-largest-sitka-spruce",
+    "park": "olym",
+    "nameEn": "World's Largest Sitka Spruce",
+    "nameZh": "世界最大锡特卡云杉",
+    "area": "quinault",
+    "areaZh": "奎诺尔特湖"
+  },
+  {
+    "id": "noca-diablo-lake-overlook",
+    "park": "noca",
+    "nameEn": "Diablo Lake Overlook",
+    "nameZh": "迪亚布洛湖观景台",
+    "area": "diablo",
+    "areaZh": "迪亚布洛湖 · 罗斯湖"
+  },
+  {
+    "id": "noca-washington-pass-overlook",
+    "park": "noca",
+    "nameEn": "Washington Pass Overlook",
+    "nameZh": "华盛顿山口观景台",
+    "area": "passes",
+    "areaZh": "东侧山口（Rainy / Washington Pass）"
+  },
+  {
+    "id": "noca-maple-pass-loop",
+    "park": "noca",
+    "nameEn": "Heather–Maple Pass Loop",
+    "nameZh": "枫树山口环线",
+    "area": "passes",
+    "areaZh": "东侧山口（Rainy / Washington Pass）"
+  },
+  {
+    "id": "noca-cascade-pass",
+    "park": "noca",
+    "nameEn": "Cascade Pass Trail",
+    "nameZh": "喀斯喀特山口步道",
+    "area": "cascade-river",
+    "areaZh": "Cascade River Road"
+  },
+  {
+    "id": "noca-visitor-center",
+    "park": "noca",
+    "nameEn": "North Cascades Visitor Center",
+    "nameZh": "北瀑布游客中心",
+    "area": "newhalem",
+    "areaZh": "Newhalem（游客中心）"
+  },
+  {
+    "id": "noca-trail-of-the-cedars",
+    "park": "noca",
+    "nameEn": "Trail of the Cedars",
+    "nameZh": "雪松步道",
+    "area": "newhalem",
+    "areaZh": "Newhalem（游客中心）"
+  },
+  {
+    "id": "noca-ladder-creek-falls",
+    "park": "noca",
+    "nameEn": "Ladder Creek Falls",
+    "nameZh": "梯溪瀑布",
+    "area": "newhalem",
+    "areaZh": "Newhalem（游客中心）"
+  },
+  {
+    "id": "noca-gorge-creek-falls",
+    "park": "noca",
+    "nameEn": "Gorge Creek Falls",
+    "nameZh": "峡谷溪瀑布",
+    "area": "newhalem",
+    "areaZh": "Newhalem（游客中心）"
+  },
+  {
+    "id": "noca-thunder-knob",
+    "park": "noca",
+    "nameEn": "Thunder Knob Trail",
+    "nameZh": "雷丘步道",
+    "area": "diablo",
+    "areaZh": "迪亚布洛湖 · 罗斯湖"
+  },
+  {
+    "id": "noca-diablo-lake-trail",
+    "park": "noca",
+    "nameEn": "Diablo Lake Trail",
+    "nameZh": "迪亚布洛湖步道",
+    "area": "diablo",
+    "areaZh": "迪亚布洛湖 · 罗斯湖"
+  },
+  {
+    "id": "noca-diablo-lake-cruise",
+    "park": "noca",
+    "nameEn": "Skagit Tours Diablo Lake Cruise",
+    "nameZh": "迪亚布洛湖游船",
+    "area": "diablo",
+    "areaZh": "迪亚布洛湖 · 罗斯湖"
+  },
+  {
+    "id": "noca-ross-lake-overlook",
+    "park": "noca",
+    "nameEn": "Ross Lake Overlook",
+    "nameZh": "罗斯湖观景点",
+    "area": "diablo",
+    "areaZh": "迪亚布洛湖 · 罗斯湖"
+  },
+  {
+    "id": "noca-blue-lake",
+    "park": "noca",
+    "nameEn": "Blue Lake Trail",
+    "nameZh": "蓝湖步道",
+    "area": "passes",
+    "areaZh": "东侧山口（Rainy / Washington Pass）"
+  },
+  {
+    "id": "noca-rainy-lake",
+    "park": "noca",
+    "nameEn": "Rainy Lake Trail",
+    "nameZh": "雨湖步道",
+    "area": "passes",
+    "areaZh": "东侧山口（Rainy / Washington Pass）"
+  },
+  {
+    "id": "yell-old-faithful",
+    "park": "yell",
+    "nameEn": "Old Faithful Geyser",
+    "nameZh": "老忠实间歇泉",
+    "area": "geyser-basins",
+    "areaZh": "间歇泉盆地（老忠实）"
+  },
+  {
+    "id": "yell-upper-geyser-basin",
+    "park": "yell",
+    "nameEn": "Upper Geyser Basin – Morning Glory Pool",
+    "nameZh": "上间歇泉盆地 · 牵牛花池",
+    "area": "geyser-basins",
+    "areaZh": "间歇泉盆地（老忠实）"
+  },
+  {
+    "id": "yell-grand-prismatic",
+    "park": "yell",
+    "nameEn": "Grand Prismatic Spring (Midway Geyser Basin)",
+    "nameZh": "大棱镜温泉",
+    "area": "geyser-basins",
+    "areaZh": "间歇泉盆地（老忠实）"
+  },
+  {
+    "id": "yell-grand-prismatic-overlook",
+    "park": "yell",
+    "nameEn": "Grand Prismatic Overlook",
+    "nameZh": "大棱镜观景台",
+    "area": "geyser-basins",
+    "areaZh": "间歇泉盆地（老忠实）"
+  },
+  {
+    "id": "yell-mammoth-terraces",
+    "park": "yell",
+    "nameEn": "Mammoth Hot Springs Terraces",
+    "nameZh": "猛犸温泉阶地",
+    "area": "mammoth",
+    "areaZh": "猛犸温泉（北门）"
+  },
+  {
+    "id": "yell-lamar-valley",
+    "park": "yell",
+    "nameEn": "Lamar Valley",
+    "nameZh": "拉马尔谷",
+    "area": "tower-lamar",
+    "areaZh": "拉马尔谷 / 东北角"
+  },
+  {
+    "id": "yell-artist-point",
+    "park": "yell",
+    "nameEn": "Artist Point",
+    "nameZh": "艺术家点",
+    "area": "canyon",
+    "areaZh": "黄石大峡谷"
+  },
+  {
+    "id": "yell-hayden-valley",
+    "park": "yell",
+    "nameEn": "Hayden Valley",
+    "nameZh": "海登谷",
+    "area": "lake",
+    "areaZh": "海登谷 / 黄石湖"
+  },
+  {
+    "id": "yell-black-sand-basin",
+    "park": "yell",
+    "nameEn": "Black Sand Basin",
+    "nameZh": "黑沙盆地",
+    "area": "geyser-basins",
+    "areaZh": "间歇泉盆地（老忠实）"
+  },
+  {
+    "id": "yell-mystic-falls",
+    "park": "yell",
+    "nameEn": "Mystic Falls",
+    "nameZh": "神秘瀑布",
+    "area": "geyser-basins",
+    "areaZh": "间歇泉盆地（老忠实）"
+  },
+  {
+    "id": "yell-fairy-falls",
+    "park": "yell",
+    "nameEn": "Fairy Falls",
+    "nameZh": "仙女瀑布",
+    "area": "geyser-basins",
+    "areaZh": "间歇泉盆地（老忠实）"
+  },
+  {
+    "id": "yell-fountain-paint-pot",
+    "park": "yell",
+    "nameEn": "Fountain Paint Pot",
+    "nameZh": "喷泉颜料锅",
+    "area": "geyser-basins",
+    "areaZh": "间歇泉盆地（老忠实）"
+  },
+  {
+    "id": "yell-firehole-canyon-drive",
+    "park": "yell",
+    "nameEn": "Firehole Canyon Drive",
+    "nameZh": "火洞峡谷景观道",
+    "area": "geyser-basins",
+    "areaZh": "间歇泉盆地（老忠实）"
+  },
+  {
+    "id": "yell-old-faithful-visitor-center",
+    "park": "yell",
+    "nameEn": "Old Faithful Visitor Education Center",
+    "nameZh": "老忠实游客教育中心",
+    "area": "geyser-basins",
+    "areaZh": "间歇泉盆地（老忠实）"
+  },
+  {
+    "id": "yell-norris-geyser-basin",
+    "park": "yell",
+    "nameEn": "Norris Geyser Basin",
+    "nameZh": "诺里斯间歇泉盆地",
+    "area": "norris",
+    "areaZh": "诺里斯 / 麦迪逊"
+  },
+  {
+    "id": "yell-gibbon-falls",
+    "park": "yell",
+    "nameEn": "Gibbon Falls",
+    "nameZh": "吉本瀑布",
+    "area": "norris",
+    "areaZh": "诺里斯 / 麦迪逊"
+  },
+  {
+    "id": "yell-artists-paintpots",
+    "park": "yell",
+    "nameEn": "Artists Paintpots",
+    "nameZh": "艺术家颜料锅",
+    "area": "norris",
+    "areaZh": "诺里斯 / 麦迪逊"
+  },
+  {
+    "id": "yell-roosevelt-arch",
+    "park": "yell",
+    "nameEn": "Roosevelt Arch",
+    "nameZh": "罗斯福拱门",
+    "area": "mammoth",
+    "areaZh": "猛犸温泉（北门）"
+  },
+  {
+    "id": "yell-tower-fall",
+    "park": "yell",
+    "nameEn": "Tower Fall",
+    "nameZh": "塔楼瀑布",
+    "area": "tower-lamar",
+    "areaZh": "拉马尔谷 / 东北角"
+  },
+  {
+    "id": "yell-mount-washburn",
+    "park": "yell",
+    "nameEn": "Mount Washburn",
+    "nameZh": "沃什伯恩山",
+    "area": "tower-lamar",
+    "areaZh": "拉马尔谷 / 东北角"
+  },
+  {
+    "id": "yell-beartooth-highway",
+    "park": "yell",
+    "nameEn": "Beartooth Highway",
+    "nameZh": "熊齿公路",
+    "area": "tower-lamar",
+    "areaZh": "拉马尔谷 / 东北角"
+  },
+  {
+    "id": "yell-brink-lower-falls",
+    "park": "yell",
+    "nameEn": "Brink of the Lower Falls",
+    "nameZh": "下瀑布之巅",
+    "area": "canyon",
+    "areaZh": "黄石大峡谷"
+  },
+  {
+    "id": "yell-lookout-point",
+    "park": "yell",
+    "nameEn": "Lookout Point & Red Rock Point",
+    "nameZh": "瞭望点 · 红岩点",
+    "area": "canyon",
+    "areaZh": "黄石大峡谷"
+  },
+  {
+    "id": "yell-inspiration-point",
+    "park": "yell",
+    "nameEn": "Inspiration Point",
+    "nameZh": "灵感点",
+    "area": "canyon",
+    "areaZh": "黄石大峡谷"
+  },
+  {
+    "id": "yell-canyon-visitor-center",
+    "park": "yell",
+    "nameEn": "Canyon Visitor Education Center",
+    "nameZh": "峡谷游客教育中心",
+    "area": "canyon",
+    "areaZh": "黄石大峡谷"
+  },
+  {
+    "id": "yell-mud-volcano",
+    "park": "yell",
+    "nameEn": "Mud Volcano & Dragon's Mouth Spring",
+    "nameZh": "泥火山 · 龙口泉",
+    "area": "lake",
+    "areaZh": "海登谷 / 黄石湖"
+  },
+  {
+    "id": "yell-lake-yellowstone",
+    "park": "yell",
+    "nameEn": "Yellowstone Lake",
+    "nameZh": "黄石湖",
+    "area": "lake",
+    "areaZh": "海登谷 / 黄石湖"
+  },
+  {
+    "id": "yell-storm-point",
+    "park": "yell",
+    "nameEn": "Storm Point Trail",
+    "nameZh": "风暴角步道",
+    "area": "lake",
+    "areaZh": "海登谷 / 黄石湖"
+  },
+  {
+    "id": "yell-west-thumb",
+    "park": "yell",
+    "nameEn": "West Thumb Geyser Basin",
+    "nameZh": "西拇指间歇泉盆地",
+    "area": "lake",
+    "areaZh": "海登谷 / 黄石湖"
+  },
+  {
+    "id": "grte-jenny-lake",
+    "park": "grte",
+    "nameEn": "Jenny Lake",
+    "nameZh": "珍妮湖",
+    "area": "jenny-lake",
+    "areaZh": "珍妮湖 / Teton Park Road"
+  },
+  {
+    "id": "grte-hidden-falls",
+    "park": "grte",
+    "nameEn": "Hidden Falls & Inspiration Point",
+    "nameZh": "隐秘瀑布 · 灵感点",
+    "area": "jenny-lake",
+    "areaZh": "珍妮湖 / Teton Park Road"
+  },
+  {
+    "id": "grte-teton-park-road",
+    "park": "grte",
+    "nameEn": "Teton Park Road",
+    "nameZh": "提顿公园路",
+    "area": "jenny-lake",
+    "areaZh": "珍妮湖 / Teton Park Road"
+  },
+  {
+    "id": "grte-oxbow-bend",
+    "park": "grte",
+    "nameEn": "Oxbow Bend",
+    "nameZh": "牛轭湾",
+    "area": "jackson-lake",
+    "areaZh": "杰克逊湖 / Colter Bay"
+  },
+  {
+    "id": "grte-mormon-row",
+    "park": "grte",
+    "nameEn": "Mormon Row Historic District",
+    "nameZh": "摩门街谷仓",
+    "area": "hwy-191",
+    "areaZh": "191 号公路 / 蛇河沿岸"
+  },
+  {
+    "id": "grte-schwabacher-landing",
+    "park": "grte",
+    "nameEn": "Schwabacher Landing",
+    "nameZh": "施瓦巴赫码头",
+    "area": "hwy-191",
+    "areaZh": "191 号公路 / 蛇河沿岸"
+  },
+  {
+    "id": "grte-snake-river-overlook",
+    "park": "grte",
+    "nameEn": "Snake River Overlook",
+    "nameZh": "蛇河观景台",
+    "area": "hwy-191",
+    "areaZh": "191 号公路 / 蛇河沿岸"
+  },
+  {
+    "id": "grte-craig-thomas-vc",
+    "park": "grte",
+    "nameEn": "Craig Thomas Discovery and Visitor Center",
+    "nameZh": "克雷格·托马斯游客中心",
+    "area": "moose",
+    "areaZh": "Moose / Moose-Wilson 路"
+  },
+  {
+    "id": "grte-chapel-transfiguration",
+    "park": "grte",
+    "nameEn": "Chapel of the Transfiguration & Menor's Ferry",
+    "nameZh": "显圣容教堂 · 梅诺渡口",
+    "area": "moose",
+    "areaZh": "Moose / Moose-Wilson 路"
+  },
+  {
+    "id": "grte-lsr-preserve",
+    "park": "grte",
+    "nameEn": "Laurance S. Rockefeller Preserve – Phelps Lake",
+    "nameZh": "洛克菲勒保护区 · 菲尔普斯湖",
+    "area": "moose",
+    "areaZh": "Moose / Moose-Wilson 路"
+  },
+  {
+    "id": "grte-moose-wilson-road",
+    "park": "grte",
+    "nameEn": "Moose-Wilson Road",
+    "nameZh": "穆斯-威尔逊路",
+    "area": "moose",
+    "areaZh": "Moose / Moose-Wilson 路"
+  },
+  {
+    "id": "grte-cascade-canyon",
+    "park": "grte",
+    "nameEn": "Cascade Canyon (to the Forks)",
+    "nameZh": "卡斯卡德峡谷",
+    "area": "jenny-lake",
+    "areaZh": "珍妮湖 / Teton Park Road"
+  },
+  {
+    "id": "grte-string-leigh-lake",
+    "park": "grte",
+    "nameEn": "String Lake & Leigh Lake",
+    "nameZh": "弦湖 · 利湖",
+    "area": "jenny-lake",
+    "areaZh": "珍妮湖 / Teton Park Road"
+  },
+  {
+    "id": "grte-taggart-lake",
+    "park": "grte",
+    "nameEn": "Taggart Lake",
+    "nameZh": "塔格特湖",
+    "area": "jenny-lake",
+    "areaZh": "珍妮湖 / Teton Park Road"
+  },
+  {
+    "id": "grte-delta-lake",
+    "park": "grte",
+    "nameEn": "Delta Lake",
+    "nameZh": "三角洲湖",
+    "area": "jenny-lake",
+    "areaZh": "珍妮湖 / Teton Park Road"
+  },
+  {
+    "id": "grte-jenny-lake-vc",
+    "park": "grte",
+    "nameEn": "Jenny Lake Visitor Center",
+    "nameZh": "珍妮湖游客中心",
+    "area": "jenny-lake",
+    "areaZh": "珍妮湖 / Teton Park Road"
+  },
+  {
+    "id": "grte-signal-mountain",
+    "park": "grte",
+    "nameEn": "Signal Mountain Summit Road",
+    "nameZh": "信号山",
+    "area": "jackson-lake",
+    "areaZh": "杰克逊湖 / Colter Bay"
+  },
+  {
+    "id": "grte-jackson-lake-dam",
+    "park": "grte",
+    "nameEn": "Jackson Lake Dam",
+    "nameZh": "杰克逊湖大坝",
+    "area": "jackson-lake",
+    "areaZh": "杰克逊湖 / Colter Bay"
+  },
+  {
+    "id": "grte-colter-bay",
+    "park": "grte",
+    "nameEn": "Colter Bay – Heron Pond & Swan Lake Loop",
+    "nameZh": "科尔特湾 · 苍鹭池环线",
+    "area": "jackson-lake",
+    "areaZh": "杰克逊湖 / Colter Bay"
+  },
+  {
+    "id": "grte-cunningham-cabin",
+    "park": "grte",
+    "nameEn": "Cunningham Cabin Historic Site",
+    "nameZh": "坎宁安小屋",
+    "area": "hwy-191",
+    "areaZh": "191 号公路 / 蛇河沿岸"
+  },
+  {
+    "id": "grte-jackson-town-square",
+    "park": "grte",
+    "nameEn": "Jackson Town Square (Antler Arches)",
+    "nameZh": "杰克逊镇广场 · 鹿角公园",
+    "area": "jackson",
+    "areaZh": "Jackson 镇 / Teton Village（园外）"
+  },
+  {
+    "id": "grte-aerial-tram",
+    "park": "grte",
+    "nameEn": "Jackson Hole Aerial Tram",
+    "nameZh": "杰克逊霍尔空中缆车",
+    "area": "jackson",
+    "areaZh": "Jackson 镇 / Teton Village（园外）"
+  },
+  {
+    "id": "grte-elk-refuge",
+    "park": "grte",
+    "nameEn": "National Elk Refuge Sleigh Rides",
+    "nameZh": "国家麋鹿保护区 · 马拉雪橇",
+    "area": "jackson",
+    "areaZh": "Jackson 镇 / Teton Village（园外）"
+  },
+  {
+    "id": "deva-visitor-center",
+    "park": "deva",
+    "nameEn": "Furnace Creek Visitor Center",
+    "nameZh": "Furnace Creek 游客中心",
+    "area": "furnace-creek",
+    "areaZh": "Furnace Creek"
+  },
+  {
+    "id": "deva-zabriskie",
+    "park": "deva",
+    "nameEn": "Zabriskie Point",
+    "nameZh": "扎布里斯基角",
+    "area": "furnace-creek",
+    "areaZh": "Furnace Creek"
+  },
+  {
+    "id": "deva-golden-canyon",
+    "park": "deva",
+    "nameEn": "Golden Canyon",
+    "nameZh": "金色峡谷",
+    "area": "furnace-creek",
+    "areaZh": "Furnace Creek"
+  },
+  {
+    "id": "deva-badwater",
+    "park": "deva",
+    "nameEn": "Badwater Basin",
+    "nameZh": "恶水盆地",
+    "area": "badwater",
+    "areaZh": "Badwater Road 沿线"
+  },
+  {
+    "id": "deva-devils-golf-course",
+    "park": "deva",
+    "nameEn": "Devils Golf Course",
+    "nameZh": "魔鬼高尔夫球场",
+    "area": "badwater",
+    "areaZh": "Badwater Road 沿线"
+  },
+  {
+    "id": "deva-artists-palette",
+    "park": "deva",
+    "nameEn": "Artists Palette",
+    "nameZh": "艺术家调色板",
+    "area": "badwater",
+    "areaZh": "Badwater Road 沿线"
+  },
+  {
+    "id": "deva-dantes-view",
+    "park": "deva",
+    "nameEn": "Dante's View",
+    "nameZh": "但丁观景台",
+    "area": "badwater",
+    "areaZh": "Badwater Road 沿线"
+  },
+  {
+    "id": "deva-mesquite-dunes",
+    "park": "deva",
+    "nameEn": "Mesquite Flat Sand Dunes",
+    "nameZh": "梅斯基特平原沙丘",
+    "area": "stovepipe",
+    "areaZh": "Stovepipe Wells"
+  },
+  {
+    "id": "deva-ubehebe",
+    "park": "deva",
+    "nameEn": "Ubehebe Crater",
+    "nameZh": "优比喜比火山口",
+    "area": "north",
+    "areaZh": "北部（Ubehebe）"
+  },
+  {
+    "id": "deva-racetrack",
+    "park": "deva",
+    "nameEn": "Racetrack Playa",
+    "nameZh": "赛马场干湖",
+    "area": "north",
+    "areaZh": "北部（Ubehebe）"
+  },
+  {
+    "id": "deva-mosaic-canyon",
+    "park": "deva",
+    "nameEn": "Mosaic Canyon",
+    "nameZh": "马赛克峡谷",
+    "area": "stovepipe",
+    "areaZh": "Stovepipe Wells"
+  },
+  {
+    "id": "deva-harmony-borax",
+    "park": "deva",
+    "nameEn": "Harmony Borax Works",
+    "nameZh": "和谐硼砂厂遗址",
+    "area": "furnace-creek",
+    "areaZh": "Furnace Creek"
+  },
+  {
+    "id": "deva-salt-creek",
+    "park": "deva",
+    "nameEn": "Salt Creek Interpretive Trail",
+    "nameZh": "盐溪步道",
+    "area": "stovepipe",
+    "areaZh": "Stovepipe Wells"
+  },
+  {
+    "id": "deva-natural-bridge",
+    "park": "deva",
+    "nameEn": "Natural Bridge Canyon",
+    "nameZh": "天然桥峡谷",
+    "area": "badwater",
+    "areaZh": "Badwater Road 沿线"
+  },
+  {
+    "id": "deva-darwin-falls",
+    "park": "deva",
+    "nameEn": "Darwin Falls",
+    "nameZh": "达尔文瀑布",
+    "area": "west",
+    "areaZh": "西部（Panamint）"
+  },
+  {
+    "id": "deva-father-crowley",
+    "park": "deva",
+    "nameEn": "Father Crowley Vista Point",
+    "nameZh": "克劳利神父观景点",
+    "area": "west",
+    "areaZh": "西部（Panamint）"
+  },
+  {
+    "id": "zion-visitor-center",
+    "park": "zion",
+    "nameEn": "Zion Canyon Visitor Center",
+    "nameZh": "锡安游客中心",
+    "area": "south",
+    "areaZh": "南入口 / Springdale"
+  },
+  {
+    "id": "zion-watchman-trail",
+    "park": "zion",
+    "nameEn": "Watchman Trail",
+    "nameZh": "守望者步道",
+    "area": "south",
+    "areaZh": "南入口 / Springdale"
+  },
+  {
+    "id": "zion-canyon-junction",
+    "park": "zion",
+    "nameEn": "Canyon Junction Bridge",
+    "nameZh": "峡谷交汇桥",
+    "area": "canyon",
+    "areaZh": "锡安峡谷（班车区）"
+  },
+  {
+    "id": "zion-patriarchs",
+    "park": "zion",
+    "nameEn": "Court of the Patriarchs",
+    "nameZh": "族长庭院",
+    "area": "canyon",
+    "areaZh": "锡安峡谷（班车区）"
+  },
+  {
+    "id": "zion-emerald-pools",
+    "park": "zion",
+    "nameEn": "Emerald Pools",
+    "nameZh": "翡翠池",
+    "area": "canyon",
+    "areaZh": "锡安峡谷（班车区）"
+  },
+  {
+    "id": "zion-angels-landing",
+    "park": "zion",
+    "nameEn": "Angels Landing",
+    "nameZh": "天使降临",
+    "area": "canyon",
+    "areaZh": "锡安峡谷（班车区）"
+  },
+  {
+    "id": "zion-narrows",
+    "park": "zion",
+    "nameEn": "The Narrows",
+    "nameZh": "窄缝",
+    "area": "canyon",
+    "areaZh": "锡安峡谷（班车区）"
+  },
+  {
+    "id": "zion-canyon-overlook",
+    "park": "zion",
+    "nameEn": "Canyon Overlook Trail",
+    "nameZh": "峡谷观景步道",
+    "area": "east",
+    "areaZh": "东侧（隧道以东）"
+  },
+  {
+    "id": "zion-kolob",
+    "park": "zion",
+    "nameEn": "Kolob Canyons",
+    "nameZh": "科罗布峡谷",
+    "area": "kolob",
+    "areaZh": "Kolob 峡谷"
+  },
+  {
+    "id": "zion-riverside-walk",
+    "park": "zion",
+    "nameEn": "Riverside Walk",
+    "nameZh": "河滨步道",
+    "area": "canyon",
+    "areaZh": "锡安峡谷（班车区）"
+  },
+  {
+    "id": "zion-pa-rus",
+    "park": "zion",
+    "nameEn": "Pa'rus Trail",
+    "nameZh": "帕鲁斯步道",
+    "area": "south",
+    "areaZh": "南入口 / Springdale"
+  },
+  {
+    "id": "zion-scout-lookout",
+    "park": "zion",
+    "nameEn": "Scout Lookout",
+    "nameZh": "侦察瞭望台",
+    "area": "canyon",
+    "areaZh": "锡安峡谷（班车区）"
+  },
+  {
+    "id": "zion-observation-point",
+    "park": "zion",
+    "nameEn": "Observation Point",
+    "nameZh": "观察点",
+    "area": "east",
+    "areaZh": "东侧（隧道以东）"
+  },
+  {
+    "id": "zion-checkerboard-mesa",
+    "park": "zion",
+    "nameEn": "Checkerboard Mesa",
+    "nameZh": "棋盘台地",
+    "area": "east",
+    "areaZh": "东侧（隧道以东）"
+  },
+  {
+    "id": "zion-human-history-museum",
+    "park": "zion",
+    "nameEn": "Zion Human History Museum",
+    "nameZh": "锡安人类历史博物馆",
+    "area": "south",
+    "areaZh": "南入口 / Springdale"
+  },
+  {
+    "id": "brca-sunrise-point",
+    "park": "brca",
+    "nameEn": "Sunrise Point",
+    "nameZh": "日出点",
+    "area": "amphitheater",
+    "areaZh": "布莱斯圆形剧场"
+  },
+  {
+    "id": "brca-sunset-point",
+    "park": "brca",
+    "nameEn": "Sunset Point",
+    "nameZh": "日落点",
+    "area": "amphitheater",
+    "areaZh": "布莱斯圆形剧场"
+  },
+  {
+    "id": "brca-navajo-queens",
+    "park": "brca",
+    "nameEn": "Navajo Loop & Queen's Garden",
+    "nameZh": "纳瓦霍 + 女王花园环线",
+    "area": "amphitheater",
+    "areaZh": "布莱斯圆形剧场"
+  },
+  {
+    "id": "brca-inspiration-point",
+    "park": "brca",
+    "nameEn": "Inspiration Point",
+    "nameZh": "灵感点",
+    "area": "amphitheater",
+    "areaZh": "布莱斯圆形剧场"
+  },
+  {
+    "id": "brca-bryce-point",
+    "park": "brca",
+    "nameEn": "Bryce Point",
+    "nameZh": "布莱斯点",
+    "area": "amphitheater",
+    "areaZh": "布莱斯圆形剧场"
+  },
+  {
+    "id": "brca-natural-bridge",
+    "park": "brca",
+    "nameEn": "Natural Bridge",
+    "nameZh": "天然桥",
+    "area": "scenic-drive",
+    "areaZh": "南段景观道"
+  },
+  {
+    "id": "brca-rainbow-point",
+    "park": "brca",
+    "nameEn": "Rainbow Point",
+    "nameZh": "彩虹点",
+    "area": "scenic-drive",
+    "areaZh": "南段景观道"
+  },
+  {
+    "id": "brca-mossy-cave",
+    "park": "brca",
+    "nameEn": "Mossy Cave",
+    "nameZh": "苔藓洞",
+    "area": "hwy-12",
+    "areaZh": "12 号公路"
+  },
+  {
+    "id": "brca-night-sky",
+    "park": "brca",
+    "nameEn": "Night Sky",
+    "nameZh": "暗夜星空",
+    "area": "amphitheater",
+    "areaZh": "布莱斯圆形剧场"
+  },
+  {
+    "id": "brca-fairyland-loop",
+    "park": "brca",
+    "nameEn": "Fairyland Loop",
+    "nameZh": "仙境环线",
+    "area": "amphitheater",
+    "areaZh": "布莱斯圆形剧场"
+  },
+  {
+    "id": "brca-peekaboo-loop",
+    "park": "brca",
+    "nameEn": "Peekaboo Loop",
+    "nameZh": "躲猫猫环线",
+    "area": "amphitheater",
+    "areaZh": "布莱斯圆形剧场"
+  },
+  {
+    "id": "brca-fairyland-point",
+    "park": "brca",
+    "nameEn": "Fairyland Point",
+    "nameZh": "仙境观景点",
+    "area": "amphitheater",
+    "areaZh": "布莱斯圆形剧场"
+  },
+  {
+    "id": "brca-paria-view",
+    "park": "brca",
+    "nameEn": "Paria View",
+    "nameZh": "帕里亚观景点",
+    "area": "amphitheater",
+    "areaZh": "布莱斯圆形剧场"
+  },
+  {
+    "id": "brca-agua-canyon",
+    "park": "brca",
+    "nameEn": "Agua Canyon",
+    "nameZh": "阿瓜峡谷",
+    "area": "scenic-drive",
+    "areaZh": "南段景观道"
+  },
+  {
+    "id": "brca-bristlecone-loop",
+    "park": "brca",
+    "nameEn": "Bristlecone Loop",
+    "nameZh": "刺果松环线",
+    "area": "scenic-drive",
+    "areaZh": "南段景观道"
+  },
+  {
+    "id": "grca-mather-point",
+    "park": "grca",
+    "nameEn": "Mather Point",
+    "nameZh": "马瑟点",
+    "area": "village",
+    "areaZh": "南缘村（游客中心）"
+  },
+  {
+    "id": "grca-yavapai",
+    "park": "grca",
+    "nameEn": "Yavapai Point & Geology Museum",
+    "nameZh": "亚瓦派观景点",
+    "area": "village",
+    "areaZh": "南缘村（游客中心）"
+  },
+  {
+    "id": "grca-bright-angel",
+    "park": "grca",
+    "nameEn": "Bright Angel Trail",
+    "nameZh": "光明天使步道",
+    "area": "village",
+    "areaZh": "南缘村（游客中心）"
+  },
+  {
+    "id": "grca-south-kaibab",
+    "park": "grca",
+    "nameEn": "South Kaibab Trail – Ooh Aah Point",
+    "nameZh": "南凯巴布步道 · Ooh Aah Point",
+    "area": "village",
+    "areaZh": "南缘村（游客中心）"
+  },
+  {
+    "id": "grca-hopi-point",
+    "park": "grca",
+    "nameEn": "Hopi Point",
+    "nameZh": "霍皮点",
+    "area": "hermit",
+    "areaZh": "Hermit Road（西段）"
+  },
+  {
+    "id": "grca-hermits-rest",
+    "park": "grca",
+    "nameEn": "Hermits Rest",
+    "nameZh": "隐士休息站",
+    "area": "hermit",
+    "areaZh": "Hermit Road（西段）"
+  },
+  {
+    "id": "grca-lipan-point",
+    "park": "grca",
+    "nameEn": "Lipan Point",
+    "nameZh": "利潘点",
+    "area": "desert-view",
+    "areaZh": "Desert View Drive（东段）"
+  },
+  {
+    "id": "grca-desert-view",
+    "park": "grca",
+    "nameEn": "Desert View Watchtower",
+    "nameZh": "沙漠观景塔",
+    "area": "desert-view",
+    "areaZh": "Desert View Drive（东段）"
+  },
+  {
+    "id": "grca-grandview-point",
+    "park": "grca",
+    "nameEn": "Grandview Point",
+    "nameZh": "大观点",
+    "area": "desert-view",
+    "areaZh": "Desert View Drive（东段）"
+  },
+  {
+    "id": "grca-moran-point",
+    "park": "grca",
+    "nameEn": "Moran Point",
+    "nameZh": "莫兰点",
+    "area": "desert-view",
+    "areaZh": "Desert View Drive（东段）"
+  },
+  {
+    "id": "grca-mohave-point",
+    "park": "grca",
+    "nameEn": "Mohave Point",
+    "nameZh": "莫哈维点",
+    "area": "hermit",
+    "areaZh": "Hermit Road（西段）"
+  },
+  {
+    "id": "grca-pima-point",
+    "park": "grca",
+    "nameEn": "Pima Point",
+    "nameZh": "皮马点",
+    "area": "hermit",
+    "areaZh": "Hermit Road（西段）"
+  },
+  {
+    "id": "grca-village-historic",
+    "park": "grca",
+    "nameEn": "Grand Canyon Village Historic District",
+    "nameZh": "大峡谷村历史街区",
+    "area": "village",
+    "areaZh": "南缘村（游客中心）"
+  },
+  {
+    "id": "grca-tusayan-ruin",
+    "park": "grca",
+    "nameEn": "Tusayan Ruin and Museum",
+    "nameZh": "图萨扬遗址",
+    "area": "desert-view",
+    "areaZh": "Desert View Drive（东段）"
+  },
+  {
+    "id": "dena-visitor-center",
+    "park": "dena",
+    "nameEn": "Denali Visitor Center",
+    "nameZh": "德纳里游客中心",
+    "area": "entrance",
+    "areaZh": "入口区"
+  },
+  {
+    "id": "dena-horseshoe-lake",
+    "park": "dena",
+    "nameEn": "Horseshoe Lake Trail",
+    "nameZh": "马蹄湖步道",
+    "area": "entrance",
+    "areaZh": "入口区"
+  },
+  {
+    "id": "dena-mount-healy",
+    "park": "dena",
+    "nameEn": "Mount Healy Overlook Trail",
+    "nameZh": "希利山观景步道",
+    "area": "entrance",
+    "areaZh": "入口区"
+  },
+  {
+    "id": "dena-sled-dogs",
+    "park": "dena",
+    "nameEn": "Sled Dog Kennels",
+    "nameZh": "雪橇犬舍",
+    "area": "entrance",
+    "areaZh": "入口区"
+  },
+  {
+    "id": "dena-mountain-vista",
+    "park": "dena",
+    "nameEn": "Mountain Vista",
+    "nameZh": "山景休息区",
+    "area": "park-road",
+    "areaZh": "公园路（Mile 13–15）"
+  },
+  {
+    "id": "dena-savage-river",
+    "park": "dena",
+    "nameEn": "Savage River Loop",
+    "nameZh": "萨维奇河步道",
+    "area": "park-road",
+    "areaZh": "公园路（Mile 13–15）"
+  },
+  {
+    "id": "dena-bus",
+    "park": "dena",
+    "nameEn": "Denali Park Road Bus",
+    "nameZh": "公园路巴士",
+    "area": "entrance",
+    "areaZh": "入口区"
+  },
+  {
+    "id": "dena-viewpoint-south",
+    "park": "dena",
+    "nameEn": "Denali Viewpoint South",
+    "nameZh": "德纳里南观景点",
+    "area": "south",
+    "areaZh": "园外南侧（3 号公路）"
+  },
+  {
+    "id": "dena-talkeetna",
+    "park": "dena",
+    "nameEn": "Talkeetna Flightseeing",
+    "nameZh": "塔基特纳观光飞行",
+    "area": "south",
+    "areaZh": "园外南侧（3 号公路）"
+  },
+  {
+    "id": "dena-mckinley-station",
+    "park": "dena",
+    "nameEn": "McKinley Station Trail",
+    "nameZh": "麦金利站步道",
+    "area": "entrance",
+    "areaZh": "入口区"
+  },
+  {
+    "id": "dena-nenana-rafting",
+    "park": "dena",
+    "nameEn": "Nenana River Rafting",
+    "nameZh": "尼纳纳河漂流",
+    "area": "entrance",
+    "areaZh": "入口区"
+  },
+  {
+    "id": "arch-visitor-center",
+    "park": "arch",
+    "nameEn": "Arches Visitor Center",
+    "nameZh": "拱门游客中心",
+    "area": "entrance",
+    "areaZh": "入口 · 公园大道"
+  },
+  {
+    "id": "arch-park-avenue",
+    "park": "arch",
+    "nameEn": "Park Avenue",
+    "nameZh": "公园大道",
+    "area": "entrance",
+    "areaZh": "入口 · 公园大道"
+  },
+  {
+    "id": "arch-la-sal-viewpoint",
+    "park": "arch",
+    "nameEn": "La Sal Mountains Viewpoint",
+    "nameZh": "拉萨尔山观景点",
+    "area": "entrance",
+    "areaZh": "入口 · 公园大道"
+  },
+  {
+    "id": "arch-balanced-rock",
+    "park": "arch",
+    "nameEn": "Balanced Rock",
+    "nameZh": "平衡石",
+    "area": "windows",
+    "areaZh": "平衡石 · 窗户区"
+  },
+  {
+    "id": "arch-windows",
+    "park": "arch",
+    "nameEn": "The Windows",
+    "nameZh": "窗户区（南北窗 · 炮塔拱门）",
+    "area": "windows",
+    "areaZh": "平衡石 · 窗户区"
+  },
+  {
+    "id": "arch-double-arch",
+    "park": "arch",
+    "nameEn": "Double Arch",
+    "nameZh": "双拱门",
+    "area": "windows",
+    "areaZh": "平衡石 · 窗户区"
+  },
+  {
+    "id": "arch-delicate-arch",
+    "park": "arch",
+    "nameEn": "Delicate Arch",
+    "nameZh": "精致拱门",
+    "area": "delicate",
+    "areaZh": "精致拱门 · 全景点"
+  },
+  {
+    "id": "arch-delicate-arch-viewpoint",
+    "park": "arch",
+    "nameEn": "Delicate Arch Viewpoints",
+    "nameZh": "精致拱门观景点",
+    "area": "delicate",
+    "areaZh": "精致拱门 · 全景点"
+  },
+  {
+    "id": "arch-panorama-point",
+    "park": "arch",
+    "nameEn": "Panorama Point",
+    "nameZh": "全景点（观星）",
+    "area": "delicate",
+    "areaZh": "精致拱门 · 全景点"
+  },
+  {
+    "id": "arch-fiery-furnace",
+    "park": "arch",
+    "nameEn": "Fiery Furnace",
+    "nameZh": "火焰炉",
+    "area": "north",
+    "areaZh": "火焰炉 · 魔鬼花园（北段）"
+  },
+  {
+    "id": "arch-sand-dune-arch",
+    "park": "arch",
+    "nameEn": "Sand Dune Arch",
+    "nameZh": "沙丘拱门",
+    "area": "north",
+    "areaZh": "火焰炉 · 魔鬼花园（北段）"
+  },
+  {
+    "id": "arch-broken-arch",
+    "park": "arch",
+    "nameEn": "Broken Arch",
+    "nameZh": "断拱",
+    "area": "north",
+    "areaZh": "火焰炉 · 魔鬼花园（北段）"
+  },
+  {
+    "id": "arch-skyline-arch",
+    "park": "arch",
+    "nameEn": "Skyline Arch",
+    "nameZh": "天际线拱门",
+    "area": "north",
+    "areaZh": "火焰炉 · 魔鬼花园（北段）"
+  },
+  {
+    "id": "arch-landscape-arch",
+    "park": "arch",
+    "nameEn": "Landscape Arch",
+    "nameZh": "风景拱门",
+    "area": "north",
+    "areaZh": "火焰炉 · 魔鬼花园（北段）"
+  },
+  {
+    "id": "arch-double-o-arch",
+    "park": "arch",
+    "nameEn": "Double O Arch",
+    "nameZh": "双 O 拱门",
+    "area": "north",
+    "areaZh": "火焰炉 · 魔鬼花园（北段）"
+  },
+  {
+    "id": "arch-devils-garden-loop",
+    "park": "arch",
+    "nameEn": "Devils Garden Primitive Loop",
+    "nameZh": "魔鬼花园原始步道环线",
+    "area": "north",
+    "areaZh": "火焰炉 · 魔鬼花园（北段）"
+  },
+  {
+    "id": "arch-tower-arch",
+    "park": "arch",
+    "nameEn": "Tower Arch",
+    "nameZh": "塔拱门",
+    "area": "north",
+    "areaZh": "火焰炉 · 魔鬼花园（北段）"
+  },
+  {
+    "id": "cany-island-visitor-center",
+    "park": "cany",
+    "nameEn": "Island in the Sky Visitor Center",
+    "nameZh": "天空之岛游客中心",
+    "area": "sky",
+    "areaZh": "天空之岛 · 死马点"
+  },
+  {
+    "id": "cany-shafer-canyon-overlook",
+    "park": "cany",
+    "nameEn": "Shafer Canyon Overlook",
+    "nameZh": "谢弗峡谷观景点",
+    "area": "sky",
+    "areaZh": "天空之岛 · 死马点"
+  },
+  {
+    "id": "cany-mesa-arch",
+    "park": "cany",
+    "nameEn": "Mesa Arch",
+    "nameZh": "梅萨拱门",
+    "area": "sky",
+    "areaZh": "天空之岛 · 死马点"
+  },
+  {
+    "id": "cany-grand-view-point",
+    "park": "cany",
+    "nameEn": "Grand View Point",
+    "nameZh": "大观景点",
+    "area": "sky",
+    "areaZh": "天空之岛 · 死马点"
+  },
+  {
+    "id": "cany-white-rim-overlook",
+    "park": "cany",
+    "nameEn": "White Rim Overlook",
+    "nameZh": "白缘观景点",
+    "area": "sky",
+    "areaZh": "天空之岛 · 死马点"
+  },
+  {
+    "id": "cany-green-river-overlook",
+    "park": "cany",
+    "nameEn": "Green River Overlook",
+    "nameZh": "格林河观景点",
+    "area": "sky",
+    "areaZh": "天空之岛 · 死马点"
+  },
+  {
+    "id": "cany-aztec-butte",
+    "park": "cany",
+    "nameEn": "Aztec Butte",
+    "nameZh": "阿兹特克孤丘",
+    "area": "sky",
+    "areaZh": "天空之岛 · 死马点"
+  },
+  {
+    "id": "cany-whale-rock",
+    "park": "cany",
+    "nameEn": "Whale Rock",
+    "nameZh": "鲸鱼岩",
+    "area": "sky",
+    "areaZh": "天空之岛 · 死马点"
+  },
+  {
+    "id": "cany-upheaval-dome",
+    "park": "cany",
+    "nameEn": "Upheaval Dome",
+    "nameZh": "隆起穹丘",
+    "area": "sky",
+    "areaZh": "天空之岛 · 死马点"
+  },
+  {
+    "id": "cany-dead-horse-point",
+    "park": "cany",
+    "nameEn": "Dead Horse Point State Park",
+    "nameZh": "死马点州立公园",
+    "area": "sky",
+    "areaZh": "天空之岛 · 死马点"
+  },
+  {
+    "id": "cany-newspaper-rock",
+    "park": "cany",
+    "nameEn": "Newspaper Rock",
+    "nameZh": "报纸岩",
+    "area": "needles",
+    "areaZh": "针尖区 · 211 号公路"
+  },
+  {
+    "id": "cany-needles-visitor-center",
+    "park": "cany",
+    "nameEn": "The Needles Visitor Center",
+    "nameZh": "针尖区游客中心",
+    "area": "needles",
+    "areaZh": "针尖区 · 211 号公路"
+  },
+  {
+    "id": "cany-cave-spring",
+    "park": "cany",
+    "nameEn": "Cave Spring Trail",
+    "nameZh": "洞穴泉步道",
+    "area": "needles",
+    "areaZh": "针尖区 · 211 号公路"
+  },
+  {
+    "id": "cany-pothole-point",
+    "park": "cany",
+    "nameEn": "Pothole Point",
+    "nameZh": "壶穴点",
+    "area": "needles",
+    "areaZh": "针尖区 · 211 号公路"
+  },
+  {
+    "id": "cany-slickrock-trail",
+    "park": "cany",
+    "nameEn": "Slickrock Trail",
+    "nameZh": "光岩步道",
+    "area": "needles",
+    "areaZh": "针尖区 · 211 号公路"
+  },
+  {
+    "id": "cany-big-spring-canyon-overlook",
+    "park": "cany",
+    "nameEn": "Big Spring Canyon Overlook",
+    "nameZh": "大泉峡谷观景点",
+    "area": "needles",
+    "areaZh": "针尖区 · 211 号公路"
+  },
+  {
+    "id": "cany-chesler-park",
+    "park": "cany",
+    "nameEn": "Chesler Park Viewpoint",
+    "nameZh": "切斯勒公园观景垭口",
+    "area": "needles",
+    "areaZh": "针尖区 · 211 号公路"
+  },
+  {
+    "id": "cany-horseshoe-canyon",
+    "park": "cany",
+    "nameEn": "Horseshoe Canyon – Great Gallery",
+    "nameZh": "马蹄峡谷大画廊",
+    "area": "horseshoe",
+    "areaZh": "马蹄峡谷（西侧）"
+  },
+  {
+    "id": "care-visitor-center",
+    "park": "care",
+    "nameEn": "Capitol Reef Visitor Center",
+    "nameZh": "圆顶礁游客中心",
+    "area": "fruita",
+    "areaZh": "弗鲁塔 · 24 号公路"
+  },
+  {
+    "id": "care-fruita-gifford-house",
+    "park": "care",
+    "nameEn": "Fruita Orchards & Gifford House",
+    "nameZh": "弗鲁塔果园与吉福德之家",
+    "area": "fruita",
+    "areaZh": "弗鲁塔 · 24 号公路"
+  },
+  {
+    "id": "care-petroglyph-panel",
+    "park": "care",
+    "nameEn": "Petroglyph Panel",
+    "nameZh": "弗里蒙特岩画",
+    "area": "fruita",
+    "areaZh": "弗鲁塔 · 24 号公路"
+  },
+  {
+    "id": "care-hickman-bridge",
+    "park": "care",
+    "nameEn": "Hickman Bridge",
+    "nameZh": "希克曼天然桥",
+    "area": "fruita",
+    "areaZh": "弗鲁塔 · 24 号公路"
+  },
+  {
+    "id": "care-rim-overlook",
+    "park": "care",
+    "nameEn": "Rim Overlook Trail",
+    "nameZh": "崖顶观景点",
+    "area": "fruita",
+    "areaZh": "弗鲁塔 · 24 号公路"
+  },
+  {
+    "id": "care-scenic-drive",
+    "park": "care",
+    "nameEn": "Capitol Reef Scenic Drive",
+    "nameZh": "圆顶礁景观道",
+    "area": "scenic-drive",
+    "areaZh": "景观道 · 峡谷步道"
+  },
+  {
+    "id": "care-grand-wash",
+    "park": "care",
+    "nameEn": "Grand Wash",
+    "nameZh": "大冲沟",
+    "area": "scenic-drive",
+    "areaZh": "景观道 · 峡谷步道"
+  },
+  {
+    "id": "care-cassidy-arch",
+    "park": "care",
+    "nameEn": "Cassidy Arch",
+    "nameZh": "卡西迪拱门",
+    "area": "scenic-drive",
+    "areaZh": "景观道 · 峡谷步道"
+  },
+  {
+    "id": "care-capitol-gorge",
+    "park": "care",
+    "nameEn": "Capitol Gorge",
+    "nameZh": "国会峡谷",
+    "area": "scenic-drive",
+    "areaZh": "景观道 · 峡谷步道"
+  },
+  {
+    "id": "care-panorama-point",
+    "park": "care",
+    "nameEn": "Panorama Point",
+    "nameZh": "全景点（观星）",
+    "area": "west",
+    "areaZh": "24 号公路西段观景点"
+  },
+  {
+    "id": "care-goosenecks-sunset-point",
+    "park": "care",
+    "nameEn": "Goosenecks Overlook & Sunset Point",
+    "nameZh": "鹅颈观景点 · 日落点",
+    "area": "west",
+    "areaZh": "24 号公路西段观景点"
+  },
+  {
+    "id": "care-chimney-rock",
+    "park": "care",
+    "nameEn": "Chimney Rock Loop",
+    "nameZh": "烟囱岩环线",
+    "area": "west",
+    "areaZh": "24 号公路西段观景点"
+  },
+  {
+    "id": "care-cathedral-valley",
+    "park": "care",
+    "nameEn": "Cathedral Valley (Temples of the Sun and Moon)",
+    "nameZh": "大教堂谷（太阳神殿 · 月亮神殿）",
+    "area": "cathedral",
+    "areaZh": "大教堂谷（北区）"
+  },
+  {
+    "id": "care-burr-trail",
+    "park": "care",
+    "nameEn": "Burr Trail Switchbacks",
+    "nameZh": "伯尔小径之字形路",
+    "area": "south",
+    "areaZh": "Burr Trail（南区）"
+  },
+  {
+    "id": "care-goblin-valley",
+    "park": "care",
+    "nameEn": "Goblin Valley State Park",
+    "nameZh": "妖精谷州立公园",
+    "area": "east",
+    "areaZh": "园外东侧（妖精谷）"
+  },
+  {
+    "id": "ante-upper-antelope-canyon",
+    "park": "ante",
+    "nameEn": "Upper Antelope Canyon",
+    "nameZh": "上羚羊峡谷",
+    "area": "upper",
+    "areaZh": "上羚羊峡谷"
+  },
+  {
+    "id": "ante-lower-antelope-canyon",
+    "park": "ante",
+    "nameEn": "Lower Antelope Canyon",
+    "nameZh": "下羚羊峡谷",
+    "area": "lower",
+    "areaZh": "下羚羊峡谷"
+  },
+  {
+    "id": "ante-antelope-canyon-x",
+    "park": "ante",
+    "nameEn": "Antelope Canyon X",
+    "nameZh": "羚羊峡谷 X",
+    "area": "more-slots",
+    "areaZh": "其他狭缝峡谷"
+  },
+  {
+    "id": "ante-waterholes-canyon",
+    "park": "ante",
+    "nameEn": "Waterholes Canyon",
+    "nameZh": "水洞峡谷",
+    "area": "more-slots",
+    "areaZh": "其他狭缝峡谷"
+  },
+  {
+    "id": "ante-antelope-canyon-kayak",
+    "park": "ante",
+    "nameEn": "Antelope Canyon by Kayak (Lake Powell)",
+    "nameZh": "皮划艇进羚羊峡谷（鲍威尔湖水上部分）",
+    "area": "lake",
+    "areaZh": "鲍威尔湖 · 水上部分"
+  },
+  {
+    "id": "ante-antelope-canyon-boat-tour",
+    "park": "ante",
+    "nameEn": "Antelope Canyon Boat Tour (Antelope Point Marina)",
+    "nameZh": "羚羊峡谷游船（Antelope Point Marina）",
+    "area": "lake",
+    "areaZh": "鲍威尔湖 · 水上部分"
+  },
+  {
+    "id": "hsbd-horseshoe-bend",
+    "park": "hsbd",
+    "nameEn": "Horseshoe Bend Overlook",
+    "nameZh": "马蹄湾观景台",
+    "area": "horseshoe-bend",
+    "areaZh": "马蹄湾"
+  },
+  {
+    "id": "hsbd-glen-canyon-dam-overlook",
+    "park": "hsbd",
+    "nameEn": "Glen Canyon Dam Overlook",
+    "nameZh": "格伦峡谷大坝观景点",
+    "area": "dam",
+    "areaZh": "格伦峡谷大坝"
+  },
+  {
+    "id": "hsbd-carl-hayden-visitor-center",
+    "park": "hsbd",
+    "nameEn": "Carl Hayden Visitor Center",
+    "nameZh": "Carl Hayden 游客中心（格伦峡谷大坝）",
+    "area": "dam",
+    "areaZh": "格伦峡谷大坝"
+  },
+  {
+    "id": "hsbd-wahweap-overlook",
+    "park": "hsbd",
+    "nameEn": "Wahweap Overlook",
+    "nameZh": "Wahweap 观景点（鲍威尔湖）",
+    "area": "lake-powell",
+    "areaZh": "鲍威尔湖 Wahweap"
+  },
+  {
+    "id": "hsbd-horseshoe-bend-kayak",
+    "park": "hsbd",
+    "nameEn": "Horseshoe Bend Kayak (Lees Ferry backhaul)",
+    "nameZh": "皮划艇漂马蹄湾（Lees Ferry 坐船上溯再漂回）",
+    "area": "river",
+    "areaZh": "科罗拉多河 · Lees Ferry"
+  },
+  {
+    "id": "hsbd-glen-canyon-float",
+    "park": "hsbd",
+    "nameEn": "Horseshoe Bend Half-Day Rafting Trip",
+    "nameZh": "格伦峡谷半日漂流（马蹄湾谷底）",
+    "area": "river",
+    "areaZh": "科罗拉多河 · Lees Ferry"
+  },
+  {
+    "id": "hsbd-glen-canyon-dam-cruise",
+    "park": "hsbd",
+    "nameEn": "Glen Canyon Dam Scenic Cruise (Wahweap)",
+    "nameZh": "鲍威尔湖大坝游船（Wahweap）",
+    "area": "lake-powell",
+    "areaZh": "鲍威尔湖 Wahweap"
+  },
+  {
+    "id": "mova-the-view",
+    "park": "mova",
+    "nameEn": "The View – Visitor Center Overlook",
+    "nameZh": "游客中心观景台（左右手）",
+    "area": "visitor-center",
+    "areaZh": "游客中心 · The View"
+  },
+  {
+    "id": "mova-valley-drive",
+    "park": "mova",
+    "nameEn": "Valley Drive (17-Mile Loop)",
+    "nameZh": "谷地自驾环线（Valley Drive）",
+    "area": "valley-drive",
+    "areaZh": "谷地自驾环线"
+  },
+  {
+    "id": "mova-john-fords-point",
+    "park": "mova",
+    "nameEn": "John Ford's Point",
+    "nameZh": "约翰·福特点",
+    "area": "valley-drive",
+    "areaZh": "谷地自驾环线"
+  },
+  {
+    "id": "mova-wildcat-trail",
+    "park": "mova",
+    "nameEn": "Wildcat Trail",
+    "nameZh": "野猫步道",
+    "area": "visitor-center",
+    "areaZh": "游客中心 · The View"
+  },
+  {
+    "id": "mova-guided-tour",
+    "park": "mova",
+    "nameEn": "Navajo-Guided Backcountry Tour",
+    "nameZh": "纳瓦霍向导吉普团（限制区）",
+    "area": "backcountry",
+    "areaZh": "向导团限定区域"
+  },
+  {
+    "id": "mova-forrest-gump-point",
+    "park": "mova",
+    "nameEn": "Forrest Gump Point",
+    "nameZh": "阿甘正传公路（阿甘点）",
+    "area": "us-163",
+    "areaZh": "163 号公路（园外）"
+  },
+  {
+    "id": "wave-the-wave",
+    "park": "wave",
+    "nameEn": "The Wave (Coyote Buttes North)",
+    "nameZh": "波浪谷（The Wave）",
+    "area": "coyote-buttes",
+    "areaZh": "狼丘北区（The Wave）"
+  },
+  {
+    "id": "wave-wire-pass",
+    "park": "wave",
+    "nameEn": "Wire Pass to Buckskin Gulch",
+    "nameZh": "Wire Pass 狭缝峡谷（到 Buckskin Gulch）",
+    "area": "house-rock",
+    "areaZh": "House Rock Valley Road"
+  },
+  {
+    "id": "wave-toadstools",
+    "park": "wave",
+    "nameEn": "Toadstool Hoodoos",
+    "nameZh": "蘑菇石（Toadstool Hoodoos）",
+    "area": "us-89",
+    "areaZh": "89 号公路沿线"
+  },
+  {
+    "id": "wave-white-pocket",
+    "park": "wave",
+    "nameEn": "White Pocket",
+    "nameZh": "白口袋（White Pocket）",
+    "area": "paria-plateau",
+    "areaZh": "帕里亚高原（White Pocket）"
+  },
+  {
+    "id": "banf-lake-louise",
+    "park": "banf",
+    "nameEn": "Lake Louise",
+    "nameZh": "露易丝湖",
+    "area": "lake-louise",
+    "areaZh": "露易丝湖"
+  },
+  {
+    "id": "banf-moraine-lake",
+    "park": "banf",
+    "nameEn": "Moraine Lake",
+    "nameZh": "梦莲湖",
+    "area": "moraine",
+    "areaZh": "梦莲湖"
+  },
+  {
+    "id": "banf-lake-agnes",
+    "park": "banf",
+    "nameEn": "Lake Agnes Tea House",
+    "nameZh": "艾格尼丝湖茶屋",
+    "area": "lake-louise",
+    "areaZh": "露易丝湖"
+  },
+  {
+    "id": "banf-plain-of-six-glaciers",
+    "park": "banf",
+    "nameEn": "Plain of Six Glaciers",
+    "nameZh": "六冰川平原",
+    "area": "lake-louise",
+    "areaZh": "露易丝湖"
+  },
+  {
+    "id": "banf-larch-valley",
+    "park": "banf",
+    "nameEn": "Larch Valley",
+    "nameZh": "落叶松谷",
+    "area": "moraine",
+    "areaZh": "梦莲湖"
+  },
+  {
+    "id": "banf-lake-louise-gondola",
+    "park": "banf",
+    "nameEn": "Lake Louise Gondola",
+    "nameZh": "露易丝湖观光缆车",
+    "area": "lake-louise",
+    "areaZh": "露易丝湖"
+  },
+  {
+    "id": "banf-morants-curve",
+    "park": "banf",
+    "nameEn": "Morant's Curve",
+    "nameZh": "莫兰特弯道",
+    "area": "bow-valley",
+    "areaZh": "弓河谷景观道 / 约翰斯顿峡谷"
+  },
+  {
+    "id": "banf-bow-valley-parkway",
+    "park": "banf",
+    "nameEn": "Bow Valley Parkway",
+    "nameZh": "弓河谷景观道",
+    "area": "bow-valley",
+    "areaZh": "弓河谷景观道 / 约翰斯顿峡谷"
+  },
+  {
+    "id": "banf-johnston-canyon",
+    "park": "banf",
+    "nameEn": "Johnston Canyon",
+    "nameZh": "约翰斯顿峡谷",
+    "area": "bow-valley",
+    "areaZh": "弓河谷景观道 / 约翰斯顿峡谷"
+  },
+  {
+    "id": "banf-bow-lake",
+    "park": "banf",
+    "nameEn": "Bow Lake",
+    "nameZh": "弓湖",
+    "area": "icefields",
+    "areaZh": "冰原大道南段（弓湖 / 佩托湖）"
+  },
+  {
+    "id": "banf-peyto-lake",
+    "park": "banf",
+    "nameEn": "Peyto Lake",
+    "nameZh": "佩托湖",
+    "area": "icefields",
+    "areaZh": "冰原大道南段（弓湖 / 佩托湖）"
+  },
+  {
+    "id": "banf-mistaya-canyon",
+    "park": "banf",
+    "nameEn": "Mistaya Canyon",
+    "nameZh": "米斯塔亚峡谷",
+    "area": "icefields",
+    "areaZh": "冰原大道南段（弓湖 / 佩托湖）"
+  },
+  {
+    "id": "banf-banff-avenue",
+    "park": "banf",
+    "nameEn": "Banff Avenue",
+    "nameZh": "班夫大道",
+    "area": "town",
+    "areaZh": "班夫镇周边"
+  },
+  {
+    "id": "banf-banff-gondola",
+    "park": "banf",
+    "nameEn": "Banff Gondola",
+    "nameZh": "班夫硫磺山缆车",
+    "area": "town",
+    "areaZh": "班夫镇周边"
+  },
+  {
+    "id": "banf-upper-hot-springs",
+    "park": "banf",
+    "nameEn": "Banff Upper Hot Springs",
+    "nameZh": "班夫上温泉",
+    "area": "town",
+    "areaZh": "班夫镇周边"
+  },
+  {
+    "id": "banf-cave-and-basin",
+    "park": "banf",
+    "nameEn": "Cave and Basin National Historic Site",
+    "nameZh": "洞穴与盆地国家历史遗址",
+    "area": "town",
+    "areaZh": "班夫镇周边"
+  },
+  {
+    "id": "banf-bow-falls",
+    "park": "banf",
+    "nameEn": "Bow Falls & Surprise Corner",
+    "nameZh": "弓河瀑布 · 惊喜角",
+    "area": "town",
+    "areaZh": "班夫镇周边"
+  },
+  {
+    "id": "banf-vermilion-lakes",
+    "park": "banf",
+    "nameEn": "Vermilion Lakes",
+    "nameZh": "朱砂湖",
+    "area": "town",
+    "areaZh": "班夫镇周边"
+  },
+  {
+    "id": "banf-lake-minnewanka",
+    "park": "banf",
+    "nameEn": "Lake Minnewanka",
+    "nameZh": "明尼万卡湖",
+    "area": "minnewanka",
+    "areaZh": "明尼万卡湖环线"
+  },
+  {
+    "id": "banf-two-jack-lake",
+    "park": "banf",
+    "nameEn": "Two Jack Lake",
+    "nameZh": "双杰克湖",
+    "area": "minnewanka",
+    "areaZh": "明尼万卡湖环线"
+  },
+  {
+    "id": "banf-tunnel-mountain",
+    "park": "banf",
+    "nameEn": "Tunnel Mountain",
+    "nameZh": "隧道山",
+    "area": "town",
+    "areaZh": "班夫镇周边"
+  },
+  {
+    "id": "banf-sunshine-meadows",
+    "park": "banf",
+    "nameEn": "Sunshine Meadows",
+    "nameZh": "阳光草甸",
+    "area": "town",
+    "areaZh": "班夫镇周边"
+  },
+  {
+    "id": "jasp-icefields-parkway",
+    "park": "jasp",
+    "nameEn": "Icefields Parkway",
+    "nameZh": "冰原大道",
+    "area": "icefield",
+    "areaZh": "哥伦比亚冰原"
+  },
+  {
+    "id": "jasp-athabasca-glacier",
+    "park": "jasp",
+    "nameEn": "Athabasca Glacier (Toe of the Glacier Trail)",
+    "nameZh": "阿萨巴斯卡冰川",
+    "area": "icefield",
+    "areaZh": "哥伦比亚冰原"
+  },
+  {
+    "id": "jasp-columbia-icefield-adventure",
+    "park": "jasp",
+    "nameEn": "Columbia Icefield Adventure (Ice Explorer & Skywalk)",
+    "nameZh": "哥伦比亚冰原冰川车",
+    "area": "icefield",
+    "areaZh": "哥伦比亚冰原"
+  },
+  {
+    "id": "jasp-wilcox-pass",
+    "park": "jasp",
+    "nameEn": "Wilcox Pass",
+    "nameZh": "威尔科克斯山口",
+    "area": "icefield",
+    "areaZh": "哥伦比亚冰原"
+  },
+  {
+    "id": "jasp-sunwapta-falls",
+    "park": "jasp",
+    "nameEn": "Sunwapta Falls",
+    "nameZh": "桑瓦普塔瀑布",
+    "area": "parkway",
+    "areaZh": "冰原大道北段（瀑布）"
+  },
+  {
+    "id": "jasp-athabasca-falls",
+    "park": "jasp",
+    "nameEn": "Athabasca Falls",
+    "nameZh": "阿萨巴斯卡瀑布",
+    "area": "parkway",
+    "areaZh": "冰原大道北段（瀑布）"
+  },
+  {
+    "id": "jasp-maligne-canyon",
+    "park": "jasp",
+    "nameEn": "Maligne Canyon",
+    "nameZh": "玛琳峡谷",
+    "area": "maligne",
+    "areaZh": "玛琳峡谷 / 玛琳湖"
+  },
+  {
+    "id": "jasp-medicine-lake",
+    "park": "jasp",
+    "nameEn": "Medicine Lake",
+    "nameZh": "药湖",
+    "area": "maligne",
+    "areaZh": "玛琳峡谷 / 玛琳湖"
+  },
+  {
+    "id": "jasp-maligne-lake",
+    "park": "jasp",
+    "nameEn": "Maligne Lake",
+    "nameZh": "玛琳湖",
+    "area": "maligne",
+    "areaZh": "玛琳峡谷 / 玛琳湖"
+  },
+  {
+    "id": "jasp-spirit-island",
+    "park": "jasp",
+    "nameEn": "Spirit Island (Maligne Lake Cruise)",
+    "nameZh": "精灵岛（玛琳湖游船）",
+    "area": "maligne",
+    "areaZh": "玛琳峡谷 / 玛琳湖"
+  },
+  {
+    "id": "jasp-jasper-skytram",
+    "park": "jasp",
+    "nameEn": "Jasper SkyTram",
+    "nameZh": "贾斯珀缆车",
+    "area": "town",
+    "areaZh": "贾斯珀镇周边"
+  },
+  {
+    "id": "jasp-pyramid-lake",
+    "park": "jasp",
+    "nameEn": "Pyramid Lake",
+    "nameZh": "金字塔湖",
+    "area": "town",
+    "areaZh": "贾斯珀镇周边"
+  },
+  {
+    "id": "jasp-valley-of-five-lakes",
+    "park": "jasp",
+    "nameEn": "Valley of the Five Lakes",
+    "nameZh": "五湖谷",
+    "area": "town",
+    "areaZh": "贾斯珀镇周边"
+  },
+  {
+    "id": "jasp-mount-edith-cavell",
+    "park": "jasp",
+    "nameEn": "Mount Edith Cavell",
+    "nameZh": "伊迪丝·卡维尔山",
+    "area": "town",
+    "areaZh": "贾斯珀镇周边"
+  },
+  {
+    "id": "jasp-jasper-town",
+    "park": "jasp",
+    "nameEn": "Jasper Townsite (Jasper Park Information Centre)",
+    "nameZh": "贾斯珀镇",
+    "area": "town",
+    "areaZh": "贾斯珀镇周边"
+  },
+  {
+    "id": "jasp-miette-hot-springs",
+    "park": "jasp",
+    "nameEn": "Miette Hot Springs",
+    "nameZh": "米耶特温泉",
+    "area": "hwy16",
+    "areaZh": "16 号公路（米耶特温泉 / 罗布森山）"
+  },
+  {
+    "id": "jasp-mount-robson",
+    "park": "jasp",
+    "nameEn": "Mount Robson",
+    "nameZh": "罗布森山",
+    "area": "hwy16",
+    "areaZh": "16 号公路（米耶特温泉 / 罗布森山）"
+  },
+  {
+    "id": "yoho-emerald-lake",
+    "park": "yoho",
+    "nameEn": "Emerald Lake",
+    "nameZh": "翡翠湖",
+    "area": "emerald",
+    "areaZh": "翡翠湖 / 天然桥"
+  },
+  {
+    "id": "yoho-natural-bridge",
+    "park": "yoho",
+    "nameEn": "Natural Bridge",
+    "nameZh": "天然桥",
+    "area": "emerald",
+    "areaZh": "翡翠湖 / 天然桥"
+  },
+  {
+    "id": "yoho-takakkaw-falls",
+    "park": "yoho",
+    "nameEn": "Takakkaw Falls",
+    "nameZh": "塔卡考瀑布",
+    "area": "yoho-valley",
+    "areaZh": "幽鹤谷（塔卡考瀑布）"
+  },
+  {
+    "id": "yoho-spiral-tunnels",
+    "park": "yoho",
+    "nameEn": "Spiral Tunnels Viewpoint",
+    "nameZh": "螺旋隧道观景点",
+    "area": "field",
+    "areaZh": "Field 镇 / 1 号公路沿线"
+  },
+  {
+    "id": "yoho-lake-ohara",
+    "park": "yoho",
+    "nameEn": "Lake O'Hara",
+    "nameZh": "欧哈拉湖",
+    "area": "ohara",
+    "areaZh": "欧哈拉湖"
+  },
+  {
+    "id": "yoho-wapta-falls",
+    "park": "yoho",
+    "nameEn": "Wapta Falls",
+    "nameZh": "瓦普塔瀑布",
+    "area": "field",
+    "areaZh": "Field 镇 / 1 号公路沿线"
+  },
+  {
+    "id": "yoho-field-visitor-centre",
+    "park": "yoho",
+    "nameEn": "Field & Yoho National Park Visitor Centre",
+    "nameZh": "Field 小镇 · 幽鹤游客中心",
+    "area": "field",
+    "areaZh": "Field 镇 / 1 号公路沿线"
+  },
+  {
+    "id": "yoho-iceline",
+    "park": "yoho",
+    "nameEn": "Iceline Trail",
+    "nameZh": "冰线步道",
+    "area": "yoho-valley",
+    "areaZh": "幽鹤谷（塔卡考瀑布）"
+  },
+  {
+    "id": "yoho-sherbrooke-lake",
+    "park": "yoho",
+    "nameEn": "Sherbrooke Lake",
+    "nameZh": "舍布鲁克湖",
+    "area": "field",
+    "areaZh": "Field 镇 / 1 号公路沿线"
+  },
+  {
+    "id": "yoho-burgess-shale",
+    "park": "yoho",
+    "nameEn": "Burgess Shale Guided Hike (Walcott Quarry)",
+    "nameZh": "伯吉斯页岩化石导览徒步",
+    "area": "yoho-valley",
+    "areaZh": "幽鹤谷（塔卡考瀑布）"
+  },
+  {
+    "id": "jotr-joshua-tree-visitor-center",
+    "park": "jotr",
+    "nameEn": "Joshua Tree Visitor Center",
+    "nameZh": "约书亚树游客中心（Joshua Tree 镇）",
+    "area": "west",
+    "areaZh": "西部 · 隐谷 / Keys View"
+  },
+  {
+    "id": "jotr-oasis-visitor-center",
+    "park": "jotr",
+    "nameEn": "Joshua Tree National Park Visitor Center (Oasis of Mara)",
+    "nameZh": "公园总部游客中心 · 马拉绿洲",
+    "area": "north",
+    "areaZh": "北侧 · Twentynine Palms"
+  },
+  {
+    "id": "jotr-cottonwood-visitor-center",
+    "park": "jotr",
+    "nameEn": "Cottonwood Visitor Center",
+    "nameZh": "棉白杨游客中心",
+    "area": "south",
+    "areaZh": "南部 · Cottonwood"
+  },
+  {
+    "id": "jotr-hidden-valley",
+    "park": "jotr",
+    "nameEn": "Hidden Valley Nature Trail",
+    "nameZh": "隐谷",
+    "area": "west",
+    "areaZh": "西部 · 隐谷 / Keys View"
+  },
+  {
+    "id": "jotr-barker-dam",
+    "park": "jotr",
+    "nameEn": "Barker Dam Trail",
+    "nameZh": "巴克水坝",
+    "area": "west",
+    "areaZh": "西部 · 隐谷 / Keys View"
+  },
+  {
+    "id": "jotr-keys-ranch",
+    "park": "jotr",
+    "nameEn": "Keys Ranch Guided Tour (Desert Queen Ranch)",
+    "nameZh": "凯斯牧场导览",
+    "area": "west",
+    "areaZh": "西部 · 隐谷 / Keys View"
+  },
+  {
+    "id": "jotr-cap-rock",
+    "park": "jotr",
+    "nameEn": "Cap Rock Nature Trail",
+    "nameZh": "帽子岩",
+    "area": "west",
+    "areaZh": "西部 · 隐谷 / Keys View"
+  },
+  {
+    "id": "jotr-keys-view",
+    "park": "jotr",
+    "nameEn": "Keys View",
+    "nameZh": "凯斯观景台",
+    "area": "west",
+    "areaZh": "西部 · 隐谷 / Keys View"
+  },
+  {
+    "id": "jotr-ryan-mountain",
+    "park": "jotr",
+    "nameEn": "Ryan Mountain Trail",
+    "nameZh": "瑞安山",
+    "area": "west",
+    "areaZh": "西部 · 隐谷 / Keys View"
+  },
+  {
+    "id": "jotr-lost-horse-mine",
+    "park": "jotr",
+    "nameEn": "Lost Horse Mine Trail",
+    "nameZh": "失马矿",
+    "area": "west",
+    "areaZh": "西部 · 隐谷 / Keys View"
+  },
+  {
+    "id": "jotr-night-sky",
+    "park": "jotr",
+    "nameEn": "Night Sky",
+    "nameZh": "暗夜星空",
+    "area": "west",
+    "areaZh": "西部 · 隐谷 / Keys View"
+  },
+  {
+    "id": "jotr-skull-rock",
+    "park": "jotr",
+    "nameEn": "Skull Rock",
+    "nameZh": "骷髅岩",
+    "area": "central",
+    "areaZh": "中部 · 巨石阵 / 骷髅岩"
+  },
+  {
+    "id": "jotr-jumbo-rocks",
+    "park": "jotr",
+    "nameEn": "Skull Rock Nature Trail (Jumbo Rocks)",
+    "nameZh": "巨石阵环线（骷髅岩步道）",
+    "area": "central",
+    "areaZh": "中部 · 巨石阵 / 骷髅岩"
+  },
+  {
+    "id": "jotr-arch-rock",
+    "park": "jotr",
+    "nameEn": "Arch Rock Trail",
+    "nameZh": "拱门岩",
+    "area": "central",
+    "areaZh": "中部 · 巨石阵 / 骷髅岩"
+  },
+  {
+    "id": "jotr-cholla-garden",
+    "park": "jotr",
+    "nameEn": "Cholla Cactus Garden",
+    "nameZh": "泰迪熊仙人掌园",
+    "area": "pinto",
+    "areaZh": "平托盆地 · 仙人掌园"
+  },
+  {
+    "id": "jotr-cottonwood-spring",
+    "park": "jotr",
+    "nameEn": "Cottonwood Spring",
+    "nameZh": "棉白杨泉",
+    "area": "south",
+    "areaZh": "南部 · Cottonwood"
+  },
+  {
+    "id": "jotr-mastodon-peak",
+    "park": "jotr",
+    "nameEn": "Mastodon Peak Loop",
+    "nameZh": "猛犸峰环线",
+    "area": "south",
+    "areaZh": "南部 · Cottonwood"
+  },
+  {
+    "id": "jotr-lost-palms-oasis",
+    "park": "jotr",
+    "nameEn": "Lost Palms Oasis Trail",
+    "nameZh": "失落棕榈绿洲",
+    "area": "south",
+    "areaZh": "南部 · Cottonwood"
+  },
+  {
+    "id": "jotr-49-palms-oasis",
+    "park": "jotr",
+    "nameEn": "Fortynine Palms Oasis Trail",
+    "nameZh": "四十九棕榈绿洲",
+    "area": "north",
+    "areaZh": "北侧 · Twentynine Palms"
+  },
+  {
+    "id": "jotr-pioneertown",
+    "park": "jotr",
+    "nameEn": "Pioneertown",
+    "nameZh": "先锋镇（西部片小镇）",
+    "area": "west",
+    "areaZh": "西部 · 隐谷 / Keys View"
+  },
+  {
+    "id": "romo-beaver-meadows-vc",
+    "park": "romo",
+    "nameEn": "Beaver Meadows Visitor Center",
+    "nameZh": "Beaver Meadows 游客中心",
+    "area": "east",
+    "areaZh": "东侧 · Beaver Meadows / Horseshoe Park"
+  },
+  {
+    "id": "romo-sheep-lakes",
+    "park": "romo",
+    "nameEn": "Sheep Lakes",
+    "nameZh": "羊湖",
+    "area": "east",
+    "areaZh": "东侧 · Beaver Meadows / Horseshoe Park"
+  },
+  {
+    "id": "romo-alluvial-fan",
+    "park": "romo",
+    "nameEn": "Alluvial Fan",
+    "nameZh": "冲积扇瀑布",
+    "area": "east",
+    "areaZh": "东侧 · Beaver Meadows / Horseshoe Park"
+  },
+  {
+    "id": "romo-deer-mountain",
+    "park": "romo",
+    "nameEn": "Deer Mountain Trail",
+    "nameZh": "鹿山",
+    "area": "east",
+    "areaZh": "东侧 · Beaver Meadows / Horseshoe Park"
+  },
+  {
+    "id": "romo-moraine-park",
+    "park": "romo",
+    "nameEn": "Moraine Park",
+    "nameZh": "冰碛草甸（Moraine Park）",
+    "area": "bear-lake",
+    "areaZh": "Bear Lake 路（熊湖走廊）"
+  },
+  {
+    "id": "romo-sprague-lake",
+    "park": "romo",
+    "nameEn": "Sprague Lake",
+    "nameZh": "斯普拉格湖",
+    "area": "bear-lake",
+    "areaZh": "Bear Lake 路（熊湖走廊）"
+  },
+  {
+    "id": "romo-bear-lake",
+    "park": "romo",
+    "nameEn": "Bear Lake",
+    "nameZh": "熊湖",
+    "area": "bear-lake",
+    "areaZh": "Bear Lake 路（熊湖走廊）"
+  },
+  {
+    "id": "romo-emerald-lake",
+    "park": "romo",
+    "nameEn": "Nymph, Dream & Emerald Lakes",
+    "nameZh": "宁芙湖 · 梦湖 · 翡翠湖",
+    "area": "bear-lake",
+    "areaZh": "Bear Lake 路（熊湖走廊）"
+  },
+  {
+    "id": "romo-alberta-falls",
+    "park": "romo",
+    "nameEn": "Alberta Falls",
+    "nameZh": "艾伯塔瀑布",
+    "area": "bear-lake",
+    "areaZh": "Bear Lake 路（熊湖走廊）"
+  },
+  {
+    "id": "romo-mills-lake",
+    "park": "romo",
+    "nameEn": "Mills Lake",
+    "nameZh": "米尔斯湖",
+    "area": "bear-lake",
+    "areaZh": "Bear Lake 路（熊湖走廊）"
+  },
+  {
+    "id": "romo-sky-pond",
+    "park": "romo",
+    "nameEn": "Sky Pond (via The Loch)",
+    "nameZh": "天空池",
+    "area": "bear-lake",
+    "areaZh": "Bear Lake 路（熊湖走廊）"
+  },
+  {
+    "id": "romo-many-parks-curve",
+    "park": "romo",
+    "nameEn": "Many Parks Curve",
+    "nameZh": "Many Parks Curve 观景台",
+    "area": "trail-ridge",
+    "areaZh": "Trail Ridge Road 高山段"
+  },
+  {
+    "id": "romo-rainbow-curve",
+    "park": "romo",
+    "nameEn": "Rainbow Curve",
+    "nameZh": "彩虹弯观景台",
+    "area": "trail-ridge",
+    "areaZh": "Trail Ridge Road 高山段"
+  },
+  {
+    "id": "romo-forest-canyon-overlook",
+    "park": "romo",
+    "nameEn": "Forest Canyon Overlook",
+    "nameZh": "森林峡谷观景台",
+    "area": "trail-ridge",
+    "areaZh": "Trail Ridge Road 高山段"
+  },
+  {
+    "id": "romo-tundra-communities",
+    "park": "romo",
+    "nameEn": "Tundra Communities Trail (Rock Cut)",
+    "nameZh": "苔原步道（Rock Cut）",
+    "area": "trail-ridge",
+    "areaZh": "Trail Ridge Road 高山段"
+  },
+  {
+    "id": "romo-alpine-visitor-center",
+    "park": "romo",
+    "nameEn": "Alpine Visitor Center",
+    "nameZh": "高山游客中心",
+    "area": "trail-ridge",
+    "areaZh": "Trail Ridge Road 高山段"
+  },
+  {
+    "id": "romo-gore-range-overlook",
+    "park": "romo",
+    "nameEn": "Gore Range Overlook",
+    "nameZh": "戈尔山脉观景台",
+    "area": "trail-ridge",
+    "areaZh": "Trail Ridge Road 高山段"
+  },
+  {
+    "id": "romo-milner-pass",
+    "park": "romo",
+    "nameEn": "Milner Pass (Continental Divide)",
+    "nameZh": "米尔纳山口（大陆分水岭）",
+    "area": "trail-ridge",
+    "areaZh": "Trail Ridge Road 高山段"
+  },
+  {
+    "id": "romo-old-fall-river-road",
+    "park": "romo",
+    "nameEn": "Old Fall River Road",
+    "nameZh": "旧瀑布河公路",
+    "area": "trail-ridge",
+    "areaZh": "Trail Ridge Road 高山段"
+  },
+  {
+    "id": "romo-farview-curve",
+    "park": "romo",
+    "nameEn": "Farview Curve Overlook",
+    "nameZh": "远眺弯观景台",
+    "area": "west",
+    "areaZh": "西侧 · Grand Lake / Kawuneeche 河谷"
+  },
+  {
+    "id": "romo-holzwarth",
+    "park": "romo",
+    "nameEn": "Holzwarth Historic Site",
+    "nameZh": "霍尔兹沃思历史牧场",
+    "area": "west",
+    "areaZh": "西侧 · Grand Lake / Kawuneeche 河谷"
+  },
+  {
+    "id": "romo-kawuneeche-valley",
+    "park": "romo",
+    "nameEn": "Kawuneeche Valley (Coyote Valley Trail)",
+    "nameZh": "卡乌尼奇河谷（看驼鹿）",
+    "area": "west",
+    "areaZh": "西侧 · Grand Lake / Kawuneeche 河谷"
+  },
+  {
+    "id": "romo-kawuneeche-vc",
+    "park": "romo",
+    "nameEn": "Kawuneeche Visitor Center",
+    "nameZh": "Kawuneeche 游客中心",
+    "area": "west",
+    "areaZh": "西侧 · Grand Lake / Kawuneeche 河谷"
+  },
+  {
+    "id": "romo-adams-falls",
+    "park": "romo",
+    "nameEn": "Adams Falls (East Inlet Trail)",
+    "nameZh": "亚当斯瀑布",
+    "area": "west",
+    "areaZh": "西侧 · Grand Lake / Kawuneeche 河谷"
+  },
+  {
+    "id": "glac-apgar-visitor-center",
+    "park": "glac",
+    "nameEn": "Apgar Visitor Center",
+    "nameZh": "Apgar 游客中心",
+    "area": "lake-mcdonald",
+    "areaZh": "西侧 · 麦克唐纳湖"
+  },
+  {
+    "id": "glac-lake-mcdonald",
+    "park": "glac",
+    "nameEn": "Lake McDonald (Apgar)",
+    "nameZh": "麦克唐纳湖（Apgar 湖岸）",
+    "area": "lake-mcdonald",
+    "areaZh": "西侧 · 麦克唐纳湖"
+  },
+  {
+    "id": "glac-trail-of-the-cedars",
+    "park": "glac",
+    "nameEn": "Trail of the Cedars",
+    "nameZh": "雪松步道",
+    "area": "lake-mcdonald",
+    "areaZh": "西侧 · 麦克唐纳湖"
+  },
+  {
+    "id": "glac-avalanche-lake",
+    "park": "glac",
+    "nameEn": "Avalanche Lake",
+    "nameZh": "雪崩湖",
+    "area": "lake-mcdonald",
+    "areaZh": "西侧 · 麦克唐纳湖"
+  },
+  {
+    "id": "glac-red-bus-tour",
+    "park": "glac",
+    "nameEn": "Red Bus Tours",
+    "nameZh": "红色老爷车观光团",
+    "area": "lake-mcdonald",
+    "areaZh": "西侧 · 麦克唐纳湖"
+  },
+  {
+    "id": "glac-going-to-the-sun-road",
+    "park": "glac",
+    "nameEn": "Going-to-the-Sun Road",
+    "nameZh": "向阳大道",
+    "area": "logan-pass",
+    "areaZh": "向阳大道 · 洛根山口"
+  },
+  {
+    "id": "glac-logan-pass",
+    "park": "glac",
+    "nameEn": "Logan Pass",
+    "nameZh": "洛根山口",
+    "area": "logan-pass",
+    "areaZh": "向阳大道 · 洛根山口"
+  },
+  {
+    "id": "glac-hidden-lake-overlook",
+    "park": "glac",
+    "nameEn": "Hidden Lake Overlook",
+    "nameZh": "隐湖观景台",
+    "area": "logan-pass",
+    "areaZh": "向阳大道 · 洛根山口"
+  },
+  {
+    "id": "glac-highline-trail",
+    "park": "glac",
+    "nameEn": "Highline Trail",
+    "nameZh": "高线步道",
+    "area": "logan-pass",
+    "areaZh": "向阳大道 · 洛根山口"
+  },
+  {
+    "id": "glac-jackson-glacier-overlook",
+    "park": "glac",
+    "nameEn": "Jackson Glacier Overlook",
+    "nameZh": "杰克逊冰川观景台",
+    "area": "st-mary",
+    "areaZh": "东侧 · 圣玛丽湖"
+  },
+  {
+    "id": "glac-st-mary-virginia-falls",
+    "park": "glac",
+    "nameEn": "St. Mary Falls & Virginia Falls",
+    "nameZh": "圣玛丽瀑布 · 弗吉尼亚瀑布",
+    "area": "st-mary",
+    "areaZh": "东侧 · 圣玛丽湖"
+  },
+  {
+    "id": "glac-sun-point-baring-falls",
+    "park": "glac",
+    "nameEn": "Sun Point & Baring Falls",
+    "nameZh": "太阳点 · 巴林瀑布",
+    "area": "st-mary",
+    "areaZh": "东侧 · 圣玛丽湖"
+  },
+  {
+    "id": "glac-wild-goose-island",
+    "park": "glac",
+    "nameEn": "Wild Goose Island Overlook",
+    "nameZh": "野鹅岛观景台",
+    "area": "st-mary",
+    "areaZh": "东侧 · 圣玛丽湖"
+  },
+  {
+    "id": "glac-st-mary-visitor-center",
+    "park": "glac",
+    "nameEn": "St. Mary Visitor Center",
+    "nameZh": "St. Mary 游客中心",
+    "area": "st-mary",
+    "areaZh": "东侧 · 圣玛丽湖"
+  },
+  {
+    "id": "glac-swiftcurrent-lake",
+    "park": "glac",
+    "nameEn": "Swiftcurrent Lake Nature Trail",
+    "nameZh": "急流湖环湖步道",
+    "area": "many-glacier",
+    "areaZh": "Many Glacier 山谷"
+  },
+  {
+    "id": "glac-many-glacier-boat",
+    "park": "glac",
+    "nameEn": "Many Glacier Boat Tour (Swiftcurrent & Josephine)",
+    "nameZh": "急流湖 · 约瑟芬湖游船",
+    "area": "many-glacier",
+    "areaZh": "Many Glacier 山谷"
+  },
+  {
+    "id": "glac-grinnell-glacier",
+    "park": "glac",
+    "nameEn": "Grinnell Glacier Trail",
+    "nameZh": "格林内尔冰川",
+    "area": "many-glacier",
+    "areaZh": "Many Glacier 山谷"
+  },
+  {
+    "id": "glac-iceberg-lake",
+    "park": "glac",
+    "nameEn": "Iceberg Lake",
+    "nameZh": "冰山湖",
+    "area": "many-glacier",
+    "areaZh": "Many Glacier 山谷"
+  },
+  {
+    "id": "glac-running-eagle-falls",
+    "park": "glac",
+    "nameEn": "Running Eagle Falls",
+    "nameZh": "奔鹰瀑布",
+    "area": "two-medicine",
+    "areaZh": "双药湖 · 2 号公路"
+  },
+  {
+    "id": "glac-two-medicine-lake",
+    "park": "glac",
+    "nameEn": "Two Medicine Lake",
+    "nameZh": "双药湖",
+    "area": "two-medicine",
+    "areaZh": "双药湖 · 2 号公路"
+  },
+  {
+    "id": "glac-goat-lick",
+    "park": "glac",
+    "nameEn": "Goat Lick Overlook",
+    "nameZh": "山羊舔盐点",
+    "area": "two-medicine",
+    "areaZh": "双药湖 · 2 号公路"
+  },
+  {
+    "id": "glac-bowman-lake",
+    "park": "glac",
+    "nameEn": "Bowman Lake",
+    "nameZh": "鲍曼湖",
+    "area": "north-fork",
+    "areaZh": "北岔 · 鲍曼湖"
+  },
+  {
+    "id": "kefj-exit-glacier-nature-center",
+    "park": "kefj",
+    "nameEn": "Exit Glacier Nature Center",
+    "nameZh": "Exit Glacier 自然中心",
+    "area": "exit-glacier",
+    "areaZh": "Exit Glacier"
+  },
+  {
+    "id": "kefj-exit-glacier",
+    "park": "kefj",
+    "nameEn": "Exit Glacier (Glacier View & Overlook Trails)",
+    "nameZh": "Exit Glacier 冰川步道",
+    "area": "exit-glacier",
+    "areaZh": "Exit Glacier"
+  },
+  {
+    "id": "kefj-harding-icefield",
+    "park": "kefj",
+    "nameEn": "Harding Icefield Trail",
+    "nameZh": "哈丁冰原步道",
+    "area": "exit-glacier",
+    "areaZh": "Exit Glacier"
+  },
+  {
+    "id": "kefj-fjords-cruise",
+    "park": "kefj",
+    "nameEn": "Kenai Fjords National Park Cruise",
+    "nameZh": "峡湾游船（到潮水冰川）",
+    "area": "fjords",
+    "areaZh": "峡湾 · 复活湾（坐船）"
+  },
+  {
+    "id": "kefj-northwestern-fjord",
+    "park": "kefj",
+    "nameEn": "Northwestern Fjord Cruise",
+    "nameZh": "西北峡湾全天游船",
+    "area": "fjords",
+    "areaZh": "峡湾 · 复活湾（坐船）"
+  },
+  {
+    "id": "kefj-resurrection-bay-cruise",
+    "park": "kefj",
+    "nameEn": "Resurrection Bay Wildlife Cruise",
+    "nameZh": "复活湾半日游船",
+    "area": "fjords",
+    "areaZh": "峡湾 · 复活湾（坐船）"
+  },
+  {
+    "id": "kefj-sea-kayak",
+    "park": "kefj",
+    "nameEn": "Sea Kayaking (Resurrection Bay & Aialik Bay)",
+    "nameZh": "海上皮划艇",
+    "area": "fjords",
+    "areaZh": "峡湾 · 复活湾（坐船）"
+  },
+  {
+    "id": "kefj-visitor-center",
+    "park": "kefj",
+    "nameEn": "Kenai Fjords National Park Visitor Center",
+    "nameZh": "基奈峡湾国家公园游客中心",
+    "area": "seward",
+    "areaZh": "Seward 小镇"
+  },
+  {
+    "id": "kefj-sealife-center",
+    "park": "kefj",
+    "nameEn": "Alaska SeaLife Center",
+    "nameZh": "阿拉斯加海洋生物中心",
+    "area": "seward",
+    "areaZh": "Seward 小镇"
+  },
+  {
+    "id": "kefj-beluga-point",
+    "park": "kefj",
+    "nameEn": "Beluga Point (Seward Highway)",
+    "nameZh": "Beluga Point 观景点",
+    "area": "highway",
+    "areaZh": "Seward 公路（安克雷奇来的路上）"
+  },
+  {
+    "id": "wrst-visitor-center",
+    "park": "wrst",
+    "nameEn": "Wrangell-St. Elias Visitor Center (Copper Center)",
+    "nameZh": "兰格尔–圣伊莱亚斯游客中心",
+    "area": "copper-center",
+    "areaZh": "Copper Center · 游客中心"
+  },
+  {
+    "id": "wrst-liberty-falls",
+    "park": "wrst",
+    "nameEn": "Liberty Falls State Recreation Site",
+    "nameZh": "Liberty Falls 瀑布",
+    "area": "mccarthy-road",
+    "areaZh": "Chitina · McCarthy Road"
+  },
+  {
+    "id": "wrst-chitina",
+    "park": "wrst",
+    "nameEn": "Chitina",
+    "nameZh": "Chitina 小镇与铜河",
+    "area": "mccarthy-road",
+    "areaZh": "Chitina · McCarthy Road"
+  },
+  {
+    "id": "wrst-mccarthy-road",
+    "park": "wrst",
+    "nameEn": "McCarthy Road (Kuskulana Bridge)",
+    "nameZh": "McCarthy Road（Kuskulana 大桥）",
+    "area": "mccarthy-road",
+    "areaZh": "Chitina · McCarthy Road"
+  },
+  {
+    "id": "wrst-mccarthy",
+    "park": "wrst",
+    "nameEn": "McCarthy",
+    "nameZh": "McCarthy 小镇",
+    "area": "kennecott",
+    "areaZh": "McCarthy · Kennecott"
+  },
+  {
+    "id": "wrst-kennecott",
+    "park": "wrst",
+    "nameEn": "Kennecott Mines National Historic Landmark",
+    "nameZh": "Kennecott 铜矿镇",
+    "area": "kennecott",
+    "areaZh": "McCarthy · Kennecott"
+  },
+  {
+    "id": "wrst-mill-tour",
+    "park": "wrst",
+    "nameEn": "Kennecott Mill Town Tour",
+    "nameZh": "Kennecott 选矿厂导览",
+    "area": "kennecott",
+    "areaZh": "McCarthy · Kennecott"
+  },
+  {
+    "id": "wrst-root-glacier",
+    "park": "wrst",
+    "nameEn": "Root Glacier Trail",
+    "nameZh": "Root 冰川步道",
+    "area": "kennecott",
+    "areaZh": "McCarthy · Kennecott"
+  },
+  {
+    "id": "wrst-glacier-hike",
+    "park": "wrst",
+    "nameEn": "Guided Root Glacier Hike",
+    "nameZh": "Root 冰川向导徒步",
+    "area": "kennecott",
+    "areaZh": "McCarthy · Kennecott"
+  },
+  {
+    "id": "wrst-bonanza-mine",
+    "park": "wrst",
+    "nameEn": "Bonanza Mine Trail",
+    "nameZh": "Bonanza 矿步道",
+    "area": "kennecott",
+    "areaZh": "McCarthy · Kennecott"
+  },
+  {
+    "id": "wrst-flightseeing",
+    "park": "wrst",
+    "nameEn": "Flightseeing from McCarthy",
+    "nameZh": "McCarthy 出发的观光飞行",
+    "area": "kennecott",
+    "areaZh": "McCarthy · Kennecott"
+  },
+  {
+    "id": "wrst-slana",
+    "park": "wrst",
+    "nameEn": "Slana Ranger Station",
+    "nameZh": "Slana 护林站",
+    "area": "nabesna",
+    "areaZh": "Nabesna Road（北侧）"
+  },
+  {
+    "id": "wrst-nabesna-road",
+    "park": "wrst",
+    "nameEn": "Nabesna Road (Twin Lakes)",
+    "nameZh": "Nabesna Road（Twin Lakes）",
+    "area": "nabesna",
+    "areaZh": "Nabesna Road（北侧）"
+  },
+  {
+    "id": "wrst-skookum-volcano",
+    "park": "wrst",
+    "nameEn": "Skookum Volcano Trail",
+    "nameZh": "Skookum 火山步道",
+    "area": "nabesna",
+    "areaZh": "Nabesna Road（北侧）"
+  },
+  {
+    "id": "wrst-worthington-glacier",
+    "park": "wrst",
+    "nameEn": "Worthington Glacier State Recreation Site",
+    "nameZh": "Worthington 冰川",
+    "area": "richardson",
+    "areaZh": "Richardson 公路 · Worthington 冰川"
+  },
+  {
+    "id": "whsa-visitor-center",
+    "park": "whsa",
+    "nameEn": "White Sands Visitor Center",
+    "nameZh": "白沙游客中心",
+    "area": "visitor-center",
+    "areaZh": "游客中心 · 入口"
+  },
+  {
+    "id": "whsa-dune-life-trail",
+    "park": "whsa",
+    "nameEn": "Dune Life Nature Trail",
+    "nameZh": "沙丘生命自然步道",
+    "area": "dunes-drive",
+    "areaZh": "沙丘大道沿线"
+  },
+  {
+    "id": "whsa-playa-trail",
+    "park": "whsa",
+    "nameEn": "Ice Age Trail (formerly Playa Trail)",
+    "nameZh": "干湖步道（冰河时代步道）",
+    "area": "dunes-drive",
+    "areaZh": "沙丘大道沿线"
+  },
+  {
+    "id": "whsa-interdune-boardwalk",
+    "park": "whsa",
+    "nameEn": "Interdune Boardwalk",
+    "nameZh": "沙丘间木栈道",
+    "area": "dunes-drive",
+    "areaZh": "沙丘大道沿线"
+  },
+  {
+    "id": "whsa-dunes-drive",
+    "park": "whsa",
+    "nameEn": "Dunes Drive",
+    "nameZh": "沙丘大道",
+    "area": "heart-of-sands",
+    "areaZh": "沙丘中心（Heart of the Sands）"
+  },
+  {
+    "id": "whsa-sledding",
+    "park": "whsa",
+    "nameEn": "Sledding at Roadrunner Picnic Area",
+    "nameZh": "滑沙",
+    "area": "heart-of-sands",
+    "areaZh": "沙丘中心（Heart of the Sands）"
+  },
+  {
+    "id": "whsa-backcountry-loop",
+    "park": "whsa",
+    "nameEn": "Backcountry Camping Loop Trail",
+    "nameZh": "野营区环线步道",
+    "area": "heart-of-sands",
+    "areaZh": "沙丘中心（Heart of the Sands）"
+  },
+  {
+    "id": "whsa-alkali-flat",
+    "park": "whsa",
+    "nameEn": "Alkali Flat Trail",
+    "nameZh": "碱滩步道",
+    "area": "heart-of-sands",
+    "areaZh": "沙丘中心（Heart of the Sands）"
+  },
+  {
+    "id": "whsa-sunset-stroll",
+    "park": "whsa",
+    "nameEn": "Sunset Stroll (ranger-guided)",
+    "nameZh": "沙丘日落 · 护林员日落漫步",
+    "area": "heart-of-sands",
+    "areaZh": "沙丘中心（Heart of the Sands）"
+  },
+  {
+    "id": "whsa-moonlight-hike",
+    "park": "whsa",
+    "nameEn": "Moonlight Hike (ranger-guided)",
+    "nameZh": "满月月光徒步",
+    "area": "dunes-drive",
+    "areaZh": "沙丘大道沿线"
+  },
+  {
+    "id": "whsa-lake-lucero",
+    "park": "whsa",
+    "nameEn": "Lake Lucero Tour (ranger-guided)",
+    "nameZh": "卢塞罗湖导览",
+    "area": "lake-lucero",
+    "areaZh": "卢塞罗湖（导弹靶场内）"
+  },
+  {
+    "id": "cave-visitor-center",
+    "park": "cave",
+    "nameEn": "Carlsbad Caverns Visitor Center",
+    "nameZh": "卡尔斯巴德洞窟游客中心",
+    "area": "visitor-center",
+    "areaZh": "游客中心 · 蝙蝠剧场"
+  },
+  {
+    "id": "cave-natural-entrance",
+    "park": "cave",
+    "nameEn": "Natural Entrance Trail",
+    "nameZh": "天然入口步道",
+    "area": "cavern",
+    "areaZh": "卡尔斯巴德洞窟（地下）"
+  },
+  {
+    "id": "cave-big-room",
+    "park": "cave",
+    "nameEn": "Big Room Trail",
+    "nameZh": "大房间（Big Room）",
+    "area": "cavern",
+    "areaZh": "卡尔斯巴德洞窟（地下）"
+  },
+  {
+    "id": "cave-kings-palace",
+    "park": "cave",
+    "nameEn": "King's Palace Tour (ranger-guided)",
+    "nameZh": "国王宫殿导览",
+    "area": "cavern",
+    "areaZh": "卡尔斯巴德洞窟（地下）"
+  },
+  {
+    "id": "cave-lower-cave",
+    "park": "cave",
+    "nameEn": "Lower Cave Tour (ranger-guided)",
+    "nameZh": "下层洞穴探险导览",
+    "area": "cavern",
+    "areaZh": "卡尔斯巴德洞窟（地下）"
+  },
+  {
+    "id": "cave-bat-flight",
+    "park": "cave",
+    "nameEn": "Bat Flight Program",
+    "nameZh": "蝙蝠出洞",
+    "area": "visitor-center",
+    "areaZh": "游客中心 · 蝙蝠剧场"
+  },
+  {
+    "id": "cave-desert-nature-trail",
+    "park": "cave",
+    "nameEn": "Chihuahuan Desert Nature Trail",
+    "nameZh": "奇瓦瓦沙漠自然步道",
+    "area": "visitor-center",
+    "areaZh": "游客中心 · 蝙蝠剧场"
+  },
+  {
+    "id": "cave-walnut-canyon-overlook",
+    "park": "cave",
+    "nameEn": "Walnut Canyon Overlook",
+    "nameZh": "胡桃峡谷观景台",
+    "area": "walnut-canyon",
+    "areaZh": "Walnut Canyon · 进园公路"
+  },
+  {
+    "id": "cave-walnut-canyon-drive",
+    "park": "cave",
+    "nameEn": "Walnut Canyon Desert Drive",
+    "nameZh": "胡桃峡谷沙漠景观道",
+    "area": "walnut-canyon",
+    "areaZh": "Walnut Canyon · 进园公路"
+  },
+  {
+    "id": "cave-rattlesnake-springs",
+    "park": "cave",
+    "nameEn": "Rattlesnake Springs",
+    "nameZh": "响尾蛇泉",
+    "area": "rattlesnake",
+    "areaZh": "Rattlesnake Springs"
+  },
+  {
+    "id": "cave-slaughter-canyon-cave",
+    "park": "cave",
+    "nameEn": "Slaughter Canyon Cave Trail",
+    "nameZh": "屠宰峡谷洞步道",
+    "area": "slaughter",
+    "areaZh": "Slaughter Canyon（西南角）"
+  },
+  {
+    "id": "meve-visitor-center",
+    "park": "meve",
+    "nameEn": "Mesa Verde Visitor and Research Center",
+    "nameZh": "梅萨维德游客与研究中心",
+    "area": "entrance",
+    "areaZh": "入口 · Morefield 营地"
+  },
+  {
+    "id": "meve-point-lookout",
+    "park": "meve",
+    "nameEn": "Point Lookout Trail",
+    "nameZh": "瞭望岬步道",
+    "area": "entrance",
+    "areaZh": "入口 · Morefield 营地"
+  },
+  {
+    "id": "meve-night-sky",
+    "park": "meve",
+    "nameEn": "Night Sky",
+    "nameZh": "暗夜星空",
+    "area": "entrance",
+    "areaZh": "入口 · Morefield 营地"
+  },
+  {
+    "id": "meve-park-point",
+    "park": "meve",
+    "nameEn": "Park Point Fire Lookout",
+    "nameZh": "帕克点火警瞭望台",
+    "area": "far-view",
+    "areaZh": "Far View · Park Point"
+  },
+  {
+    "id": "meve-far-view-sites",
+    "park": "meve",
+    "nameEn": "Far View Sites",
+    "nameZh": "远景遗址群",
+    "area": "far-view",
+    "areaZh": "Far View · Park Point"
+  },
+  {
+    "id": "meve-museum",
+    "park": "meve",
+    "nameEn": "Chapin Mesa Archeological Museum",
+    "nameZh": "查平台地考古博物馆",
+    "area": "chapin",
+    "areaZh": "Chapin Mesa 博物馆区"
+  },
+  {
+    "id": "meve-spruce-tree-house",
+    "park": "meve",
+    "nameEn": "Spruce Tree House Overlook",
+    "nameZh": "云杉树屋（观景台）",
+    "area": "chapin",
+    "areaZh": "Chapin Mesa 博物馆区"
+  },
+  {
+    "id": "meve-petroglyph-point",
+    "park": "meve",
+    "nameEn": "Petroglyph Point Trail",
+    "nameZh": "岩画点步道",
+    "area": "chapin",
+    "areaZh": "Chapin Mesa 博物馆区"
+  },
+  {
+    "id": "meve-pithouses",
+    "park": "meve",
+    "nameEn": "Pithouses & Mesa Top Sites",
+    "nameZh": "半地穴屋与台地村落",
+    "area": "mesa-top-loop",
+    "areaZh": "台地顶环路（Mesa Top Loop）"
+  },
+  {
+    "id": "meve-square-tower-house",
+    "park": "meve",
+    "nameEn": "Square Tower House Overlook",
+    "nameZh": "方塔屋（观景台）",
+    "area": "mesa-top-loop",
+    "areaZh": "台地顶环路（Mesa Top Loop）"
+  },
+  {
+    "id": "meve-sun-point-view",
+    "park": "meve",
+    "nameEn": "Sun Point View",
+    "nameZh": "太阳点观景台",
+    "area": "mesa-top-loop",
+    "areaZh": "台地顶环路（Mesa Top Loop）"
+  },
+  {
+    "id": "meve-sun-temple",
+    "park": "meve",
+    "nameEn": "Sun Temple & Cliff Palace View",
+    "nameZh": "太阳神庙 · 悬崖宫殿远眺",
+    "area": "mesa-top-loop",
+    "areaZh": "台地顶环路（Mesa Top Loop）"
+  },
+  {
+    "id": "meve-cliff-palace",
+    "park": "meve",
+    "nameEn": "Cliff Palace Ranger-Guided Tour",
+    "nameZh": "悬崖宫殿（护林员导览）",
+    "area": "cliff-palace-loop",
+    "areaZh": "悬崖宫殿环路（Cliff Palace Loop）"
+  },
+  {
+    "id": "meve-cliff-palace-overlook",
+    "park": "meve",
+    "nameEn": "Cliff Palace Overlook",
+    "nameZh": "悬崖宫殿观景台",
+    "area": "cliff-palace-loop",
+    "areaZh": "悬崖宫殿环路（Cliff Palace Loop）"
+  },
+  {
+    "id": "meve-balcony-house",
+    "park": "meve",
+    "nameEn": "Balcony House Ranger-Guided Tour",
+    "nameZh": "阳台屋（护林员导览）",
+    "area": "cliff-palace-loop",
+    "areaZh": "悬崖宫殿环路（Cliff Palace Loop）"
+  },
+  {
+    "id": "meve-soda-canyon-overlook",
+    "park": "meve",
+    "nameEn": "Soda Canyon Overlook Trail",
+    "nameZh": "苏打峡谷观景步道",
+    "area": "cliff-palace-loop",
+    "areaZh": "悬崖宫殿环路（Cliff Palace Loop）"
+  },
+  {
+    "id": "meve-long-house",
+    "park": "meve",
+    "nameEn": "Long House Ranger-Guided Tour",
+    "nameZh": "长屋（护林员导览）",
+    "area": "wetherill",
+    "areaZh": "Wetherill Mesa（西侧台地）"
+  },
+  {
+    "id": "meve-step-house",
+    "park": "meve",
+    "nameEn": "Step House",
+    "nameZh": "阶梯屋",
+    "area": "wetherill",
+    "areaZh": "Wetherill Mesa（西侧台地）"
+  },
+  {
+    "id": "pefo-painted-desert-vc",
+    "park": "pefo",
+    "nameEn": "Painted Desert Visitor Center & Community Complex",
+    "nameZh": "彩绘沙漠游客中心（北入口）",
+    "area": "painted-desert",
+    "areaZh": "彩绘沙漠（北段）"
+  },
+  {
+    "id": "pefo-tiponi-point",
+    "park": "pefo",
+    "nameEn": "Tiponi Point",
+    "nameZh": "提波尼观景点",
+    "area": "painted-desert",
+    "areaZh": "彩绘沙漠（北段）"
+  },
+  {
+    "id": "pefo-tawa-point",
+    "park": "pefo",
+    "nameEn": "Tawa Point",
+    "nameZh": "塔瓦观景点",
+    "area": "painted-desert",
+    "areaZh": "彩绘沙漠（北段）"
+  },
+  {
+    "id": "pefo-painted-desert-inn",
+    "park": "pefo",
+    "nameEn": "Painted Desert Inn & Kachina Point",
+    "nameZh": "彩绘沙漠旅馆 · 卡奇纳观景点",
+    "area": "painted-desert",
+    "areaZh": "彩绘沙漠（北段）"
+  },
+  {
+    "id": "pefo-pintado-point",
+    "park": "pefo",
+    "nameEn": "Pintado Point",
+    "nameZh": "平塔多观景点",
+    "area": "painted-desert",
+    "areaZh": "彩绘沙漠（北段）"
+  },
+  {
+    "id": "pefo-onyx-bridge",
+    "park": "pefo",
+    "nameEn": "Painted Desert Wilderness – Onyx Bridge Route",
+    "nameZh": "彩绘沙漠荒野 · Onyx Bridge 路线",
+    "area": "painted-desert",
+    "areaZh": "彩绘沙漠（北段）"
+  },
+  {
+    "id": "pefo-route-66",
+    "park": "pefo",
+    "nameEn": "Route 66 Alignment & Studebaker",
+    "nameZh": "66 号公路旧址 · 老爷车",
+    "area": "route-66-puerco",
+    "areaZh": "66 号公路 · 普埃科河"
+  },
+  {
+    "id": "pefo-puerco-pueblo",
+    "park": "pefo",
+    "nameEn": "Puerco Pueblo",
+    "nameZh": "普埃科村落遗址",
+    "area": "route-66-puerco",
+    "areaZh": "66 号公路 · 普埃科河"
+  },
+  {
+    "id": "pefo-newspaper-rock",
+    "park": "pefo",
+    "nameEn": "Newspaper Rock",
+    "nameZh": "报纸岩",
+    "area": "route-66-puerco",
+    "areaZh": "66 号公路 · 普埃科河"
+  },
+  {
+    "id": "pefo-tepees",
+    "park": "pefo",
+    "nameEn": "The Tepees",
+    "nameZh": "圆锥丘（The Tepees）",
+    "area": "blue-mesa",
+    "areaZh": "蓝台地 · 圆锥丘"
+  },
+  {
+    "id": "pefo-blue-mesa",
+    "park": "pefo",
+    "nameEn": "Blue Mesa",
+    "nameZh": "蓝台地",
+    "area": "blue-mesa",
+    "areaZh": "蓝台地 · 圆锥丘"
+  },
+  {
+    "id": "pefo-agate-bridge",
+    "park": "pefo",
+    "nameEn": "Agate Bridge",
+    "nameZh": "玛瑙桥",
+    "area": "crystal-forest",
+    "areaZh": "玛瑙桥 · 水晶森林"
+  },
+  {
+    "id": "pefo-jasper-forest",
+    "park": "pefo",
+    "nameEn": "Jasper Forest",
+    "nameZh": "碧玉森林",
+    "area": "crystal-forest",
+    "areaZh": "玛瑙桥 · 水晶森林"
+  },
+  {
+    "id": "pefo-crystal-forest",
+    "park": "pefo",
+    "nameEn": "Crystal Forest",
+    "nameZh": "水晶森林",
+    "area": "crystal-forest",
+    "areaZh": "玛瑙桥 · 水晶森林"
+  },
+  {
+    "id": "pefo-rainbow-forest-museum",
+    "park": "pefo",
+    "nameEn": "Rainbow Forest Museum & Giant Logs",
+    "nameZh": "彩虹森林博物馆 · 巨木步道",
+    "area": "rainbow-forest",
+    "areaZh": "彩虹森林（南入口）"
+  },
+  {
+    "id": "pefo-long-logs-agate-house",
+    "park": "pefo",
+    "nameEn": "Long Logs & Agate House Trails",
+    "nameZh": "长木步道 · 玛瑙屋",
+    "area": "rainbow-forest",
+    "areaZh": "彩虹森林（南入口）"
+  },
+  {
+    "id": "grsa-visitor-center",
+    "park": "grsa",
+    "nameEn": "Great Sand Dunes Visitor Center",
+    "nameZh": "大沙丘游客中心",
+    "area": "visitor-center",
+    "areaZh": "游客中心 · 莫斯卡山口步道"
+  },
+  {
+    "id": "grsa-dunefield",
+    "park": "grsa",
+    "nameEn": "The Dunefield (from Dunes Parking Area)",
+    "nameZh": "沙丘区漫步",
+    "area": "dunes",
+    "areaZh": "沙丘区 · 梅达诺溪（Dunes Parking Area）"
+  },
+  {
+    "id": "grsa-medano-creek",
+    "park": "grsa",
+    "nameEn": "Medano Creek",
+    "nameZh": "梅达诺溪",
+    "area": "dunes",
+    "areaZh": "沙丘区 · 梅达诺溪（Dunes Parking Area）"
+  },
+  {
+    "id": "grsa-high-dune",
+    "park": "grsa",
+    "nameEn": "High Dune on First Ridge",
+    "nameZh": "高沙丘（第一道沙脊）",
+    "area": "dunes",
+    "areaZh": "沙丘区 · 梅达诺溪（Dunes Parking Area）"
+  },
+  {
+    "id": "grsa-star-dune",
+    "park": "grsa",
+    "nameEn": "Star Dune",
+    "nameZh": "星形沙丘",
+    "area": "dunes",
+    "areaZh": "沙丘区 · 梅达诺溪（Dunes Parking Area）"
+  },
+  {
+    "id": "grsa-sandboarding",
+    "park": "grsa",
+    "nameEn": "Sandboarding & Sand Sledding",
+    "nameZh": "滑沙",
+    "area": "dunes",
+    "areaZh": "沙丘区 · 梅达诺溪（Dunes Parking Area）"
+  },
+  {
+    "id": "grsa-night-sky",
+    "park": "grsa",
+    "nameEn": "Night Sky",
+    "nameZh": "暗夜星空",
+    "area": "dunes",
+    "areaZh": "沙丘区 · 梅达诺溪（Dunes Parking Area）"
+  },
+  {
+    "id": "grsa-montville-trail",
+    "park": "grsa",
+    "nameEn": "Montville Nature Trail",
+    "nameZh": "蒙特维尔自然步道",
+    "area": "visitor-center",
+    "areaZh": "游客中心 · 莫斯卡山口步道"
+  },
+  {
+    "id": "grsa-mosca-pass-trail",
+    "park": "grsa",
+    "nameEn": "Mosca Pass Trail",
+    "nameZh": "莫斯卡山口步道",
+    "area": "visitor-center",
+    "areaZh": "游客中心 · 莫斯卡山口步道"
+  },
+  {
+    "id": "grsa-castle-creek",
+    "park": "grsa",
+    "nameEn": "Castle Creek Picnic Area (Eastern Dune Ridge)",
+    "nameZh": "城堡溪野餐区（东侧沙丘）",
+    "area": "medano-road",
+    "areaZh": "梅达诺山口四驱路 · 东侧沙丘"
+  },
+  {
+    "id": "grsa-medano-pass-road",
+    "park": "grsa",
+    "nameEn": "Medano Pass Primitive Road",
+    "nameZh": "梅达诺山口四驱路",
+    "area": "medano-road",
+    "areaZh": "梅达诺山口四驱路 · 东侧沙丘"
+  },
+  {
+    "id": "grsa-zapata-falls",
+    "park": "grsa",
+    "nameEn": "Zapata Falls",
+    "nameZh": "萨帕塔瀑布",
+    "area": "zapata",
+    "areaZh": "园外南侧 · 萨帕塔瀑布（BLM）"
+  },
+  {
+    "id": "blca-visitor-center",
+    "park": "blca",
+    "nameEn": "South Rim Visitor Center & Gunnison Point",
+    "nameZh": "南缘游客中心 · 甘尼森点",
+    "area": "visitor-center",
+    "areaZh": "南缘 · 游客中心一带"
+  },
+  {
+    "id": "blca-tomichi-point",
+    "park": "blca",
+    "nameEn": "Tomichi Point",
+    "nameZh": "托米奇点",
+    "area": "visitor-center",
+    "areaZh": "南缘 · 游客中心一带"
+  },
+  {
+    "id": "blca-oak-flat-loop",
+    "park": "blca",
+    "nameEn": "Oak Flat Loop Trail",
+    "nameZh": "橡树平地环线",
+    "area": "visitor-center",
+    "areaZh": "南缘 · 游客中心一带"
+  },
+  {
+    "id": "blca-rim-rock-trail",
+    "park": "blca",
+    "nameEn": "Rim Rock Nature Trail",
+    "nameZh": "崖缘步道",
+    "area": "visitor-center",
+    "areaZh": "南缘 · 游客中心一带"
+  },
+  {
+    "id": "blca-gunnison-route",
+    "park": "blca",
+    "nameEn": "Gunnison Route",
+    "nameZh": "甘尼森路线（下到河边）",
+    "area": "visitor-center",
+    "areaZh": "南缘 · 游客中心一带"
+  },
+  {
+    "id": "blca-pulpit-rock",
+    "park": "blca",
+    "nameEn": "Pulpit Rock Overlook",
+    "nameZh": "讲坛岩观景台",
+    "area": "south-rim-drive",
+    "areaZh": "南缘观景路（游客中心以西）"
+  },
+  {
+    "id": "blca-cross-fissures",
+    "park": "blca",
+    "nameEn": "Cross Fissures, Rock Point & Devils Lookout",
+    "nameZh": "交叉裂隙 · 岩石点 · 魔鬼瞭望台",
+    "area": "south-rim-drive",
+    "areaZh": "南缘观景路（游客中心以西）"
+  },
+  {
+    "id": "blca-chasm-view",
+    "park": "blca",
+    "nameEn": "Chasm View",
+    "nameZh": "深渊观景台",
+    "area": "south-rim-drive",
+    "areaZh": "南缘观景路（游客中心以西）"
+  },
+  {
+    "id": "blca-painted-wall-view",
+    "park": "blca",
+    "nameEn": "Painted Wall View",
+    "nameZh": "彩绘崖壁观景台",
+    "area": "south-rim-drive",
+    "areaZh": "南缘观景路（游客中心以西）"
+  },
+  {
+    "id": "blca-cedar-point",
+    "park": "blca",
+    "nameEn": "Cedar Point Nature Trail",
+    "nameZh": "雪松点自然步道",
+    "area": "south-rim-drive",
+    "areaZh": "南缘观景路（游客中心以西）"
+  },
+  {
+    "id": "blca-dragon-point",
+    "park": "blca",
+    "nameEn": "Dragon Point",
+    "nameZh": "龙点观景台",
+    "area": "south-rim-drive",
+    "areaZh": "南缘观景路（游客中心以西）"
+  },
+  {
+    "id": "blca-sunset-view",
+    "park": "blca",
+    "nameEn": "Sunset View",
+    "nameZh": "日落观景台",
+    "area": "south-rim-drive",
+    "areaZh": "南缘观景路（游客中心以西）"
+  },
+  {
+    "id": "blca-warner-point",
+    "park": "blca",
+    "nameEn": "Warner Point Nature Trail",
+    "nameZh": "华纳点步道",
+    "area": "south-rim-drive",
+    "areaZh": "南缘观景路（游客中心以西）"
+  },
+  {
+    "id": "blca-east-portal",
+    "park": "blca",
+    "nameEn": "East Portal Road",
+    "nameZh": "East Portal 谷底公路",
+    "area": "east-portal",
+    "areaZh": "East Portal（谷底河边）"
+  },
+  {
+    "id": "blca-north-rim-drive",
+    "park": "blca",
+    "nameEn": "North Rim Road",
+    "nameZh": "北缘观景路",
+    "area": "north-rim",
+    "areaZh": "北缘"
+  },
+  {
+    "id": "blca-north-chasm-view",
+    "park": "blca",
+    "nameEn": "Chasm View Nature Trail (North Rim)",
+    "nameZh": "北缘深渊观景步道",
+    "area": "north-rim",
+    "areaZh": "北缘"
+  },
+  {
+    "id": "blca-exclamation-point",
+    "park": "blca",
+    "nameEn": "North Vista Trail to Exclamation Point",
+    "nameZh": "惊叹点（北景步道）",
+    "area": "north-rim",
+    "areaZh": "北缘"
+  },
+  {
+    "id": "blca-night-sky",
+    "park": "blca",
+    "nameEn": "Night Sky",
+    "nameZh": "暗夜星空",
+    "area": "visitor-center",
+    "areaZh": "南缘 · 游客中心一带"
+  },
+  {
+    "id": "havo-welcome-center",
+    "park": "havo",
+    "nameEn": "Welcome Center at Kilauea Military Camp",
+    "nameZh": "Kīlauea 欢迎中心（临时游客中心）",
+    "area": "summit",
+    "areaZh": "Kīlauea 山顶 · 火山口边缘"
+  },
+  {
+    "id": "havo-uekahuna",
+    "park": "havo",
+    "nameEn": "Uēkahuna Overlook",
+    "nameZh": "Uēkahuna 观景台",
+    "area": "summit",
+    "areaZh": "Kīlauea 山顶 · 火山口边缘"
+  },
+  {
+    "id": "havo-kilauea-overlook",
+    "park": "havo",
+    "nameEn": "Kīlauea Overlook",
+    "nameZh": "Kīlauea 观景台",
+    "area": "summit",
+    "areaZh": "Kīlauea 山顶 · 火山口边缘"
+  },
+  {
+    "id": "havo-steam-vents",
+    "park": "havo",
+    "nameEn": "Steam Vents (Kūkamāhuākea) & Steaming Bluff (Wahinekapu)",
+    "nameZh": "喷气孔和蒸汽崖",
+    "area": "summit",
+    "areaZh": "Kīlauea 山顶 · 火山口边缘"
+  },
+  {
+    "id": "havo-sulphur-banks",
+    "park": "havo",
+    "nameEn": "Haʻakulamanu (Sulphur Banks)",
+    "nameZh": "硫磺岸（Haʻakulamanu）",
+    "area": "summit",
+    "areaZh": "Kīlauea 山顶 · 火山口边缘"
+  },
+  {
+    "id": "havo-kupinai-pali",
+    "park": "havo",
+    "nameEn": "Kūpinaʻi Pali (Waldron Ledge)",
+    "nameZh": "Kūpinaʻi Pali（Waldron Ledge）",
+    "area": "summit",
+    "areaZh": "Kīlauea 山顶 · 火山口边缘"
+  },
+  {
+    "id": "havo-kilauea-iki",
+    "park": "havo",
+    "nameEn": "Kīlauea Iki Trail",
+    "nameZh": "Kīlauea Iki 步道",
+    "area": "summit",
+    "areaZh": "Kīlauea 山顶 · 火山口边缘"
+  },
+  {
+    "id": "havo-nahuku",
+    "park": "havo",
+    "nameEn": "Nāhuku (Thurston Lava Tube)",
+    "nameZh": "Nāhuku 熔岩管",
+    "area": "summit",
+    "areaZh": "Kīlauea 山顶 · 火山口边缘"
+  },
+  {
+    "id": "havo-devastation-trail",
+    "park": "havo",
+    "nameEn": "Devastation Trail",
+    "nameZh": "荒芜步道（Devastation Trail）",
+    "area": "summit",
+    "areaZh": "Kīlauea 山顶 · 火山口边缘"
+  },
+  {
+    "id": "havo-keanakakoi",
+    "park": "havo",
+    "nameEn": "Keanakākoʻi (via Old Crater Rim Drive)",
+    "nameZh": "Keanakākoʻi 火山口",
+    "area": "summit",
+    "areaZh": "Kīlauea 山顶 · 火山口边缘"
+  },
+  {
+    "id": "havo-eruption-glow",
+    "park": "havo",
+    "nameEn": "Kīlauea Eruption & Night Glow Viewing",
+    "nameZh": "夜看火山口红光和喷发",
+    "area": "summit",
+    "areaZh": "Kīlauea 山顶 · 火山口边缘"
+  },
+  {
+    "id": "havo-chain-of-craters-road",
+    "park": "havo",
+    "nameEn": "Chain of Craters Road",
+    "nameZh": "火山口链公路",
+    "area": "chain-of-craters",
+    "areaZh": "火山口链公路（Chain of Craters Road）"
+  },
+  {
+    "id": "havo-mauna-ulu",
+    "park": "havo",
+    "nameEn": "Maunaulu & Puʻuhuluhulu",
+    "nameZh": "Maunaulu 熔岩盾和 Puʻuhuluhulu",
+    "area": "chain-of-craters",
+    "areaZh": "火山口链公路（Chain of Craters Road）"
+  },
+  {
+    "id": "havo-puu-loa",
+    "park": "havo",
+    "nameEn": "Puʻuloa Petroglyphs",
+    "nameZh": "Puʻuloa 岩画",
+    "area": "chain-of-craters",
+    "areaZh": "火山口链公路（Chain of Craters Road）"
+  },
+  {
+    "id": "havo-holei-sea-cliffs",
+    "park": "havo",
+    "nameEn": "End of Chain of Craters Road (Hōlei Sea Cliffs)",
+    "nameZh": "火山口链公路终点（Hōlei 海崖）",
+    "area": "chain-of-craters",
+    "areaZh": "火山口链公路（Chain of Craters Road）"
+  },
+  {
+    "id": "havo-mauna-loa-road",
+    "park": "havo",
+    "nameEn": "Mauna Loa Road & Lookout (Kīpukapuaulu, Tree Molds)",
+    "nameZh": "冒纳罗亚路和观景台",
+    "area": "mauna-loa",
+    "areaZh": "冒纳罗亚路（Mauna Loa Road）"
+  },
+  {
+    "id": "havo-kahuku",
+    "park": "havo",
+    "nameEn": "Kahuku Unit (Puʻu o Lokuana)",
+    "nameZh": "Kahuku 园区（Puʻu o Lokuana 渣锥）",
+    "area": "kahuku",
+    "areaZh": "Kahuku 园区（Kaʻū 南部，周四到周日开）"
+  },
+  {
+    "id": "havo-punaluu",
+    "park": "havo",
+    "nameEn": "Punaluʻu Black Sand Beach",
+    "nameZh": "Punaluʻu 黑沙滩",
+    "area": "nearby",
+    "areaZh": "园外顺路（希洛、Punaluʻu 黑沙滩）"
+  },
+  {
+    "id": "havo-rainbow-falls",
+    "park": "havo",
+    "nameEn": "Rainbow Falls (Waiānuenue), Hilo",
+    "nameZh": "彩虹瀑布（希洛）",
+    "area": "nearby",
+    "areaZh": "园外顺路（希洛、Punaluʻu 黑沙滩）"
+  },
+  {
+    "id": "hale-hq-visitor-center",
+    "park": "hale",
+    "nameEn": "Park Headquarters Visitor Center",
+    "nameZh": "公园总部游客中心",
+    "area": "summit",
+    "areaZh": "山顶区（Summit District）"
+  },
+  {
+    "id": "hale-hosmer-grove",
+    "park": "hale",
+    "nameEn": "Hosmer Grove Loop Trail",
+    "nameZh": "Hosmer Grove 森林步道",
+    "area": "summit",
+    "areaZh": "山顶区（Summit District）"
+  },
+  {
+    "id": "hale-halemauu-trail",
+    "park": "hale",
+    "nameEn": "Halemauʻu Trail (to the crater rim)",
+    "nameZh": "Halemauʻu 步道（到火山口边）",
+    "area": "summit",
+    "areaZh": "山顶区（Summit District）"
+  },
+  {
+    "id": "hale-leleiwi",
+    "park": "hale",
+    "nameEn": "Leleiwi Overlook",
+    "nameZh": "Leleiwi 观景台",
+    "area": "summit",
+    "areaZh": "山顶区（Summit District）"
+  },
+  {
+    "id": "hale-kalahaku",
+    "park": "hale",
+    "nameEn": "Kalahaku Overlook (Silversword Area)",
+    "nameZh": "Kalahaku 观景台（银剑草）",
+    "area": "summit",
+    "areaZh": "山顶区（Summit District）"
+  },
+  {
+    "id": "hale-visitor-center",
+    "park": "hale",
+    "nameEn": "Haleakalā Visitor Center & Pā Kaʻoao (White Hill)",
+    "nameZh": "哈莱阿卡拉游客中心和 Pā Kaʻoao",
+    "area": "summit",
+    "areaZh": "山顶区（Summit District）"
+  },
+  {
+    "id": "hale-puu-ulaula",
+    "park": "hale",
+    "nameEn": "Puʻuʻulaʻula Summit (Red Hill)",
+    "nameZh": "Puʻuʻulaʻula 山顶",
+    "area": "summit",
+    "areaZh": "山顶区（Summit District）"
+  },
+  {
+    "id": "hale-sliding-sands",
+    "park": "hale",
+    "nameEn": "Keoneheʻeheʻe (Sliding Sands) Trail to Ka Lua o ka ʻŌʻō",
+    "nameZh": "Sliding Sands 步道（Keoneheʻeheʻe）",
+    "area": "summit",
+    "areaZh": "山顶区（Summit District）"
+  },
+  {
+    "id": "hale-sunrise",
+    "park": "hale",
+    "nameEn": "Haleakalā Sunrise",
+    "nameZh": "山顶日出",
+    "area": "summit",
+    "areaZh": "山顶区（Summit District）"
+  },
+  {
+    "id": "hale-sunset",
+    "park": "hale",
+    "nameEn": "Haleakalā Sunset",
+    "nameZh": "山顶日落",
+    "area": "summit",
+    "areaZh": "山顶区（Summit District）"
+  },
+  {
+    "id": "hale-stargazing",
+    "park": "hale",
+    "nameEn": "Stargazing at the Summit",
+    "nameZh": "山顶看星空",
+    "area": "summit",
+    "areaZh": "山顶区（Summit District）"
+  },
+  {
+    "id": "hale-kipahulu-visitor-center",
+    "park": "hale",
+    "nameEn": "Kīpahulu Visitor Center",
+    "nameZh": "Kīpahulu 游客中心",
+    "area": "kipahulu",
+    "areaZh": "Kīpahulu 区（哈纳以南的海岸）"
+  },
+  {
+    "id": "hale-pipiwai-trail",
+    "park": "hale",
+    "nameEn": "Pīpīwai Trail to Waimoku Falls",
+    "nameZh": "Pīpīwai 步道（竹林和 Waimoku 瀑布）",
+    "area": "kipahulu",
+    "areaZh": "Kīpahulu 区（哈纳以南的海岸）"
+  },
+  {
+    "id": "hale-kuloa-point",
+    "park": "hale",
+    "nameEn": "Kūloa Point Trail & Pools of ʻOheʻo",
+    "nameZh": "Kūloa Point 步道（ʻOheʻo 水潭）",
+    "area": "kipahulu",
+    "areaZh": "Kīpahulu 区（哈纳以南的海岸）"
+  },
+  {
+    "id": "hale-road-to-hana",
+    "park": "hale",
+    "nameEn": "Road to Hāna (Hāna Highway)",
+    "nameZh": "哈纳公路（Road to Hāna）",
+    "area": "hana-highway",
+    "areaZh": "哈纳公路（去 Kīpahulu 的路上）"
+  },
+  {
+    "id": "hale-waianapanapa",
+    "park": "hale",
+    "nameEn": "Waiʻānapanapa State Park",
+    "nameZh": "Waiʻānapanapa 黑沙滩（州立公园）",
+    "area": "hana-highway",
+    "areaZh": "哈纳公路（去 Kīpahulu 的路上）"
+  },
+  {
+    "id": "glba-visitor-center",
+    "park": "glba",
+    "nameEn": "Glacier Bay Visitor Center",
+    "nameZh": "冰川湾游客中心（Glacier Bay Lodge 二楼）",
+    "area": "bartlett-cove",
+    "areaZh": "Bartlett Cove（公园总部）"
+  },
+  {
+    "id": "glba-day-boat",
+    "park": "glba",
+    "nameEn": "Glacier Bay Day Boat Tour",
+    "nameZh": "冰川湾全天游船（到 Margerie 冰川）",
+    "area": "bay",
+    "areaZh": "冰川湾里（坐船 · 坐飞机）"
+  },
+  {
+    "id": "glba-forest-trail",
+    "park": "glba",
+    "nameEn": "Forest Trail",
+    "nameZh": "森林步道（Forest Trail）",
+    "area": "bartlett-cove",
+    "areaZh": "Bartlett Cove（公园总部）"
+  },
+  {
+    "id": "glba-tribal-house",
+    "park": "glba",
+    "nameEn": "Xunaa Shuká Hít (Huna Tribal House) & Tlingit Trail",
+    "nameZh": "Huna 部落屋（Xunaa Shuká Hít）与特林吉特步道",
+    "area": "bartlett-cove",
+    "areaZh": "Bartlett Cove（公园总部）"
+  },
+  {
+    "id": "glba-bartlett-river",
+    "park": "glba",
+    "nameEn": "Bartlett River Trail",
+    "nameZh": "Bartlett 河步道",
+    "area": "bartlett-cove",
+    "areaZh": "Bartlett Cove（公园总部）"
+  },
+  {
+    "id": "glba-shore-walk",
+    "park": "glba",
+    "nameEn": "Bartlett Cove Shoreline (toward Point Gustavus)",
+    "nameZh": "Bartlett Cove 海滩漫步",
+    "area": "bartlett-cove",
+    "areaZh": "Bartlett Cove（公园总部）"
+  },
+  {
+    "id": "glba-kayak",
+    "park": "glba",
+    "nameEn": "Guided Sea Kayaking in Bartlett Cove",
+    "nameZh": "Bartlett Cove 海上皮划艇",
+    "area": "bartlett-cove",
+    "areaZh": "Bartlett Cove（公园总部）"
+  },
+  {
+    "id": "glba-flightseeing",
+    "park": "glba",
+    "nameEn": "Glacier Bay Flightseeing",
+    "nameZh": "冰川湾观光飞行",
+    "area": "bay",
+    "areaZh": "冰川湾里（坐船 · 坐飞机）"
+  },
+  {
+    "id": "glba-whale-watching",
+    "park": "glba",
+    "nameEn": "Icy Strait Whale Watching (Point Adolphus)",
+    "nameZh": "Point Adolphus 看鲸游船（Icy Strait）",
+    "area": "gustavus",
+    "areaZh": "Gustavus 小镇 · Icy Strait"
+  },
+  {
+    "id": "glba-nagoonberry-loop",
+    "park": "glba",
+    "nameEn": "Nagoonberry Loop Trail (Gustavus Beach)",
+    "nameZh": "Nagoonberry 环线与 Gustavus 海滩",
+    "area": "gustavus",
+    "areaZh": "Gustavus 小镇 · Icy Strait"
+  },
+  {
+    "id": "gaar-yukon-river",
+    "park": "gaar",
+    "nameEn": "Yukon River Crossing (E. L. Patton Bridge)",
+    "nameZh": "育空河大桥（Yukon Crossing）",
+    "area": "dalton-south",
+    "areaZh": "Dalton 公路南段（育空河 · 北极圈）"
+  },
+  {
+    "id": "gaar-finger-mountain",
+    "park": "gaar",
+    "nameEn": "Finger Mountain Wayside",
+    "nameZh": "Finger Mountain 花岗岩石柱",
+    "area": "dalton-south",
+    "areaZh": "Dalton 公路南段（育空河 · 北极圈）"
+  },
+  {
+    "id": "gaar-arctic-circle",
+    "park": "gaar",
+    "nameEn": "Arctic Circle Wayside",
+    "nameZh": "北极圈标志",
+    "area": "dalton-south",
+    "areaZh": "Dalton 公路南段（育空河 · 北极圈）"
+  },
+  {
+    "id": "gaar-arctic-visitor-center",
+    "park": "gaar",
+    "nameEn": "Arctic Interagency Visitor Center",
+    "nameZh": "北极跨部门游客中心（Coldfoot）",
+    "area": "coldfoot-wiseman",
+    "areaZh": "Coldfoot · Wiseman"
+  },
+  {
+    "id": "gaar-wiseman",
+    "park": "gaar",
+    "nameEn": "Wiseman",
+    "nameZh": "Wiseman 淘金老村",
+    "area": "coldfoot-wiseman",
+    "areaZh": "Coldfoot · Wiseman"
+  },
+  {
+    "id": "gaar-wiseman-hike",
+    "park": "gaar",
+    "nameEn": "Hike into the park from Wiseman (Nolan Road)",
+    "nameZh": "从 Wiseman 走进公园（Nolan 矿区路）",
+    "area": "coldfoot-wiseman",
+    "areaZh": "Coldfoot · Wiseman"
+  },
+  {
+    "id": "gaar-sukakpak",
+    "park": "gaar",
+    "nameEn": "Sukakpak Mountain",
+    "nameZh": "Sukakpak 山",
+    "area": "dalton-north",
+    "areaZh": "Dalton 公路北段（Sukakpak 山 · Atigun 山口）"
+  },
+  {
+    "id": "gaar-atigun-pass",
+    "park": "gaar",
+    "nameEn": "Atigun Pass",
+    "nameZh": "Atigun 山口（北美大陆分水岭）",
+    "area": "dalton-north",
+    "areaZh": "Dalton 公路北段（Sukakpak 山 · Atigun 山口）"
+  },
+  {
+    "id": "gaar-aurora",
+    "park": "gaar",
+    "nameEn": "Northern Lights at Coldfoot & Wiseman",
+    "nameZh": "Coldfoot · Wiseman 看极光",
+    "area": "coldfoot-wiseman",
+    "areaZh": "Coldfoot · Wiseman"
+  },
+  {
+    "id": "gaar-gates-flight",
+    "park": "gaar",
+    "nameEn": "Gates of the Arctic Flightseeing from Coldfoot",
+    "nameZh": "“北极之门”观光飞行（Coldfoot 起飞）",
+    "area": "fly-in",
+    "areaZh": "坐小飞机进园"
+  },
+  {
+    "id": "gaar-arrigetch-flight",
+    "park": "gaar",
+    "nameEn": "Arrigetch Peaks Flightseeing",
+    "nameZh": "Arrigetch 花岗岩群峰飞行",
+    "area": "fly-in",
+    "areaZh": "坐小飞机进园"
+  },
+  {
+    "id": "gaar-fairbanks-flight",
+    "park": "gaar",
+    "nameEn": "Gates of the Arctic Air Adventure (from Fairbanks)",
+    "nameZh": "费尔班克斯出发的北极之门傍晚航班",
+    "area": "fly-in",
+    "areaZh": "坐小飞机进园"
+  },
+  {
+    "id": "gaar-anaktuvuk-pass",
+    "park": "gaar",
+    "nameEn": "Anaktuvuk Pass",
+    "nameZh": "Anaktuvuk Pass 村",
+    "area": "fly-in",
+    "areaZh": "坐小飞机进园"
+  },
+  {
+    "id": "kova-heritage-center",
+    "park": "kova",
+    "nameEn": "Northwest Arctic Heritage Center",
+    "nameZh": "西北极遗产中心",
+    "area": "kotzebue",
+    "areaZh": "Kotzebue（科策布）"
+  },
+  {
+    "id": "kova-kotzebue",
+    "park": "kova",
+    "nameEn": "Kotzebue (Qikiqtaġruk)",
+    "nameZh": "Kotzebue 海边小城",
+    "area": "kotzebue",
+    "areaZh": "Kotzebue（科策布）"
+  },
+  {
+    "id": "kova-sand-dunes",
+    "park": "kova",
+    "nameEn": "Great Kobuk Sand Dunes",
+    "nameZh": "科伯克大沙丘（坐小飞机降落）",
+    "area": "kobuk-valley",
+    "areaZh": "科伯克河谷（坐小飞机）"
+  },
+  {
+    "id": "kova-onion-portage",
+    "park": "kova",
+    "nameEn": "Onion Portage (Paatitaaq)",
+    "nameZh": "Onion Portage 驯鹿渡口",
+    "area": "kobuk-valley",
+    "areaZh": "科伯克河谷（坐小飞机）"
+  },
+  {
+    "id": "kova-flightseeing",
+    "park": "kova",
+    "nameEn": "Kobuk Valley Flightseeing",
+    "nameZh": "科伯克河谷观光飞行",
+    "area": "kobuk-valley",
+    "areaZh": "科伯克河谷（坐小飞机）"
+  },
+  {
+    "id": "katm-brooks-falls",
+    "park": "katm",
+    "nameEn": "Brooks Falls Bear Viewing (Brooks Camp)",
+    "nameZh": "Brooks 瀑布看熊（Brooks Camp）",
+    "area": "brooks",
+    "areaZh": "Brooks Camp（坐水上飞机）"
+  },
+  {
+    "id": "katm-coastal-bears",
+    "park": "katm",
+    "nameEn": "Katmai Coast Bear Viewing (Hallo Bay & nearby bays)",
+    "nameZh": "卡特迈海岸看熊（Hallo 湾等）",
+    "area": "coast",
+    "areaZh": "卡特迈海岸（坐小飞机）"
+  },
+  {
+    "id": "katm-vtts",
+    "park": "katm",
+    "nameEn": "Valley of Ten Thousand Smokes Bus Tour",
+    "nameZh": "万烟谷巴士导览（Valley of Ten Thousand Smokes）",
+    "area": "vtts",
+    "areaZh": "万烟谷"
+  },
+  {
+    "id": "katm-dumpling-mountain",
+    "park": "katm",
+    "nameEn": "Dumpling Mountain Trail",
+    "nameZh": "Dumpling 山步道（Brooks Camp）",
+    "area": "brooks",
+    "areaZh": "Brooks Camp（坐水上飞机）"
+  },
+  {
+    "id": "lacl-coastal-bears",
+    "park": "lacl",
+    "nameEn": "Coastal Bear Viewing (Chinitna Bay & Silver Salmon Creek)",
+    "nameZh": "海岸看熊（Chinitna 湾 / Silver Salmon Creek）",
+    "area": "coast",
+    "areaZh": "Cook 湾海岸（坐小飞机）"
+  },
+  {
+    "id": "lacl-crescent-lake",
+    "park": "lacl",
+    "nameEn": "Crescent Lake Bear Viewing (Redoubt Mountain Lodge)",
+    "nameZh": "Crescent 湖看熊（Redoubt 火山下）",
+    "area": "crescent",
+    "areaZh": "Crescent 湖（坐水上飞机）"
+  },
+  {
+    "id": "lacl-proenneke-cabin",
+    "park": "lacl",
+    "nameEn": "Lake Clark Pass Flight & Proenneke's Cabin (Upper Twin Lake)",
+    "nameZh": "飞越 Lake Clark Pass 到 Proenneke 小屋",
+    "area": "twin-lakes",
+    "areaZh": "Twin Lakes（坐水上飞机）"
+  },
+  {
+    "id": "lacl-port-alsworth",
+    "park": "lacl",
+    "nameEn": "Port Alsworth & Tanalian Falls Trail",
+    "nameZh": "Port Alsworth 与 Tanalian 瀑布",
+    "area": "port-alsworth",
+    "areaZh": "Port Alsworth · Lake Clark 湖"
+  },
+  {
+    "id": "lacl-tanalian-mountain",
+    "park": "lacl",
+    "nameEn": "Tanalian Mountain Trail",
+    "nameZh": "Tanalian 山步道",
+    "area": "port-alsworth",
+    "areaZh": "Port Alsworth · Lake Clark 湖"
+  },
+  {
+    "id": "pinn-visitor-center",
+    "park": "pinn",
+    "nameEn": "Pinnacles Visitor Center (East)",
+    "nameZh": "尖峰石阵游客中心（东侧）",
+    "area": "east",
+    "areaZh": "东侧（Bear Gulch · 营地 · 游客中心）"
+  },
+  {
+    "id": "pinn-bear-gulch-cave",
+    "park": "pinn",
+    "nameEn": "Bear Gulch Cave & Reservoir (Moses Spring–Rim Trail Loop)",
+    "nameZh": "Bear Gulch 洞穴与水库（Moses Spring–Rim 环线）",
+    "area": "east",
+    "areaZh": "东侧（Bear Gulch · 营地 · 游客中心）"
+  },
+  {
+    "id": "pinn-high-peaks",
+    "park": "pinn",
+    "nameEn": "Condor Gulch to High Peaks Loop",
+    "nameZh": "High Peaks 尖峰环线（Condor Gulch 上、High Peaks 下）",
+    "area": "east",
+    "areaZh": "东侧（Bear Gulch · 营地 · 游客中心）"
+  },
+  {
+    "id": "pinn-condor-gulch-overlook",
+    "park": "pinn",
+    "nameEn": "Condor Gulch Overlook",
+    "nameZh": "Condor Gulch 观景台",
+    "area": "east",
+    "areaZh": "东侧（Bear Gulch · 营地 · 游客中心）"
+  },
+  {
+    "id": "pinn-chalone-peak",
+    "park": "pinn",
+    "nameEn": "North Chalone Peak Trail",
+    "nameZh": "北 Chalone 峰（公园最高点）",
+    "area": "east",
+    "areaZh": "东侧（Bear Gulch · 营地 · 游客中心）"
+  },
+  {
+    "id": "pinn-old-pinnacles-balconies",
+    "park": "pinn",
+    "nameEn": "Old Pinnacles Trail to Balconies Cave",
+    "nameZh": "Old Pinnacles 步道到 Balconies 洞穴（东侧进）",
+    "area": "east",
+    "areaZh": "东侧（Bear Gulch · 营地 · 游客中心）"
+  },
+  {
+    "id": "pinn-west-visitor-station",
+    "park": "pinn",
+    "nameEn": "West Pinnacles Visitor Contact Station",
+    "nameZh": "West Pinnacles 游客服务站（西侧）",
+    "area": "west",
+    "areaZh": "西侧（Chaparral · West Pinnacles）"
+  },
+  {
+    "id": "pinn-prewett-point",
+    "park": "pinn",
+    "nameEn": "Prewett Point Trail",
+    "nameZh": "Prewett Point 观景步道（看日落）",
+    "area": "west",
+    "areaZh": "西侧（Chaparral · West Pinnacles）"
+  },
+  {
+    "id": "pinn-balconies-cave",
+    "park": "pinn",
+    "nameEn": "Balconies Cliffs–Cave Loop",
+    "nameZh": "Balconies 洞穴与崖壁环线（西侧）",
+    "area": "west",
+    "areaZh": "西侧（Chaparral · West Pinnacles）"
+  },
+  {
+    "id": "pinn-juniper-canyon",
+    "park": "pinn",
+    "nameEn": "Juniper Canyon Loop (via Tunnel Trail)",
+    "nameZh": "Juniper Canyon–Tunnel 环线（西侧上 High Peaks）",
+    "area": "west",
+    "areaZh": "西侧（Chaparral · West Pinnacles）"
+  },
+  {
+    "id": "grba-lehman-caves-vc",
+    "park": "grba",
+    "nameEn": "Lehman Caves Visitor Center",
+    "nameZh": "Lehman Caves 游客中心",
+    "area": "lehman",
+    "areaZh": "Lehman Caves 游客中心一带"
+  },
+  {
+    "id": "grba-lehman-caves",
+    "park": "grba",
+    "nameEn": "Lehman Caves – Grand Palace Tour",
+    "nameZh": "Lehman Caves 洞穴导览（Grand Palace）",
+    "area": "lehman",
+    "areaZh": "Lehman Caves 游客中心一带"
+  },
+  {
+    "id": "grba-mountain-view-trail",
+    "park": "grba",
+    "nameEn": "Mountain View Nature Trail",
+    "nameZh": "Mountain View 自然步道",
+    "area": "lehman",
+    "areaZh": "Lehman Caves 游客中心一带"
+  },
+  {
+    "id": "grba-scenic-drive",
+    "park": "grba",
+    "nameEn": "Wheeler Peak Scenic Drive",
+    "nameZh": "惠勒峰景观道",
+    "area": "scenic-drive",
+    "areaZh": "惠勒峰景观道（高山湖 · 狐尾松 · 惠勒峰）"
+  },
+  {
+    "id": "grba-alpine-lakes",
+    "park": "grba",
+    "nameEn": "Alpine Lakes Loop Trail",
+    "nameZh": "高山湖环线（Stella 湖 · Teresa 湖）",
+    "area": "scenic-drive",
+    "areaZh": "惠勒峰景观道（高山湖 · 狐尾松 · 惠勒峰）"
+  },
+  {
+    "id": "grba-bristlecone-grove",
+    "park": "grba",
+    "nameEn": "Bristlecone Pine Trail (Wheeler Peak Grove)",
+    "nameZh": "狐尾松林步道（可接冰川步道）",
+    "area": "scenic-drive",
+    "areaZh": "惠勒峰景观道（高山湖 · 狐尾松 · 惠勒峰）"
+  },
+  {
+    "id": "grba-wheeler-peak",
+    "park": "grba",
+    "nameEn": "Wheeler Peak Summit Trail",
+    "nameZh": "惠勒峰登顶",
+    "area": "scenic-drive",
+    "areaZh": "惠勒峰景观道（高山湖 · 狐尾松 · 惠勒峰）"
+  },
+  {
+    "id": "grba-night-sky",
+    "park": "grba",
+    "nameEn": "Night Sky & Astronomy Programs",
+    "nameZh": "暗夜星空（护林员观星）",
+    "area": "lehman",
+    "areaZh": "Lehman Caves 游客中心一带"
+  },
+  {
+    "id": "grba-baker-creek",
+    "park": "grba",
+    "nameEn": "Baker Creek Loop Trail",
+    "nameZh": "Baker Creek 环线",
+    "area": "baker-creek",
+    "areaZh": "Baker Creek"
+  },
+  {
+    "id": "grba-lexington-arch",
+    "park": "grba",
+    "nameEn": "Lexington Arch",
+    "nameZh": "Lexington 石拱",
+    "area": "south",
+    "areaZh": "南部（Lexington Arch）"
+  },
+  {
+    "id": "grba-great-basin-vc",
+    "park": "grba",
+    "nameEn": "Great Basin Visitor Center",
+    "nameZh": "Great Basin 游客中心（Baker 镇）",
+    "area": "baker",
+    "areaZh": "Baker 小镇"
+  },
+  {
+    "id": "bibe-panther-junction",
+    "park": "bibe",
+    "nameEn": "Panther Junction Visitor Center",
+    "nameZh": "Panther Junction 游客中心",
+    "area": "north",
+    "areaZh": "Panther Junction · 北部"
+  },
+  {
+    "id": "bibe-fossil-discovery",
+    "park": "bibe",
+    "nameEn": "Fossil Discovery Exhibit",
+    "nameZh": "化石发现展馆",
+    "area": "north",
+    "areaZh": "Panther Junction · 北部"
+  },
+  {
+    "id": "bibe-balanced-rock",
+    "park": "bibe",
+    "nameEn": "Balanced Rock (Grapevine Hills Trail)",
+    "nameZh": "平衡石（葡萄藤丘）",
+    "area": "north",
+    "areaZh": "Panther Junction · 北部"
+  },
+  {
+    "id": "bibe-lost-mine",
+    "park": "bibe",
+    "nameEn": "Lost Mine Trail",
+    "nameZh": "Lost Mine 步道",
+    "area": "chisos",
+    "areaZh": "奇索斯山 · 盆地（Chisos Basin）"
+  },
+  {
+    "id": "bibe-window-view",
+    "park": "bibe",
+    "nameEn": "Window View Trail",
+    "nameZh": "Window View 小环线（看日落）",
+    "area": "chisos",
+    "areaZh": "奇索斯山 · 盆地（Chisos Basin）"
+  },
+  {
+    "id": "bibe-window-trail",
+    "park": "bibe",
+    "nameEn": "Window Trail",
+    "nameZh": "Window 步道",
+    "area": "chisos",
+    "areaZh": "奇索斯山 · 盆地（Chisos Basin）"
+  },
+  {
+    "id": "bibe-emory-peak",
+    "park": "bibe",
+    "nameEn": "Emory Peak Trail",
+    "nameZh": "Emory 峰（园内最高点）",
+    "area": "chisos",
+    "areaZh": "奇索斯山 · 盆地（Chisos Basin）"
+  },
+  {
+    "id": "bibe-south-rim",
+    "park": "bibe",
+    "nameEn": "South Rim Trail",
+    "nameZh": "南缘（South Rim）",
+    "area": "chisos",
+    "areaZh": "奇索斯山 · 盆地（Chisos Basin）"
+  },
+  {
+    "id": "bibe-burro-mesa-pouroff",
+    "park": "bibe",
+    "nameEn": "Lower Burro Mesa Pour-off Trail",
+    "nameZh": "Burro Mesa 跌水崖",
+    "area": "west",
+    "areaZh": "Ross Maxwell 观景道 · 圣埃伦娜峡谷（西南部）"
+  },
+  {
+    "id": "bibe-sotol-vista",
+    "park": "bibe",
+    "nameEn": "Sotol Vista Overlook",
+    "nameZh": "Sotol 观景台",
+    "area": "west",
+    "areaZh": "Ross Maxwell 观景道 · 圣埃伦娜峡谷（西南部）"
+  },
+  {
+    "id": "bibe-mule-ears",
+    "park": "bibe",
+    "nameEn": "Mule Ears Overlook",
+    "nameZh": "骡耳峰观景台",
+    "area": "west",
+    "areaZh": "Ross Maxwell 观景道 · 圣埃伦娜峡谷（西南部）"
+  },
+  {
+    "id": "bibe-tuff-canyon",
+    "park": "bibe",
+    "nameEn": "Tuff Canyon",
+    "nameZh": "凝灰岩峡谷",
+    "area": "west",
+    "areaZh": "Ross Maxwell 观景道 · 圣埃伦娜峡谷（西南部）"
+  },
+  {
+    "id": "bibe-castolon",
+    "park": "bibe",
+    "nameEn": "Castolon Historic District",
+    "nameZh": "Castolon 历史区",
+    "area": "west",
+    "areaZh": "Ross Maxwell 观景道 · 圣埃伦娜峡谷（西南部）"
+  },
+  {
+    "id": "bibe-santa-elena-canyon",
+    "park": "bibe",
+    "nameEn": "Santa Elena Canyon Trail",
+    "nameZh": "圣埃伦娜峡谷",
+    "area": "west",
+    "areaZh": "Ross Maxwell 观景道 · 圣埃伦娜峡谷（西南部）"
+  },
+  {
+    "id": "bibe-night-sky",
+    "park": "bibe",
+    "nameEn": "Night Sky",
+    "nameZh": "暗夜星空",
+    "area": "west",
+    "areaZh": "Ross Maxwell 观景道 · 圣埃伦娜峡谷（西南部）"
+  },
+  {
+    "id": "bibe-hot-springs",
+    "park": "bibe",
+    "nameEn": "Hot Springs Historic District",
+    "nameZh": "温泉历史区（Langford 温泉）",
+    "area": "east",
+    "areaZh": "格兰德河村 · Boquillas（东部）"
+  },
+  {
+    "id": "bibe-rgv-nature-trail",
+    "park": "bibe",
+    "nameEn": "Rio Grande Village Nature Trail",
+    "nameZh": "格兰德河村自然步道（看日落）",
+    "area": "east",
+    "areaZh": "格兰德河村 · Boquillas（东部）"
+  },
+  {
+    "id": "bibe-boquillas-crossing",
+    "park": "bibe",
+    "nameEn": "Boquillas Crossing & Boquillas del Carmen, Mexico",
+    "nameZh": "Boquillas 口岸（坐船去墨西哥小村）",
+    "area": "east",
+    "areaZh": "格兰德河村 · Boquillas（东部）"
+  },
+  {
+    "id": "bibe-boquillas-canyon",
+    "park": "bibe",
+    "nameEn": "Boquillas Canyon Trail",
+    "nameZh": "Boquillas 峡谷",
+    "area": "east",
+    "areaZh": "格兰德河村 · Boquillas（东部）"
+  },
+  {
+    "id": "bibe-terlingua",
+    "park": "bibe",
+    "nameEn": "Terlingua Ghost Town",
+    "nameZh": "Terlingua 鬼镇",
+    "area": "terlingua",
+    "areaZh": "园外：Terlingua · 河路 FM 170"
+  },
+  {
+    "id": "bibe-river-road",
+    "park": "bibe",
+    "nameEn": "River Road (FM 170) & Closed Canyon, Big Bend Ranch State Park",
+    "nameZh": "河路 FM 170（大弯牧场州立公园）",
+    "area": "terlingua",
+    "areaZh": "园外：Terlingua · 河路 FM 170"
+  },
+  {
+    "id": "thro-south-unit-vc",
+    "park": "thro",
+    "nameEn": "South Unit Visitor Center & Maltese Cross Cabin",
+    "nameZh": "South Unit 游客中心 · 马耳他十字小屋",
+    "area": "south-unit",
+    "areaZh": "South Unit · 景观环路（Medora）"
+  },
+  {
+    "id": "thro-skyline-vista",
+    "park": "thro",
+    "nameEn": "Skyline Vista",
+    "nameZh": "Skyline Vista 观景台",
+    "area": "south-unit",
+    "areaZh": "South Unit · 景观环路（Medora）"
+  },
+  {
+    "id": "thro-prairie-dog-town",
+    "park": "thro",
+    "nameEn": "Prairie Dog Town",
+    "nameZh": "草原犬鼠城",
+    "area": "south-unit",
+    "areaZh": "South Unit · 景观环路（Medora）"
+  },
+  {
+    "id": "thro-peaceful-valley",
+    "park": "thro",
+    "nameEn": "Peaceful Valley Ranch",
+    "nameZh": "Peaceful Valley 牧场",
+    "area": "south-unit",
+    "areaZh": "South Unit · 景观环路（Medora）"
+  },
+  {
+    "id": "thro-wind-canyon",
+    "park": "thro",
+    "nameEn": "Wind Canyon Trail",
+    "nameZh": "风之峡谷（Wind Canyon）",
+    "area": "south-unit",
+    "areaZh": "South Unit · 景观环路（Medora）"
+  },
+  {
+    "id": "thro-boicourt",
+    "park": "thro",
+    "nameEn": "Boicourt Overlook Trail",
+    "nameZh": "Boicourt 观景台步道",
+    "area": "south-unit",
+    "areaZh": "South Unit · 景观环路（Medora）"
+  },
+  {
+    "id": "thro-buck-hill",
+    "park": "thro",
+    "nameEn": "Buck Hill",
+    "nameZh": "Buck Hill 山顶",
+    "area": "south-unit",
+    "areaZh": "South Unit · 景观环路（Medora）"
+  },
+  {
+    "id": "thro-coal-vein",
+    "park": "thro",
+    "nameEn": "Coal Vein Trail",
+    "nameZh": "煤层步道（Coal Vein Trail）",
+    "area": "south-unit",
+    "areaZh": "South Unit · 景观环路（Medora）"
+  },
+  {
+    "id": "thro-old-east-entrance",
+    "park": "thro",
+    "nameEn": "Old East Entrance Station",
+    "nameZh": "老东门站",
+    "area": "south-unit",
+    "areaZh": "South Unit · 景观环路（Medora）"
+  },
+  {
+    "id": "thro-badlands-overlook",
+    "park": "thro",
+    "nameEn": "Badlands Overlook",
+    "nameZh": "恶地观景台（Badlands Overlook）",
+    "area": "south-unit",
+    "areaZh": "South Unit · 景观环路（Medora）"
+  },
+  {
+    "id": "thro-painted-canyon",
+    "park": "thro",
+    "nameEn": "Painted Canyon Overlook & Visitor Center",
+    "nameZh": "彩绘峡谷观景台（Painted Canyon）",
+    "area": "painted-canyon",
+    "areaZh": "彩绘峡谷（I-94 旁）"
+  },
+  {
+    "id": "thro-painted-canyon-trail",
+    "park": "thro",
+    "nameEn": "Painted Canyon Nature Trail",
+    "nameZh": "彩绘峡谷自然步道",
+    "area": "painted-canyon",
+    "areaZh": "彩绘峡谷（I-94 旁）"
+  },
+  {
+    "id": "thro-petrified-forest",
+    "park": "thro",
+    "nameEn": "Petrified Forest Trail",
+    "nameZh": "石化林步道",
+    "area": "petrified-forest",
+    "areaZh": "石化林（South Unit 西侧，砂石路进）"
+  },
+  {
+    "id": "thro-elkhorn-ranch",
+    "park": "thro",
+    "nameEn": "Elkhorn Ranch Site",
+    "nameZh": "Elkhorn 牧场旧址",
+    "area": "elkhorn",
+    "areaZh": "Elkhorn Ranch 园区（罗斯福牧场旧址）"
+  },
+  {
+    "id": "thro-cannonball-concretions",
+    "park": "thro",
+    "nameEn": "Cannonball Concretions",
+    "nameZh": "炮弹石（Cannonball Concretions）",
+    "area": "north-unit",
+    "areaZh": "North Unit（Watford City 以南）"
+  },
+  {
+    "id": "thro-little-mo",
+    "park": "thro",
+    "nameEn": "Little Mo Nature Trail",
+    "nameZh": "Little Mo 自然步道",
+    "area": "north-unit",
+    "areaZh": "North Unit（Watford City 以南）"
+  },
+  {
+    "id": "thro-caprock-coulee",
+    "park": "thro",
+    "nameEn": "Caprock Coulee Nature Trail",
+    "nameZh": "Caprock Coulee 自然步道",
+    "area": "north-unit",
+    "areaZh": "North Unit（Watford City 以南）"
+  },
+  {
+    "id": "thro-river-bend",
+    "park": "thro",
+    "nameEn": "River Bend Overlook",
+    "nameZh": "河湾观景台（River Bend Overlook）",
+    "area": "north-unit",
+    "areaZh": "North Unit（Watford City 以南）"
+  },
+  {
+    "id": "thro-oxbow-overlook",
+    "park": "thro",
+    "nameEn": "Oxbow Overlook",
+    "nameZh": "Oxbow 观景台",
+    "area": "north-unit",
+    "areaZh": "North Unit（Watford City 以南）"
+  },
+  {
+    "id": "thro-medora-musical",
+    "park": "thro",
+    "nameEn": "Medora Musical",
+    "nameZh": "Medora 音乐剧",
+    "area": "medora",
+    "areaZh": "Medora 小镇（园外）"
+  },
+  {
+    "id": "thro-tr-library",
+    "park": "thro",
+    "nameEn": "Theodore Roosevelt Presidential Library",
+    "nameZh": "西奥多·罗斯福总统图书馆",
+    "area": "medora",
+    "areaZh": "Medora 小镇（园外）"
+  },
+  {
+    "id": "badl-ben-reifel-vc",
+    "park": "badl",
+    "nameEn": "Ben Reifel Visitor Center",
+    "nameZh": "Ben Reifel 游客中心",
+    "area": "cedar-pass",
+    "areaZh": "Cedar Pass（游客中心 · Door / Notch 步道）"
+  },
+  {
+    "id": "badl-door-window",
+    "park": "badl",
+    "nameEn": "Door Trail & Window Trail",
+    "nameZh": "Door 和 Window 步道",
+    "area": "cedar-pass",
+    "areaZh": "Cedar Pass（游客中心 · Door / Notch 步道）"
+  },
+  {
+    "id": "badl-notch-trail",
+    "park": "badl",
+    "nameEn": "Notch Trail",
+    "nameZh": "Notch 步道（爬木梯到峡口）",
+    "area": "cedar-pass",
+    "areaZh": "Cedar Pass（游客中心 · Door / Notch 步道）"
+  },
+  {
+    "id": "badl-cliff-shelf",
+    "park": "badl",
+    "nameEn": "Cliff Shelf Nature Trail",
+    "nameZh": "Cliff Shelf 自然步道",
+    "area": "cedar-pass",
+    "areaZh": "Cedar Pass（游客中心 · Door / Notch 步道）"
+  },
+  {
+    "id": "badl-saddle-pass",
+    "park": "badl",
+    "nameEn": "Saddle Pass Trail",
+    "nameZh": "Saddle Pass 步道",
+    "area": "cedar-pass",
+    "areaZh": "Cedar Pass（游客中心 · Door / Notch 步道）"
+  },
+  {
+    "id": "badl-castle-trail",
+    "park": "badl",
+    "nameEn": "Castle Trail",
+    "nameZh": "Castle 步道",
+    "area": "cedar-pass",
+    "areaZh": "Cedar Pass（游客中心 · Door / Notch 步道）"
+  },
+  {
+    "id": "badl-fossil-exhibit",
+    "park": "badl",
+    "nameEn": "Fossil Exhibit Trail",
+    "nameZh": "化石展示步道",
+    "area": "loop-road",
+    "areaZh": "Badlands Loop Road 观景点"
+  },
+  {
+    "id": "badl-big-badlands-overlook",
+    "park": "badl",
+    "nameEn": "Big Badlands Overlook",
+    "nameZh": "Big Badlands 观景点",
+    "area": "loop-road",
+    "areaZh": "Badlands Loop Road 观景点"
+  },
+  {
+    "id": "badl-panorama-point",
+    "park": "badl",
+    "nameEn": "Panorama Point",
+    "nameZh": "Panorama Point 观景点",
+    "area": "loop-road",
+    "areaZh": "Badlands Loop Road 观景点"
+  },
+  {
+    "id": "badl-yellow-mounds",
+    "park": "badl",
+    "nameEn": "Yellow Mounds Overlook",
+    "nameZh": "黄丘观景点",
+    "area": "loop-road",
+    "areaZh": "Badlands Loop Road 观景点"
+  },
+  {
+    "id": "badl-pinnacles-overlook",
+    "park": "badl",
+    "nameEn": "Pinnacles Overlook",
+    "nameZh": "Pinnacles 观景点",
+    "area": "loop-road",
+    "areaZh": "Badlands Loop Road 观景点"
+  },
+  {
+    "id": "badl-sage-creek-rim-road",
+    "park": "badl",
+    "nameEn": "Sage Creek Rim Road",
+    "nameZh": "Sage Creek Rim Road（看野牛）",
+    "area": "sage-creek",
+    "areaZh": "Sage Creek 荒野区（看野牛）"
+  },
+  {
+    "id": "badl-sheep-mountain-table",
+    "park": "badl",
+    "nameEn": "Sheep Mountain Table",
+    "nameZh": "Sheep Mountain Table",
+    "area": "south-unit",
+    "areaZh": "南园区（Stronghold · White River）"
+  },
+  {
+    "id": "badl-white-river-vc",
+    "park": "badl",
+    "nameEn": "White River Visitor Center",
+    "nameZh": "White River 游客中心",
+    "area": "south-unit",
+    "areaZh": "南园区（Stronghold · White River）"
+  },
+  {
+    "id": "badl-night-sky-program",
+    "park": "badl",
+    "nameEn": "Evening Program & Night Sky Program",
+    "nameZh": "Cedar Pass 夜间讲解和星空观测",
+    "area": "cedar-pass",
+    "areaZh": "Cedar Pass（游客中心 · Door / Notch 步道）"
+  },
+  {
+    "id": "badl-wall-drug",
+    "park": "badl",
+    "nameEn": "Wall Drug Store",
+    "nameZh": "Wall Drug 杂货铺",
+    "area": "gateway",
+    "areaZh": "园外：Wall 镇 · I-90 沿线"
+  },
+  {
+    "id": "badl-minuteman-missile",
+    "park": "badl",
+    "nameEn": "Minuteman Missile National Historic Site",
+    "nameZh": "民兵导弹国家历史遗址",
+    "area": "gateway",
+    "areaZh": "园外：Wall 镇 · I-90 沿线"
+  },
+  {
+    "id": "wica-visitor-center",
+    "park": "wica",
+    "nameEn": "Wind Cave Visitor Center",
+    "nameZh": "风洞游客中心",
+    "area": "visitor-center",
+    "areaZh": "游客中心 · 洞穴导览"
+  },
+  {
+    "id": "wica-natural-entrance-tour",
+    "park": "wica",
+    "nameEn": "Natural Entrance Tour",
+    "nameZh": "天然入口导览",
+    "area": "visitor-center",
+    "areaZh": "游客中心 · 洞穴导览"
+  },
+  {
+    "id": "wica-fairgrounds-tour",
+    "park": "wica",
+    "nameEn": "Fairgrounds Tour",
+    "nameZh": "Fairgrounds 导览",
+    "area": "visitor-center",
+    "areaZh": "游客中心 · 洞穴导览"
+  },
+  {
+    "id": "wica-garden-of-eden-tour",
+    "park": "wica",
+    "nameEn": "Garden of Eden Tour",
+    "nameZh": "伊甸园导览",
+    "area": "visitor-center",
+    "areaZh": "游客中心 · 洞穴导览"
+  },
+  {
+    "id": "wica-candlelight-tour",
+    "park": "wica",
+    "nameEn": "Candlelight Tour",
+    "nameZh": "烛光导览",
+    "area": "visitor-center",
+    "areaZh": "游客中心 · 洞穴导览"
+  },
+  {
+    "id": "wica-wild-cave-tour",
+    "park": "wica",
+    "nameEn": "Wild Cave Tour",
+    "nameZh": "野洞探险导览",
+    "area": "visitor-center",
+    "areaZh": "游客中心 · 洞穴导览"
+  },
+  {
+    "id": "wica-natural-entrance",
+    "park": "wica",
+    "nameEn": "Wind Cave Natural Entrance",
+    "nameZh": "风洞天然入口",
+    "area": "visitor-center",
+    "areaZh": "游客中心 · 洞穴导览"
+  },
+  {
+    "id": "wica-bison-flats",
+    "park": "wica",
+    "nameEn": "Bison Flats (US-385)",
+    "nameZh": "Bison Flats 草原（看野牛和草原犬鼠）",
+    "area": "bison-flats",
+    "areaZh": "南部草原（US-385 · Bison Flats）"
+  },
+  {
+    "id": "wica-rankin-ridge",
+    "park": "wica",
+    "nameEn": "Rankin Ridge Nature Trail",
+    "nameZh": "Rankin Ridge 自然步道",
+    "area": "north",
+    "areaZh": "北部（Rankin Ridge · NPS 5/6 砂石路）"
+  },
+  {
+    "id": "wica-lookout-point",
+    "park": "wica",
+    "nameEn": "Lookout Point – Centennial Loop",
+    "nameZh": "Lookout Point 环线",
+    "area": "north",
+    "areaZh": "北部（Rankin Ridge · NPS 5/6 砂石路）"
+  },
+  {
+    "id": "wica-backroads",
+    "park": "wica",
+    "nameEn": "NPS 5 & NPS 6 backcountry roads",
+    "nameZh": "NPS 5 / NPS 6 砂石路（野牛群和马鹿）",
+    "area": "north",
+    "areaZh": "北部（Rankin Ridge · NPS 5/6 砂石路）"
+  },
+  {
+    "id": "wica-custer-wildlife-loop",
+    "park": "wica",
+    "nameEn": "Wildlife Loop Road, Custer State Park",
+    "nameZh": "卡斯特州立公园野生动物环线",
+    "area": "custer-state-park",
+    "areaZh": "园外：卡斯特州立公园"
+  },
+  {
+    "id": "wica-needles-highway",
+    "park": "wica",
+    "nameEn": "Needles Highway (SD-87) & Sylvan Lake",
+    "nameZh": "Needles 公路和 Sylvan 湖",
+    "area": "custer-state-park",
+    "areaZh": "园外：卡斯特州立公园"
+  },
+  {
+    "id": "wica-mount-rushmore",
+    "park": "wica",
+    "nameEn": "Mount Rushmore National Memorial",
+    "nameZh": "拉什莫尔山国家纪念公园",
+    "area": "rushmore",
+    "areaZh": "园外：拉什莫尔山 · 疯马"
+  },
+  {
+    "id": "wica-rushmore-lighting",
+    "park": "wica",
+    "nameEn": "Evening Lighting Program, Mount Rushmore",
+    "nameZh": "拉什莫尔山夜间灯光仪式",
+    "area": "rushmore",
+    "areaZh": "园外：拉什莫尔山 · 疯马"
+  },
+  {
+    "id": "wica-crazy-horse",
+    "park": "wica",
+    "nameEn": "Crazy Horse Memorial",
+    "nameZh": "疯马纪念碑",
+    "area": "rushmore",
+    "areaZh": "园外：拉什莫尔山 · 疯马"
+  },
+  {
+    "id": "sagu-red-hills-vc",
+    "park": "sagu",
+    "nameEn": "Red Hills Visitor Center",
+    "nameZh": "红山游客中心（西区）",
+    "area": "west",
+    "areaZh": "西区 · 图森山（Tucson Mountain District）"
+  },
+  {
+    "id": "sagu-desert-discovery",
+    "park": "sagu",
+    "nameEn": "Desert Discovery Trail",
+    "nameZh": "沙漠探索步道",
+    "area": "west",
+    "areaZh": "西区 · 图森山（Tucson Mountain District）"
+  },
+  {
+    "id": "sagu-valley-view-overlook",
+    "park": "sagu",
+    "nameEn": "Valley View Overlook Trail",
+    "nameZh": "Valley View 观景步道",
+    "area": "west",
+    "areaZh": "西区 · 图森山（Tucson Mountain District）"
+  },
+  {
+    "id": "sagu-signal-hill",
+    "park": "sagu",
+    "nameEn": "Signal Hill Petroglyphs",
+    "nameZh": "Signal Hill 岩画",
+    "area": "west",
+    "areaZh": "西区 · 图森山（Tucson Mountain District）"
+  },
+  {
+    "id": "sagu-bajada-loop",
+    "park": "sagu",
+    "nameEn": "Bajada Loop Drive",
+    "nameZh": "Bajada 环线景观道",
+    "area": "west",
+    "areaZh": "西区 · 图森山（Tucson Mountain District）"
+  },
+  {
+    "id": "sagu-wasson-peak",
+    "park": "sagu",
+    "nameEn": "Wasson Peak via King Canyon Trail",
+    "nameZh": "Wasson Peak（图森山最高点）",
+    "area": "west",
+    "areaZh": "西区 · 图森山（Tucson Mountain District）"
+  },
+  {
+    "id": "sagu-desert-museum",
+    "park": "sagu",
+    "nameEn": "Arizona-Sonora Desert Museum",
+    "nameZh": "亚利桑那–索诺拉沙漠博物馆",
+    "area": "west",
+    "areaZh": "西区 · 图森山（Tucson Mountain District）"
+  },
+  {
+    "id": "sagu-gates-pass",
+    "park": "sagu",
+    "nameEn": "Gates Pass Overlook",
+    "nameZh": "Gates Pass 观景台",
+    "area": "west",
+    "areaZh": "西区 · 图森山（Tucson Mountain District）"
+  },
+  {
+    "id": "sagu-rincon-mountain-vc",
+    "park": "sagu",
+    "nameEn": "Rincon Mountain Visitor Center",
+    "nameZh": "林孔山游客中心（东区）",
+    "area": "east",
+    "areaZh": "东区 · 林孔山（Rincon Mountain District）"
+  },
+  {
+    "id": "sagu-cactus-forest-drive",
+    "park": "sagu",
+    "nameEn": "Cactus Forest Loop Drive",
+    "nameZh": "Cactus Forest 环线景观道",
+    "area": "east",
+    "areaZh": "东区 · 林孔山（Rincon Mountain District）"
+  },
+  {
+    "id": "sagu-javelina-rocks",
+    "park": "sagu",
+    "nameEn": "Javelina Rocks Overlook",
+    "nameZh": "Javelina Rocks 观景点",
+    "area": "east",
+    "areaZh": "东区 · 林孔山（Rincon Mountain District）"
+  },
+  {
+    "id": "sagu-freeman-homestead",
+    "park": "sagu",
+    "nameEn": "Freeman Homestead Trail",
+    "nameZh": "Freeman 家园步道",
+    "area": "east",
+    "areaZh": "东区 · 林孔山（Rincon Mountain District）"
+  },
+  {
+    "id": "sagu-tanque-verde-ridge",
+    "park": "sagu",
+    "nameEn": "Tanque Verde Ridge Trail (to the overlook)",
+    "nameZh": "Tanque Verde 山脊步道（观景点）",
+    "area": "east",
+    "areaZh": "东区 · 林孔山（Rincon Mountain District）"
+  },
+  {
+    "id": "sagu-bridal-wreath-falls",
+    "park": "sagu",
+    "nameEn": "Bridal Wreath Falls via Douglas Spring Trail",
+    "nameZh": "Bridal Wreath 瀑布",
+    "area": "east",
+    "areaZh": "东区 · 林孔山（Rincon Mountain District）"
+  },
+  {
+    "id": "sagu-sabino-canyon",
+    "park": "sagu",
+    "nameEn": "Sabino Canyon Recreation Area",
+    "nameZh": "Sabino Canyon（萨比诺峡谷）",
+    "area": "sabino",
+    "areaZh": "Sabino Canyon（图森东北，园外）"
+  },
+  {
+    "id": "gumo-pine-springs-vc",
+    "park": "gumo",
+    "nameEn": "Pine Springs Visitor Center",
+    "nameZh": "Pine Springs 游客中心",
+    "area": "pine-springs",
+    "areaZh": "Pine Springs · 瓜达卢佩峰"
+  },
+  {
+    "id": "gumo-pinery",
+    "park": "gumo",
+    "nameEn": "Pinery Trail (Butterfield Stage Station Ruins)",
+    "nameZh": "Pinery 驿站遗址步道",
+    "area": "pine-springs",
+    "areaZh": "Pine Springs · 瓜达卢佩峰"
+  },
+  {
+    "id": "gumo-guadalupe-peak",
+    "park": "gumo",
+    "nameEn": "Guadalupe Peak Trail",
+    "nameZh": "瓜达卢佩峰（得州最高点）",
+    "area": "pine-springs",
+    "areaZh": "Pine Springs · 瓜达卢佩峰"
+  },
+  {
+    "id": "gumo-devils-hall",
+    "park": "gumo",
+    "nameEn": "Devil's Hall Trail",
+    "nameZh": "Devil's Hall（魔鬼走廊）",
+    "area": "pine-springs",
+    "areaZh": "Pine Springs · 瓜达卢佩峰"
+  },
+  {
+    "id": "gumo-el-capitan-viewpoint",
+    "park": "gumo",
+    "nameEn": "El Capitan Viewpoint",
+    "nameZh": "El Capitan 观景点（62/180 号公路）",
+    "area": "highway",
+    "areaZh": "62/180 号公路观景点"
+  },
+  {
+    "id": "gumo-frijole-ranch",
+    "park": "gumo",
+    "nameEn": "Frijole Ranch History Museum",
+    "nameZh": "Frijole 牧场",
+    "area": "frijole",
+    "areaZh": "Frijole Ranch"
+  },
+  {
+    "id": "gumo-smith-spring",
+    "park": "gumo",
+    "nameEn": "Smith Spring Loop Trail",
+    "nameZh": "Smith Spring 环线",
+    "area": "frijole",
+    "areaZh": "Frijole Ranch"
+  },
+  {
+    "id": "gumo-mckittrick-nature-trail",
+    "park": "gumo",
+    "nameEn": "McKittrick Canyon Contact Station & Nature Trail",
+    "nameZh": "McKittrick 峡谷游客站和自然步道",
+    "area": "mckittrick",
+    "areaZh": "McKittrick 峡谷"
+  },
+  {
+    "id": "gumo-pratt-cabin",
+    "park": "gumo",
+    "nameEn": "McKittrick Canyon Trail to Pratt Cabin",
+    "nameZh": "McKittrick 峡谷 · Pratt 小屋",
+    "area": "mckittrick",
+    "areaZh": "McKittrick 峡谷"
+  },
+  {
+    "id": "gumo-grotto",
+    "park": "gumo",
+    "nameEn": "McKittrick Canyon Trail to the Grotto & Hunter Line Shack",
+    "nameZh": "McKittrick 峡谷 · Grotto 和猎人小屋",
+    "area": "mckittrick",
+    "areaZh": "McKittrick 峡谷"
+  },
+  {
+    "id": "gumo-salt-basin-dunes",
+    "park": "gumo",
+    "nameEn": "Salt Basin Dunes",
+    "nameZh": "Salt Basin 石膏沙丘",
+    "area": "salt-basin",
+    "areaZh": "Salt Basin 沙丘（西侧）"
+  },
+  {
+    "id": "gumo-dog-canyon",
+    "park": "gumo",
+    "nameEn": "Dog Canyon & Indian Meadow Nature Trail",
+    "nameZh": "Dog Canyon（Indian Meadow 自然步道）",
+    "area": "dog-canyon",
+    "areaZh": "Dog Canyon（北侧）"
+  },
+  {
+    "id": "shen-dickey-ridge-vc",
+    "park": "shen",
+    "nameEn": "Dickey Ridge Visitor Center",
+    "nameZh": "Dickey Ridge 游客中心",
+    "area": "north",
+    "areaZh": "北区（Front Royal 入口–Thornton Gap，0–31.5 英里）"
+  },
+  {
+    "id": "shen-overall-run-falls",
+    "park": "shen",
+    "nameEn": "Overall Run Falls",
+    "nameZh": "Overall Run 瀑布",
+    "area": "north",
+    "areaZh": "北区（Front Royal 入口–Thornton Gap，0–31.5 英里）"
+  },
+  {
+    "id": "shen-marys-rock",
+    "park": "shen",
+    "nameEn": "Marys Rock (from Meadow Spring)",
+    "nameZh": "Mary's Rock",
+    "area": "central",
+    "areaZh": "中区（Thornton Gap–Swift Run Gap，31.5–65.5 英里）"
+  },
+  {
+    "id": "shen-stony-man",
+    "park": "shen",
+    "nameEn": "Stony Man Trail",
+    "nameZh": "Stony Man",
+    "area": "central",
+    "areaZh": "中区（Thornton Gap–Swift Run Gap，31.5–65.5 英里）"
+  },
+  {
+    "id": "shen-limberlost",
+    "park": "shen",
+    "nameEn": "Limberlost Trail",
+    "nameZh": "Limberlost 环线",
+    "area": "central",
+    "areaZh": "中区（Thornton Gap–Swift Run Gap，31.5–65.5 英里）"
+  },
+  {
+    "id": "shen-whiteoak-canyon",
+    "park": "shen",
+    "nameEn": "Whiteoak Canyon (Upper Falls)",
+    "nameZh": "Whiteoak 峡谷上瀑布",
+    "area": "central",
+    "areaZh": "中区（Thornton Gap–Swift Run Gap，31.5–65.5 英里）"
+  },
+  {
+    "id": "shen-hawksbill",
+    "park": "shen",
+    "nameEn": "Hawksbill Summit",
+    "nameZh": "Hawksbill 山顶",
+    "area": "central",
+    "areaZh": "中区（Thornton Gap–Swift Run Gap，31.5–65.5 英里）"
+  },
+  {
+    "id": "shen-old-rag",
+    "park": "shen",
+    "nameEn": "Old Rag Circuit",
+    "nameZh": "Old Rag 环线",
+    "area": "old-rag",
+    "areaZh": "园界东侧 · Old Rag（不通天际线公路）"
+  },
+  {
+    "id": "shen-byrd-vc",
+    "park": "shen",
+    "nameEn": "Harry F. Byrd, Sr. Visitor Center",
+    "nameZh": "Byrd 游客中心",
+    "area": "central",
+    "areaZh": "中区（Thornton Gap–Swift Run Gap，31.5–65.5 英里）"
+  },
+  {
+    "id": "shen-big-meadows",
+    "park": "shen",
+    "nameEn": "Big Meadows",
+    "nameZh": "Big Meadows 草甸",
+    "area": "central",
+    "areaZh": "中区（Thornton Gap–Swift Run Gap，31.5–65.5 英里）"
+  },
+  {
+    "id": "shen-dark-hollow-falls",
+    "park": "shen",
+    "nameEn": "Dark Hollow Falls",
+    "nameZh": "Dark Hollow 瀑布",
+    "area": "central",
+    "areaZh": "中区（Thornton Gap–Swift Run Gap，31.5–65.5 英里）"
+  },
+  {
+    "id": "shen-rapidan-camp",
+    "park": "shen",
+    "nameEn": "Rapidan Camp Tour",
+    "nameZh": "Rapidan 营地（胡佛总统夏季营地）导览",
+    "area": "central",
+    "areaZh": "中区（Thornton Gap–Swift Run Gap，31.5–65.5 英里）"
+  },
+  {
+    "id": "shen-bearfence",
+    "park": "shen",
+    "nameEn": "Bearfence Mountain Rock Scramble",
+    "nameZh": "Bearfence 攀岩环线",
+    "area": "central",
+    "areaZh": "中区（Thornton Gap–Swift Run Gap，31.5–65.5 英里）"
+  },
+  {
+    "id": "shen-doyles-river-falls",
+    "park": "shen",
+    "nameEn": "Doyles River Falls",
+    "nameZh": "Doyles River 瀑布",
+    "area": "south",
+    "areaZh": "南区（Swift Run Gap–Rockfish Gap，65.5–105 英里）"
+  },
+  {
+    "id": "shen-blackrock-summit",
+    "park": "shen",
+    "nameEn": "Blackrock Summit",
+    "nameZh": "Blackrock 山顶",
+    "area": "south",
+    "areaZh": "南区（Swift Run Gap–Rockfish Gap，65.5–105 英里）"
+  },
+  {
+    "id": "shen-luray-caverns",
+    "park": "shen",
+    "nameEn": "Luray Caverns",
+    "nameZh": "Luray 溶洞",
+    "area": "luray",
+    "areaZh": "园外：Luray 小镇（西侧河谷）"
+  },
+  {
+    "id": "neri-canyon-rim",
+    "park": "neri",
+    "nameEn": "Canyon Rim Visitor Center & Overlooks",
+    "nameZh": "Canyon Rim 游客中心和大桥观景台",
+    "area": "bridge",
+    "areaZh": "大桥一带（Canyon Rim · Fayette Station）"
+  },
+  {
+    "id": "neri-long-point",
+    "park": "neri",
+    "nameEn": "Long Point Trail",
+    "nameZh": "Long Point 步道",
+    "area": "fayetteville",
+    "areaZh": "南岸：Fayetteville · Long Point · Kaymoor"
+  },
+  {
+    "id": "neri-endless-wall",
+    "park": "neri",
+    "nameEn": "Endless Wall Trail & Diamond Point",
+    "nameZh": "Endless Wall 步道和 Diamond Point",
+    "area": "lansing",
+    "areaZh": "北岸：Endless Wall · Nuttallburg"
+  },
+  {
+    "id": "neri-fayette-station-road",
+    "park": "neri",
+    "nameEn": "Fayette Station Road",
+    "nameZh": "Fayette Station Road 峡谷观景路",
+    "area": "bridge",
+    "areaZh": "大桥一带（Canyon Rim · Fayette Station）"
+  },
+  {
+    "id": "neri-bridge-walk",
+    "park": "neri",
+    "nameEn": "Bridge Walk (catwalk tour under the New River Gorge Bridge)",
+    "nameZh": "Bridge Walk 大桥检修走道团",
+    "area": "bridge",
+    "areaZh": "大桥一带（Canyon Rim · Fayette Station）"
+  },
+  {
+    "id": "neri-whitewater-rafting",
+    "park": "neri",
+    "nameEn": "Lower New River whitewater rafting",
+    "nameZh": "下游峡谷激流漂流",
+    "area": "river",
+    "areaZh": "峡谷下游河段（漂流）"
+  },
+  {
+    "id": "neri-kaymoor",
+    "park": "neri",
+    "nameEn": "Kaymoor Mine Site (Kaymoor Miners Trail)",
+    "nameZh": "Kaymoor 煤矿遗址（Kaymoor Miners 步道）",
+    "area": "fayetteville",
+    "areaZh": "南岸：Fayetteville · Long Point · Kaymoor"
+  },
+  {
+    "id": "neri-nuttallburg",
+    "park": "neri",
+    "nameEn": "Nuttallburg",
+    "nameZh": "Nuttallburg 煤矿小镇遗址",
+    "area": "lansing",
+    "areaZh": "北岸：Endless Wall · Nuttallburg"
+  },
+  {
+    "id": "neri-thurmond",
+    "park": "neri",
+    "nameEn": "Thurmond Historic District",
+    "nameZh": "Thurmond 铁路小镇",
+    "area": "thurmond",
+    "areaZh": "中段：Thurmond 小镇"
+  },
+  {
+    "id": "neri-grandview",
+    "park": "neri",
+    "nameEn": "Grandview Main Overlook",
+    "nameZh": "Grandview 观景台",
+    "area": "grandview",
+    "areaZh": "Grandview（Beckley 附近）"
+  },
+  {
+    "id": "neri-sandstone-falls",
+    "park": "neri",
+    "nameEn": "Sandstone Falls",
+    "nameZh": "Sandstone 瀑布",
+    "area": "sandstone",
+    "areaZh": "南段：Sandstone 瀑布 · Hinton"
+  },
+  {
+    "id": "neri-babcock-grist-mill",
+    "park": "neri",
+    "nameEn": "Glade Creek Grist Mill, Babcock State Park",
+    "nameZh": "Glade Creek 磨坊（Babcock 州立公园）",
+    "area": "babcock",
+    "areaZh": "园外：Babcock 州立公园"
+  },
+  {
+    "id": "acad-hulls-cove-visitor-center",
+    "park": "acad",
+    "nameEn": "Hulls Cove Visitor Center",
+    "nameZh": "Hulls Cove 游客中心",
+    "area": "east",
+    "areaZh": "荒漠山岛东侧（Park Loop Road · 卡迪拉克山 · 乔丹池 · 巴尔港）"
+  },
+  {
+    "id": "acad-cadillac-summit",
+    "park": "acad",
+    "nameEn": "Cadillac Mountain Summit",
+    "nameZh": "卡迪拉克山顶（日出）",
+    "area": "east",
+    "areaZh": "荒漠山岛东侧（Park Loop Road · 卡迪拉克山 · 乔丹池 · 巴尔港）"
+  },
+  {
+    "id": "acad-sand-beach",
+    "park": "acad",
+    "nameEn": "Sand Beach",
+    "nameZh": "沙滩（Sand Beach）",
+    "area": "east",
+    "areaZh": "荒漠山岛东侧（Park Loop Road · 卡迪拉克山 · 乔丹池 · 巴尔港）"
+  },
+  {
+    "id": "acad-beehive",
+    "park": "acad",
+    "nameEn": "Beehive Loop Trail",
+    "nameZh": "蜂巢山步道（Beehive）",
+    "area": "east",
+    "areaZh": "荒漠山岛东侧（Park Loop Road · 卡迪拉克山 · 乔丹池 · 巴尔港）"
+  },
+  {
+    "id": "acad-thunder-hole",
+    "park": "acad",
+    "nameEn": "Thunder Hole",
+    "nameZh": "雷鸣洞（Thunder Hole）",
+    "area": "east",
+    "areaZh": "荒漠山岛东侧（Park Loop Road · 卡迪拉克山 · 乔丹池 · 巴尔港）"
+  },
+  {
+    "id": "acad-otter-cliff",
+    "park": "acad",
+    "nameEn": "Otter Cliff",
+    "nameZh": "水獭崖（Otter Cliff）",
+    "area": "east",
+    "areaZh": "荒漠山岛东侧（Park Loop Road · 卡迪拉克山 · 乔丹池 · 巴尔港）"
+  },
+  {
+    "id": "acad-precipice",
+    "park": "acad",
+    "nameEn": "Precipice Loop Trail",
+    "nameZh": "绝壁步道（Precipice）",
+    "area": "east",
+    "areaZh": "荒漠山岛东侧（Park Loop Road · 卡迪拉克山 · 乔丹池 · 巴尔港）"
+  },
+  {
+    "id": "acad-jordan-pond",
+    "park": "acad",
+    "nameEn": "Jordan Pond Path",
+    "nameZh": "乔丹池环湖步道",
+    "area": "east",
+    "areaZh": "荒漠山岛东侧（Park Loop Road · 卡迪拉克山 · 乔丹池 · 巴尔港）"
+  },
+  {
+    "id": "acad-jordan-pond-house",
+    "park": "acad",
+    "nameEn": "Jordan Pond House Popovers",
+    "nameZh": "乔丹池屋下午茶（泡芙）",
+    "area": "east",
+    "areaZh": "荒漠山岛东侧（Park Loop Road · 卡迪拉克山 · 乔丹池 · 巴尔港）"
+  },
+  {
+    "id": "acad-bubbles",
+    "park": "acad",
+    "nameEn": "South Bubble & Bubble Rock",
+    "nameZh": "南泡泡山与平衡石",
+    "area": "east",
+    "areaZh": "荒漠山岛东侧（Park Loop Road · 卡迪拉克山 · 乔丹池 · 巴尔港）"
+  },
+  {
+    "id": "acad-carriage-roads",
+    "park": "acad",
+    "nameEn": "Carriage Roads (Eagle Lake Loop)",
+    "nameZh": "马车道骑行（鹰湖环线）",
+    "area": "east",
+    "areaZh": "荒漠山岛东侧（Park Loop Road · 卡迪拉克山 · 乔丹池 · 巴尔港）"
+  },
+  {
+    "id": "acad-bar-island",
+    "park": "acad",
+    "nameEn": "Bar Island Land Bridge",
+    "nameZh": "退潮步道（Bar Island）",
+    "area": "east",
+    "areaZh": "荒漠山岛东侧（Park Loop Road · 卡迪拉克山 · 乔丹池 · 巴尔港）"
+  },
+  {
+    "id": "acad-bar-harbor",
+    "park": "acad",
+    "nameEn": "Bar Harbor Village & Shore Path",
+    "nameZh": "巴尔港小镇与海滨步道",
+    "area": "east",
+    "areaZh": "荒漠山岛东侧（Park Loop Road · 卡迪拉克山 · 乔丹池 · 巴尔港）"
+  },
+  {
+    "id": "acad-bass-harbor-light",
+    "park": "acad",
+    "nameEn": "Bass Harbor Head Light",
+    "nameZh": "Bass Harbor 灯塔",
+    "area": "west",
+    "areaZh": "荒漠山岛西侧（Bass Harbor · Echo Lake · Southwest Harbor）"
+  },
+  {
+    "id": "acad-ship-harbor",
+    "park": "acad",
+    "nameEn": "Ship Harbor Trail",
+    "nameZh": "Ship Harbor 步道",
+    "area": "west",
+    "areaZh": "荒漠山岛西侧（Bass Harbor · Echo Lake · Southwest Harbor）"
+  },
+  {
+    "id": "acad-echo-lake",
+    "park": "acad",
+    "nameEn": "Echo Lake Beach",
+    "nameZh": "回声湖湖滩（Echo Lake）",
+    "area": "west",
+    "areaZh": "荒漠山岛西侧（Bass Harbor · Echo Lake · Southwest Harbor）"
+  },
+  {
+    "id": "acad-schoodic-point",
+    "park": "acad",
+    "nameEn": "Schoodic Point",
+    "nameZh": "Schoodic 角",
+    "area": "schoodic",
+    "areaZh": "Schoodic 半岛（隔海，开车约 1 小时）"
+  },
+  {
+    "id": "acad-schoodic-loop",
+    "park": "acad",
+    "nameEn": "Schoodic Loop Road",
+    "nameZh": "Schoodic 环线公路",
+    "area": "schoodic",
+    "areaZh": "Schoodic 半岛（隔海，开车约 1 小时）"
+  },
+  {
+    "id": "ever-coe-visitor-center",
+    "park": "ever",
+    "nameEn": "Ernest F. Coe Visitor Center",
+    "nameZh": "Ernest F. Coe 游客中心",
+    "area": "royal-palm",
+    "areaZh": "Homestead 主入口 · Royal Palm"
+  },
+  {
+    "id": "ever-anhinga-trail",
+    "park": "ever",
+    "nameEn": "Anhinga Trail",
+    "nameZh": "蛇鸟步道",
+    "area": "royal-palm",
+    "areaZh": "Homestead 主入口 · Royal Palm"
+  },
+  {
+    "id": "ever-nike-missile-site",
+    "park": "ever",
+    "nameEn": "Nike Missile Site HM-69",
+    "nameZh": "Nike 导弹基地 HM-69",
+    "area": "royal-palm",
+    "areaZh": "Homestead 主入口 · Royal Palm"
+  },
+  {
+    "id": "ever-pa-hay-okee",
+    "park": "ever",
+    "nameEn": "Pa-hay-okee Overlook",
+    "nameZh": "Pa-hay-okee 观景台",
+    "area": "main-road",
+    "areaZh": "主园路（Pa-hay-okee 到 West Lake）"
+  },
+  {
+    "id": "ever-mahogany-hammock",
+    "park": "ever",
+    "nameEn": "Mahogany Hammock Trail",
+    "nameZh": "桃花心木林步道",
+    "area": "main-road",
+    "areaZh": "主园路（Pa-hay-okee 到 West Lake）"
+  },
+  {
+    "id": "ever-west-lake",
+    "park": "ever",
+    "nameEn": "West Lake Trail",
+    "nameZh": "西湖红树林木栈道",
+    "area": "main-road",
+    "areaZh": "主园路（Pa-hay-okee 到 West Lake）"
+  },
+  {
+    "id": "ever-flamingo-marina",
+    "park": "ever",
+    "nameEn": "Flamingo Marina & Guy Bradley Visitor Center",
+    "nameZh": "Flamingo 码头与游客中心",
+    "area": "flamingo",
+    "areaZh": "Flamingo · 佛罗里达湾"
+  },
+  {
+    "id": "ever-flamingo-boat-tour",
+    "park": "ever",
+    "nameEn": "Flamingo Boat Tours (Backcountry & Florida Bay)",
+    "nameZh": "Flamingo 游船（红树林水道 / 佛罗里达湾）",
+    "area": "flamingo",
+    "areaZh": "Flamingo · 佛罗里达湾"
+  },
+  {
+    "id": "ever-shark-valley-tram",
+    "park": "ever",
+    "nameEn": "Shark Valley Tram Tour & Observation Tower",
+    "nameZh": "Shark Valley 电车导览与观景塔",
+    "area": "shark-valley",
+    "areaZh": "Shark Valley（Tamiami Trail）"
+  },
+  {
+    "id": "ever-gulf-coast-visitor-center",
+    "park": "ever",
+    "nameEn": "Marjory Stoneman Douglas Visitor Center (Gulf Coast)",
+    "nameZh": "Marjory Stoneman Douglas 游客中心（Gulf Coast）",
+    "area": "gulf-coast",
+    "areaZh": "Gulf Coast · Everglades City（万岛群）"
+  },
+  {
+    "id": "ever-ten-thousand-islands-tour",
+    "park": "ever",
+    "nameEn": "Ten Thousand Islands Boat Tour",
+    "nameZh": "万岛群游船",
+    "area": "gulf-coast",
+    "areaZh": "Gulf Coast · Everglades City（万岛群）"
+  },
+  {
+    "id": "ever-smallwood-store",
+    "park": "ever",
+    "nameEn": "Smallwood Store Museum",
+    "nameZh": "Smallwood 老商店博物馆",
+    "area": "gulf-coast",
+    "areaZh": "Gulf Coast · Everglades City（万岛群）"
+  },
+  {
+    "id": "ever-airboat",
+    "park": "ever",
+    "nameEn": "Airboat rides on Tamiami Trail (Coopertown, Gator Park, Everglades Safari Park)",
+    "nameZh": "Tamiami Trail 风扇船",
+    "area": "tamiami",
+    "areaZh": "园外：Tamiami Trail · Big Cypress"
+  },
+  {
+    "id": "ever-kirby-storter",
+    "park": "ever",
+    "nameEn": "Kirby Storter Boardwalk (Big Cypress National Preserve)",
+    "nameZh": "Kirby Storter 木栈道（大柏树）",
+    "area": "tamiami",
+    "areaZh": "园外：Tamiami Trail · Big Cypress"
+  },
+  {
+    "id": "ever-clyde-butcher",
+    "park": "ever",
+    "nameEn": "Clyde Butcher's Big Cypress Gallery",
+    "nameZh": "Clyde Butcher 大柏树画廊",
+    "area": "tamiami",
+    "areaZh": "园外：Tamiami Trail · Big Cypress"
+  },
+  {
+    "id": "ever-robert-is-here",
+    "park": "ever",
+    "nameEn": "Robert Is Here Fruit Stand",
+    "nameZh": "Robert Is Here 水果摊",
+    "area": "homestead",
+    "areaZh": "园外：Homestead · Florida City"
+  },
+  {
+    "id": "bisc-visitor-center",
+    "park": "bisc",
+    "nameEn": "Dante Fascell Visitor Center",
+    "nameZh": "Dante Fascell 游客中心",
+    "area": "convoy-point",
+    "areaZh": "Convoy Point（陆上 · 游客中心）"
+  },
+  {
+    "id": "bisc-jetty-trail",
+    "park": "bisc",
+    "nameEn": "Convoy Point Jetty Trail",
+    "nameZh": "Convoy Point 海堤步道",
+    "area": "convoy-point",
+    "areaZh": "Convoy Point（陆上 · 游客中心）"
+  },
+  {
+    "id": "bisc-heritage-cruise",
+    "park": "bisc",
+    "nameEn": "Heritage of Biscayne Cruise",
+    "nameZh": "比斯坎遗产游船（登 Elliott Key 等礁岛）",
+    "area": "keys",
+    "areaZh": "外侧礁岛与珊瑚礁（坐船，Convoy Point 出发）"
+  },
+  {
+    "id": "bisc-boca-chita",
+    "park": "bisc",
+    "nameEn": "Boca Chita Key Heritage Cruise",
+    "nameZh": "Boca Chita 灯塔岛游船",
+    "area": "north-bay",
+    "areaZh": "北湾 · Boca Chita · Stiltsville（坐船，Coconut Grove 出发）"
+  },
+  {
+    "id": "bisc-snorkel",
+    "park": "bisc",
+    "nameEn": "Biscayne Snorkel Experience",
+    "nameZh": "珊瑚礁浮潜团",
+    "area": "keys",
+    "areaZh": "外侧礁岛与珊瑚礁（坐船，Convoy Point 出发）"
+  },
+  {
+    "id": "bisc-jones-lagoon",
+    "park": "bisc",
+    "nameEn": "Jones Lagoon Eco-Paddle",
+    "nameZh": "Jones 泻湖划桨",
+    "area": "keys",
+    "areaZh": "外侧礁岛与珊瑚礁（坐船，Convoy Point 出发）"
+  },
+  {
+    "id": "bisc-stiltsville",
+    "park": "bisc",
+    "nameEn": "Stiltsville Guided Tour",
+    "nameZh": "Stiltsville 高脚屋游船",
+    "area": "north-bay",
+    "areaZh": "北湾 · Boca Chita · Stiltsville（坐船，Coconut Grove 出发）"
+  },
+  {
+    "id": "bisc-coral-castle",
+    "park": "bisc",
+    "nameEn": "Coral Castle Museum",
+    "nameZh": "珊瑚城堡（Coral Castle）",
+    "area": "homestead",
+    "areaZh": "Homestead 一带（园外）"
+  },
+  {
+    "id": "drto-ferry",
+    "park": "drto",
+    "nameEn": "Yankee Freedom Ferry Day Trip to Fort Jefferson",
+    "nameZh": "Yankee Freedom 渡轮一日游（杰斐逊堡 · 浮潜 · 海滩）",
+    "area": "tortugas",
+    "areaZh": "干龟群岛（坐渡轮 · 水上飞机）"
+  },
+  {
+    "id": "drto-seaplane",
+    "park": "drto",
+    "nameEn": "Dry Tortugas Seaplane (Half Day)",
+    "nameZh": "水上飞机半日游（Key West 出发）",
+    "area": "tortugas",
+    "areaZh": "干龟群岛（坐渡轮 · 水上飞机）"
+  },
+  {
+    "id": "drto-mallory-square",
+    "park": "drto",
+    "nameEn": "Mallory Square Sunset Celebration",
+    "nameZh": "Mallory 广场日落庆典",
+    "area": "key-west",
+    "areaZh": "Key West"
+  },
+  {
+    "id": "drto-fort-zachary-taylor",
+    "park": "drto",
+    "nameEn": "Fort Zachary Taylor Historic State Park",
+    "nameZh": "Fort Zachary Taylor 州立公园",
+    "area": "key-west",
+    "areaZh": "Key West"
+  },
+  {
+    "id": "drto-seven-mile-bridge",
+    "park": "drto",
+    "nameEn": "Old Seven Mile Bridge & Pigeon Key",
+    "nameZh": "旧七英里桥 · Pigeon Key",
+    "area": "keys",
+    "areaZh": "海外公路（迈阿密开往 Key West 的路上）"
+  },
+  {
+    "id": "drto-bahia-honda",
+    "park": "drto",
+    "nameEn": "Bahia Honda State Park",
+    "nameZh": "Bahia Honda 州立公园",
+    "area": "keys",
+    "areaZh": "海外公路（迈阿密开往 Key West 的路上）"
+  },
+  {
+    "id": "grsm-sugarlands-vc",
+    "park": "grsm",
+    "nameEn": "Sugarlands Visitor Center",
+    "nameZh": "Sugarlands 游客中心",
+    "area": "sugarlands",
+    "areaZh": "Sugarlands · Roaring Fork（Gatlinburg 入口）"
+  },
+  {
+    "id": "grsm-laurel-falls",
+    "park": "grsm",
+    "nameEn": "Laurel Falls",
+    "nameZh": "Laurel Falls 瀑布",
+    "area": "sugarlands",
+    "areaZh": "Sugarlands · Roaring Fork（Gatlinburg 入口）"
+  },
+  {
+    "id": "grsm-rainbow-falls",
+    "park": "grsm",
+    "nameEn": "Rainbow Falls Trail",
+    "nameZh": "Rainbow Falls 瀑布步道",
+    "area": "sugarlands",
+    "areaZh": "Sugarlands · Roaring Fork（Gatlinburg 入口）"
+  },
+  {
+    "id": "grsm-roaring-fork",
+    "park": "grsm",
+    "nameEn": "Roaring Fork Motor Nature Trail",
+    "nameZh": "Roaring Fork 自然观光路",
+    "area": "sugarlands",
+    "areaZh": "Sugarlands · Roaring Fork（Gatlinburg 入口）"
+  },
+  {
+    "id": "grsm-grotto-falls",
+    "park": "grsm",
+    "nameEn": "Grotto Falls (Trillium Gap Trail)",
+    "nameZh": "Grotto Falls 瀑布",
+    "area": "sugarlands",
+    "areaZh": "Sugarlands · Roaring Fork（Gatlinburg 入口）"
+  },
+  {
+    "id": "grsm-newfound-gap",
+    "park": "grsm",
+    "nameEn": "Newfound Gap",
+    "nameZh": "Newfound Gap 山口",
+    "area": "newfound-gap",
+    "areaZh": "Newfound Gap 公路 · 主脊（Kuwohi）"
+  },
+  {
+    "id": "grsm-kuwohi",
+    "park": "grsm",
+    "nameEn": "Kuwohi Observation Tower (formerly Clingmans Dome)",
+    "nameZh": "Kuwohi 观景塔（原 Clingmans Dome）",
+    "area": "newfound-gap",
+    "areaZh": "Newfound Gap 公路 · 主脊（Kuwohi）"
+  },
+  {
+    "id": "grsm-andrews-bald",
+    "park": "grsm",
+    "nameEn": "Andrews Bald (Forney Ridge Trail)",
+    "nameZh": "Andrews Bald 高山草甸",
+    "area": "newfound-gap",
+    "areaZh": "Newfound Gap 公路 · 主脊（Kuwohi）"
+  },
+  {
+    "id": "grsm-alum-cave",
+    "park": "grsm",
+    "nameEn": "Alum Cave Trail (to Alum Cave Bluffs)",
+    "nameZh": "Alum Cave 步道",
+    "area": "newfound-gap",
+    "areaZh": "Newfound Gap 公路 · 主脊（Kuwohi）"
+  },
+  {
+    "id": "grsm-chimney-tops",
+    "park": "grsm",
+    "nameEn": "Chimney Tops Trail",
+    "nameZh": "Chimney Tops 步道",
+    "area": "newfound-gap",
+    "areaZh": "Newfound Gap 公路 · 主脊（Kuwohi）"
+  },
+  {
+    "id": "grsm-charlies-bunion",
+    "park": "grsm",
+    "nameEn": "Charlies Bunion via the Appalachian Trail",
+    "nameZh": "Charlies Bunion（阿巴拉契亚步道）",
+    "area": "newfound-gap",
+    "areaZh": "Newfound Gap 公路 · 主脊（Kuwohi）"
+  },
+  {
+    "id": "grsm-elkmont",
+    "park": "grsm",
+    "nameEn": "Elkmont Historic District (Daisy Town)",
+    "nameZh": "Elkmont 历史区（Daisy Town）",
+    "area": "elkmont",
+    "areaZh": "Little River 路 · Elkmont"
+  },
+  {
+    "id": "grsm-the-sinks",
+    "park": "grsm",
+    "nameEn": "The Sinks",
+    "nameZh": "The Sinks 急流",
+    "area": "elkmont",
+    "areaZh": "Little River 路 · Elkmont"
+  },
+  {
+    "id": "grsm-cades-cove",
+    "park": "grsm",
+    "nameEn": "Cades Cove Loop Road",
+    "nameZh": "Cades Cove 环路",
+    "area": "cades-cove",
+    "areaZh": "Cades Cove（Townsend 一侧）"
+  },
+  {
+    "id": "grsm-abrams-falls",
+    "park": "grsm",
+    "nameEn": "Abrams Falls Trail",
+    "nameZh": "Abrams Falls 瀑布步道",
+    "area": "cades-cove",
+    "areaZh": "Cades Cove（Townsend 一侧）"
+  },
+  {
+    "id": "grsm-oconaluftee",
+    "park": "grsm",
+    "nameEn": "Oconaluftee Visitor Center & Mountain Farm Museum",
+    "nameZh": "Oconaluftee 游客中心 · 山地农庄博物馆",
+    "area": "oconaluftee",
+    "areaZh": "Oconaluftee（北卡 Cherokee 入口）"
+  },
+  {
+    "id": "grsm-mingus-mill",
+    "park": "grsm",
+    "nameEn": "Mingus Mill",
+    "nameZh": "Mingus 磨坊",
+    "area": "oconaluftee",
+    "areaZh": "Oconaluftee（北卡 Cherokee 入口）"
+  },
+  {
+    "id": "grsm-deep-creek",
+    "park": "grsm",
+    "nameEn": "Deep Creek Waterfalls (Juney Whank, Tom Branch, Indian Creek)",
+    "nameZh": "Deep Creek 三瀑布环线",
+    "area": "deep-creek",
+    "areaZh": "Deep Creek（Bryson City）"
+  },
+  {
+    "id": "grsm-cataloochee",
+    "park": "grsm",
+    "nameEn": "Cataloochee Valley (Elk Viewing)",
+    "nameZh": "Cataloochee 谷看麋鹿",
+    "area": "cataloochee",
+    "areaZh": "Cataloochee 谷（东北角）"
+  },
+  {
+    "id": "grsm-gatlinburg-skybridge",
+    "park": "grsm",
+    "nameEn": "Gatlinburg SkyBridge (SkyPark)",
+    "nameZh": "Gatlinburg 空中吊桥（SkyBridge）",
+    "area": "gatlinburg",
+    "areaZh": "园外：Gatlinburg · Pigeon Forge"
+  },
+  {
+    "id": "grsm-waterrock-knob",
+    "park": "grsm",
+    "nameEn": "Waterrock Knob (Blue Ridge Parkway MP 451)",
+    "nameZh": "Waterrock Knob 观景点（蓝岭公路）",
+    "area": "parkway",
+    "areaZh": "园外：蓝岭公路（北卡段）"
+  },
+  {
+    "id": "grsm-craggy-gardens",
+    "park": "grsm",
+    "nameEn": "Craggy Gardens & Craggy Pinnacle (Blue Ridge Parkway MP 364)",
+    "nameZh": "Craggy Gardens（蓝岭公路）",
+    "area": "parkway",
+    "areaZh": "园外：蓝岭公路（北卡段）"
+  }
+]

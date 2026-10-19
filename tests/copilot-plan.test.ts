@@ -21,8 +21,9 @@ const paths = (request: unknown) => validateTripRequest(request).map((issue) => 
 test("copilot/contracts 里的 schema、公园和机场目录和代码一致（改了就跑 npm run copilot:contracts）", () => {
   assert.deepEqual(contractFile("trip-request.v1.schema.json"), JSON.parse(JSON.stringify(tripRequestSchema)));
   assert.deepEqual(contractFile("trip-result.v1.schema.json"), JSON.parse(JSON.stringify(tripResultSchema)));
-  const { parks, airports } = catalog();
+  const { parks, airports, attractions: attractionList } = catalog();
   assert.deepEqual(contractFile("parks.json"), parks);
+  assert.deepEqual(contractFile("attractions.json"), attractionList);
   assert.deepEqual(contractFile("airports.json"), airports);
   assert.deepEqual(contractFile("hant-to-hans.json"), hantToHans());
   const lines = readFileSync(new URL("../copilot/contracts/knowledge.jsonl", import.meta.url), "utf8").trim().split("\n");

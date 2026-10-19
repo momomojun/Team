@@ -16,7 +16,7 @@ from functools import lru_cache
 from pathlib import Path
 
 DIR = Path(__file__).resolve().parent / "prompts"
-TASKS = ("intake", "writer", "qa", "dispatch")
+TASKS = ("intake", "writer", "qa", "dispatch", "alerts")
 
 
 @dataclass(frozen=True)

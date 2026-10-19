@@ -50,3 +50,6 @@ copilot/eval/reports/
 __pycache__/
 *.egg-info/
 .pytest_cache/
+
+# 每天抓的 NPS 公告快照和提取结果（评测用的快照在 copilot/eval/alerts/，要提交）
+copilot/data/alerts/

@@ -41,6 +41,7 @@ flowchart LR
 - **按片区、州说的一组公园**：“西雅图附近的三个国家公园都玩”“华盛顿州的国家公园都去”按网站的片区和州换成具体的公园（不超过 4 座），回复里说一句是哪几座；只是问“是哪三个”的不换，交给 QA。
 - **QA（回答问题，RAG）**：`knowledge.search` 在 `knowledge.jsonl`（网站数据整理成的 1687 条短文：景点、住处、公园、片区、州、特别活动、临时关闭）里找 4 条，只在这次行程的公园里找（问题里点名了别的公园就加上那座；片区、州的资料不分公园，问题里说了它的名字才用）。问的是行程里的景点整体（“这些景点好看吗”）时，另外把每一站的一句介绍给模型。问题里直接出现了某条的名字（“El Portal”）的排最前面，“雾径 · 弗纳尔瀑布”只说“雾径”也算；其余按 BM25（中文按相邻两个字切，英文按单词）。模型只看“行程 + 这 4 条”回答，输出 `{found, answer, sources}`；代码检查回答里的时间、数字都在行程或资料里出现过（按整个数比）、引用的编号是给过的，对不上就不用模型写的、改成摘资料原文（问题里点了名的那条），资料里没有就说不知道。回答后面注明用了哪几条资料。不用向量检索、不另外下载模型；以后可以换成嵌入模型做对照实验，接口不变。
 - **打错字反问**（10-19）：认不出的公园叫法和所有公园的叫法比像不像（`catalog.similar`，去掉“国家公园”后 difflib 相似度至少 0.6，两个字的名字首字相同也算），像就反问“你说的“奥林匹亚”是奥林匹克吗？”（`confirm_park`），回是加上、回不是不算、答别的当不是；不像的、前面已经认出别的公园的，说一声“没认出……先没算进去”，不再悄悄丢掉。不把错字当别名加进叫法表。
+- **读 NPS 公告提取临时关闭**（`alerts.py`、提示词 `alerts_v1`，10-19）：`npm run alerts:fetch` 抓所有公园的公告快照（`copilot/data/alerts/latest.json`，不提交），`python -m nps_copilot alerts` 让模型一条条读：从这座公园的景点名单（`contracts/attractions.json`）里选出关了的、读出起止日期。代码核对：证明关闭的原话（evidence）要在公告里，不在就不算关闭；日期要是公告里写到的（“through Nov 19”可以算成 20 日重开）；选的景点公告里要提到（全名、名字里够特别的词或片区）。输出 `closures-latest.json` 用模型和规则（网站的 `closedByAlerts`）的并集，每条记 `found_by`。还没接进排行程（下一步）。
 - **公园名在别的地方名字里**：“冰川点”是优胜美地的景点，里面的“冰川”不当成冰川国家公园（`knowledge.inside_place_name`，记在 trace 的 `ignored_parks`）；只在那个地方属于别的公园时才不算（“大峡谷村”还是大峡谷）。
 
 ## 契约：Copilot 和行程引擎之间的约定
@@ -80,6 +81,7 @@ flowchart LR
 | `copilot/nps_copilot/dates.py`、`text.py` | 读日期（中文、英文的几种顺序、“二〇二七年”、“下个月”）和天数（“5天”“五日”“四日三夜”“一周”）；文本规范化（NFKC、繁转简、空格） |
 | `copilot/nps_copilot/plan_client.py` | 调 plan_trip：默认直接跑仓库里的 Node 命令行（不用开网站），设了 `COPILOT_PLAN_URL` 走 HTTP |
 | `copilot/nps_copilot/critic.py`、`writer.py` | Critic、Writer（模板和忠实度检查 `faithful`） |
+| `copilot/nps_copilot/alerts.py`、`scripts/fetch-alerts.mjs` | 读 NPS 公告提取临时关闭：抓快照、模型提取和代码核对、规则对照、两者合并 |
 | `copilot/nps_copilot/dispatcher.py` | 调度员：给模型看的上下文、输出格式、丢掉编造的名字 |
 | `copilot/nps_copilot/knowledge.py`、`qa.py` | QA：在 `knowledge.jsonl` 里检索（名字命中 + BM25）、让模型只按查到的资料回答、检查回答里的数字，对不上就摘原文 |
 | `copilot/nps_copilot/providers.py` | 模型提供方：本机 Ollama（默认）、回放录好的输出（CI 用，没录到的请求直接报错）、录音、测试用的脚本、云端（留接口、默认关） |
@@ -106,7 +108,7 @@ flowchart LR
 
 ### 提示词版本
 
-- 任务有 `intake`、`writer`、`qa`、`dispatch` 四个，文件是 `prompts/<任务>_v<n>.txt`。
+- 任务有 `intake`、`writer`、`qa`、`dispatch`、`alerts` 五个，文件是 `prompts/<任务>_v<n>.txt`。
 - **不改旧文件，新建下一版**：旧版留着才能回滚，也才能和旧的评测录音对上（回放按“任务 + 提示词全文 + 消息 + schema”的 hash 找录音，提示词改一个字就对不上）。
 - 默认版本改 `defaults.json`，走 PR；已经部署的服务可以不改代码临时切换：`COPILOT_PROMPT_INTAKE=v1`、`COPILOT_PROMPT_WRITER=v1`、`COPILOT_PROMPT_QA=v1`、`COPILOT_PROMPT_DISPATCH=v1`。
 - 现在默认 `intake/v1`、`writer/v1`、`qa/v2`、`dispatch/v1`（`qa/v2` 加了出行日期和英文回答的规则，10-18）。`intake_v2.txt` 是没采用的实验版本（回归集变好、开发集变差，门禁挡住了），留着演示回滚，见 [RESULTS.md](../copilot/eval/RESULTS.md)。
@@ -120,6 +122,7 @@ flowchart LR
 | `copilot/eval/cases/holdout-v1.jsonl` | 40 | 复杂情况（改口、矛盾、节假日、繁体、注入、复杂同行人员……），冻结后才跑；看过失败、修了代码，所以现在也算回归集 | `baseline-holdout.json` |
 | `copilot/eval/cases/regional-v1.jsonl` | 17 | 香港、台湾、新马的写法，先提交期望再跑；同样修过，当回归集 | `baseline-regional.json` |
 | `copilot/eval/cases/conversation-v1.jsonl` | 20 组 52 轮 | 多轮对话（`eval/conversation.py` 用完整的 Copilot 一轮轮跑、每轮都查）：仓库主人两次试用的原话、指代、又改又问、加减景点、指定住处、排之前提问、闲聊、资料里没有的、英文；调度员改造的开发集 | `baseline-conversation.json` |
+| `copilot/eval/alerts/`（`eval/alerts.py`） | 151 条公告 | 2026-10-19 的 NPS 公告快照和模型跑之前标好的标准答案（21 条 ambiguous）；比较规则、模型、两者合并：类型准确率、整段关闭的精确和召回、景点的精确召回 F1、日期 | `baseline-alerts.json` |
 | `copilot/eval/cases/conversation-v3.jsonl` | 2 组 14 轮 | 仓库主人第三次试用的原话（波特兰附近、西雅图附近、奥林匹亚、不住酒店、看不出哪天在哪、季节对不上），先写期望再跑 | `baseline-conversation-v3.json` |
 | `copilot/eval/cases/conversation-v2.jsonl` | 15 组 34 轮 | 调度员写完以后才写的多轮对话（繁体、粤语、每晚都住某处、公园里没有的地方、“那就加上它”、去掉又加回来、两座公园……），第一次跑 14/15；修了一处，当回归集 | `baseline-conversation-v2.json` |
 
