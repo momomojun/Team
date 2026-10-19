@@ -1,0 +1,14 @@
+{
+ "frozen_at": "2026-10-19T04:46:17+00:00",
+ "commit": "9ba51e16707102f64e53f459a93783b25692a690",
+ "note": "多轮对话评测：20 组 52 轮，期望在跑任何模型之前写好、提交（只按确定性的行程引擎核对过前提，比如 6 月 4 天的优胜美地会排马里波萨巨杉林）。第一次用这版代码（调度员改造之前）跑出来的是基线；之后改代码再跑的分数要另外标明。",
+ "sha256": {
+  "eval/cases/conversation-v1.jsonl": "9284259209702ad735d97b7d20d8793ab986ed7dbdae6982ab5482b173009165",
+  "nps_copilot/pipeline.py": "f3659bb2eeb81b5428e7219e3f1c6a991d91bd06ee83a9fccae3690ee071bb77",
+  "nps_copilot/intake.py": "769c27aeb8033fe34fa7deb6b59cdcd15ce854e3ea257022ebf3fa8b6d249178",
+  "nps_copilot/qa.py": "3a3b78d2ae5d40afd4a5fe339a5bc578528e8cf8d4b1fda8ab53731bbb26c70b",
+  "nps_copilot/knowledge.py": "598e0c468e355658cb70294a0ee6af744ccd2be2d811647c83e7deaed9448be1",
+  "nps_copilot/prompts/intake_v1.txt": "79d3b5f861f097f04fb47c92326cb6f6bf46cf21e1af1f32e820636feff6fd08",
+  "nps_copilot/prompts/qa_v1.txt": "3a4035784d0fdf79d3d1b4ca631f38408507faf8d84d40d6ddd9829a546b3cb4"
+ }
+}
