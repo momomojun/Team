@@ -1,0 +1,57 @@
+# 每天读一次 NPS 公告（计划书的 fast-changing data）：抓所有公园的公告快照，以前没报过的关闭公告开一个 issue（标签 nps-alerts）。
+# CI 上没有模型，只用规则看一眼对到了哪些景点；用模型提取要在本机下载这次的快照（artifact nps-alerts-snapshot）跑
+# python -m nps_copilot alerts --snapshot <快照>。新的关闭公告是模型没见过的数据，可以标好答案做下一版提示词的评测。
+# 仓库设置里加了 secret DATA_GOV_API_KEY 就用它（DEMO_KEY 按 IP 限次数，GitHub 的机器是很多仓库共用的，常常 429）。
+name: NPS alerts (nightly)
+
+on:
+  schedule:
+    # 每天 UTC 14:00（美国太平洋时间早上 7 点、北京时间晚上 10 点）
+    - cron: "0 14 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: alerts-nightly
+  cancel-in-progress: false
+
+jobs:
+  alerts:
+    name: Fetch NPS alerts, report new closures
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci || npm install --no-audit --no-fund
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Fetch alerts snapshot
+        env:
+          DATA_GOV_API_KEY: ${{ secrets.DATA_GOV_API_KEY }}
+        run: npm run alerts:fetch
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nps-alerts-snapshot
+          path: copilot/data/alerts/latest.json
+          retention-days: 30
+      - name: Find closure alerts not reported before
+        id: report
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create nps-alerts --color a04c2e --description "每晚读 NPS 公告发现的新关闭" 2>/dev/null || true
+          gh issue list --label nps-alerts --state all --limit 500 --json body --jq '.[].body' > known.txt
+          python copilot/scripts/alerts_report.py copilot/data/alerts/latest.json --known known.txt --out report.md | tee report.log
+          grep -m1 '^NEW=' report.log >> "$GITHUB_OUTPUT"
+      - name: Open an issue
+        if: steps.report.outputs.NEW != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh issue create --label nps-alerts --title "NPS 公告：${{ steps.report.outputs.NEW }} 条新的关闭（$(date -u +%F)）/ New NPS closure alerts" --body-file report.md

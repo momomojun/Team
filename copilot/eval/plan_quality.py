@@ -9,10 +9,13 @@ from __future__ import annotations
 
 import collections
 import json
+import os
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+# 评测、测试不用本机的 NPS 公告关闭清单（每天会变），结果才能复现
+os.environ.setdefault("COPILOT_LIVE", "0")
 
 from nps_copilot.critic import critique  # noqa: E402
 from nps_copilot.plan_client import PlanError, plan_trip  # noqa: E402

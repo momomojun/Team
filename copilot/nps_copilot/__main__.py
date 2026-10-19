@@ -49,23 +49,13 @@ def main() -> None:
                          ensure_ascii=False, indent=1))
         return
     if args.command == "alerts":
-        from .alerts import combined, extract, rules_extract
+        from .alerts import closures_from
 
         snapshot = json.loads(open(args.snapshot, encoding="utf-8").read())
-        reference = dt.date.fromisoformat(snapshot["fetched"])
-        provider = from_env()
-        closures = []
-        for alert in snapshot["alerts"]:
-            # 模型和规则一起（评测里漏得最少）；每条记下是谁找到的
-            result = combined(extract(alert, provider, reference), rules_extract(alert))
-            if result.type == "full" and result.closed:
-                closures.append({"alert": result.alert, "park": result.park, "attractions": result.closed, "from": result.start,
-                                 "reopen": result.reopen, "evidence": result.evidence, "found_by": result.trace.get("found_by", []),
-                                 "title": alert["title"], "url": alert.get("url")})
-        out = {"fetched": snapshot["fetched"], "prompts": prompts.current(), "closures": closures}
+        out = closures_from(snapshot, from_env())
         with open(args.out, "w", encoding="utf-8") as handle:
             json.dump(out, handle, ensure_ascii=False, indent=1)
-        print(f"{len(snapshot['alerts'])} 条公告，{len(closures)} 条关了网站上的景点，写到 {args.out}")
+        print(f"{len(snapshot['alerts'])} 条公告，{len(out['closures'])} 条关了网站上的景点，写到 {args.out}")
         return
     if args.command == "stats":
         from .monitor import report

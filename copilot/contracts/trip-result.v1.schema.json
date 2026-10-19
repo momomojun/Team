@@ -352,8 +352,27 @@
                       "lastShuttle",
                       "tempClosed",
                       "maybeClosed",
-                      "familySerious"
+                      "familySerious",
+                      "alertMaybeClosed"
                     ]
+                  }
+                },
+                "alert": {
+                  "type": "object",
+                  "required": [
+                    "title"
+                  ],
+                  "properties": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "url": {
+                      "type": "string"
+                    },
+                    "reopen": {
+                      "type": "string",
+                      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                    }
                   }
                 }
               }
@@ -395,6 +414,24 @@
           },
           "noteZh": {
             "type": "string"
+          },
+          "alert": {
+            "type": "object",
+            "required": [
+              "title"
+            ],
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              },
+              "reopen": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              }
+            }
           }
         }
       }

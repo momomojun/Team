@@ -1,5 +1,6 @@
 import datetime as dt
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -7,6 +8,8 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "copilot"))
+# 评测、测试不用本机的 NPS 公告关闭清单（每天会变），结果才能复现
+os.environ.setdefault("COPILOT_LIVE", "0")
 
 from nps_copilot.intake import Intake  # noqa: E402
 from nps_copilot.providers import ScriptedProvider  # noqa: E402

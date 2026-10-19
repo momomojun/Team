@@ -94,6 +94,17 @@ python -m pytest -q copilot/tests
 - `npm test`：网站的测试（约 130 个，几秒，不联网）。测试是怎么写的见 [DEVELOPMENT.md](DEVELOPMENT.md#测试是怎么写的)。
 - `pytest`：Copilot 的测试（约 100 个，不联网、不要模型）。
 - `npm run check:closures`：拿 NPS 最新公告和 `src/data/closures.ts` 对一遍，列出要人工看的临时关闭（联网）。
+- 让 Copilot 排行程时用上最新的 NPS 公告（两周内出发的行程不排公告说关了的景点；清单超过 3 天就不用了，所以出发前一天跑一次）：
+
+```bash
+npm --prefix D:/LLM/Team run alerts:fetch
+```
+
+```bash
+cd D:/LLM/Team/copilot && python -m nps_copilot alerts
+```
+
+  第二条要开着 Ollama，151 条公告约 5 分钟。GitHub 上每天也会自动抓一次，有新的关闭公告就开一个 `nps-alerts` 标签的 issue；仓库设置里加 secret `DATA_GOV_API_KEY` 更稳（不加用 DEMO_KEY，常常被限流）。
 
 ### Copilot：三种跑法，选一个
 

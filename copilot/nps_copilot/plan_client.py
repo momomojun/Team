@@ -1,5 +1,9 @@
 """调 plan_trip 工具（网站的行程引擎）。默认直接跑仓库里的 Node 命令行（不用开网站）；
-设了 COPILOT_PLAN_URL（比如 http://localhost:3000/api/copilot/plan）就走 HTTP。"""
+设了 COPILOT_PLAN_URL（比如 http://localhost:3000/api/copilot/plan）就走 HTTP。
+
+NPS 公告提取出的关闭（python -m nps_copilot alerts 写的 copilot/data/alerts/closures-latest.json，或者 COPILOT_LIVE_CLOSURES
+指的文件）有就交给命令行，近期出发的行程不排公告说关了的景点；COPILOT_LIVE=0 不用（评测、测试里关掉，结果才能复现）。
+走 HTTP 时由网站服务器自己的 LIVE_CLOSURES 决定。"""
 from __future__ import annotations
 
 import json
@@ -13,6 +17,8 @@ from dataclasses import dataclass
 
 from .catalog import ROOT
 
+DEFAULT_CLOSURES = ROOT / "copilot" / "data" / "alerts" / "closures-latest.json"
+
 
 class PlanError(RuntimeError):
     def __init__(self, message: str, issues: list[dict] | None = None):
@@ -25,6 +31,14 @@ class PlanCall:
     result: dict
     latency_ms: int
     via: str
+
+
+def live_closures() -> str | None:
+    """要交给行程引擎的公告关闭清单的路径；没有或者关掉了就是 None"""
+    if os.environ.get("COPILOT_LIVE") == "0":
+        return None
+    path = os.environ.get("COPILOT_LIVE_CLOSURES") or str(DEFAULT_CLOSURES)
+    return path if os.path.exists(path) else None
 
 
 def plan_trip(request: dict, reference_date: str) -> PlanCall:
@@ -48,7 +62,8 @@ def plan_trip(request: dict, reference_date: str) -> PlanCall:
             [node, "--disable-warning=ExperimentalWarning", "--disable-warning=MODULE_TYPELESS_PACKAGE_JSON",
              "--import", "./tests/register.mjs", "scripts/plan-trip.mjs", "-"],
             input=json.dumps(request, ensure_ascii=False).encode("utf-8"), cwd=ROOT, capture_output=True,
-            env={**os.environ, "REFERENCE_DATE": reference_date}, timeout=120,
+            env={**os.environ, "REFERENCE_DATE": reference_date, **({"LIVE_CLOSURES": live} if (live := live_closures()) else {})},
+            timeout=120,
         )
         output = completed.stdout.decode("utf-8")
         if completed.returncode == 2:

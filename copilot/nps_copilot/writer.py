@@ -26,6 +26,7 @@ WARNINGS_ZH = {
     "farTransfer": "这一段车程太长", "missSunset": "赶不上日落", "offTime": "不在它的最佳时段", "dark": "结束时天已经黑了",
     "parkingFull": "到的时候停车场多半已经满了", "overloaded": "这天安排得太满", "lateReturn": "回住处太晚",
     "familySerious": "对同行的婴儿或老人风险高、很累，请务必慎重考虑（看这个景点的说明）",
+    "alertMaybeClosed": "NPS 最新公告里提到它可能关了，出发前在 nps.gov 确认",
 }
 WARNINGS_EN = {
     "tempClosed": "temporarily closed that day", "maybeClosed": "may still be temporarily closed", "afterHours": "arrives after hours or last entry",
@@ -33,6 +34,7 @@ WARNINGS_EN = {
     "farTransfer": "a very long drive", "missSunset": "misses sunset", "offTime": "outside its best time", "dark": "ends after dark",
     "parkingFull": "the lot is likely full by then", "overloaded": "this day is packed", "lateReturn": "late return to lodging",
     "familySerious": "risky or very strenuous for the baby or seniors in your group, please think very carefully (see the stop's notes)",
+    "alertMaybeClosed": "a current NPS alert may mean it's closed, check nps.gov before you go",
 }
 SKIP_ZH = {"permit": "要抽签的许可证", "closed": "这几天不开放", "tooHard": "太难或太长", "noTime": "排不下",
            "tooFar": "离其他景点太远", "across": "季节性山路封着、要绕很远", "unsuitable": "不适合同行的人"}
@@ -246,6 +248,13 @@ def long_drive_notes(request: dict, days: list[dict], origin: str, zh: bool) -> 
 def skip_reason(item: dict, zh: bool) -> str:
     """没排进去的原因；季节性的说清楚一年里什么时候才有（“火瀑只在 2 月中下旬……出现”），别说得像过几天就开"""
     reason = item["reason"]
+    alert = item.get("alert")
+    if reason == "closed" and alert:
+        # NPS 公告说关了（Copilot 提取的关闭清单）：说清楚是公告说的、公告写了哪天重开
+        reopen = alert.get("reopen")
+        if zh:
+            return "NPS 最新公告说暂时关闭" + (f"，{int(reopen[5:7])} 月 {int(reopen[8:])} 日重开" if reopen else "")
+        return "temporarily closed per the latest NPS alert" + (f", reopens {calendar.month_name[int(reopen[5:7])]} {int(reopen[8:])}" if reopen else "")
     if reason == "closed" and zh and item.get("noteZh") and "月" in item["noteZh"]:
         return item["noteZh"]
     months = item.get("openMonths")
@@ -278,7 +287,7 @@ def facts(result: dict) -> set[str]:
         for stop in day["stops"]:
             found.update({stop["start"], stop["end"], stop.get("localStart") or "", stop["nameZh"], stop["nameEn"]})
     for item in result.get("skipped", []):
-        found.update({item["nameZh"], item["nameEn"]})
+        found.update({item["nameZh"], item["nameEn"], (item.get("alert") or {}).get("reopen") or ""})
     found.add(str(len(result["days"])))
     return {item for item in found if item}
 

@@ -87,12 +87,19 @@ export const STOP_WARNINGS = [
   "tempClosed",
   "maybeClosed",
   "familySerious",
+  "alertMaybeClosed",
 ] as const;
 
 /** 没排进去的原因（generate-trip.ts 的 GuideSkipped） */
 export const SKIP_REASONS = ["permit", "closed", "tooHard", "noTime", "tooFar", "across", "unsuitable"] as const;
 
 const DATE_PATTERN = "^\\d{4}-\\d{2}-\\d{2}$";
+/** NPS 公告（Copilot 提取的关闭清单里的一条）：标题、链接、公告写的重开日期 */
+const ALERT_SCHEMA = {
+  type: "object",
+  required: ["title"],
+  properties: { title: { type: "string" }, url: { type: "string" }, reopen: { type: "string", pattern: DATE_PATTERN } },
+} as const;
 const CLOCK_PATTERN = "^\\d{2}:\\d{2}$";
 const parkCodes = Object.keys(parkZones).sort();
 const airportCodes = Object.keys(airports).sort();
@@ -243,6 +250,8 @@ export const tripResultSchema = {
                 slot: { enum: ["sunrise", "any", "sunset", "night"] },
                 shuttle: { type: "string" },
                 warnings: { type: "array", items: { enum: [...STOP_WARNINGS] } },
+                // alertMaybeClosed：NPS 公告可能让它关了（只有模型读出来的，照排、提醒出发前确认）
+                alert: ALERT_SCHEMA,
               },
             },
           },
@@ -254,11 +263,13 @@ export const tripResultSchema = {
       items: {
         type: "object",
         required: ["id", "park", "nameZh", "nameEn", "reason"],
-        // closed 的：openMonths 是一年里开放（出现）的月份，noteZh 是为什么不开的一句话（“火瀑只在 2 月中下旬……出现”）
+        // closed 的：openMonths 是一年里开放（出现）的月份，noteZh 是为什么不开的一句话（“火瀑只在 2 月中下旬……出现”）；
+        // alert 是 NPS 公告说关了的（Copilot 提取的关闭清单），附公告标题、链接和公告写的重开日期
         properties: {
           reason: { enum: [...SKIP_REASONS] },
           openMonths: { type: "array", items: { type: "integer", minimum: 1, maximum: 12 } },
           noteZh: { type: "string" },
+          alert: ALERT_SCHEMA,
         },
       },
     },
