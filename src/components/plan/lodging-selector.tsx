@@ -14,6 +14,7 @@ export function LodgingSelector({
   hint,
   current,
   status,
+  closedNote,
   ranked,
   previous,
   searchNear,
@@ -27,6 +28,8 @@ export function LodgingSelector({
   current?: ResolvedLodging;
   /** 当前住处的状态说明，比如“回 Springdale，约 19:05 到” */
   status?: string;
+  /** 当前住处这晚不营业时的提醒 */
+  closedNote?: string;
   /** 推荐住宿，已按车程排好 */
   ranked: LodgingRank<ResolvedLodging>[];
   /** 前一晚的住处，用于“和前一晚一样” */
@@ -120,6 +123,7 @@ export function LodgingSelector({
             <p className="font-serif text-base">
               {rank.lodging.name}
               {tag(rank.lodging)}
+              {rank.closed && <span className="ml-2 align-middle text-xs text-clay-700">{t.closedTag}</span>}
             </p>
             {rank.lodging.note && <p className="mt-0.5 text-xs text-mute">{rank.lodging.note}</p>}
             <p className="mt-0.5 flex flex-wrap items-center gap-x-3 text-xs text-ink-soft">
@@ -155,6 +159,7 @@ export function LodgingSelector({
               <span className="text-mute">{t.unset}</span>
             )}
           </p>
+          {current && closedNote && <p className="mt-1 pl-6 text-xs text-clay-700">{closedNote}</p>}
           {current && status && <p className="mt-1 pl-6 text-xs text-mute">{status}</p>}
           {current && airbnbHref?.(current) && <p className="mt-1 pl-6">{airbnbLink(current)}</p>}
           {!current && hint && <p className="mt-1 pl-6 text-xs text-mute">{hint}</p>}
@@ -163,7 +168,10 @@ export function LodgingSelector({
         <div className="flex flex-wrap gap-1.5">
           {!current &&
             !open &&
-            ranked.slice(0, 2).map((rank) => (
+            ranked
+              .filter((rank) => !rank.closed)
+              .slice(0, 2)
+              .map((rank) => (
               <button
                 key={rank.lodging.id}
                 type="button"

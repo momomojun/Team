@@ -159,7 +159,7 @@ export const lodgingOptions: LodgingOption[] = [
     inPark: true,
     lat: 36.7419,
     lon: -118.96055,
-    note: "国王峡谷 Grant Grove 村里，离格兰特将军树几分钟。",
+    note: "国王峡谷 Grant Grove 村里，离格兰特将军树几分钟；冬季关闭（2026 年 11 月 28 日以后不营业）。",
   },
   {
     id: "seki-stay-three-rivers",
@@ -592,7 +592,7 @@ export const lodgingOptions: LodgingOption[] = [
     inPark: true,
     lat: 46.78688,
     lon: -121.73392,
-    note: "Paradise 的百年老木屋旅馆，出门就是天际线步道；约 5 月中到 10 月初营业，旺季很难订，价格偏高。",
+    note: "Paradise 的百年老木屋旅馆，出门就是天际线步道；约 5 月中到 9 月底营业，旺季很难订，价格偏高。",
   },
   {
     id: "mora-stay-national-park-inn",
@@ -1583,7 +1583,7 @@ export const lodgingOptions: LodgingOption[] = [
     lat: 38.17407,
     lon: -109.74184,
     note:
-      "针尖区入口外的私营营地（2026 年 3 月 1 日到 11 月 21 日营业），除了普通营位还有豪华帐篷、印第安帐篷和树屋帐篷，有淋浴、加油站和小商店，到针尖区游客中心约 5 分钟；周边几十公里没有别的住处和餐厅。",
+      "针尖区入口外的私营营地（2026 年 3 月 1 日到 11 月 20 日营业），除了普通营位还有豪华帐篷、印第安帐篷和树屋帐篷，有淋浴、加油站和小商店，到针尖区游客中心约 5 分钟；周边几十公里没有别的住处和餐厅。",
   },
   {
     id: "cany-stay-monticello",

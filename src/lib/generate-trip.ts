@@ -14,6 +14,7 @@ import {
   type TimelineEntry,
 } from "./planner";
 import { closedAllDays } from "./closures";
+import { lodgingOpenOn } from "./lodging-season";
 import { addDays } from "./dates";
 import { moonNight } from "./moon";
 import { acrossClosedRoad, bestRoadDay, openChance, ROAD_LIKELY, roadDecides, roadFor, roadStatus } from "./roads";
@@ -373,7 +374,12 @@ export function generateTrip(input: GenerateInput, context: GenerateContext): { 
       const bonus = (lodging: GuideLodging) =>
         input.lodgingPref === "rental" ? (lodging.rental ? RENTAL_BONUS : 0) : lodging.inPark ? IN_PARK_BONUS : 0;
       const cost = (rank: LodgingRank<GuideLodging>) => (rank.backMin ?? 0) + (rank.outMin ?? 0) - bonus(rank.lodging);
-      const ranking = rankLodging(lodgingChoices, lastStop, nextStop, { back: dateFor(night - 1), out: dateFor(night) }).sort(
+      // 这晚不营业的不住（季节性的园内酒店、阿拉斯加的夏季旅馆）；按偏好挑的都关了，就在营业的里面挑，全都关了才照旧
+      const checkIn = dateFor(night - 1);
+      const openChoices = lodgingChoices.filter((option) => lodgingOpenOn(option.id, checkIn));
+      const openAny = context.lodging.filter((option) => lodgingOpenOn(option.id, checkIn));
+      const choices = openChoices.length > 0 ? openChoices : openAny.length > 0 ? openAny : lodgingChoices;
+      const ranking = rankLodging(choices, lastStop, nextStop, { back: checkIn, out: dateFor(night) }).sort(
         (a, b) => cost(a) - cost(b),
       );
       if (ranking.length === 0) continue;

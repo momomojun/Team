@@ -1069,6 +1069,8 @@ export interface LodgingRank<T extends LodgingPoint> {
   backMin?: number;
   /** 第二天从这里去第一个景点 */
   outMin?: number;
+  /** 这晚不营业（季节性的住处，见 src/data/lodging-seasons.ts） */
+  closed?: boolean;
 }
 
 /** 按“今晚回去 + 明早出发”的总车程给候选住处排序；知道日期时，季节性道路封着要绕路的也算进去 */
