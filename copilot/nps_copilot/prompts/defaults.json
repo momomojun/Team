@@ -2,5 +2,6 @@
   "intake": "v1",
   "writer": "v1",
   "qa": "v2",
-  "dispatch": "v1"
+  "dispatch": "v1",
+  "alerts": "v1"
 }

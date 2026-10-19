@@ -1,0 +1,11 @@
+{
+ "frozen_at": "2026-10-19T08:37:21+00:00",
+ "note": "NPS 公告提取的评测：2026-10-19 的公告快照（151 条，47 座公园）和标准答案。标准答案是助手按公告原文、照 labels 的定义逐条标的（模型跑之前），21 条拿不准的标了 ambiguous，另算一份只看没争议的成绩。冻结时的代码 hash 记在这里；第一次的分数按这一版代码报告。",
+ "sha256": {
+  "copilot/eval/alerts/labels-2026-10-19.jsonl": "08c2c62ed7e92f27bbe6e16d13f71a5858e4271466ea2752cfa0f488ed7cd859",
+  "copilot/eval/alerts/snapshot-2026-10-19.json": "5e9aa3840dfcdc6eb14368ab24901e030a7ba26be34f90a3376e3ce3ed83eb62",
+  "copilot/nps_copilot/alerts.py": "6b4be179608829e48ace59add769342ea1a0561425c0b6a372458b801ef8d6e9",
+  "copilot/nps_copilot/prompts/alerts_v1.txt": "89904d683e081546cee94aea74b007ba72baab1b12f54987922fe04e8c83c7d9",
+  "copilot/eval/alerts.py": "9899d2c27fd15005ca0fb399e7f1bc2e9072821b933e7fe8a8e622671b1169ac"
+ }
+}

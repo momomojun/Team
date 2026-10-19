@@ -26,7 +26,8 @@
     "i18n:en": "node --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/i18n-en.mjs",
     "copilot:plan": "node --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/plan-trip.mjs",
     "copilot:contracts": "node --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/build-copilot-contracts.mjs",
-    "check:closures": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/check-closures.mjs"
+    "check:closures": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/check-closures.mjs",
+    "alerts:fetch": "node --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/fetch-alerts.mjs"
   },
   "dependencies": {
     "fflate": "^0.8.3",

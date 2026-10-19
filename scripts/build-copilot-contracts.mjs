@@ -5,6 +5,7 @@ import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import * as OpenCC from "opencc-js";
 import { airports } from "../src/data/airports.ts";
 import { parks } from "../src/data/parks.ts";
+import { attractions } from "../src/data/attractions/index.ts";
 import { knowledge } from "./build-copilot-knowledge.mjs";
 import { localize } from "../src/i18n/convert.ts";
 import { airportMinutes } from "../src/lib/travel.ts";
@@ -45,7 +46,16 @@ export function catalog() {
     lat: airport.lat,
     lon: airport.lon,
   }));
-  return { parks: parkList, airports: airportList };
+  // 景点：Copilot 读 NPS 公告、判断关了哪个景点时，让模型从这座公园的景点里选（id、中英文名、片区）
+  const attractionList = attractions.map((a) => ({
+    id: a.id,
+    park: a.park,
+    nameEn: a.nameEn,
+    nameZh: a.nameZh,
+    area: a.area,
+    areaZh: parks.find((park) => park.code === a.park)?.areas?.[a.area] ?? "",
+  }));
+  return { parks: parkList, airports: airportList, attractions: attractionList };
 }
 
 /**
@@ -90,9 +100,10 @@ export function hantToHans() {
 if (process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, "/").split("/").pop())) {
   write("trip-request.v1.schema.json", tripRequestSchema);
   write("trip-result.v1.schema.json", tripResultSchema);
-  const { parks: parkList, airports: airportList } = catalog();
+  const { parks: parkList, airports: airportList, attractions: attractionList } = catalog();
   write("parks.json", parkList);
   write("airports.json", airportList);
+  write("attractions.json", attractionList);
   const docs = knowledge();
   writeFileSync(new URL("knowledge.jsonl", OUT), docs.map((doc) => JSON.stringify(doc)).join("\n") + "\n");
   const map = hantToHans();

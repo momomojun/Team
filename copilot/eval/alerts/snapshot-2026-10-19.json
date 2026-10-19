@@ -1,0 +1,1365 @@
+{
+ "fetched": "2026-10-19",
+ "failed": [],
+ "alerts": [
+  {
+   "id": "96A00261-453A-467D-A1D5-24D68A59AB50",
+   "park": "acad",
+   "category": "Park Closure",
+   "title": "Schoodic Mountain Road Closed for Repairs",
+   "description": "Starting Aug 31, the Schoodic Mountain Road will be closed for repairs from Schoodic Loop Road to the summit of Schoodic Head. Workers will be operating heavy equipment for resurfacing, regrading and ditching.",
+   "url": "",
+   "updated": "2026-09-30 00:00:00.0"
+  },
+  {
+   "id": "D3E90E5C-ABED-4EDD-B17F-7D4744770978",
+   "park": "acad",
+   "category": "Park Closure",
+   "title": "Southern Section of Ocean Path Closed for Repairs",
+   "description": "Starting Aug 31, a section of Ocean Path will be closed for repairs from a trailhead across from the Otter Point parking lot to the trail's southern terminus.",
+   "url": "",
+   "updated": "2026-09-16 00:00:00.0"
+  },
+  {
+   "id": "F8AFCEAD-7E34-4C99-8AF6-C0B7C376C8FB",
+   "park": "acad",
+   "category": "Park Closure",
+   "title": "Eastern Section of Beech Mountain Loop Trail Closed for Repairs",
+   "description": "Starting Sept 21, the eastern section of the Beech Mountain Loop Trail will be closed for repairs from a junction just beyond the parking lot to just below the summit at the fire tower. Three alternate routes to the summit are available: the outer loop of the Beech Mountain Loop Trail, Beech South Ridge Trail and Beech West Ridge Trail.",
+   "url": "",
+   "updated": "2026-09-30 00:00:00.0"
+  },
+  {
+   "id": "698D84A8-AC1F-413D-8ED6-5794E933A5DB",
+   "park": "arch",
+   "category": "Information",
+   "title": "Trip-planning tips for 2026",
+   "description": "Planning to visit Arches this year? To ensure the best experience, please anticipate potentially long wait times at the entrance station. If trailhead parking is full, plan to return a little later. Please avoid parking on vegetation and roadways to help preserve this beautiful place for everyone to enjoy.",
+   "url": "",
+   "updated": "2026-03-18 00:00:00.0"
+  },
+  {
+   "id": "55402D51-1847-498E-8A7A-F6A4BB3EFD1B",
+   "park": "badl",
+   "category": "Park Closure",
+   "title": "Notch Trail Closure for Repairs",
+   "description": "Notch Trail and all areas within 100’ of the designated trail closed while park staff are repairing the section of the Notch trail ladder that has become a safety hazard for hikers.",
+   "url": "",
+   "updated": "2026-10-01 00:00:00.0"
+  },
+  {
+   "id": "768A062E-B105-44FC-8F59-3605699FC4AA",
+   "park": "badl",
+   "category": "Caution",
+   "title": "Navigation",
+   "description": "Do not rely on GPS digital navigation systems to find your way to Badlands National Park. Please note that the Visitor Center at 25216 Ben Reifel Road, Interior SD 57750 is located just off I-90.",
+   "url": "https://www.nps.gov/badl/planyourvisit/directions.htm",
+   "updated": "2020-12-16 09:25:24.0"
+  },
+  {
+   "id": "03B953FC-7E30-415D-A65D-42147D28452E",
+   "park": "bibe",
+   "category": "Information",
+   "title": "Big Bend is a NO DRONE Zone",
+   "description": "The use of drones is prohibited in Big Bend National Park. Thank you for preserving the peace and tranquility of Big Bend.",
+   "url": "",
+   "updated": "2022-12-13 10:11:51.0"
+  },
+  {
+   "id": "60ACB26C-E132-4CD7-8B2E-E75F3CB27A31",
+   "park": "bibe",
+   "category": "Information",
+   "title": "Bringing a Pet to Big Bend?",
+   "description": "Bringing your pet to Big Bend National Park will limit some of your park explorations and opportunities. Pets are not allowed on park trails, in the backcountry, or on the river. Pets are allowed only where vehicles can go. Pets may not be left unattended",
+   "url": "https://www.nps.gov/bibe/planyourvisit/pets.htm",
+   "updated": "2022-05-04 15:01:26.0"
+  },
+  {
+   "id": "5FD218D4-E590-4358-8EDC-89C6E36F81C4",
+   "park": "bisc",
+   "category": "Information",
+   "title": "Camping and Docking at Boca Chita and Elliott Keys",
+   "description": "Day Use Docking at Boca Chita and Elliott Keys: $25.00 Friday - Monday and Federal Holidays. Overnight Camping and Docking at Boca Chita and Elliott Keys: $60.00 per night. Payments must be made on site using the recreation.gov phone app.",
+   "url": "",
+   "updated": "2026-09-18 00:00:00.0"
+  },
+  {
+   "id": "93EB14E1-EFB7-4604-8674-6129B325E72A",
+   "park": "bisc",
+   "category": "Caution",
+   "title": "Boater Awareness",
+   "description": "Please use caution in park waters due to navigational markers that may be missing or moved due to unforeseen circumstances.",
+   "url": "",
+   "updated": "2022-09-07 17:29:16.0"
+  },
+  {
+   "id": "A959D1A1-6FCA-4FCD-A14E-B6793CF8C62D",
+   "park": "bisc",
+   "category": "Information",
+   "title": "Ride Share Services",
+   "description": "Convoy Point grounds, Jetty Trail, kayak launch, and picnic area open at 7 a.m. and close at 5:30 p.m. If you are using a ride share service for transportation to and from the park, ensure ride share services can be onsite before closing time.",
+   "url": "",
+   "updated": "2023-10-31 14:13:42.0"
+  },
+  {
+   "id": "736CF815-5749-41B0-AD81-ECD3BA1D8D59",
+   "park": "blca",
+   "category": "Caution",
+   "title": "No Water Available in Park",
+   "description": "Water systems throughout the park have been shut off for the winter season, October to April. Please plan ahead and bring your own drinking water.",
+   "url": "",
+   "updated": "2026-10-13 00:00:00.0"
+  },
+  {
+   "id": "7F949259-384C-4098-A7CF-90E54C09E118",
+   "park": "blca",
+   "category": "Information",
+   "title": "Cashless Operations",
+   "description": "Black Canyon's operations are now cashless. South Rim Campground is by reservation only via Recreation.gov. East Portal & North Rim campground sites are first-come first-served and accept payment using Scan & Pay through Recreation.gov's mobile app.",
+   "url": "https://www.nps.gov/blca/planyourvisit/camping.htm",
+   "updated": "2026-04-15 00:00:00.0"
+  },
+  {
+   "id": "02F6DDD2-25FD-4D13-85F5-941F0CD23FAE",
+   "park": "brca",
+   "category": "Information",
+   "title": "Dump Station Closed for Season",
+   "description": "The dump station has closed due to early freezing temperatures. Please make other arrangements. Drinking fountains are also in the process of being winterized for the same reason. Please plan appropriately.",
+   "url": "",
+   "updated": "2026-10-15 00:00:00.0"
+  },
+  {
+   "id": "FC27643B-95B4-4158-9028-BEB8E235FF66",
+   "park": "brca",
+   "category": "Park Closure",
+   "title": "Trail Closures Due to Recent Rains",
+   "description": "Wall Street is closed until further notice. Other park trails are open, but hikers are urged to use caution.",
+   "url": "",
+   "updated": "2026-10-15 00:00:00.0"
+  },
+  {
+   "id": "FDF5B1EA-4A56-4D29-8BE0-C55822069481",
+   "park": "brca",
+   "category": "Caution",
+   "title": "Current Fire Restrictions",
+   "description": "Fires are only allowed in established fire pits.",
+   "url": "",
+   "updated": "2026-08-31 00:00:00.0"
+  },
+  {
+   "id": "0FC5E9EA-D8DE-4F6F-976B-51765FCD4220",
+   "park": "cany",
+   "category": "Park Closure",
+   "title": "White Rim Road CLOSED AND IMPASSABLE",
+   "description": "Due to recent rains and flooding, there is a rockfall, cutbanks, washouts, mud and standing water causing IMPASSABLE conditions on the White Rim. The western side of the White Rim Road (From Mineral Bottom to West of White Crack Junction) is CLOSED to all traffic through at least October 20 2026. Visitors can still drive to White Crack on the eastern side of the White Rim, but a full loop is not possible at this time.",
+   "url": "",
+   "updated": "2026-10-15 00:00:00.0"
+  },
+  {
+   "id": "540965D2-AFA0-42F8-886C-5E39A2E5A274",
+   "park": "cany",
+   "category": "Information",
+   "title": "Trip-planning tips for 2026",
+   "description": "Planning to visit Canyonlands this year? To ensure the best experience, please anticipate potentially long wait times at the entrance station. If overlook or trailhead parking is full, plan to return a little later. Please avoid parking on vegetation and roadways to help preserve this beautiful place for everyone to enjoy.",
+   "url": "",
+   "updated": "2026-03-17 00:00:00.0"
+  },
+  {
+   "id": "7EF3C4AE-4A5C-432A-83D3-D62231362FD1",
+   "park": "care",
+   "category": "Caution",
+   "title": "Monsoon Season & Flash Floods",
+   "description": "Heavy rains can cause sudden flooding, especially in canyons and washes. Do not drive or hike through flood waters. Get to high ground and wait for floods to subside. Some roads may close temporarily; closures are posted at the visitor center.",
+   "url": "https://www.nps.gov/articles/monsoon-season.htm",
+   "updated": "2026-07-27 00:00:00.0"
+  },
+  {
+   "id": "903C1BB1-20F2-4569-BB7F-17EA840ACE83",
+   "park": "care",
+   "category": "Caution",
+   "title": "Elevated E. Coli levels - Fremont River and Sulphur Creek",
+   "description": "Recent water quality testing shows elevated E. coli levels in the Fremont River and Sulphur Creek. A warning advisory has been issued by the Utah DEQ. Use caution if entering the water. Do not get water in your mouth, do not swim. Wash hands with soap and water.",
+   "url": "",
+   "updated": "2026-08-28 00:00:00.0"
+  },
+  {
+   "id": "1FF4A543-5FF0-4B2D-94F0-2F29030381AE",
+   "park": "cave",
+   "category": "Information",
+   "title": "Fire Restrictions",
+   "description": "Fire restrictions have been lifted at Carlsbad Caverns which means that fires such as charcoal fires in grills and the use of camp stoves or portable grills will be allowed. Igniting and maintaining an open fire must be done with materials that are commonly used for warmth and food preparations such as natural firewood or charcoal briquettes. Other materials such as flammable liquids, garbage, plastic, aerosol canisters, or other artificial substances are not permitted.",
+   "url": "",
+   "updated": "2025-11-18 00:00:00.0"
+  },
+  {
+   "id": "59BA228E-ACAE-4A57-AD4F-CC9E6AFD54E4",
+   "park": "cave",
+   "category": "Information",
+   "title": "Footwear in the Cavern",
+   "description": "For safety, closed-toe shoes with good traction are recommended. Flip flops, sandals, and some walking shoes have little or no traction and increase the possibility of slips, trips, and falls. Watch your step and use the handrails when necessary.",
+   "url": "",
+   "updated": "2018-09-19 18:25:10.0"
+  },
+  {
+   "id": "AB6D9AA5-0899-4E4F-A6B5-A28365367388",
+   "park": "cave",
+   "category": "Information",
+   "title": "Closures Due to Flood Damage",
+   "description": "Some areas of the park including Walnut Canyon Desert Drive and some trails remain closed after extensive flood damage. The main park road to the visitor center and cavern is open.",
+   "url": "https://www.nps.gov/cave/planyourvisit/conditions.htm#flood",
+   "updated": "2025-03-05 12:00:34.0"
+  },
+  {
+   "id": "EBC49FB8-1FE3-42BD-8EE7-D1BBA0DD60DB",
+   "park": "cave",
+   "category": "Information",
+   "title": "Items Worn or Used in Other Caves Not Allowed",
+   "description": "A disease known as White-Nose Syndrome is killing bats in North America. To prevent it from spreading to our bats, do not wear shoes, clothing, or bring any gear into any cave at Carlsbad Caverns National Park that were in another cave.",
+   "url": "https://www.nps.gov/articles/what-is-white-nose-syndrome.htm",
+   "updated": "2024-04-09 19:40:57.0"
+  },
+  {
+   "id": "ED5743DA-201A-47C1-A87D-47BD088D5836",
+   "park": "cave",
+   "category": "Information",
+   "title": "Timed Entry Ticket Required to Enter Carlsbad Cavern",
+   "description": "Reservations are highly recommended and can be purchased by clicking \"more\" or calling 877-444-6777. Reservations only select the entry time. Upon arrival at the visitor center, an entrance pass must be purchased.",
+   "url": "https://www.recreation.gov/ticket/234637/ticket/10086811",
+   "updated": "2024-04-05 14:46:23.0"
+  },
+  {
+   "id": "C09D6CAE-1916-4981-B9C2-6AD984FCDD60",
+   "park": "chis",
+   "category": "Park Closure",
+   "title": "Parts of Santa Rosa Island Closed During Wildfire Recovery",
+   "description": "Burned areas on Santa Rosa Island remain closed. Backcountry beach camping in Southeast Quadrant will remain closed for the remainder of the 2026 recreation season. Click the more link for additional information.",
+   "url": "https://www.nps.gov/chis/planyourvisit/santa-rosa-island-fire-recovery.htm",
+   "updated": "2026-10-14 00:00:00.0"
+  },
+  {
+   "id": "D992F239-4C85-45CE-B471-5107FEC177B2",
+   "park": "chis",
+   "category": "Information",
+   "title": "Santa Barbara Island Dock Closed; Landings Restricted to Adjacent Rocky Ledge",
+   "description": "Santa Barbara Island is open to public access, but landings are restricted to the rocky ledge adjacent to the dock. The dock is closed and is not expected to be repaired in the near future due to the severe winter storm damage.",
+   "url": "https://www.nps.gov/chis/planyourvisit/conditions.htm",
+   "updated": "2018-01-23 14:42:10.0"
+  },
+  {
+   "id": "C4B686D0-FE61-47ED-983C-3BE7FBE76625",
+   "park": "crla",
+   "category": "Park Closure",
+   "title": "Cleetwood Cove Trail is CLOSED for Rehabilitation",
+   "description": "The Cleetwood Cove Trail is CLOSED for construction. This critical project will fully rehabilitate the trail and marina to ensure safe access to the lake, provide a much-improved visitor experience, and protect the environment.",
+   "url": "https://www.nps.gov/crla/planyourvisit/cleetwood-cove-trail-and-marina-rehabilitation.htm",
+   "updated": "2026-04-10 00:00:00.0"
+  },
+  {
+   "id": "BB9A9C62-35D1-4F41-9861-0F12D8343051",
+   "park": "dena",
+   "category": "Information",
+   "title": "Road Open To: Mile 13 (Mountain Vista)",
+   "description": "The Denali Park Road is open to Mile 13, Mountain Vista. Be prepared for winter driving conditions to reach Mile 13.",
+   "url": "",
+   "updated": "2026-10-15 00:00:00.0"
+  },
+  {
+   "id": "7F92E1B6-D4AC-4D02-A2EA-719F34061870",
+   "park": "deva",
+   "category": "Information",
+   "title": "Gas Pumps at Panamint Springs Resort are Closed at Night",
+   "description": "Gasoline is available at Panamint Springs Resort from 7am-9:30pm, daily. Gas is available at Furnace Creek and Stovepipe Wells 24hrs.",
+   "url": "",
+   "updated": "2025-01-27 12:37:06.0"
+  },
+  {
+   "id": "25F15682-8531-4D8E-AB7C-B78E52F102D2",
+   "park": "drto",
+   "category": "Park Closure",
+   "title": "Current Alerts and Conditions",
+   "description": "Be sure to review the Alerts and Conditions below before and during your visit for additional, up-to-date information on closures, cautions, and other current park conditions.",
+   "url": "",
+   "updated": "2026-07-15 00:00:00.0"
+  },
+  {
+   "id": "5AD0CD62-6D0D-4607-BD38-D6C2EDF3801F",
+   "park": "drto",
+   "category": "Park Closure",
+   "title": "Sections of moat wall closed until Winter 2026",
+   "description": "Sections of the moat wall that were damaged by Hurricanes Helene and Milton (2024) are undergoing repair and reinforcement. For your safety, please follow posted signage and do not cross any barricades.",
+   "url": "",
+   "updated": "2026-07-15 00:00:00.0"
+  },
+  {
+   "id": "6D3D0F5D-9F82-4380-9624-0EAFE7ACDF32",
+   "park": "drto",
+   "category": "Park Closure",
+   "title": "Seasonal Closure: Bush Key",
+   "description": "Most of Bush Key is now open to the public. To protect nesting frigatebirds, a small area on the north side of Bush Key, all of Long Key, and all vegetation remains closed until further notice.",
+   "url": "",
+   "updated": "2026-09-29 00:00:00.0"
+  },
+  {
+   "id": "7D5830C9-8EED-4C56-B4EC-CA0130205AE5",
+   "park": "drto",
+   "category": "Caution",
+   "title": "Garden Key Harbor Light",
+   "description": "Vessel operators - the Garden Key Harbor Light is undergoing repairs and is extinguished. At this time it is unknown when the light will again be illuminated.",
+   "url": "",
+   "updated": "2017-08-17 14:16:47.0"
+  },
+  {
+   "id": "EF0A8550-FBD4-4AB8-AE9B-CC867C519D6A",
+   "park": "drto",
+   "category": "Information",
+   "title": "Migrant Notice",
+   "description": "Like elsewhere in the Florida Keys, we have seen an increase in Cuban migrants arriving by boat from Cuba and landing on the islands of Dry Tortugas National Park. You may observe migrant landings at the park and visitor areas may be impacted.",
+   "url": "",
+   "updated": "2024-09-24 20:28:15.0"
+  },
+  {
+   "id": "28229465-A067-4CFD-B1E0-52201752A5D4",
+   "park": "ever",
+   "category": "Park Closure",
+   "title": "Current Alerts and Conditions",
+   "description": "Be sure to review the Alerts and Conditions below before and during your visit for additional, up-to-date information on closures, cautions, and other current park conditions.",
+   "url": "",
+   "updated": "2026-06-27 00:00:00.0"
+  },
+  {
+   "id": "7BFF9E67-1275-4440-8396-6ED36C900F7A",
+   "park": "ever",
+   "category": "Caution",
+   "title": "Roadwork may cause delays on US 41/Tamiami Trail",
+   "description": "Current roadwork is ongoing along the park's northern boundary on US Highway 41/Tamiami Trail to raise the road for Everglades Restoration benefits. Drivers may experience up to 15-minute delays and should watch for personnel, equipment and slow downs.",
+   "url": "",
+   "updated": "2026-05-28 00:00:00.0"
+  },
+  {
+   "id": "8BE3C0D2-D6A9-49E8-8FD6-737E15D8DDEA",
+   "park": "ever",
+   "category": "Information",
+   "title": "For entrance fees, we accept digital passes and credit/debit cards",
+   "description": "Digital passes or credit/debit cards are the ONLY method of payment at all fee collection areas. Pre-paid digital passes are available online and may be purchased in advance.",
+   "url": "https://www.nps.gov/ever/planyourvisit/fees.htm",
+   "updated": "2026-05-28 00:00:00.0"
+  },
+  {
+   "id": "0AB18BFC-180D-4E49-90DC-76951A96244E",
+   "park": "gaar",
+   "category": "Caution",
+   "title": "Food-Conditioned Bear in Arrigetch Peaks",
+   "description": "On August 13, 2026 a brown bear entered camps and food caches in the Arrigetch Peaks area, obtaining food from a soft-sided, bag-type Bear Resistant Food Container (BRFC). At this time, we strongly recommend hard-sided BRFCs for all visitors to the Arrigetch Peaks area. Hard-sided BRFCs can be checked out at the Bettles Ranger Station. Backpackers in the area should maintain a high level of bear awareness and continue to follow best practices for camping in bear country.",
+   "url": "https://www.nps.gov/gaar/planyourvisit/bearsafety.htm",
+   "updated": "2026-08-21 00:00:00.0"
+  },
+  {
+   "id": "1FD3D242-051B-4A42-9F16-931E1C51BF26",
+   "park": "glac",
+   "category": "Park Closure",
+   "title": "Going-to-the-Sun Road Partial Closure",
+   "description": "Going-to-the-Sun Road is now open on the east side from St. Mary to Logan Pass. It remains closed between Avalanche and Logan Pass.",
+   "url": "https://www.nps.gov/glac/planyourvisit/road-trail-campground-status.htm",
+   "updated": "2026-10-14 00:00:00.0"
+  },
+  {
+   "id": "5285404A-0630-43A6-A822-3A0B9718AB18",
+   "park": "grba",
+   "category": "Park Closure",
+   "title": "Dump Station Seasonal Closure",
+   "description": "Due to incoming winter weather, the park's dump station will be closing for the season at 12:00 pm on Friday, October 9, 2026. After that time, there will be no potable water available inside the National Park.",
+   "url": "",
+   "updated": "2026-10-08 00:00:00.0"
+  },
+  {
+   "id": "9E20F6D6-A4D8-4705-BF04-7A2F0F933144",
+   "park": "grba",
+   "category": "Park Closure",
+   "title": "Wheeler Peak Scenic Drive Seasonal Closure",
+   "description": "Wheeler Peak Scenic Drive is closed to vehicle traffic at the Summit Trailhead due to impacts from winter weather.",
+   "url": "",
+   "updated": "2026-10-17 00:00:00.0"
+  },
+  {
+   "id": "D0D8383C-4AF2-49A5-AC1F-9423036335B5",
+   "park": "grba",
+   "category": "Caution",
+   "title": "No Potable Water in Park Campgrounds",
+   "description": "There currently is no water available in any campground in Great Basin National Park.  Water is available at the RV Fill and Dump Station, the Great Basin, and the Lehman Caves Visitor Center as well as some local businesses.",
+   "url": "",
+   "updated": "2026-06-02 00:00:00.0"
+  },
+  {
+   "id": "D7CB92C9-211A-44AD-BB2D-9E548C0ED4B2",
+   "park": "grba",
+   "category": "Park Closure",
+   "title": "Wheeler Peak Campground Seasonal Closure",
+   "description": "The Wheeler Peak Campground will close for the season on Saturday, October 10, 2026. Availability in the other park campgrounds can be found on recreation.gov.",
+   "url": "",
+   "updated": "2026-10-08 00:00:00.0"
+  },
+  {
+   "id": "2CF15EBC-0800-4DF3-8179-B1579B6D4F57",
+   "park": "grca",
+   "category": "Caution",
+   "title": "Critical Backcountry Updates/Closures",
+   "description": "Visit this link for the inner canyon weather forecast, current trail closures, today's heat risk, and drinking water availability.",
+   "url": "https://www.nps.gov/grca/planyourvisit/key-messages.htm",
+   "updated": "2026-06-26 00:00:00.0"
+  },
+  {
+   "id": "4CC2EC5B-2CAD-44DC-90C1-86856D021228",
+   "park": "grca",
+   "category": "Caution",
+   "title": "Overnight Lodging Suspended and Parkwide Stage 4 Water Restrictions",
+   "description": "Grand Canyon National Park has implemented Stage 4 water restrictions on the South Rim due to extensive flash flood damage to the Transcanyon Waterline. Overnight accommodations are suspended, and only dry camping is allowed. The park remains open for day use, with food and beverage services, the Grand Canyon Clinic, and Post Office remaining open. Visitors are asked to bring water with them when visiting the park.",
+   "url": "https://www.nps.gov/grca/learn/news/grand-canyon-national-park-to-close-overnight-hotel-accommodations-beginning-august-31.htm",
+   "updated": "2026-09-30 00:00:00.0"
+  },
+  {
+   "id": "608538F9-D5D1-4AD4-BD95-6BB351146EDC",
+   "park": "grca",
+   "category": "Danger",
+   "title": "INNER CANYON WATER SHUTOFFS",
+   "description": "Beginning Sep. 6, no potable water will be available in the inner canyon, including along the Bright Angel Trail (1.5 Mile Resthouse, 3-Mile Resthouse, Havasupai Gardens day use and campground). All backpackers and hikers should carry water filtration and treatment OR carry all water with them.",
+   "url": "https://www.nps.gov/grca/planyourvisit/key-messages.htm",
+   "updated": "2026-09-11 00:00:00.0"
+  },
+  {
+   "id": "7F3F5A00-0567-40F0-8283-7B0002C0EF53",
+   "park": "grca",
+   "category": "Park Closure",
+   "title": "North Rim Scenic Road Closure: Cape Royal and Point Imperial",
+   "description": "The Point Imperial Road (from the Cape Royal Road to Point Imperial) will be closed from Oct. 15 through Nov. 3, 2026. No services, fuel, and no water are available on the North Rim as of Oct. 15, 2026.",
+   "url": "https://www.nps.gov/grca/northrimstatus.htm",
+   "updated": "2026-10-15 00:00:00.0"
+  },
+  {
+   "id": "BD6EC75E-89ED-4345-BE71-4A2EA5FF186E",
+   "park": "grca",
+   "category": "Danger",
+   "title": "INNER CANYON TRAIL CLOSURES",
+   "description": "Current trail closures: Bright Angel Trail from One-and-a-Half Mile Resthouse to Havasupai Gardens, the entire North Kaibab Trail (including Cottonwood Campground), Phantom Ranch, Bright Angel Campground, Silver Bridge, the South Kaibab Trail below Tip-Off, the River Trail east of the River Resthouse to the South Kaibab Trail junction, and the Black Bridge. Please do not attempt to access the closed areas.",
+   "url": "",
+   "updated": "2026-10-15 00:00:00.0"
+  },
+  {
+   "id": "3FC08B61-062E-4657-A182-A22DCF486AB5",
+   "park": "grsa",
+   "category": "Caution",
+   "title": "Speed Limits are Much Lower Inside Park than Surrounding Highways",
+   "description": "Speed limits for the park include 30 MPH near the park boundary and Great Sand Dunes Sign, and as low as 10 MPH near the Headquarters and Entrance Station. Speed limits are in place to protect park visitors, pedestrians, and wildlife in the park. Please drive carefully and responsibly.",
+   "url": "",
+   "updated": "2026-02-17 00:00:00.0"
+  },
+  {
+   "id": "6A994F39-E3A2-482E-BBAD-C1B24AD0D1ED",
+   "park": "grsa",
+   "category": "Caution",
+   "title": "Creek Crossings 3, 4, and 5 Have Deep Water on the Medano Pass Primitive Rd",
+   "description": "Update 10-16-2026: The third, fourth, and fifth creek crossings on the 4WD Only Medano Pass Primitive Road have deep water crossings. Motorists are advised to use caution and exercise sound judgement to the capabilities of their vehicle. NOTE: Access remains unaffected for all other paved road destinations such as the visitor center, dunes parking lot, and campground.",
+   "url": "https://www.nps.gov/grsa/planyourvisit/medano-pass-road.htm",
+   "updated": "2026-10-16 00:00:00.0"
+  },
+  {
+   "id": "9D01ED0A-8C73-43A1-8E05-307AA7CD0FB9",
+   "park": "grsa",
+   "category": "Information",
+   "title": "Great Sand Dunes Currently at Stage 1 Fire Restrictions",
+   "description": "As of August 18th, Great Sand Dunes is under Stage 1 Fire Restrictions. All wood and charcoal fires must be in established fire rings in designated campsites or picnic sites. No other open fires are allowed. Fires MUST BE put out COLD before leaving your site and must not be left unattended. camp stoves and other pressurized gas devices allowed.",
+   "url": "",
+   "updated": "2026-08-22 00:00:00.0"
+  },
+  {
+   "id": "AAC423BE-C5AC-4E74-B250-DA50F6A19561",
+   "park": "grsa",
+   "category": "Information",
+   "title": "Sand Board and Sand Sled Rentals Not Available In Park.",
+   "description": "Sand boarding and sand sled rentals are located in local communities surrounding the park. Visitors are encouraged to arrange rentals BEFORE coming to the park.",
+   "url": "https://www.nps.gov/grsa/planyourvisit/sandboardingsandsledding.htm",
+   "updated": "2025-12-22 00:00:00.0"
+  },
+  {
+   "id": "BDA0DA92-BDDE-495E-A3CA-26EC77F84B33",
+   "park": "grsa",
+   "category": "Information",
+   "title": "Piñon Flats Campground, sites can be reserved 3 months in advance for 2026",
+   "description": "Due to the need for improvements in Piñon Flats Campground, sites can be reserved 3 months in advance beginning in 2026.",
+   "url": "",
+   "updated": "2025-09-10 00:00:00.0"
+  },
+  {
+   "id": "12245A18-7A06-441D-AF04-AC317D28D5D2",
+   "park": "grsm",
+   "category": "Park Closure",
+   "title": "Cherokee Orchard Road Closed to Pedestrian Traffic",
+   "description": "Cherokee Orchard Road is currently closed to pedestrian traffic due to bear activity. All visitors must stay in their vehicles. Do not stop or park your vehicle in the roadway.",
+   "url": "",
+   "updated": "2026-10-15 00:00:00.0"
+  },
+  {
+   "id": "13500752-527E-4330-B9A8-E9EB19A2DBD8",
+   "park": "grsm",
+   "category": "Park Closure",
+   "title": "Kuwohi Road Closure",
+   "description": "Kuwohi Road is closed due to forecasted ice creating hazardous driving conditions.",
+   "url": "https://www.nps.gov/grsm/planyourvisit/conditions.htm",
+   "updated": "2026-10-17 00:00:00.0"
+  },
+  {
+   "id": "8BFDECEA-1900-4FB5-BED6-90A603B42CDB",
+   "park": "grsm",
+   "category": "Park Closure",
+   "title": "Straight Fork and the one-way section of Balsam Mountain Road closed.",
+   "description": "Straight Fork and the one-way section of Balsam Mountain Road (Heintooga Round-Bottom Road) are closed.",
+   "url": "https://www.nps.gov/grsm/planyourvisit/seasonalroads.htm",
+   "updated": "2025-11-12 00:00:00.0"
+  },
+  {
+   "id": "9DC90668-39A8-454B-8688-8F0B533C71EC",
+   "park": "grsm",
+   "category": "Information",
+   "title": "Most visitors need a parking tag",
+   "description": "All vehicles parking for longer than 15 minutes require a parking tag. Three tag durations are available for purchase for all vehicle sizes and types: Daily ($5), Weekly ($15), or Annual ($40).",
+   "url": "https://www.nps.gov/grsm/planyourvisit/fees.htm",
+   "updated": "2024-02-08 13:03:57.0"
+  },
+  {
+   "id": "A199A455-8045-4391-9CD8-20B24218CF81",
+   "park": "grsm",
+   "category": "Park Closure",
+   "title": "Park Headquarters Road is closed",
+   "description": "Park Headquarters Road is closed due to rehabilitation work on the Sugarlands water and wastewater systems.",
+   "url": "",
+   "updated": "2026-06-26 00:00:00.0"
+  },
+  {
+   "id": "3E0D0431-D76E-4D10-8290-DEAB7FA80B87",
+   "park": "grte",
+   "category": "Caution",
+   "title": "Construction in the South End of the Park",
+   "description": "Moose-Wilson Road between Moose and LSR Preserve closed. Expect occasional short delays between Granite Entrance and LSR Preserve. Possible intermittent delays on Teton Park Road at Cottonwood Creek Picnic Area. Cottonwood Creek picnic area closed. Taggart Trail detour in place. Mormon Row area open with some construction activity.",
+   "url": "https://www.nps.gov/grte/planyourvisit/road-construction.htm",
+   "updated": "2026-09-30 00:00:00.0"
+  },
+  {
+   "id": "8E55AEEE-C63F-44F9-AA7F-3B027CB4210F",
+   "park": "grte",
+   "category": "Park Closure",
+   "title": "Death Canyon Trailhead Construction Closure",
+   "description": "Death Canyon Road and Trailhead are closed to all use. Start hikes at alternative trailheads such as Granite Canyon, LSR Preserve, and Taggart Lake.",
+   "url": "https://www.nps.gov/grte/planyourvisit/road-construction.htm",
+   "updated": "2026-06-18 00:00:00.0"
+  },
+  {
+   "id": "BB1BC3DE-956F-41F6-804C-89B50FC74221",
+   "park": "grte",
+   "category": "Caution",
+   "title": "Construction on HWY 26/89/191",
+   "description": "Construction taking place on US HWY 26/89/191 south of Moran Junction. Expect 20-minute delays in both directions.",
+   "url": "https://www.nps.gov/grte/planyourvisit/road-construction.htm",
+   "updated": "2026-10-05 00:00:00.0"
+  },
+  {
+   "id": "D180D78B-29C6-491D-9FC0-52E385201765",
+   "park": "grte",
+   "category": "Information",
+   "title": "Plan Ahead for 2027 Construction",
+   "description": "Plan ahead for construction in 2027. Check road construction and park construction pages for more information.",
+   "url": "https://www.nps.gov/grte/planyourvisit/road-construction.htm",
+   "updated": "2026-10-13 00:00:00.0"
+  },
+  {
+   "id": "16CF7F46-FF9F-4B9C-90E1-C4F004B85A2F",
+   "park": "gumo",
+   "category": "Information",
+   "title": "Park Store To Go Cashless",
+   "description": "Starting August 14th, 2025 the park store will go cashless. All major credit cards, debit cards and mobile electronic payments will be accepted.",
+   "url": "",
+   "updated": "2025-08-13 18:34:50.0"
+  },
+  {
+   "id": "A1BDABE7-A32D-4C27-9361-7D536D913379",
+   "park": "gumo",
+   "category": "Caution",
+   "title": "Devil's Hall is a Strenuous Hike",
+   "description": "The hike to Devil's Hall is rated as strenuous. The portion of the route in the wash requires rock scrambling and is dangerous when wet or if water is present. The wash surface is loose gravel and rocks and may be unstable.",
+   "url": "https://www.nps.gov/thingstodo/gumo_hike_devils_hall_trail.htm",
+   "updated": "2022-12-02 13:09:34.0"
+  },
+  {
+   "id": "3D8667EC-7753-45E0-97D5-7E4B04E92EBA",
+   "park": "hale",
+   "category": "Information",
+   "title": "Limited Parking and Traffic Delays in Summit District",
+   "description": "Beginning Monday, January 12, 2026 Haleakalā Visitor Center (summit district) parking lot will have limited parking due to a water infrastructure project. Expect traffic delays. The project will last several months.",
+   "url": "",
+   "updated": "2026-01-08 00:00:00.0"
+  },
+  {
+   "id": "478F35AB-327C-4904-8C74-77FC15A841B7",
+   "park": "hale",
+   "category": "Information",
+   "title": "Expect Long Waits at the Summit Entrance Station Before Sunset",
+   "description": "Due to a high volume of traffic, cars may be temporarily turned around at the gate when capacity is reached. Purchasing a pass online does not guarantee entry at sunset. To ensure timely access, arrive 3 hours before sunset.",
+   "url": "",
+   "updated": "2026-01-09 00:00:00.0"
+  },
+  {
+   "id": "72638ED6-CF7E-4D2A-B26C-081741FF6DA2",
+   "park": "hale",
+   "category": "Information",
+   "title": "No Water at Hosmer Campground",
+   "description": "Water at Hosmer Campground in the Summit District is shutoff due to a waterline break. Water is available 24-hours at Headquarters Visitor Center one mile up the road. At this point we don't have an estimate for when repairs will be complete.",
+   "url": "",
+   "updated": "2026-09-03 00:00:00.0"
+  },
+  {
+   "id": "AD2DA1FB-E0A4-4990-8DC6-BC98A974930C",
+   "park": "hale",
+   "category": "Information",
+   "title": "Drive Cautiously - Endangered Birds on Roadway",
+   "description": "Nēnē (Hawaiian geese) and ʻuaʻu (Hawaiian petrel) are nesting in the park and may land on or frequent park roads, parking lots, and road leading up to the park. Drivers are reminded to drive at the posted speed limits and exercise caution.",
+   "url": "",
+   "updated": "2023-08-17 19:27:14.0"
+  },
+  {
+   "id": "031E225F-49AB-4264-9DD6-4402E620DC1B",
+   "park": "havo",
+   "category": "Information",
+   "title": "Kīlauea eruption",
+   "description": "Volcanic eruptions can be hazardous. Stay out of closed areas and monitor air quality. Eruptions can last a few hours and are often separated by pauses lasting several weeks.",
+   "url": "https://www.nps.gov/havo/planyourvisit/lava2.htm",
+   "updated": "2026-10-16 00:00:00.0"
+  },
+  {
+   "id": "372637DA-0B8C-422B-B98B-9ACF44B56C46",
+   "park": "havo",
+   "category": "Information",
+   "title": "Sulphur Banks Bridge Closed; Boardwalk is Open",
+   "description": "The Sulphur Banks Bridge is damaged and closed until further notice. The Haʻakulamanu area, boardwalk and Sulphur Banks Trail are open and accessible from the west side near Steam Vents.",
+   "url": "",
+   "updated": "2026-10-01 00:00:00.0"
+  },
+  {
+   "id": "37CFEFAB-CC85-4ED3-8850-D1EE86A7F0DF",
+   "park": "havo",
+   "category": "Caution",
+   "title": "Protect Yourself from Volcanic Tephra",
+   "description": "Volcanic ash, rock and glassy strands (tephra) is present at Kīlauea summit and can irritate your skin, eyes and respiratory system. For your safety, do not handle it. Eye protection, long sleeves, long pants, a hat, closed-toe shoes and a dust mask are recommended.",
+   "url": "",
+   "updated": "2026-04-08 00:00:00.0"
+  },
+  {
+   "id": "611B580A-2CFD-4331-B712-E8E46FC6683D",
+   "park": "havo",
+   "category": "Information",
+   "title": "Mauna Loa Road Closed Past First Cattle Guard for Tree Removal",
+   "description": "Mauna Loa Road will be closed to all use from the first cattle guard to Mauna Loa Lookout for tree removal starting September 23 through October 29, 2026. The tree work will prepare the area for the Mauna Loa Road Rehabilitation Project. Vehicles, bicyclists and pedestrians will not be allowed during the closure.",
+   "url": "",
+   "updated": "2026-10-15 00:00:00.0"
+  },
+  {
+   "id": "8A75DF70-5B3C-4878-8E33-C3EFBBA3204D",
+   "park": "havo",
+   "category": "Caution",
+   "title": "Kīpukapuaulu Trail Closed Due to Hazardous Trees and Hanging Limbs",
+   "description": "Kīpukapuaulu Trail remains closed due to numerous hazardous trees and hanging limbs resulting from several recent storms. Managers are developing a plan and will reopen the trail when it is safe.",
+   "url": "",
+   "updated": "2026-10-08 00:00:00.0"
+  },
+  {
+   "id": "9EA3FC4B-73DA-4CD9-BB0D-6A1F3DFF7407",
+   "park": "havo",
+   "category": "Information",
+   "title": "Upper Kahuku Road Closed Beyond Boot Decontamination Station",
+   "description": "Upper Kahuku Road remains closed beyond the boot decontamination station due to storm damage. The Visitor Contact Station and most trails in the Kahuku Unit are now open following Hurricane Lala. Kahuku Road above the Lower Palm Trailhead is deeply rutted by the recent heavy rains. A 4WD is recommended to access areas above the Lower Palm Trailhead.",
+   "url": "",
+   "updated": "2026-09-03 00:00:00.0"
+  },
+  {
+   "id": "E184228C-9A0B-4463-9848-44AF5D566030",
+   "park": "havo",
+   "category": "Information",
+   "title": "Hilina Pali Road Shoulder Work Scheduled 9/14/26 to 11/19/26",
+   "description": "Hilina Pali Road beyond the Maunaiki Trailhead will be closed to motorized vehicles on September 14, 2026 from 6 a.m. to 4:30 p.m. Monday through Thursday for shoulder work. Hikers, bicyclists and backcountry permit holders will be given access but should expect delays while heavy machinery works on the road. The entire road will be open to all use outside of those hours including weekends and holidays. The work is expected to be complete by November 19, 2026.",
+   "url": "",
+   "updated": "2026-10-08 00:00:00.0"
+  },
+  {
+   "id": "0C7CCAFE-79B7-4185-BFF2-C766EFF7535C",
+   "park": "hsbd",
+   "category": "Caution",
+   "title": "Lake Powell Recreational Water Advisory",
+   "description": "Any time that you do recreational activities (swimming, water skiing, making sand castles, etc.) on the beaches or in the waters of Lake Powell you are strongly encouraged to follow basic hygiene practices. A number of conditions can cause potential water quality issues on Lake Powell, at Lees Ferry, and on Colorado River tributaries.",
+   "url": "https://www.nps.gov/glca/learn/news/lpp.htm",
+   "updated": "2026-05-27 00:00:00.0"
+  },
+  {
+   "id": "B8D8832D-1756-4193-A883-4B0E0FD82134",
+   "park": "hsbd",
+   "category": "Park Closure",
+   "title": "Launch Ramp Updates",
+   "description": "Lake level changes will influence the functionality of all launch ramps. Find updated status of all launch ramps at the link.",
+   "url": "https://www.nps.gov/glca/learn/changing-lake-levels.htm",
+   "updated": "2026-03-25 00:00:00.0"
+  },
+  {
+   "id": "FADF0D0C-29B1-4DDC-A30B-4A26D4ED2337",
+   "park": "hsbd",
+   "category": "Caution",
+   "title": "Lees Ferry Campground Partial Closure",
+   "description": "The upper loop of the Lees Ferry Campground is closed for renovations. Large equipment will be paving at the Lees Ferry campground. Do not enter construction area.",
+   "url": "https://www.nps.gov/glca/planyourvisit/camping.htm",
+   "updated": "2026-08-26 00:00:00.0"
+  },
+  {
+   "id": "5B4D4734-2C5C-4782-8DBD-0CFB38C8A14B",
+   "park": "jotr",
+   "category": "Caution",
+   "title": "Inaccurate Third-Party Apps",
+   "description": "Some third-party hiking apps are providing inaccurate trail and safety information to users. Please use the official NPS app for accurate information.",
+   "url": "https://www.nps.gov/subjects/digital/nps-apps.htm",
+   "updated": "2024-03-11 16:20:08.0"
+  },
+  {
+   "id": "B28BDD5D-BBC4-454C-A34B-BE47D64A1C3A",
+   "park": "jotr",
+   "category": "Caution",
+   "title": "Oasis of Mara Trail Partial Closure",
+   "description": "Due to a heavy flooding event, the Oasis of Mara Trail is closed past the Oasis.",
+   "url": "",
+   "updated": "2026-03-19 00:00:00.0"
+  },
+  {
+   "id": "B369CE03-CA9A-4393-8468-9A3F78802F6B",
+   "park": "jotr",
+   "category": "Caution",
+   "title": "Partial Trail Closure of West Side Loop",
+   "description": "There is a partial trail closure of West Side Loop trail in the Black Rock area to allow for trail crew and volunteers to conduct trail repairs. Sections of West Side will be closed to all forms of traffic, Equestrians and hikers will have to take one of the connector trails along Black Rock Canyon to bypass the planned work. Estimated reopening date is November.",
+   "url": "",
+   "updated": "2026-10-13 00:00:00.0"
+  },
+  {
+   "id": "4D04EF5F-9E7F-454B-982A-C1E01352545A",
+   "park": "kefj",
+   "category": "Caution",
+   "title": "Use Caution in and around Pedersen Lagoon",
+   "description": "On August 7, 2024, a landslide triggered tsunami washed over portions of Pedersen Lagoon near Aialik Bay (59.8842N, -149.7309W). We recommend caution for those visiting the area in and around Pedersen Lagoon. Click more for additional information.",
+   "url": "https://www.usgs.gov/programs/landslide-hazards/science/2024-pedersen-lagoon-landslide-generated-tsunami",
+   "updated": "2024-08-22 16:25:35.0"
+  },
+  {
+   "id": "757A370F-9763-4B59-B607-E1824B16B3AE",
+   "park": "kefj",
+   "category": "Danger",
+   "title": "Hazardous Conditions at Terminus Of Aialik Glacier",
+   "description": "Entering an ice fall hazard zone is prohibited in Kenai Fjords National Park. The terminus of Aialik Glacier is a high-risk area, where unstable ice can fall in blocks or columns. This can generate localized tsunami waves that wash over newly deglaciated and nearby beaches. Rapidly collapsing ice and breakage can cause severe injury or death.",
+   "url": "",
+   "updated": "2026-09-14 00:00:00.0"
+  },
+  {
+   "id": "8F0E2E55-9A30-4EBE-BFEC-940F87A80F18",
+   "park": "kefj",
+   "category": "Danger",
+   "title": "Canyon from Toe of Exit Glacier to the Outwash Plain",
+   "description": "The canyon from the toe of Exit Glacier to where Exit Creek opens into the Outwash Plain is susceptible to sudden outburst flood events. These events produce sudden surges of water, ice and rock. For your safety please stick to designated park trails.",
+   "url": "https://www.nps.gov/kefj/planyourvisit/conditions.htm#EG-Canyon-Closure",
+   "updated": "2025-04-25 15:34:26.0"
+  },
+  {
+   "id": "080E2253-8FF4-494E-8581-56526A0BBAF6",
+   "park": "lavo",
+   "category": "Information",
+   "title": "EV charging station unavailable",
+   "description": "The Electric Vehicle charging station is non-functional. There is no timeline for when it may become available. Please plan accordingly.",
+   "url": "https://www.nps.gov/lavo/planyourvisit/ev.htm",
+   "updated": "2026-06-08 00:00:00.0"
+  },
+  {
+   "id": "5C320303-369F-42C5-B441-CED863E56495",
+   "park": "lavo",
+   "category": "Information",
+   "title": "Juniper Lake Campground Closed",
+   "description": "The Juniper Lake Campground and day use area is currently closed for maintenance and campground improvement projects. Potable water is not available in the campground. The Juniper Lake Road (access to lake and trailheads) is open. Please drive with caution as road crews and contractors may be actively working along the roadway.",
+   "url": "https://www.nps.gov/lavo/planyourvisit/weather.htm",
+   "updated": "2026-07-31 00:00:00.0"
+  },
+  {
+   "id": "7624377B-9B6F-44F0-BE7A-5CC934817D7F",
+   "park": "lavo",
+   "category": "Information",
+   "title": "Visitor Phone Line Intermittent",
+   "description": "You may experience problems reaching park staff via the main visitor phone line which functions intermittently. You may email the park at lavo_information@nps.gov with general park questions.",
+   "url": "",
+   "updated": "2024-10-04 19:23:25.0"
+  },
+  {
+   "id": "AB7B6104-EAA7-4393-B075-27E5FC821878",
+   "park": "meve",
+   "category": "Information",
+   "title": "Road Construction",
+   "description": "Road work will begin on the first four miles of the Main Park Road during the week of September 20 - 26. Expect delays up to 15 minutes. Far View Sites and Cedar Tree Tower are closed for road improvements. Wetherill Mesa Road has compacted gravel for 30 feet; motorcycles should take extra caution on this road.",
+   "url": "https://www.nps.gov/meve/planyourvisit/maps.htm",
+   "updated": "2026-09-17 00:00:00.0"
+  },
+  {
+   "id": "47FB46E0-9B49-4116-A527-C0FE070F96FA",
+   "park": "mora",
+   "category": "Information",
+   "title": "Expect long lines at entrances on weekends.",
+   "description": "Lengthy delays are likely at the southwest park entrance on SR706 on weekends. Check Google Maps for backup (represented by the orange/red line) at link below. Please do not block driveways or roads while in line outside the park.",
+   "url": "https://t.co/JZaIRxjnp7",
+   "updated": "2026-05-29 00:00:00.0"
+  },
+  {
+   "id": "6080843E-B4D3-44DF-97C3-3F26D3CC4883",
+   "park": "mora",
+   "category": "Caution",
+   "title": "Be cautious around park rivers & learn how to cross safely!",
+   "description": "Many hikers underestimate the power of moving water. Regardless of your knowledge, skills, and experience use these pointers in making wise decisions before attempting to cross a river.",
+   "url": "https://www.nps.gov/mora/planyourvisit/hiking-safety.htm",
+   "updated": "2026-06-29 00:00:00.0"
+  },
+  {
+   "id": "73CE219E-D823-4452-A8C1-67869DC3CD1A",
+   "park": "mora",
+   "category": "Danger",
+   "title": "WILDFIRE CLOSURES: Sunrise & northern trails. White River open.",
+   "description": "Due to several active fires on the north side of the park, the following closures are in effect until further notice: Grand Park area & trails, Northern Loop Trail, Wonderland Trail from Carbon River Suspension Bridge to Frozen Lake, & associated backcountry campgrounds. White River Road & WR Campground reopened along with White River/Sunrise Trails. Sunrise Rd CLOSED to vehicles; open for pedestrians/bicycling only.",
+   "url": "https://www.nps.gov/mora/learn/news/fire.htm",
+   "updated": "2026-10-15 00:00:00.0"
+  },
+  {
+   "id": "A0418840-9080-4171-A0B3-EEAD9DB106EC",
+   "park": "mora",
+   "category": "Information",
+   "title": "Your GPS May Be Wrong",
+   "description": "There are five entrances to the park. GPS may take you to the wrong entrance or attempt to follow the most direct route, which could lead to closed gates. It can take hours to reroute to the correct entrance. Check directions & maps, not just your GPS.",
+   "url": "https://www.nps.gov/mora/planyourvisit/directions.htm",
+   "updated": "2026-06-02 00:00:00.0"
+  },
+  {
+   "id": "CB5AE302-9DA5-48D9-81D9-4998F5807010",
+   "park": "mora",
+   "category": "Information",
+   "title": "Fryingpan Creek Bridge Replacement Project: Traffic and Trail Impacts",
+   "description": "Parking is closed at the Summerland Trailhead on either side of Fryingpan Creek Bridge due to construction through 2029. Access to Summerland remains open via the Wonderland Trail with limited parking at White River Campground. Expect traffic delays of up to 30 minutes due to one-lane traffic on White River Road while it remains open for the season.",
+   "url": "https://www.nps.gov/mora/planyourvisit/park-construction.htm/#fryingpan-creek-bridge",
+   "updated": "2026-10-08 00:00:00.0"
+  },
+  {
+   "id": "E5F3836C-7B40-4550-9650-4F50BF4CE491",
+   "park": "mora",
+   "category": "Park Closure",
+   "title": "SR 165 Carbon River/Fairfax Bridge is closed: no access to Carbon River or Mowich Lake.",
+   "description": "There is NO public access to Carbon River & Mowich Lake from SR 165. The bridge is closed to pedestrians, bicycles and vehicles and there is no alternate route.",
+   "url": "https://www.nps.gov/mora/planyourvisit/carbon-river-and-mowich.htm",
+   "updated": "2025-12-04 00:00:00.0"
+  },
+  {
+   "id": "EAB6278E-32F7-4DF0-B6D2-C3EFAAB3B897",
+   "park": "mora",
+   "category": "Information",
+   "title": "Ohanapecosh Campground area closed for construction in 2026.",
+   "description": "The entire Ohanapecosh Campground area is CLOSED for the duration of the construction project, including all campsites, visitor center, restrooms, picnic area, & Ohanapecosh river access.",
+   "url": "https://www.nps.gov/mora/planyourvisit/park-construction.htm",
+   "updated": "2026-04-08 00:00:00.0"
+  },
+  {
+   "id": "4565D0AA-7CB9-463F-BFCF-81E20510B907",
+   "park": "neri",
+   "category": "Information",
+   "title": "Burnwood Campground and Restroom Closure",
+   "description": "The Burnwood group campground will be closed from October 5 through mid November due to a construction project to replace water lines. During that time restroom facilities will be closed at the Burnwood Trailhead.",
+   "url": "",
+   "updated": "2026-09-10 00:00:00.0"
+  },
+  {
+   "id": "95337116-5117-4A84-9CBE-400EC5C3D436",
+   "park": "neri",
+   "category": "Information",
+   "title": "Rend Trail Closed through December 2027",
+   "description": "The Rend Trail is closed for trail Improvements that will include a new parking area, restroom, and a small picnic area overlooking Arbuckle Creek at the Minden trailhead, structural improvements to five historic railroad trestles along the trail, and full trail surface rehabilitation. Additionally, construction of a large accessible ramp over the ‘big rock’ will replace a stairway, resulting in the only fully accessible earthen surface trail located within the park.",
+   "url": "",
+   "updated": "2026-08-06 00:00:00.0"
+  },
+  {
+   "id": "B3619D90-1712-402E-A040-775950BB1B85",
+   "park": "neri",
+   "category": "Information",
+   "title": "Kaymoor Miners Trail Closure",
+   "description": "From June 15 through November 19 the upper part of the Kaymoor Miners Trail (from Kaymoor Top down to the mine site at the junction with the Kaymoor Trail) will be closed Monday through Thursday due to a trail rehab project. The trail is expected to be fully open Friday, Saturday, and Sunday.",
+   "url": "",
+   "updated": "2026-05-29 00:00:00.0"
+  },
+  {
+   "id": "12EDA62D-51F8-4ACE-AA9F-FE531D4C54F5",
+   "park": "noca",
+   "category": "Caution",
+   "title": "Delays on Cascade River Road Starting October 13",
+   "description": "Due to road maintenance there may be delays on Cascade River Roa beyond milepost 20 (Eldorado) three miles before the trailhead beginning October 13.",
+   "url": "",
+   "updated": "2026-10-15 00:00:00.0"
+  },
+  {
+   "id": "13FEA700-4EB0-4649-B46E-090902C3C2F9",
+   "park": "noca",
+   "category": "Park Closure",
+   "title": "Hozomeen Gate Remains Closed",
+   "description": "Until further notice, the gate at Hozomeen will remain closed; vehicle and foot traffic across the US/Canada border is prohibited. Visitors must enter through a designated port of entry.",
+   "url": "https://www.nps.gov/noca/planyourvisit/hozomeen.htm",
+   "updated": "2025-02-13 10:43:22.0"
+  },
+  {
+   "id": "6D5C9E19-8DF6-4224-9409-1F6A79A10C9E",
+   "park": "noca",
+   "category": "Caution",
+   "title": "Diablo Lake Boat Launch Inaccessible to Powerboats",
+   "description": "Due to silt accumulation, the Diablo Lake boat launch at Colonial Creek South Campground is not usable for launching most powerboats. Expect shallow or no water at the launch ramp and the possibility of needing to carry your boat to or from the water.",
+   "url": "https://www.nps.gov/noca/planyourvisit/lake-and-river-conditions.htm",
+   "updated": "2023-03-30 18:30:13.0"
+  },
+  {
+   "id": "7DC99B5A-EDA3-47B7-988E-A1750AFF7B84",
+   "park": "noca",
+   "category": "Caution",
+   "title": "Stehekin Flash Flood and Debris Flow Area",
+   "description": "The Stehekin area is prone to flooding, which increases in a post-fire environment. Know before you go – visit the Post Fire Safety page for information on what to do in a flash flood and debris flow area",
+   "url": "https://www.nps.gov/noca/planyourvisit/post-fire-safety.htm",
+   "updated": "2025-05-16 15:48:28.0"
+  },
+  {
+   "id": "8480542B-A0D2-4ADC-8CFC-B3949B040A8F",
+   "park": "noca",
+   "category": "Park Closure",
+   "title": "Fire Closures - Trail, Area, and Camp Closures",
+   "description": "For closures due to fire activity visit the Fire Closures page, including trail, area, and camp closures for current and post fire conditions.",
+   "url": "https://www.nps.gov/noca/planyourvisit/fire-closures.htm",
+   "updated": "2023-07-29 14:17:58.0"
+  },
+  {
+   "id": "AA1919BE-5AE0-4F1A-9C2C-BBB7A41294A5",
+   "park": "noca",
+   "category": "Information",
+   "title": "Stehekin is Open, Services Limited at Stehekin Landing",
+   "description": "Visitor and recreational opportunities continue to be available in the Stehekin Valley. Some services are limited at the Stehekin Landing following flood damage in December 2025.",
+   "url": "https://www.nps.gov/noca/planyourvisit/stehekin-flood-updates.htm",
+   "updated": "2026-07-08 00:00:00.0"
+  },
+  {
+   "id": "FA92ED3E-3FA3-41C9-A166-5064DDA98044",
+   "park": "noca",
+   "category": "Caution",
+   "title": "Be Aware of Break-ins along State Route 20",
+   "description": "Prevent smashed windows and theft. Break-ins are not uncommon at trailheads along State Route 20. Remove your valuables and electronics and take associated electronic cords.",
+   "url": "",
+   "updated": "2015-05-21 11:19:27.0"
+  },
+  {
+   "id": "0918CC30-347E-47CA-98FC-9AB7602DE1B3",
+   "park": "olym",
+   "category": "Caution",
+   "title": "Staircase Developed Area is Open, Use Caution in Burned Areas",
+   "description": "The Staircase developed area is open. The surrounding wilderness areas will remain closed as repair and recovery efforts continue. Use extreme caution when entering burned areas. Burned landscapes may contain falling trees and branches, loose boulders, unstable ground, stump holes, landslides, and debris flows. Changing conditions such as wind, rain, or storms can rapidly trigger hazards. Learn more on our Fire Conditions and Updates page.",
+   "url": "https://www.nps.gov/olym/planyourvisit/fire-conditions-and-updates.htm",
+   "updated": "2026-07-08 00:00:00.0"
+  },
+  {
+   "id": "BD0ECF54-649B-46A7-A9B1-3C185F62D8E1",
+   "park": "olym",
+   "category": "Danger",
+   "title": "Bat Tests Positive for Rabies, Visitors Urged to Report Potential Contact",
+   "description": "A rabid bat was found at Olympic National Park near Staircase Bridge on August 9th. At approximately 2 p.m., the bat swooped down onto an unidentified woman and was temporarily caught in her hair. This individual is at risk for rabies and should seek healthcare immediately, as well as contact the Mason County Health Department at 360-427-9670, ext. 405. More at the link.",
+   "url": "https://www.nps.gov/olym/learn/news/bat-tests-positive-for-rabies-at-olympic-national-park.htm",
+   "updated": "2026-10-09 00:00:00.0"
+  },
+  {
+   "id": "B0DB1721-80A7-4BD2-AC15-1048D72613DF",
+   "park": "pefo",
+   "category": "Information",
+   "title": "The Painted Desert Oasis Gift Shop, Gas Station and Restaurant are Open!",
+   "description": "The Painted Desert Oasis gift shop, gas station and restaurant located at the north entrance of the park are open, and restrooms are available during construction. Visitor center operations are currently located at the Painted Desert Inn, two miles past the entrance station.",
+   "url": "",
+   "updated": "2026-02-26 00:00:00.0"
+  },
+  {
+   "id": "DC37A899-318A-4508-87DB-A4FA011CCE13",
+   "park": "pefo",
+   "category": "Information",
+   "title": "Park Headquarters Phones are Down",
+   "description": "Phones at park headquarters are currently down. Please call the visitor center at Painted Desert Inn 928-235-2467 or the Visitor Services office 928-235-2391 between 8 am and 5 pm. You can also send us an email at pefo_information@nps.gov.",
+   "url": "",
+   "updated": "2026-02-24 00:00:00.0"
+  },
+  {
+   "id": "76963DF5-FF4B-4C00-8F86-2ECA0AED7446",
+   "park": "pinn",
+   "category": "Information",
+   "title": "Heavy Traffic and High Visitation Alert",
+   "description": "Pinnacles experiences extremely high visitation on weekends, holidays, and during favorable weather, especially in the spring. Expect long lines and delays between 10:00 am and 3:00 pm. If you're planning to hike the High Peaks, Condor Gulch, Balconies, or Moses Spring Trail, it’s recommended to arrive before 8:00 am (parking may fill earlier). Additionally, campground access may be temporarily delayed during peak periods of visitation when ALL incoming traffic is held.",
+   "url": "https://www.nps.gov/pinn/planyourvisit/hours.htm",
+   "updated": "2026-05-29 00:00:00.0"
+  },
+  {
+   "id": "E76D093C-BA71-4A21-9135-49DB27F09689",
+   "park": "pinn",
+   "category": "Caution",
+   "title": "Fire Danger VERY HIGH",
+   "description": "Wood-burning fires and charcoal grills are prohibited. Propane and gas stoves allowed only in campground and picnic areas for cooking food. No smoking on trail. No roadside parking. Fireworks are always prohibited.",
+   "url": "",
+   "updated": "2026-07-15 00:00:00.0"
+  },
+  {
+   "id": "25D8DBEB-D977-40F2-A75A-DF2FBC760432",
+   "park": "redw",
+   "category": "Information",
+   "title": "DeMartin Trail and Campground",
+   "description": "As part of CalTrans work to develop a new highway route that is more stable and safer, they will be undertaking geotechnical drilling this fall and winter. Hikers and campers in the area will likely see and hear heavy equipment at work and hear noise associated with the drilling, which may be 24 hours/day at times. Redwood National and State Parks has worked with CalTrans to minimize the impacts to users of this area while keeping the trail and campground open and accessible.",
+   "url": "https://www.nps.govquickmap.dot.ca.gov",
+   "updated": "2026-08-31 00:00:00.0"
+  },
+  {
+   "id": "29539564-4306-4317-B9F7-5B5FD8B5BB2A",
+   "park": "redw",
+   "category": "Caution",
+   "title": "Prescribed Fire in the Bald Hills Area",
+   "description": "There will be smoke and firefighter activity from prescribed burns in the Bald Hills Area 10/22/2026 to 10/26/2026. There may be intermittent closures of the Lyon's Ranch Trail for prescribed burns during this period.",
+   "url": "",
+   "updated": "2026-10-16 00:00:00.0"
+  },
+  {
+   "id": "9810F004-0947-4B3F-931F-336A9ED2C514",
+   "park": "redw",
+   "category": "Caution",
+   "title": "Delays along Highway 101",
+   "description": "There are multiple traffic stops along Highway 101 from Orick, CA to Crescent City, CA due to road construction. Extra time may be needed to travel throughout the park. Delay times may vary. Please stay alert and drive cautiously.",
+   "url": "",
+   "updated": "2026-06-17 00:00:00.0"
+  },
+  {
+   "id": "9F57CA42-009D-419A-9B05-8A7CFD41857B",
+   "park": "redw",
+   "category": "Information",
+   "title": "44 Creek Bridge Failure",
+   "description": "44 creek bridge is closed due to damage identified by a Federal Highway inspection team. This bridge is north of 44 Camp, approximately 7 miles south of the Redwood Creek trailhead and about 1 mile north of the Tall Trees river crossing. All trails remain open in the area, but crossing this ravine is dangerous and not advised. Hikers should plan to take alternative routes to 44 Camp, which will add at least 3.5 miles from Redwood Creek Trailhead. Stop by a visitor center for more information.",
+   "url": "",
+   "updated": "2026-08-04 00:00:00.0"
+  },
+  {
+   "id": "230A2397-5226-480B-8BEE-90AB5A9C2F42",
+   "park": "sagu",
+   "category": "Information",
+   "title": "RV and trailer precautions: be aware of vehicle restrictions before visit.",
+   "description": "As the busy season ramps up, traffic will be denser and can result in delays and complications particularly for owners of longer vehicles. The Tucson Mountain District (west side) of the park can accommodate vehicles up to 40ft in total length on the loop drive and has RV parking available at the Visitor Center, and the Rincon Mountain District (east side) can accommodate vehicles up to 40ft in length on the loop drive but has no RV parking available at the Visitor Center.",
+   "url": "",
+   "updated": "2026-02-11 00:00:00.0"
+  },
+  {
+   "id": "8B6E1110-56B7-46F0-A4BC-694E4874690B",
+   "park": "sagu",
+   "category": "Caution",
+   "title": "Vehicle Break-Ins",
+   "description": "Vehicle break-ins have occurred at the King Canyon Trailhead, as well as at other trailheads throughout the park. Hide valuables and consider taking them with you, secure your vehicle, and report any suspicious activity. Please call 911 to report criminal activity or the Pima County Sheriff's Department Non-Emergency number at 520-351-4900.",
+   "url": "",
+   "updated": "2026-09-04 00:00:00.0"
+  },
+  {
+   "id": "C557D745-52BB-42B7-BFED-8C773B3207BB",
+   "park": "sagu",
+   "category": "Danger",
+   "title": "Loop Drive closed in Tucson Mountain District due to storms.",
+   "description": "The following areas in the Tucson Mountain District of Saguaro National Park are closed to public use: Bajada Loop Drive, including all of Hohokam Road and Golden Gate Road. The closure is a result of road damage due to flash flooding. The closure will be lifted when the road is repaired, the area is safe to reenter, and the signs are removed. Kinney Rd from the eastern intersection of McCain Loop to the Desert Museum will be closed from Oct 1 - Nov 24, use McCain Loop as an alternative route.",
+   "url": "",
+   "updated": "2026-10-05 00:00:00.0"
+  },
+  {
+   "id": "FFFD3415-3713-473D-A2F9-70E3C53943E1",
+   "park": "sagu",
+   "category": "Information",
+   "title": "Rideshare services should be used with caution if visiting the Tucson Mountain District",
+   "description": "Rideshare services will drop visitors off at the park, but usually will not pick them back up. To avoid being stranded in the park, coordinate two-way trips before using rideshares to visit the West side. No major trails start at the visitor center.",
+   "url": "",
+   "updated": "2023-07-20 12:03:13.0"
+  },
+  {
+   "id": "09C80695-B7BF-4CD7-88B9-9670C8250EEF",
+   "park": "seki",
+   "category": "Information",
+   "title": "Weekday Traffic Delays on Generals Highway North of Giant Forest",
+   "description": "Due to removal of hazard trees along Generals Highway between Highway 180 and Giant Forest, there are traffic delays on weekdays from 8 a.m. to 5 p.m. Vehicles may experience delays of up to 30 minutes total. There will not be delays on federal holidays.",
+   "url": "",
+   "updated": "2026-10-09 00:00:00.0"
+  },
+  {
+   "id": "66320505-44F0-4430-BD69-4DB83436BB5F",
+   "park": "seki",
+   "category": "Information",
+   "title": "Fire Restrictions in Place",
+   "description": "Stage 1 Fire Restrictions are in effect. Wood and charcoal fires are prohibited at all low-elevation campgrounds and picnic areas. Additional restrictions apply. Click \"more\" for details.",
+   "url": "https://www.nps.gov/seki/learn/nature/fire-restrictions.htm",
+   "updated": "2026-06-08 00:00:00.0"
+  },
+  {
+   "id": "D8BD0E71-88FB-4A59-BAAB-FB2A2193EB36",
+   "park": "seki",
+   "category": "Information",
+   "title": "Mineral King Road Construction Traffic Delays and Closures",
+   "description": "There are temporary daytime closures and traffic delays on Mineral King Road. A schedule of daily closures and delays can be found on our Road Construction webpage. Click \"more\" to go there.",
+   "url": "https://www.nps.gov/seki/planyourvisit/road-construction.htm",
+   "updated": "2026-10-13 00:00:00.0"
+  },
+  {
+   "id": "2DC60C7E-23DA-4C5F-915E-5971F1B408F6",
+   "park": "shen",
+   "category": "Park Closure",
+   "title": "Active Closure",
+   "description": "Due to recent wildlife interactions and out of an abundance of caution, the Naked Creek backcountry zone is closed to all recreation until further notice. A camping closure remains in effect for the Appalachian Trail (AT) from Lewis Mountain to Big Meadows, including the Bearfence AT Hut. The AT is still accessible to hikers for day-use only.",
+   "url": "https://www.nps.gov/shen/planyourvisit/naked-creek-backcountry-zone-closure.htm",
+   "updated": "2026-10-14 00:00:00.0"
+  },
+  {
+   "id": "3E4B8C08-23A0-4F40-B290-53BB4959E6CD",
+   "park": "shen",
+   "category": "Information",
+   "title": "Get Skyline Drive Status Updates",
+   "description": "Sign up for Shenandoah Alerts by texting SHENALERTS to 888777. Any time there are closures, re-openings, or other important safety-related alerts, subscribers will receive a notification via text. You may unsubscribe at any time.",
+   "url": "https://www.nps.gov/shen/planyourvisit/alert-system.htm",
+   "updated": "2025-09-29 00:00:00.0"
+  },
+  {
+   "id": "94BF0A56-2B9D-4CB0-B420-8D98104FAB72",
+   "park": "shen",
+   "category": "Caution",
+   "title": "Parking at Boundary Access Areas",
+   "description": "Visitors are reminded to park in designated parking areas when accessing the park via boundary trailheads. Parking in unauthorized locations may result in your vehicle being towed at the owner's expense. Park on the right side of the road approaching Thompson Hollow. Parking is authorized up to the \"No Parking\" sign before a private driveway.",
+   "url": "",
+   "updated": "2025-11-20 00:00:00.0"
+  },
+  {
+   "id": "BC3F8F95-D556-41DE-AD27-7DFB09526C66",
+   "park": "shen",
+   "category": "Information",
+   "title": "Shenandoah National Park Moved to Fully Cashless Fee Collection",
+   "description": "On July 1, 2025, the park transitioned to a fully cashless system at our fee entrance stations. Only credit cards, debit cards, or mobile payments will be accepted.",
+   "url": "",
+   "updated": "2026-04-22 00:00:00.0"
+  },
+  {
+   "id": "C5CE178E-5255-42E2-9F8F-285637B4C84E",
+   "park": "shen",
+   "category": "Information",
+   "title": "Ticket Required to Hike Old Rag",
+   "description": "March 1 - November 30 those wishing to hike Old Rag are required to obtain a day-use ticket before arriving.",
+   "url": "https://www.nps.gov/shen/planyourvisit/faqs-oldrag.htm",
+   "updated": "2024-01-17 13:20:06.0"
+  },
+  {
+   "id": "EE9142C1-F172-45BD-A6DF-5E3145AD7612",
+   "park": "shen",
+   "category": "Caution",
+   "title": "Emergency Phone Line Unavailable",
+   "description": "Shenandoah National Park Emergency Phone number (1-800-732-0911) is currently unavailable. For all emergencies, Park visitors can dial 911.",
+   "url": "",
+   "updated": "2026-10-10 00:00:00.0"
+  },
+  {
+   "id": "F4AB8754-5847-4FB2-AB55-670DAD3FE1DF",
+   "park": "shen",
+   "category": "Information",
+   "title": "Infrastructure Improvements to Old Rag Trailhead",
+   "description": "Effective May 4, Shenandoah National Park will begin infrastructure enhancements at the Old Rag Trailhead main parking lot. We expect to complete work by November 2026. Until then, the main parking lot is closed to all vehicle and pedestrian traffic. Visitors can access Old Rag Trailhead via existing overflow parking lots. Day-use tickets are still required from March 1 through November 30 in addition to a park entrance fee.",
+   "url": "",
+   "updated": "2026-04-22 00:00:00.0"
+  },
+  {
+   "id": "5DAFD8CE-ED3D-4C75-BBBC-EC5EBC5010D5",
+   "park": "thro",
+   "category": "Information",
+   "title": "Theodore Roosevelt National Park moves to cashless fee collection",
+   "description": "Starting May 1, Theodore Roosevelt National Park will accept only credit cards, debit cards, or digital payments for entrance fees, campground fees, and Interagency Passes. Cash and check payments will no longer be accepted.",
+   "url": "https://www.nps.gov/thro/learn/news/theodore-roosevelt-national-park-to-move-to-cashless-fee-collection-starting-may-1.htm",
+   "updated": "2026-03-31 00:00:00.0"
+  },
+  {
+   "id": "70B82CA0-42C9-40C8-ADB5-1D110B8A04F8",
+   "park": "thro",
+   "category": "Information",
+   "title": "South Unit Address for Mobile Maps – Theodore Roosevelt NP",
+   "description": "On all maps used on mobile devices, use the following address to reach the South Unit Visitor Center and Entrance Station 201 East River Road N. Medora, ND 58645",
+   "url": "",
+   "updated": "2025-09-18 00:00:00.0"
+  },
+  {
+   "id": "F8289D3C-4DAE-4F2A-A625-5BA53492ECDD",
+   "park": "thro",
+   "category": "Information",
+   "title": "Petrified Forest Trailhead Access Update: Use Approved Route",
+   "description": "Directions to the Petrified Forest trailhead have changed. Please use the approved legal route from I-94, Exit 10 toward Camels Hump Lake and follow the clearly marked posts. This update helps maintain good cooperation with neighbors and respect park boundaries. For precise directions, use the link provided.",
+   "url": "https://www.nps.gov/thingstodo/hike-the-petrified-forest.htm",
+   "updated": "2025-09-17 00:00:00.0"
+  },
+  {
+   "id": "0BBA2DAF-A401-4A3D-9D7C-38E2A83D72AD",
+   "park": "whsa",
+   "category": "Park Closure",
+   "title": "Dunes Drive Safety Corridor",
+   "description": "Dunes Drive is open. A safety corridor is in effect between mile marker 3 and 5.5 along Dunes Drive. Visitors may drive but not stop or exit their vehicle in this area.",
+   "url": "https://www.nps.gov/whsa/planyourvisit/safety-corridor-in-effect.htm",
+   "updated": "2026-01-27 00:00:00.0"
+  },
+  {
+   "id": "2AAE7B44-FBB7-45ED-9F33-181E5F82F1D1",
+   "park": "whsa",
+   "category": "Information",
+   "title": "Interdune Boardwalk Closed",
+   "description": "Due to the active safety corridor, the Interdune Boardwalk is closed. Please visit the park visitor center to learn about other options during your visit.",
+   "url": "",
+   "updated": "2024-07-26 16:59:04.0"
+  },
+  {
+   "id": "57F5103D-99E6-445B-BD93-F947D4EA6E06",
+   "park": "whsa",
+   "category": "Information",
+   "title": "Park Closures",
+   "description": "From time to time the missile range that surrounds the park performs military testing that may require the closure of the park or Highway 70. Please plan your visit around upcoming military tests.",
+   "url": "https://www.nps.gov/whsa/planyourvisit/park-closures.htm",
+   "updated": "2024-01-02 13:34:42.0"
+  },
+  {
+   "id": "87F12777-F902-4017-8783-2A28241A0458",
+   "park": "whsa",
+   "category": "Information",
+   "title": "RV and Tractor Trailer Parking at the Visitor Center",
+   "description": "There is limited space for parking for recreational vehicles and trailers in the parking lot directly in front (south) of the visitor center. RVs are asked to not park in the lot behind the visitor center. There is no parking space for tractor trailers.",
+   "url": "",
+   "updated": "2019-02-05 14:36:01.0"
+  },
+  {
+   "id": "A6BD6AE1-329B-4722-8CB0-6E1EE0D1D244",
+   "park": "whsa",
+   "category": "Information",
+   "title": "Backcountry Camping Closed",
+   "description": "Backcountry camping at the park is closed. There is no established opening date at this time.",
+   "url": "",
+   "updated": "2024-08-22 17:51:35.0"
+  },
+  {
+   "id": "973BDD5B-01D0-43BB-8940-53035FAB205F",
+   "park": "wica",
+   "category": "Information",
+   "title": "Natural Entrance Tour Route Closes For Season October 1, 2026",
+   "description": "The Natural Entrance Tour Route will be closed for the season beginning October 1st, 2026. The Garden of Eden, Fairgrounds, and Accessibility Tour Routes remain available. This annual closure will last through the winter season.",
+   "url": "",
+   "updated": "2026-09-25 00:00:00.0"
+  },
+  {
+   "id": "ED937D2E-21A6-4BBD-9ACF-BFE92F72C0EA",
+   "park": "wica",
+   "category": "Information",
+   "title": "Centennial Trailhead Parking",
+   "description": "Reminder: Overnight parking without a camping permit is prohibited. Permits are not issued specifically for parking. Shuttles are available in the Black Hills for through hikers on the Centennial Trail.",
+   "url": "",
+   "updated": "2024-07-31 12:39:04.0"
+  },
+  {
+   "id": "FC4081DE-FF98-4059-8FD4-F7112A221A1F",
+   "park": "wica",
+   "category": "Information",
+   "title": "Wind Cave moves to cashless fee collection",
+   "description": "Payments for cave tours, campground fees, as well as Interagency Passes at Wind Cave National Park, will be by credit/ debit cards or digital payments only. Cash and check payments will no longer be accepted.",
+   "url": "",
+   "updated": "2023-02-10 17:18:28.0"
+  },
+  {
+   "id": "57EFE369-9186-400A-8F18-0E966993B8A3",
+   "park": "yell",
+   "category": "Information",
+   "title": "Traffic Delays - Gardner River High Bridge",
+   "description": "Expect a single lane of traffic with up to 15-minute delays, 24 hours a day, seven days a week, from April 1 through late October 2026. Oversized/overweight vehicles (8'6\"+ wide, 75'+ long, 80,000 lbs+ gross vehicle weight) will not be able to cross the bridge during this time.",
+   "url": "https://www.nps.gov/yell/planyourvisit/parkroads.htm",
+   "updated": "2026-03-19 00:00:00.0"
+  },
+  {
+   "id": "67146540-50E1-44EE-8D3A-2314B0192DDB",
+   "park": "yell",
+   "category": "Caution",
+   "title": "Stay Away From Bull Elk",
+   "description": "Bull elk are fast and unpredictable this time of year and can seriously injure people. If an elk charges, run. In addition to staying at least 25 yards (23 m) away from elk and bison, always stay at least 100 yards (91 m) away from bears and wolves.",
+   "url": "https://www.nps.gov/yell/planyourvisit/safety.htm#elk",
+   "updated": "2026-08-26 00:00:00.0"
+  },
+  {
+   "id": "68BF1AEF-79A0-4FE9-B11C-BDFDAD08E15E",
+   "park": "yell",
+   "category": "Information",
+   "title": "Vehicle Entrance Reservation Not Needed",
+   "description": "Although an entrance pass is required to enter Yellowstone National Park, vehicle reservations are not needed. You are encouraged to purchase an entrance pass before arriving, but you may also purchase passes at any entrance station upon arrival.",
+   "url": "https://www.nps.gov/yell/planyourvisit/fees.htm",
+   "updated": "2025-06-18 19:15:37.0"
+  },
+  {
+   "id": "75EAC129-65A2-4CDA-B29C-413502DD3A35",
+   "park": "yell",
+   "category": "Park Closure",
+   "title": "Biscuit Basin Closed Due to Hydrothermal Explosion",
+   "description": "The parking lot, boardwalk, and Firehole River at Biscuit Basin, located north of Old Faithful, is closed to all travel until further notice due to the possibility of another event at the site of a hydrothermal explosion that occurred July 23, 2024.",
+   "url": "https://www.nps.gov/yell/images/Biscuit_Basin_Closure_Map_20250529_1.png",
+   "updated": "2026-07-01 00:00:00.0"
+  },
+  {
+   "id": "B1B8B58E-47EB-4729-8494-A201E094EBDF",
+   "park": "yose",
+   "category": "Information",
+   "title": "No overnight parking on Tioga & Glacier Point Roads",
+   "description": "Overnight parking is not allowed on Tioga Road and Glacier Point Road, including all parking lots reachable from these roads.",
+   "url": "",
+   "updated": "2026-10-16 00:00:00.0"
+  },
+  {
+   "id": "09699C7F-F2CD-4BE9-B8D4-5E19CC89BE7A",
+   "park": "zion",
+   "category": "Caution",
+   "title": "Toxic cyanobacteria in rivers, streams, and pools",
+   "description": "Do not submerge your head in or drink instream water in Zion National Park.",
+   "url": "https://www.nps.gov/zion/planyourvisit/toxic-cyanobacteria-bloom-in-the-virgin-river-and-the-streams-of-zion-national-park.htm",
+   "updated": "2026-09-16 00:00:00.0"
+  },
+  {
+   "id": "0EA570B2-2FF0-4B33-AD3A-1313385965A0",
+   "park": "zion",
+   "category": "Information",
+   "title": "Please park legally and responsibly",
+   "description": "Zion has limited parking. Once parking spaces in Zion are full, visitors should park in Springdale. Please park only in designated spaces. Vehicles parked outside of designated spaces are subject to citation and towing.",
+   "url": "https://www.nps.gov/zion/planyourvisit/traffic.htm#parking",
+   "updated": "2026-09-16 00:00:00.0"
+  },
+  {
+   "id": "83AE2DD9-F167-445F-8B00-A4F9E5A993D8",
+   "park": "zion",
+   "category": "Caution",
+   "title": "Large vehicle restrictions on Zion-Mt. Carmel Highway",
+   "description": "Vehicles that exceed length, width, height, or weight limits cannot travel between Canyon Junction and the park's East Entrance. See the current limits on the page linked below.",
+   "url": "https://www.nps.gov/zion/planyourvisit/large-vehicles.htm",
+   "updated": "2026-09-16 00:00:00.0"
+  },
+  {
+   "id": "CDD9D321-49B3-4C74-89AD-A186807220E6",
+   "park": "zion",
+   "category": "Park Closure",
+   "title": "Watchman Trail closed",
+   "description": "The Watchman Trail is closed pending repairs.",
+   "url": "",
+   "updated": "2026-09-29 00:00:00.0"
+  },
+  {
+   "id": "F093B239-D138-4B04-BDFE-745A41F17B04",
+   "park": "zion",
+   "category": "Information",
+   "title": "Angels Landing Pilot Permit Program",
+   "description": "All hikers need a permit to hike Angels Landing. Learn why you need a permit and how to get one using the link below.",
+   "url": "https://www.nps.gov/zion/planyourvisit/angels-landing-hiking-permits.htm",
+   "updated": "2026-09-16 00:00:00.0"
+  }
+ ]
+}
