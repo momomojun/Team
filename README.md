@@ -274,6 +274,7 @@ Built with Next.js 16, React 19, TypeScript, Tailwind CSS 4 and MapLibre GL, mos
 |---|---|
 | [docs/GUIDE.md](docs/GUIDE.md) | **组员从这里开始**：安装、运行网站和 Copilot、改代码、开 PR、部署、发版、回滚 |
 | [docs/PROJECT.md](docs/PROJECT.md) | 项目现状：做到哪、下一步、待决定的事、做过的决定、按时间的记录 |
+| [docs/GOALS.md](docs/GOALS.md) | 目标清单：仓库主人提过的所有要求、计划书和课程的承诺，每条做到哪了 |
 | [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | 网站的技术参考：代码结构、数据脚本、数据源和注意事项 |
 | [docs/COPILOT.md](docs/COPILOT.md) | Copilot 的技术参考：设计、契约、提示词版本、评测方法 |
 | [docs/ENGLISH.md](docs/ENGLISH.md) | 英文版怎么写 |
