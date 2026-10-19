@@ -1,6 +1,7 @@
 import type { CelebrityShot } from "@/data/celebrities";
 import type { Dictionary } from "@/i18n/dictionaries";
-import { otherName } from "@/i18n/format";
+import { fill, otherName } from "@/i18n/format";
+import { MediaEmbed } from "@/components/media-embed";
 
 type CelebText = Pick<Dictionary, "attraction" | "units">;
 
@@ -36,6 +37,16 @@ export function CelebrityShotItem({ shot, text, compact = false }: { shot: Celeb
       {shot.whoZh && <p className="mt-1 text-xs text-mute">{shot.whoZh}</p>}
       {!shot.attraction && <p className="mt-1 text-xs text-mute">{shot.placeZh}</p>}
       <p className="mt-2 text-ink-soft">{shot.shotZh}</p>
+      {!compact && shot.postUrl && shot.platform === "instagram" && (
+        <MediaEmbed
+          kind="instagram"
+          src={shot.postUrl}
+          title={`${shot.nameEn} · Instagram`}
+          label={t.embedPost}
+          note={fill(t.embedNote, { platform: "Instagram", channel: shot.nameEn })}
+          hide={t.embedHide}
+        />
+      )}
       {!compact && (
         <>
           <p className="mt-2 text-ink-soft">
