@@ -28,11 +28,14 @@ from .critic import critique
 from .intake import Field, Intake
 from .plan_client import PlanError, plan_trip
 from .providers import Provider
+from .text import contains
 
 VERSION = f"copilot/{__version__}"
 RUNS = Path(os.environ.get("COPILOT_RUNS", Path(__file__).resolve().parents[1] / "runs"))
 # 刚问了用户一句（玩几天、选哪个），回答这么短的就直接按追问读，不用调度员
 QUICK_ANSWER_CHARS = 6
+CONTEXTUAL = re.compile(r"那|这|它|他们|她们|呢|上面|刚才|前面|(it|that|there|those|they|this)", re.I)
+QUICK_ANSWER = re.compile(r"\s*(\d{1,2}|[一二两三四五六七八九十]+|是的?|对|对的|好|好的|不是|不对|不用|都去|都要|第.{1,2}个?|yes|no|yep|nope)\s*(天|日|个|号|岁|晚)?[。.!！]?\s*", re.I)
 
 
 def prompt_hashes() -> dict[str, str]:
@@ -75,6 +78,7 @@ class Session:
         self.include: list[str] = []
         self.exclude: list[str] = []
         self.nights: dict[int, str] = {}
+        self._solo = True
 
     @property
     def zh(self) -> bool:
@@ -113,8 +117,13 @@ class Session:
             self.history = history
             head.append("好，重新排一个新的行程，前面说的条件都不算了。" if zh else "Sure, starting a new trip from scratch.")
         asks = [action for action in plan.actions if action.type == "ask"]
+        self._solo = all(action.type in ("ask", "chat") for action in plan.actions)
         edits = [action for action in plan.actions if action.type in ("add_stop", "remove_stop", "set_lodging")]
-        if plan.has("conditions") or plan.has("new_trip"):
+        if not asks and qa.is_question(message) and not is_ack(message):
+            # 调度员漏了提问（“附近有什么国家公园”被只当成给条件）：问号、“什么”这类一看就是在问的，也去查着回答
+            asks.append(dispatcher_module.Action("ask", message))
+            trace["added_ask"] = True
+        if plan.has("conditions") or plan.has("new_trip") or self.last_request is None:
             # “那就 7 月 10 日出发”：这句没写公园、指的是前面说过的那座（调度员给的名字要是对话里出现过的）
             said = next((action.place for action in plan.actions if action.type == "conditions" and action.place), "")
             if said and not self.intake.parks.value:
@@ -142,7 +151,10 @@ class Session:
             return Reply("needs_input", text, question, None, None, trace)
         else:
             request = {key: value for key, value in self.last_request.items() if key not in ("include", "exclude", "lodging")}
-        notes = self._apply_edits(edits, request, zh)
+        self._trace_note = None
+        notes = self._apply_edits(edits, request, zh, message)
+        if self._trace_note:
+            trace["pronoun"] = self._trace_note
         trace["edits"] = {"include": self.include, "exclude": self.exclude, "nights": self.nights}
         effective = self._with_edits(request)
         if self.last_request is not None and same_request(self.last_request, effective):
@@ -157,13 +169,20 @@ class Session:
         reply.text = "\n".join([*notes, reply.text, *answers]) if notes else "\n".join([reply.text, *answers])
         return reply
 
-    def _apply_edits(self, edits: list, request: dict, zh: bool) -> list[str]:
+    def _apply_edits(self, edits: list, request: dict, zh: bool, message: str = "") -> list[str]:
         """加减景点、指定住处：名字在这几座公园的资料里对成 id；对不上的说一声，不瞎做"""
         notes = []
         parks = request.get("parks") or []
         for action in edits:
             kind = "lodging" if action.type == "set_lodging" else "attraction"
             doc = knowledge.resolve(action.place, parks, kind)
+            # “那就加上它吧”：这句只用了代词、名字是调度员从上下文补的。用户上一句正好点了一个地方，就以它为准
+            # （调度员有时会补成行程里别的地方，比如上一句问塔夫特点，它补成了冰川点）
+            if self.history and action.place and not contains(message, action.place) and CONTEXTUAL.search(message):
+                previous = knowledge.mentioned(self.history[-1][0], parks, kind)
+                if len(previous) == 1 and (doc is None or previous[0].id != doc.id):
+                    self._trace_note = {"pronoun": action.place, "used": previous[0].id}
+                    doc = previous[0]
             if doc is None:
                 notes.append(f"没找到叫“{action.place}”的{'住处' if kind == 'lodging' else '景点'}，没有改。" if zh else
                              f"I couldn't find “{action.place}” in this trip's parks, so nothing changed.")
@@ -199,12 +218,17 @@ class Session:
 
     def _answers(self, asks: list, result: dict | None, zh: bool, trace: dict, message: str = "") -> list[str]:
         out = []
+        solo = len(asks) == 1 and self._solo
         parks = (result or {}).get("request", {}).get("parks") or self.intake.parks.value or []
         for action in asks:
             # 一句话只问了一件事：模型按用户原话回答，调度员补全的问法帮着找资料；问了几件的，按调度员拆开的问法
-            question = message if len(asks) == 1 and message else action.query
-            said, qa_trace = qa.answer(question, parks, self.last_text, self.provider, zh, stop_ids(result),
-                                       meaning=action.query if question != action.query else "")
+            # 这句话只是在问（没有别的事要做）：按原话回答；一句话里还有别的事（“第一晚住 El Portal，冰川点几月开？”），按调度员拆出来的问法
+            question = message if solo and message and qa.is_question(message) else action.query
+            # 补全的问法只在原话要靠上下文才看得懂时用（“那条步道多长”“雷尼尔山呢”）；原话自己说清楚了的不用，
+            # 补全有时会补错（把“雾径”补成编出来的英文名），小模型会跟着错的走
+            needs_context = CONTEXTUAL.search(question) is not None
+            meaning = action.query if question != action.query and needs_context else ""
+            said, qa_trace = qa.answer(question, parks, self.last_text, self.provider, zh, stop_ids(result), meaning=meaning)
             trace.setdefault("qa", []).append({"query": action.query, **qa_trace})
             out.append(said)
         return out
@@ -216,8 +240,11 @@ class Session:
         return {key: value for key, value in request.items() if value is not None and key != "provenance"}
 
     def _quick_answer(self, message: str) -> bool:
-        """刚问了用户一句、回答很短（“5”“2”“是的”）：直接按追问读"""
-        return bool(self.intake.pending or self.intake.asked) and len(message.strip()) <= QUICK_ANSWER_CHARS
+        """刚问了用户一句、回答像是在答这一问（“5”“5天”“2”“是的”“第二个”）：直接按追问读，不用调度员。
+        “雷尼尔山呢？”这种带问号、像在提问的不算"""
+        text = message.strip()
+        return (bool(self.intake.pending or self.intake.asked) and len(text) <= QUICK_ANSWER_CHARS
+                and not qa.is_question(text) and QUICK_ANSWER.fullmatch(text) is not None)
 
     # ---------- 排行程（两条路共用） ----------
     def _plan(self, request: dict, head: list[str], zh: bool, trace: dict) -> Reply:

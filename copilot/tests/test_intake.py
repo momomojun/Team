@@ -333,3 +333,23 @@ def test_parks_by_region_or_state(make_intake):
     other = make_intake(extraction())
     other.step("你知道西雅图附近的三个国家公园是哪三个吗？")
     assert other.parks.value is None
+
+
+def test_typo_in_a_park_name_is_asked_back(make_intake):
+    # 10-19 仓库主人：“奥林匹亚”是打错字，不要当别名加；像某座公园就反问一句
+    intake = make_intake(extraction(parks=["北瀑布", "雷尼尔山", "奥林匹亚"], dates=["2027年7月10日"]))
+    turn = intake.step("2027年7月10日去北瀑布，雷尼尔山和奥林匹亚")
+    assert turn.question["kind"] == "confirm_park"
+    assert turn.question["text"] == "你说的“奥林匹亚”是奥林匹克（Olympic）吗？北瀑布、雷尼尔山已经记下了。"
+    intake.step("是的")
+    assert sorted(intake.parks.value) == ["mora", "noca", "olym"]
+
+
+def test_typo_rejected_and_unknown_names_are_said_out_loud(make_intake):
+    intake = make_intake(extraction(parks=["Yosemity"]), extraction(parks=["优胜美地", "火星公园"]))
+    assert intake.step("I want to visit Yosemity").question["text"] == "By “Yosemity”, did you mean Yosemite?"
+    turn = intake.step("no")
+    assert intake.parks.value is None and turn.question["kind"] == "parks"
+    other = make_intake(extraction(parks=["优胜美地", "火星公园"]))
+    turn = other.step("去优胜美地和火星公园")
+    assert other.parks.value == ["yose"] and "没认出“火星公园”，先没算进去。" in turn.notices

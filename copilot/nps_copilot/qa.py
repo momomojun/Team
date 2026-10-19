@@ -36,6 +36,15 @@ def is_question(message: str) -> bool:
     return QUESTION.search(normalize(message)) is not None
 
 
+def travel_months(plan_text: str) -> str:
+    """行程里的日期范围和月份（“2026-10-31 到 2026-11-04（10 月、11 月）”）：让模型不用自己推算出行月份"""
+    dates = sorted(set(re.findall(r"(\d{4}-\d{2}-\d{2})", plan_text)))
+    if not dates:
+        return ""
+    months = "、".join(dict.fromkeys(f"{int(d[5:7])} 月" for d in dates))
+    return f"{dates[0]} 到 {dates[-1]}（{months}）" if len(dates) > 1 else f"{dates[0]}（{months}）"
+
+
 def trip_context(plan_text: str) -> str:
     """给模型看的行程：上一次回复里的行程，去掉 Airbnb 链接（很长、对回答没用）"""
     return "\n".join(line for line in plan_text.splitlines() if "http" not in line) or "（还没排出行程）"
@@ -51,8 +60,13 @@ def stop_briefs(stops: list[str]) -> list[str]:
     return lines
 
 
-def build_user(question: str, trip: str, docs: list[Doc], briefs: list[str] | None = None, meaning: str = "") -> str:
+def build_user(question: str, trip: str, docs: list[Doc], briefs: list[str] | None = None, meaning: str = "",
+               when: str = "", zh: bool = True) -> str:
     parts = [f"问题：{question}"]
+    if not zh:
+        parts.append("（用户用英文问的：answer 用英文写，Answer in English.）")
+    if when:
+        parts.append(f"出行日期：{when}")
     if meaning and normalize(meaning) != normalize(question):
         parts.append(f"（按前面的对话，大概是问：{meaning}。以用户原话为准）")
     parts += ["", "[0] 行程：", trip]
@@ -105,7 +119,7 @@ def answer(question: str, parks: list[str], plan_text: str, provider: Provider |
         return fallback(question, docs, zh), trace
     prompt = prompts.load("qa")
     trace["prompt"] = prompt.id
-    user = build_user(question, trip, docs, briefs, meaning)
+    user = build_user(question, trip, docs, briefs, meaning, travel_months(plan_text), zh)
     trace["stop_briefs"] = len(briefs)
     try:
         completion = provider.complete_json("qa", prompt.text, user, QA_SCHEMA)

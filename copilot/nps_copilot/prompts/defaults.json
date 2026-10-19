@@ -1,6 +1,6 @@
 {
   "intake": "v1",
   "writer": "v1",
-  "qa": "v1",
+  "qa": "v2",
   "dispatch": "v1"
 }
