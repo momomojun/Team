@@ -16,7 +16,7 @@ import type { Photo } from "@/data/attractions/types";
 import { climate } from "@/data/climate.generated";
 import type { LodgingOption } from "@/data/lodging";
 import type { ServicePoint } from "@/data/services.generated";
-import { fill, formatBig, formatDuration, formatMonths } from "@/i18n/format";
+import { fill, formatBig, formatDuration, formatMonths, joinList } from "@/i18n/format";
 import { crowdOf } from "@/lib/crowd";
 import { addDays, monthOf, nominalDate } from "@/lib/dates";
 import { airbnbUrl } from "@/lib/airbnb";
@@ -39,6 +39,7 @@ import {
   type PlanStop,
 } from "@/lib/planner";
 import { formatClock, minutesOfDay, sunTimes } from "@/lib/sun";
+import { closureOn, lodgingOpenOn, seasonOf } from "@/lib/lodging-season";
 import { moveItem, setNight } from "@/lib/trip-edit";
 import { bestRoadDay, ROAD_LIKELY, roadFor } from "@/lib/roads";
 import { datedSchedule, runsOn, tourScheduleOf, tourSeason } from "@/lib/tours";
@@ -387,7 +388,25 @@ export function Planner({
     const candidates = lodgingOptions
       .filter((option) => parksNearby.has(option.park))
       .map((option) => resolve({ kind: "option", id: option.id })!);
-    return rankLodging(candidates, lastStop, nextStop, { back: refDateOf(night - 1), out: refDateOf(night) });
+    // 这晚不营业的排到最后、标出来（只定了月份时按那个月的 15 号算）
+    const checkIn = refDateOf(night - 1);
+    return rankLodging(candidates, lastStop, nextStop, { back: checkIn, out: refDateOf(night) })
+      .map((rank) => ({ ...rank, closed: !lodgingOpenOn(rank.lodging.id, checkIn) }))
+      .sort((a, b) => Number(a.closed) - Number(b.closed));
+  };
+  /** 第 night 晚住的地方这晚不营业：说一句它什么时候营业 */
+  const closedNoteFor = (night: number, lodging: ResolvedLodging | undefined) => {
+    const season = seasonOf(lodging?.id);
+    const date = refDateOf(night - 1);
+    if (!lodging || !season || !date || lodgingOpenOn(lodging.id, date)) return undefined;
+    const monthDay = (value: string) => {
+      const [m, d] = value.slice(-5).split("-").map(Number);
+      return fill(t.lodging.monthDay, { m, d });
+    };
+    const closure = closureOn(season, date);
+    if (closure) return closure.to ? fill(t.lodging.closedUntil, { date: monthDay(closure.to) }) : t.lodging.closedNoDate;
+    const ranges = (season.open ?? []).map(({ from, to }) => fill(t.lodging.seasonRange, { from: monthDay(from), to: monthDay(to) }));
+    return fill(t.lodging.closedTonight, { ranges: joinList(ranges, text.units), year: season.year });
   };
   /** 第 night 晚住 lodging 的话，在 Airbnb 上按整段连住的日期搜 */
   const airbnbFor = (night: number) => (lodging: ResolvedLodging) => {
@@ -441,7 +460,7 @@ export function Planner({
     updateTrip((current) => {
       let next = current;
       for (let night = 1; night <= current.dayCount; night++) {
-        const best = current.nights[night] ? undefined : rankedFor(night)[0];
+        const best = current.nights[night] ? undefined : rankedFor(night).find((rank) => !rank.closed);
         if (best) next = setNight(next, night, { kind: "option", id: best.lodging.id });
       }
       return next;
@@ -1398,6 +1417,7 @@ export function Planner({
                         : t.lodging.tonight;
                     })()}
                     current={view.to}
+                    closedNote={closedNoteFor(night, view.to)}
                     ranked={rankedFor(night)}
                     previous={trip.nights[night - 1]}
                     searchNear={searchNearFor(night)}
