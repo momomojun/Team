@@ -87,6 +87,7 @@ import { PageHeader } from "@/components/site/page-header";
 import { closedAllDays } from "@/lib/closures";
 
 const LODGING_COLOR = "#2f4a5a";
+const CAMP_COLOR = "#3f6b4e";
 /** 地图显示整个行程（每天一种颜色） */
 const ALL_DAYS = -1;
 /** 自定义住处只查这个范围内公园的景点车程 */
@@ -129,6 +130,8 @@ export function Planner({
   const t = text.plan;
   const trip = useTrip();
   const [mapDay, setMapDay] = useState(ALL_DAYS);
+  const [campMap, setCampMap] = useState(false);
+  const [campPick, setCampPick] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   // 行程里展开详情的景点；“添加景点”列表里展开的另算
   const [openId, setOpenId] = useState<string | null>(null);
@@ -289,6 +292,8 @@ export function Planner({
           note: option.note,
           rental: option.rental,
           airbnb: option.airbnb,
+          camp: option.camp,
+          bookUrl: option.bookUrl,
         }
       : undefined;
   };
@@ -460,7 +465,11 @@ export function Planner({
     updateTrip((current) => {
       let next = current;
       for (let night = 1; night <= current.dayCount; night++) {
-        const best = current.nights[night] ? undefined : rankedFor(night).find((rank) => !rank.closed);
+        const preferCamp = current.guide?.lodgingPref === "camp";
+        const best = current.nights[night]
+          ? undefined
+          : rankedFor(night).find((rank) => !rank.closed && (preferCamp ? rank.lodging.camp : !rank.lodging.camp)) ??
+            rankedFor(night).find((rank) => !rank.closed);
         if (best) next = setNight(next, night, { kind: "option", id: best.lodging.id });
       }
       return next;
@@ -528,6 +537,7 @@ export function Planner({
               inPark: option.inPark,
               rental: option.rental,
               airbnb: option.airbnb,
+              camp: option.camp,
             })),
           sunFor,
           dateFor,
@@ -667,7 +677,7 @@ export function Planner({
     const stop = byId.get(id);
     if (opening && stop) loadGallery(stop.park);
   };
-  const parkHref = (stop: AttractionWithPhoto) => `/${locale}/parks/${stop.park}#attraction-${stop.id}`;
+  const parkHref = (stop: AttractionWithPhoto) => `/${locale}/parks/${stop.park}/attractions#attraction-${stop.id}`;
   const detailsFor = (stop: AttractionWithPhoto, month: number | null, onClose: () => void, actions?: ReactNode) => (
     <StopDetails
       stop={stop}
@@ -686,9 +696,10 @@ export function Planner({
   // 地图：整个行程（每天一种颜色）或者某一天：前一晚住处 → 景点 → 当晚住处
   // 换住处的一天（没安排景点，比如最后一天开回机场）也画路线、算油费
   const scheduledDays = dayViews.filter((view) => view.rows.length > 0 || view.timeline.returnAt !== undefined);
-  const showAll = mapDay === ALL_DAYS && trip.days.length > 1;
+  const showAll = !campMap && mapDay === ALL_DAYS && trip.days.length > 1;
+  const routeAll = campMap || showAll;
   const mapIndex = Math.min(Math.max(mapDay, 0), trip.days.length - 1);
-  const mapViews = showAll ? scheduledDays : dayViews[mapIndex]?.rows.length ? [dayViews[mapIndex]] : [];
+  const mapViews = routeAll ? scheduledDays : dayViews[mapIndex]?.rows.length ? [dayViews[mapIndex]] : [];
   const lodgingPoint = (lodging: ResolvedLodging): MapPoint => ({
     id: `lodging-${lodging.id}`,
     lat: lodging.lat,
@@ -736,6 +747,23 @@ export function Planner({
     });
     if (view.to) addPoint(lodgingPoint(view.to));
   }
+  const tripParks = new Set(dayViews.flatMap((view) => view.rows.map((row) => row.stop.park)));
+  const campSites = lodgingOptions.filter((option) => option.camp && tripParks.has(option.park));
+  if (campMap) {
+    for (const camp of campSites) {
+      addPoint({
+        id: `camp-${camp.id}`,
+        lat: camp.lat,
+        lon: camp.lon,
+        label: camp.nameZh,
+        sublabel: camp.nameEn,
+        color: CAMP_COLOR,
+        shape: "camp",
+        emphasis: trip.nights.some((night) => night?.kind === "option" && night.id === camp.id),
+      });
+    }
+  }
+  const pickedCamp = campSites.find((camp) => camp.id === campPick);
   if (mapViews.length === 0) {
     for (const id of allIds) {
       const stop = byId.get(id);
@@ -896,7 +924,8 @@ export function Planner({
       const entry = i >= 0 ? weatherData.forecasts[i]?.find((forecast) => forecast.date === date) : undefined;
       if (entry) {
         const alerts = (weatherData.alerts[i] ?? []).filter((alert) => alertCovers(alert, date, todayDate));
-        return { kind: "forecast", day: entry, alerts };
+        const air = weatherData.air?.[i]?.find((day) => day.date === date);
+        return { kind: "forecast", day: entry, alerts, ...(air ? { air } : {}) };
       }
     }
     const stop = climateStop(view.day);
@@ -1405,6 +1434,7 @@ export function Planner({
                       onChange={(lodging) => updateTrip((current) => setNight(current, 0, lodging))}
                       measure={measure}
                       airbnbHref={airbnbFor(0)}
+                      preferCamp={trip.guide?.lodgingPref === "camp"}
                     />
                   ) : undefined
                 }
@@ -1425,6 +1455,7 @@ export function Planner({
                     onChange={(lodging) => updateTrip((current) => setNight(current, night, lodging))}
                     measure={measure}
                     airbnbHref={night < trip.dayCount ? airbnbFor(night) : undefined}
+                    preferCamp={trip.guide?.lodgingPref === "camp"}
                   />
                 }
               />
@@ -1556,31 +1587,53 @@ export function Planner({
 
         <div className="lg:col-span-5 print:hidden">
           <div id="plan-map" className="scroll-mt-32 space-y-4 lg:sticky lg:top-32">
-            {trip.days.length > 1 && (
+            {(trip.days.length > 1 || campSites.length > 0) && (
               <div className="flex flex-wrap gap-x-5 gap-y-2" role="group" aria-label={t.showOnMap}>
-                <button type="button" className={chip(showAll)} aria-pressed={showAll} onClick={() => {
-                    setMapDay(ALL_DAYS);
-                    setSelectedId(null);
-                  }}
-                >
-                  {t.wholeTrip}
-                </button>
-                {trip.days.map((_, day) => (
-                  <button
-                    key={day}
-                    type="button"
-                    className={chip(!showAll && day === mapIndex)}
-                    aria-pressed={!showAll && day === mapIndex}
-                    onClick={() => {
-                      setMapDay(day);
+                {trip.days.length > 1 && (
+                  <button type="button" className={chip(showAll)} aria-pressed={showAll} onClick={() => {
+                      setCampMap(false);
+                      setCampPick(null);
+                      setMapDay(ALL_DAYS);
                       setSelectedId(null);
                     }}
                   >
-                    {fill(t.day, { n: day + 1 })}
+                    {t.wholeTrip}
                   </button>
-                ))}
+                )}
+                {trip.days.length > 1 &&
+                  trip.days.map((_, day) => (
+                    <button
+                      key={day}
+                      type="button"
+                      className={chip(!campMap && !showAll && day === mapIndex)}
+                      aria-pressed={!campMap && !showAll && day === mapIndex}
+                      onClick={() => {
+                        setCampMap(false);
+                        setCampPick(null);
+                        setMapDay(day);
+                        setSelectedId(null);
+                      }}
+                    >
+                      {fill(t.day, { n: day + 1 })}
+                    </button>
+                  ))}
+                {campSites.length > 0 && (
+                  <button
+                    type="button"
+                    className={chip(campMap)}
+                    aria-pressed={campMap}
+                    onClick={() => {
+                      setCampMap(true);
+                      setCampPick(null);
+                      setSelectedId(null);
+                    }}
+                  >
+                    {t.lodging.map}
+                  </button>
+                )}
               </div>
             )}
+            {campMap && <p className="text-xs leading-6 text-mute">{t.lodging.mapHint}</p>}
             <ParkMap
               imagery={stopParks.some((code) => parks.find((park) => park.code === code)?.country === "CA") ? "eox" : "usgs"}
               points={mapPoints}
@@ -1588,16 +1641,56 @@ export function Planner({
               highlightTrailId={selectedId}
               legs={mapLegs}
               legend={mapLegend}
-              fitKey={showAll ? "all" : String(mapIndex)}
+              fitKey={campMap ? "camps" : showAll ? "all" : String(mapIndex)}
               extras={supplyExtras}
               extrasLegend={supplyLegend}
               selectedId={selectedId}
               onSelect={(id) => {
+                if (id.startsWith("camp-")) {
+                  const campId = id.slice("camp-".length);
+                  setCampPick((current) => (current === campId ? null : campId));
+                  setSelectedId(id);
+                  return;
+                }
                 if (!id.startsWith("lodging-")) selectOnMap(id);
               }}
               text={text.map}
               className="h-96 lg:h-[calc(100vh-12rem)]"
-            />
+            >
+              {campMap && pickedCamp && (
+                <div className="absolute bottom-3 left-3 z-10 max-w-xs bg-paper/95 px-4 py-3 text-sm shadow-sm">
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="font-serif text-base">{pickedCamp.nameZh}</p>
+                    <button
+                      type="button"
+                      className="text-mute hover:text-ink"
+                      aria-label={t.lodging.mapClose}
+                      onClick={() => setCampPick(null)}
+                    >
+                      <IconClose />
+                    </button>
+                  </div>
+                  {pickedCamp.note && <p className="mt-1 text-xs leading-5 text-mute">{pickedCamp.note}</p>}
+                  {pickedCamp.bookUrl && (
+                    <a href={pickedCamp.bookUrl} target="_blank" rel="noreferrer" className="link-line mt-1 inline-block text-xs text-clay-700">
+                      {t.lodging.book}
+                    </a>
+                  )}
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {Array.from({ length: trip.dayCount }, (_, index) => index + 1).map((night) => (
+                      <button
+                        key={night}
+                        type="button"
+                        className={buttonPrimary}
+                        onClick={() => updateTrip((current) => setNight(current, night, { kind: "option", id: pickedCamp.id }))}
+                      >
+                        {fill(t.lodging.mapNight, { n: night })}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </ParkMap>
           </div>
         </div>
       </div>

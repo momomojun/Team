@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { IconArrowUpRight, IconCar, IconPlane } from "@/components/icons";
 import { daysBetween, roundTrip } from "@/components/plan/flights-car";
 import { buttonPrimary } from "@/components/ui";
@@ -8,8 +8,10 @@ import type { Airport } from "@/data/airports";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { fill, formatDuration } from "@/i18n/format";
 import { addDays } from "@/lib/dates";
-import { flightKey, saveFlight, useFlightStore } from "@/lib/flight-store";
+import { flightKey, saveFlight, useFlightStore, type FlightStore } from "@/lib/flight-store";
+import { LDW_PER_DAY, pickupNotes, SLI_PER_DAY } from "@/lib/prices/car-cover";
 import { carRates, carRatesDate, carRatesSource, DEFAULT_CAR_RATE } from "@/lib/prices/car-rates";
+import { flexTripQueries } from "@/lib/prices/flex-dates";
 import {
   DC_FAST_PRICE,
   fuelPricesDate,
@@ -66,16 +68,84 @@ function FlightPrice({ result, adults, text }: { result?: FlightResult; adults: 
   );
 }
 
+function showDay(date: string, hl: string) {
+  const [year, month, day] = date.split("-").map(Number);
+  return new Date(Date.UTC(year, month - 1, day)).toLocaleDateString(hl, { month: "short", day: "numeric", timeZone: "UTC" });
+}
+
+function FlexPrices({
+  queries,
+  store,
+  adults,
+  text,
+  hl,
+  links,
+}: {
+  queries: FlightQuery[];
+  store: FlightStore;
+  adults: number;
+  text: PricesText;
+  hl: string;
+  links: (query: FlightQuery) => ReactNode;
+}) {
+  const rows = queries.map((query) => ({ query, result: store[flightKey(query)] }));
+  const cheapest = rows.reduce<number | null>((best, row) => {
+    const price = row.result?.quotes[0]?.price;
+    if (price === undefined) return best;
+    return best === null || price < best ? price : best;
+  }, null);
+  const best = rows.find((row) => row.result?.quotes[0]?.price === cheapest);
+
+  return (
+    <div className="mt-6">
+      {best && cheapest !== null ? (
+        <p className="text-sm">
+          {fill(text.flexCheapest, {
+            depart: showDay(best.query.legs[0].date, hl),
+            back: showDay(best.query.legs[1].date, hl),
+            price: money(cheapest),
+          })}
+        </p>
+      ) : (
+        <p className="text-sm text-mute">{text.flexNone}</p>
+      )}
+      <ul className="mt-3 divide-y divide-line border-y border-line">
+        {rows.map(({ query, result }) => {
+          const price = result?.quotes[0]?.price;
+          const isCheapest = price !== undefined && price === cheapest;
+          return (
+            <li key={flightKey(query)} className="flex flex-wrap items-start justify-between gap-3 py-3 text-sm">
+              <div>
+                <p className={isCheapest ? "font-medium" : undefined}>
+                  {showDay(query.legs[0].date, hl)} → {showDay(query.legs[1].date, hl)}
+                  <span className="ml-2 text-xs font-normal text-mute">
+                    {query.legs[0].from} ⇄ {query.legs[0].to}
+                  </span>
+                </p>
+                <div className="mt-1">{links(query)}</div>
+              </div>
+              <FlightPrice result={result} adults={adults} text={text} />
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
 export function PriceCenter({
   airports,
   parks,
   locale,
   text,
+  section,
 }: {
   airports: Record<string, Airport>;
   parks: PricePark[];
   locale: string;
   text: PricesText;
+  /** 这一页只显示一块：机票、租车或油价 */
+  section: "flights" | "car" | "gas";
 }) {
   const hl = locale === "zh-Hant" ? "zh-TW" : locale === "en" ? "en-US" : "zh-CN";
   const prefs = useTripPrefs();
@@ -91,10 +161,21 @@ export function PriceCenter({
   const [comparePark, setComparePark] = useState(parks.find((p) => p.code === "yell")?.code ?? parks[0]?.code ?? "");
   const [checking, setChecking] = useState(false);
   const [status, setStatus] = useState<"notConfigured" | "failed" | null>(null);
+  const [flexible, setFlexible] = useState(false);
+  const [span, setSpan] = useState(14);
+  const [nights, setNights] = useState<number[]>([7]);
   const home = prefs.homeAirport;
   const adults = prefs.travelers;
   const outDate = out ?? defaultOut;
-  const backDate = back ?? (outDate ? addDays(outDate, 7) : "");
+  const backDate = flexible
+    ? outDate
+      ? addDays(outDate, nights[0] ?? 7)
+      : ""
+    : (back ?? (outDate ? addDays(outDate, 7) : ""));
+  const flexQueries =
+    flexible && IATA.test(home) && IATA.test(destination) && outDate && home !== destination
+      ? flexTripQueries(home, destination, outDate, span, nights, adults)
+      : [];
   const query = (to: string): FlightQuery | null => {
     if (!IATA.test(home) || !IATA.test(to) || !outDate || home === to) return null;
     return backDate
@@ -157,7 +238,7 @@ export function PriceCenter({
   const airportList = Object.values(airports).sort((a, b) => a.code.localeCompare(b.code));
 
   // ---------- 油价 ----------
-  const gasData = useJson<GasPrices>("/api/prices/gas");
+  const gasData = useJson<GasPrices>(section === "gas" ? "/api/prices/gas" : null);
   const gas = gasData ?? { states: gasSnapshot, date: fuelPricesDate, live: false };
   const [km, setKm] = useState(1500);
   const [mpg, setMpg] = useState(MILES_PER_GALLON);
@@ -188,16 +269,25 @@ export function PriceCenter({
   );
 
   return (
-    <div className="space-y-24">
-      {/* 机票 */}
-      <section id="flights" className="scroll-mt-32 border-t border-ink pt-6">
+    <div>
+      {section === "flights" && (
+      <section>
         <p className="eyebrow text-mute">{text.flightsEyebrow}</p>
         <h2 className="mt-4 flex items-center gap-3 font-serif text-3xl">
           <IconPlane className="text-2xl text-mute" /> {text.flightsTitle}
         </h2>
         <p className="mt-3 max-w-3xl text-sm leading-7 text-ink-soft">{text.flightsIntro}</p>
 
-        <div className="mt-8 flex flex-wrap items-end gap-x-8 gap-y-5">
+        <div className="mt-8 flex gap-6 text-sm">
+          <button type="button" aria-pressed={!flexible} onClick={() => setFlexible(false)} className={flexible ? "text-mute" : "link-line"}>
+            {text.dateMode.fixed}
+          </button>
+          <button type="button" aria-pressed={flexible} onClick={() => setFlexible(true)} className={flexible ? "link-line" : "text-mute"}>
+            {text.dateMode.flex}
+          </button>
+        </div>
+
+        <div className="mt-6 flex flex-wrap items-end gap-x-8 gap-y-5">
           <label className="eyebrow max-w-full text-mute">
             {text.home}
             <input
@@ -220,13 +310,47 @@ export function PriceCenter({
             </select>
           </label>
           <label className="eyebrow max-w-full text-mute">
-            {text.depart}
+            {flexible ? text.earliest : text.depart}
             <input type="date" value={outDate} onChange={(event) => setOut(event.target.value)} className={field} />
           </label>
-          <label className="eyebrow max-w-full text-mute">
-            {text.return}
-            <input type="date" value={backDate} onChange={(event) => setBack(event.target.value)} className={field} />
-          </label>
+          {flexible ? (
+            <>
+              <label className="eyebrow max-w-full text-mute">
+                {text.window}
+                <select value={span} onChange={(event) => setSpan(Number(event.target.value))} className={field}>
+                  {[7, 14].map((days) => (
+                    <option key={days} value={days}>
+                      {fill(text.windowDays, { n: days })}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <fieldset className="eyebrow text-mute">
+                <legend>{text.lengths}</legend>
+                <div className="mt-2 flex gap-4 normal-case tracking-normal">
+                  {[5, 7, 10].map((days) => (
+                    <label key={days} className="flex items-center gap-1.5 text-sm text-ink">
+                      <input
+                        type="checkbox"
+                        checked={nights.includes(days)}
+                        onChange={() =>
+                          setNights((current) =>
+                            current.includes(days) ? current.filter((n) => n !== days) : [...current, days].sort((a, b) => a - b),
+                          )
+                        }
+                      />
+                      {fill(text.lengthDays, { n: days })}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            </>
+          ) : (
+            <label className="eyebrow max-w-full text-mute">
+              {text.return}
+              <input type="date" value={backDate} onChange={(event) => setBack(event.target.value)} className={field} />
+            </label>
+          )}
           <label className="eyebrow max-w-full text-mute">
             {text.travelers}
             <select value={adults} onChange={(event) => updatePrefs({ travelers: Number(event.target.value) })} className={`${field} max-w-full`}>
@@ -237,16 +361,26 @@ export function PriceCenter({
               ))}
             </select>
           </label>
-          <button type="button" className={buttonPrimary} disabled={checking || !query(destination)} onClick={() => check([query(destination)])}>
+          <button
+            type="button"
+            className={buttonPrimary}
+            disabled={checking || (flexible ? flexQueries.length === 0 : !query(destination))}
+            onClick={() => check(flexible ? flexQueries : [query(destination)])}
+          >
             {checking ? text.checking : text.check}
           </button>
         </div>
-        <p className="mt-3 text-xs text-mute">{backDate ? text.roundTripHint : text.oneWayHint}</p>
+        <p className="mt-3 text-xs text-mute">{flexible ? text.flexHint : backDate ? text.roundTripHint : text.oneWayHint}</p>
+        {flexible && nights.length === 0 && <p className="mt-2 text-xs text-clay-700">{text.flexNeedLengths}</p>}
         {!home && <p className="mt-2 text-xs text-clay-700">{text.needHome}</p>}
         {status === "notConfigured" && <p className="mt-2 text-xs text-clay-700">{text.notConfigured}</p>}
         {status === "failed" && <p className="mt-2 text-xs text-clay-700">{text.failed}</p>}
 
-        {(() => {
+        {flexible && flexQueries.length > 0 && (
+          <FlexPrices queries={flexQueries} store={store} adults={adults} text={text} hl={hl} links={links} />
+        )}
+
+        {!flexible && (() => {
           const q = query(destination);
           if (!q) return null;
           const result = store[flightKey(q)];
@@ -321,9 +455,10 @@ export function PriceCenter({
           </ul>
         </div>
       </section>
+      )}
 
-      {/* 租车 */}
-      <section id="car" className="scroll-mt-32 border-t border-ink pt-6">
+      {section === "car" && (
+      <section>
         <p className="eyebrow text-mute">{text.carEyebrow}</p>
         <h2 className="mt-4 flex items-center gap-3 font-serif text-3xl">
           <IconCar className="text-2xl text-mute" /> {text.carTitle}
@@ -376,6 +511,16 @@ export function PriceCenter({
                 : fill(text.carNoRate, { rate: money(DEFAULT_CAR_RATE) })}
             </p>
             {drop !== pickup && <p className="mt-1 text-xs text-clay-700">{text.oneWay}</p>}
+            <p className="mt-2 text-sm leading-7">
+              {fill(text.withInsurance, {
+                base: money(rentDays * (rate?.car ?? DEFAULT_CAR_RATE)),
+                ldwRate: money(LDW_PER_DAY),
+                sliRate: money(SLI_PER_DAY),
+                withLdw: money(rentDays * ((rate?.car ?? DEFAULT_CAR_RATE) + LDW_PER_DAY)),
+                withBoth: money(rentDays * ((rate?.car ?? DEFAULT_CAR_RATE) + LDW_PER_DAY + SLI_PER_DAY)),
+              })}
+            </p>
+            {text.pickupNotes[pickup] && <p className="mt-2 text-sm leading-7 text-clay-800">{text.pickupNotes[pickup]}</p>}
           </div>
           {carQuery && (
             <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
@@ -387,6 +532,20 @@ export function PriceCenter({
               </a>
             </p>
           )}
+        </div>
+
+        <div className="mt-10">
+          <h3 className="font-serif text-2xl">{text.platformsTitle}</h3>
+          <ul className="mt-4 divide-y divide-line border-y border-line">
+            {text.platforms.map((platform) => (
+              <li key={platform.name} className="py-4 text-sm leading-7">
+                <p className="font-medium">{platform.name}</p>
+                <p className="mt-1 text-ink-soft">{platform.quote}</p>
+                <p className="text-ink-soft">{platform.pickup}</p>
+                <p className="text-ink-soft">{platform.insurance}</p>
+              </li>
+            ))}
+          </ul>
         </div>
 
         <div className="mt-8 overflow-x-auto">
@@ -427,9 +586,10 @@ export function PriceCenter({
           ))}
         </ul>
       </section>
+      )}
 
-      {/* 油价 */}
-      <section id="gas" className="scroll-mt-32 border-t border-ink pt-6">
+      {section === "gas" && (
+      <section>
         <p className="eyebrow text-mute">{text.gasEyebrow}</p>
         <h2 className="mt-4 font-serif text-3xl">{text.gasTitle}</h2>
         <p className="mt-3 max-w-3xl text-sm leading-7 text-ink-soft">{text.gasIntro}</p>
@@ -532,6 +692,7 @@ export function PriceCenter({
           ))}
         </ul>
       </section>
+      )}
     </div>
   );
 }

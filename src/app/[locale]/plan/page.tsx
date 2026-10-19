@@ -6,6 +6,7 @@ import { airports } from "@/data/airports";
 import { attractions } from "@/data/attractions";
 import { bookingRules } from "@/data/bookings";
 import { darkSky } from "@/data/honors";
+import { campgrounds } from "@/data/campgrounds";
 import { lodgingOptions } from "@/data/lodging";
 import { isSite, parks } from "@/data/parks";
 import { seasonalRoads } from "@/data/roads";
@@ -38,7 +39,7 @@ export default async function PlanPage({ params }: PageProps<"/[locale]/plan">) 
         locale={locale}
         // 行程页不显示照片，不把图集传给浏览器
         attractions={attractions.map((a) => ({ ...localizeAttraction(a, locale), photo: undefined, gallery: [] }))}
-        lodgingOptions={lodgingOptions.map((option) => localizeLodging(option, locale))}
+        lodgingOptions={[...lodgingOptions, ...campgrounds].map((option) => localizeLodging(option, locale))}
         activities={activities.map((activity) => localizeActivity(activity, locale))}
         bookingRules={bookingRules.map((rule) => ({
           ...rule,

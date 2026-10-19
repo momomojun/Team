@@ -127,7 +127,8 @@
       "enum": [
         "any",
         "hotel",
-        "rental"
+        "rental",
+        "camp"
       ]
     },
     "party": {

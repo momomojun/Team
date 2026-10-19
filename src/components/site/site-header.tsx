@@ -60,8 +60,8 @@ export function SiteHeader({
             <TripNavLink href={`/${locale}/plan`} label={text.plan} />
             <NavLink href={`/${locale}/when`} label={text.when} active={pathname === `/${locale}/when`} />
             <NavLink href={`/${locale}/routes`} label={text.routes} active={pathname === `/${locale}/routes`} />
-            <NavLink href={`/${locale}/prices`} label={text.prices} active={pathname === `/${locale}/prices`} />
-            <NavLink href={`/${locale}/rankings`} label={text.rankings} active={pathname === `/${locale}/rankings`} />
+            <NavLink href={`/${locale}/prices`} label={text.prices} active={pathname === `/${locale}/prices` || pathname.startsWith(`/${locale}/prices/`)} />
+            <NavLink href={`/${locale}/rankings`} label={text.rankings} active={pathname === `/${locale}/rankings` || pathname.startsWith(`/${locale}/rankings/`)} />
           </nav>
 
           <Link

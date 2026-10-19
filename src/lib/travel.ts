@@ -67,6 +67,12 @@ const parkOf = (node: string) => {
 };
 const tableNode = (node: string) => (node.endsWith(":gateway") ? "gateway" : node);
 
+/** 车程表里有没有这个点。新加的营地还没重新生成表时是 false，车程改按直线估算 */
+export function travelNodeListed(id: string): boolean {
+  const table = parkTravel[parkOf(id)];
+  return table?.nodes.includes(tableNode(id)) ?? false;
+}
+
 /** 两个景点（或公园定位点）之间的开车分钟数；跨公园时查相邻公园的表，没有就经过两边的定位点 */
 export function travelMinutes(from: string, to: string): number {
   if (from === to) return 0;

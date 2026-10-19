@@ -1,7 +1,9 @@
+import { PlaceCheckButtons } from "@/components/park/place-check";
 import { Section } from "@/components/section";
 import type { Park } from "@/data/parks";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { fill } from "@/i18n/format";
+import { nlrCheckKey } from "@/lib/place-check-keys";
 import {
   getChargersNear,
   isDcFast,
@@ -149,6 +151,7 @@ function StationRow({ station, t }: { station: ChargingStation; t: ChargerText }
             ))
           )}
         </div>
+        <PlaceCheckButtons id={nlrCheckKey(station.id)} text={t.check} />
       </td>
     </tr>
   );

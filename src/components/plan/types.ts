@@ -64,6 +64,10 @@ export interface ResolvedLodging extends LodgingPoint {
   rental?: boolean;
   /** Airbnb 搜索地名 */
   airbnb?: string;
+  /** 园内营地 */
+  camp?: boolean;
+  /** 订营位的页面 */
+  bookUrl?: string;
   /** 自动生成攻略的出发地 / 回程地（机场、城市），不是住处 */
   endpoint?: "origin" | "destination";
 }

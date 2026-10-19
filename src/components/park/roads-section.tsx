@@ -27,10 +27,12 @@ export function RoadsSection({
   roads,
   attractions,
   dict,
+  hrefFor,
 }: {
   roads: SeasonalRoad[];
   attractions: AttractionWithPhoto[];
   dict: Dictionary;
+  hrefFor: (id: string) => string;
 }) {
   const t = dict.park.activities.roads;
   const day = (md: MonthDay) => fill(t.monthDay, { m: Number(md.slice(0, 2)), d: Number(md.slice(3, 5)) });
@@ -72,7 +74,7 @@ export function RoadsSection({
               .map((id, i) => (
                 <span key={id}>
                   {i > 0 && dict.units.listSep}
-                  <a href={`#attraction-${id}`} className="hover:text-clay-700">
+                  <a href={hrefFor(id)} className="hover:text-clay-700">
                     {nameOf(id)}
                   </a>
                 </span>

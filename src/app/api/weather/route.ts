@@ -1,3 +1,4 @@
+import { getAirDays } from "@/lib/air";
 import { getForecasts, getWeatherAlerts } from "@/lib/weather";
 import type { WeatherResponse } from "@/lib/weather-types";
 
@@ -12,11 +13,12 @@ export async function GET(request: Request) {
     .filter(([lat, lon]) => Number.isFinite(lat) && Number.isFinite(lon) && Math.abs(lat) <= 90 && Math.abs(lon) <= 180)
     .slice(0, MAX_POINTS)
     .map(([lat, lon]) => ({ lat, lon }));
-  if (points.length === 0) return Response.json({ forecasts: [], alerts: [] } satisfies WeatherResponse);
+  if (points.length === 0) return Response.json({ forecasts: [], alerts: [], air: [] } satisfies WeatherResponse);
 
-  const [forecasts, alerts] = await Promise.all([
+  const [forecasts, alerts, air] = await Promise.all([
     getForecasts(points).catch(() => points.map(() => null)),
     Promise.all(points.map((point) => getWeatherAlerts(point).catch(() => []))),
+    getAirDays(points).catch(() => points.map(() => null)),
   ]);
-  return Response.json({ forecasts, alerts } satisfies WeatherResponse);
+  return Response.json({ forecasts, alerts, air } satisfies WeatherResponse);
 }

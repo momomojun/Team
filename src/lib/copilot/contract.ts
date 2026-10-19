@@ -13,7 +13,7 @@ export const TRIP_REQUEST_CONTRACT = "trip-request/v1";
 export const TRIP_RESULT_CONTRACT = "trip-result/v1";
 
 export type Pace = "relaxed" | "normal" | "packed";
-export type LodgingPref = "any" | "hotel" | "rental";
+export type LodgingPref = "any" | "hotel" | "rental" | "camp";
 
 /** 出发地 / 回程地：常用机场（三字码），或者任意地点（名字和坐标） */
 export type Place = { airport: string } | { name: string; lat: number; lon: number };
@@ -66,7 +66,7 @@ export const REQUEST_FIELDS = [
 export type RequestField = (typeof REQUEST_FIELDS)[number];
 
 export const PACES: Pace[] = ["relaxed", "normal", "packed"];
-export const LODGING_PREFS: LodgingPref[] = ["any", "hotel", "rental"];
+export const LODGING_PREFS: LodgingPref[] = ["any", "hotel", "rental", "camp"];
 export const MAX_TRIP_DAYS = 14;
 export const MAX_TRIP_PARKS = 4;
 

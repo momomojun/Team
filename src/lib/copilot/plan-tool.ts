@@ -1,5 +1,6 @@
 import { airports } from "../../data/airports";
 import { attractions, type AttractionWithPhoto } from "../../data/attractions";
+import { campgrounds } from "../../data/campgrounds";
 import { lodgingOptions } from "../../data/lodging";
 import { parks } from "../../data/parks";
 import { airbnbUrl } from "../airbnb";
@@ -49,7 +50,8 @@ export interface PlanOptions {
 
 const parkByCode = new Map(parks.map((park) => [park.code, park]));
 const stopById = new Map(attractions.map((stop) => [stop.id, stop]));
-const lodgingById = new Map(lodgingOptions.map((option) => [option.id, option]));
+const stayOptions = [...lodgingOptions, ...campgrounds];
+const lodgingById = new Map(stayOptions.map((option) => [option.id, option]));
 
 /** 机场 / 地点 → 生成攻略要的出发地、回程地；常用机场带上预先算好的到各景点的车程 */
 function endpoint(place: Place, role: "origin" | "destination", stops: PlanStop[]) {
@@ -105,7 +107,7 @@ export function planTrip(input: unknown, options: PlanOptions) {
       if (!known.has(id)) issues.push({ path: `/${key}/${i}`, message: `${id} 不是 ${request.parks.join(", ")} 的景点` });
     });
   }
-  const stays = new Set(lodgingOptions.filter((option) => request.parks.includes(option.park)).map((option) => option.id));
+  const stays = new Set(stayOptions.filter((option) => request.parks.includes(option.park)).map((option) => option.id));
   (request.lodging ?? []).forEach(({ night, id }, i) => {
     if (!stays.has(id)) issues.push({ path: `/lodging/${i}/id`, message: `${id} 不是 ${request.parks.join(", ")} 的推荐住宿` });
     if (night >= request.days) issues.push({ path: `/lodging/${i}/night`, message: `${request.days} 天的行程只有 ${request.days - 1} 晚在外面住` });
@@ -134,9 +136,17 @@ export function planTrip(input: unknown, options: PlanOptions) {
   if (!options.live) assumptions.push("no-live-alerts: 没有读 NPS 实时公告，只按仓库里整理的临时关闭");
 
   const stops = attractions.filter((a) => normalized.parks.includes(a.park));
-  const lodging = lodgingOptions
+  const lodging = stayOptions
     .filter((option) => normalized.parks.includes(option.park))
-    .map((option) => ({ id: option.id, lat: option.lat, lon: option.lon, inPark: option.inPark, rental: option.rental, airbnb: option.airbnb }));
+    .map((option) => ({
+      id: option.id,
+      lat: option.lat,
+      lon: option.lon,
+      inPark: option.inPark,
+      rental: option.rental,
+      airbnb: option.airbnb,
+      camp: option.camp,
+    }));
   const origin = endpoint(normalized.origin, "origin", stops);
   const destination = endpoint(normalized.destination!, "destination", stops);
   const { trip, guide } = generateTrip(
