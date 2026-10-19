@@ -6,8 +6,10 @@ name: NPS alerts (nightly)
 
 on:
   schedule:
-    # 每天 UTC 14:00（美国太平洋时间早上 7 点、北京时间晚上 10 点）
-    - cron: "0 14 * * *"
+    # 加州时间每天 0 点（仓库主人 10-19 定的）。GitHub 的定时只认 UTC，加州夏令时是 UTC-7、冬令时是 UTC-8，
+    # 所以 UTC 7 点、8 点各触发一次，下面的 when 只让加州正好是 0 点的那次往下跑
+    - cron: "0 7 * * *"
+    - cron: "0 8 * * *"
   workflow_dispatch:
 
 permissions:
@@ -19,9 +21,27 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  when:
+    name: Midnight in California?
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.check.outputs.run }}
+    steps:
+      - id: check
+        # 手动触发的照跑；定时触发的看加州现在几点（GitHub 的定时偶尔晚几十分钟，0 点那一小时都算）
+        run: |
+          hour=$(TZ=America/Los_Angeles date +%H)
+          echo "加州现在 $(TZ=America/Los_Angeles date '+%F %H:%M')"
+          if [ "${{ github.event_name }}" != "schedule" ] || [ "$hour" = "00" ]; then echo "run=true" >> "$GITHUB_OUTPUT"; else echo "run=false" >> "$GITHUB_OUTPUT"; fi
+
   alerts:
     name: Fetch NPS alerts, report new closures
+    needs: when
+    if: needs.when.outputs.run == 'true'
     runs-on: ubuntu-latest
+    env:
+      # 快照日期、issue 标题的日期都按加州的日子
+      TZ: America/Los_Angeles
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -54,4 +74,4 @@ jobs:
         if: steps.report.outputs.NEW != '0'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh issue create --label nps-alerts --title "NPS 公告：${{ steps.report.outputs.NEW }} 条新的关闭（$(date -u +%F)）/ New NPS closure alerts" --body-file report.md
+        run: gh issue create --label nps-alerts --title "NPS 公告：${{ steps.report.outputs.NEW }} 条新的关闭（$(date +%F)）/ New NPS closure alerts" --body-file report.md
