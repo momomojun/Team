@@ -79,6 +79,7 @@ import { OfflineMaps } from "./offline-maps";
 import { roadNoteFor } from "./road-note";
 import { paceParts, TodayPanel } from "./today-panel";
 import { TripTools } from "./trip-tools";
+import { CopilotChat } from "./copilot-chat";
 import { TripWizard, useRequestedPark, type WizardInput, type WizardPlace } from "./trip-wizard";
 import type { DayView, DragSpot, PlannerPark, PlannerText, ResolvedLodging, StargazingInfo, SunInfo } from "./types";
 import { alertCovers, type DayWeather } from "./weather";
@@ -478,6 +479,18 @@ export function Planner({
       // 公告读不到就按临时关闭的数据排，行程页照样会显示读到的公告
       return undefined;
     }
+  };
+
+  // 对话框（Copilot）排出的行程：原样放进行程页。第一次换掉手里已有的行程前问一声，之后接着说改出来的直接换
+  const copilotOwnsTrip = useRef(false);
+  const applyCopilotTrip = (next: Trip) => {
+    if (!copilotOwnsTrip.current && allIds.length > 0 && !window.confirm(t.copilot.replaceConfirm)) return false;
+    copilotOwnsTrip.current = true;
+    updateTrip(() => next);
+    setMapDay(ALL_DAYS);
+    setOpenId(null);
+    setWizardOpen(false);
+    return true;
   };
 
   // 自动生成攻略：查出发地、回程地到各景点的车程，再挑景点、排每天、定住宿
@@ -1128,6 +1141,8 @@ export function Planner({
       <SectionNav label={t.nav.label} items={sectionLinks} inset />
 
 
+
+      <CopilotChat text={text} english={locale === "en"} onTrip={applyCopilotTrip} />
 
       <section id="plan-wizard" className="scroll-mt-32 border-t border-ink pt-6 print:hidden">
         <div className="flex flex-wrap items-baseline justify-between gap-4">

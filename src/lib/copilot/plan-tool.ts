@@ -196,6 +196,9 @@ export function planTrip(input: unknown, options: PlanOptions) {
       return closedKind(stop, month, dates, dates, live) === "alert" ? closure : undefined;
     }),
     assumptions: [...new Set(assumptions)],
+    // 网站行程页能直接用的行程（每天的景点、每晚住处、攻略说明）：对话框排出行程后原样放进行程页，
+    // 页面上看到的就是 Copilot 说的那一份。Python 那边不读它
+    trip,
   };
 }
 

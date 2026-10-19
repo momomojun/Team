@@ -274,6 +274,8 @@ export const tripResultSchema = {
       },
     },
     assumptions: { type: "array", items: { type: "string" } },
+    // 网站的 Trip（src/lib/trip-store.ts），给行程页的对话框直接用；契约不管它的内部结构
+    trip: { type: "object" },
   },
 } as const;
 

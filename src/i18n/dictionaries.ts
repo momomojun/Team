@@ -1230,6 +1230,28 @@ const zhHans = {
         unset: "还没定",
       },
     },
+    copilot: {
+      eyebrow: "Copilot · 用一句话说需求",
+      title: "直接说你想怎么玩，缺什么我来问，问清楚就排好",
+      intro:
+        "比如“6 月带爸妈去优胜美地玩 4 天，从旧金山飞”。排好的行程会放进下面的行程页，之后还能接着说“轻松一点”“第三晚住 Curry Village”“不去冰川点了”“换成 9 月去”。",
+      name: "Copilot",
+      examples: [
+        "6 月带爸妈去优胜美地玩 4 天，从旧金山飞",
+        "明年 7 月去黄石和大提顿 6 天，有个 5 岁的孩子，盐湖城进出",
+        "11 月从拉斯维加斯出发，锡安和布莱斯峡谷 5 天，轻松一点",
+      ],
+      placeholder: "想去哪、什么时候、玩几天、从哪出发……",
+      followUp: "接着说：换个日子、轻松一点、加减景点、某晚住哪，或者问问题……",
+      send: "发送",
+      thinking: "正在想……",
+      applied: "已经放进下面的行程，去看看 ↓",
+      restart: "重新开始",
+      offline: "连不上 Copilot（本机的 Copilot 服务可能关了），可以先用下面的“自动生成攻略”。",
+      error: "Copilot 这次出错了，换个说法再试一次。",
+      note: "Copilot 用本机的 Qwen3.5 4B 模型理解你的话、追问缺的条件，行程由网站的排行程引擎排，开放时间、车程都来自网站的数据；出发前仍以 nps.gov 为准。",
+      replaceConfirm: "用 Copilot 排的行程换掉现在的行程吗？",
+    },
     wizard: {
       sitesGroup: "园外名胜",
       eyebrow: "Auto Plan · 自动生成攻略",

@@ -1261,6 +1261,28 @@ export const en: Dictionary = {
         unset: "Not set",
       },
     },
+    copilot: {
+      eyebrow: "Copilot · just describe it",
+      title: "Tell me the trip you have in mind. I'll ask what's missing, then plan it",
+      intro:
+        "Try “4 days in Yosemite with my parents in June, flying into San Francisco.” The plan lands in the trip below, and you can keep going: “slow it down,” “stay at Curry Village on night 3,” “skip Glacier Point,” “make it September instead.”",
+      name: "Copilot",
+      examples: [
+        "4 days in Yosemite with my parents in June, flying into San Francisco",
+        "Yellowstone and Grand Teton next July, 6 days, with a 5-year-old, in and out of Salt Lake City",
+        "Zion and Bryce Canyon from Las Vegas in November, 5 days, nothing too strenuous",
+      ],
+      placeholder: "Where, when, how many days, flying in from where…",
+      followUp: "Keep going: change the dates, slow it down, add or drop a stop, pick a night's lodging, or ask a question…",
+      send: "Send",
+      thinking: "Thinking…",
+      applied: "Added to your trip below ↓",
+      restart: "Start over",
+      offline: "Can't reach the Copilot (the local Copilot service may be off). You can still use Build a trip below.",
+      error: "The Copilot hit an error. Try rephrasing.",
+      note: "The Copilot runs Qwen3.5 4B on this computer to understand you and ask for anything missing; the itinerary itself comes from the site's planner and its own data on hours and drive times. Check nps.gov before you go.",
+      replaceConfirm: "Replace your current trip with the one the Copilot planned?",
+    },
     wizard: {
       sitesGroup: "Beyond the parks",
       eyebrow: "Auto plan",
