@@ -2,6 +2,7 @@ import { CreditedPhoto } from "@/components/credited-photo";
 import type { FilmSpot } from "@/data/film-spots";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { fill } from "@/i18n/format";
+import { MediaEmbed } from "@/components/media-embed";
 
 type FilmText = Pick<Dictionary, "attraction" | "units">;
 
@@ -49,6 +50,17 @@ export function FilmShotItem({
       </p>
       {!shot.attraction && <p className="mt-1 text-xs text-mute">{shot.placeZh}</p>}
       <p className="mt-2 text-ink-soft">{shot.sceneZh}</p>
+      {!compact && shot.video && (
+        <MediaEmbed
+          kind="youtube"
+          src={shot.video.youtube}
+          start={shot.video.start}
+          title={`${shot.titleEn} · YouTube`}
+          label={shot.video.type === "clip" ? t.embedClip : t.embedTrailer}
+          note={fill(t.embedNote, { platform: "YouTube", channel: shot.video.channel })}
+          hide={t.embedHide}
+        />
+      )}
       <p className="mt-2 text-ink-soft">
         <span className="text-ink">
           {t.filmHowTo}
