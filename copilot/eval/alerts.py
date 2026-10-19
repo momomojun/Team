@@ -15,6 +15,7 @@ import argparse
 import datetime as dt
 import json
 import sys
+from collections import Counter
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -22,7 +23,7 @@ sys.path.insert(0, str(HERE.parent))
 
 from nps_copilot import alerts as alerts_module  # noqa: E402
 from nps_copilot.pipeline import prompt_hashes  # noqa: E402
-from nps_copilot.providers import OllamaProvider, RecordingProvider, ReplayProvider  # noqa: E402
+from nps_copilot.providers import RecordingProvider, ReplayProvider, from_env  # noqa: E402
 
 SNAPSHOT = HERE / "alerts" / "snapshot-2026-10-19.json"
 LABELS = HERE / "alerts" / "labels-2026-10-19.jsonl"
@@ -92,21 +93,43 @@ def main() -> int:
         if args.replay:
             provider, label = ReplayProvider(args.replay), f"replay:{args.replay.stem}"
         else:
-            provider = OllamaProvider()
+            provider = from_env()  # 默认本机 Ollama；COPILOT_PROVIDER=gemini / openai 换商业 API（对照实验）
             label = provider.model
             if args.record:
                 path = HERE / "recordings" / f"{provider.model.replace(':', '_')}-alerts-{snapshot['fetched']}.jsonl"
                 path.unlink(missing_ok=True)
                 provider = RecordingProvider(provider, path)
-        predictions = {g["id"]: alerts_module.extract(by_id[g["id"]], provider, reference) for g in labels}
+        predictions = {}
+        for k, g in enumerate(labels):
+            predictions[g["id"]] = alerts_module.extract(by_id[g["id"]], provider, reference)
+            # 前 3 条都出错（key 不对、模型不认设置、额度用完）：停下，不把 151 次额度白白用掉
+            if k == 2 and all("error" in p.trace for p in predictions.values()):
+                print(f"前 3 条都出错，停下：{next(iter(predictions.values())).trace['error'][:200]}")
+                return 2
         results["model"] = both(predictions)
         results["both"] = both({g["id"]: alerts_module.combined(predictions[g["id"]], alerts_module.rules_extract(by_id[g["id"]])) for g in labels})
         results["model"]["dropped"] = sum(1 for p in predictions.values() if p.trace.get("dropped"))
         results["model"]["dropped_dates"] = sum(len(p.trace.get("dropped_dates", [])) for p in predictions.values())
+        # 速度和用量（对照实验比成本用）：延迟中位数、出错的条数，每条平均输入、输出、思考 token
+        latencies = sorted(p.trace["latency_ms"] for p in predictions.values() if "latency_ms" in p.trace)
+        usage = [p.trace.get("usage") or {} for p in predictions.values()]
+        mean = lambda key: round(sum(u.get(key) or 0 for u in usage) / max(1, sum(1 for u in usage if u.get(key) is not None)), 1)  # noqa: E731
+        results["model"]["speed"] = {
+            "median_ms": latencies[len(latencies) // 2] if latencies else None,
+            "errors": sum(1 for p in predictions.values() if "error" in p.trace),
+            # 出错的原因（超时、服务忙、额度用完……）各几条
+            "error_kinds": dict(Counter(p.trace["error"].split("：")[0][:40] for p in predictions.values() if "error" in p.trace)),
+            "prompt_tokens": mean("prompt_tokens") or mean("prompt_eval_count"),
+            "output_tokens": mean("output_tokens") or mean("eval_count"),
+            "thinking_tokens": mean("thinking_tokens"),
+        }
     for name, result in results.items():
         print(f"{name:6} 类型 {result['type_accuracy']:.0%}  整段关闭 精确 {result['full_precision']:.0%} 召回 {result['full_recall']:.0%}  "
               f"景点 精确 {result['attraction_precision']:.0%} 召回 {result['attraction_recall']:.0%} F1 {result['attraction_f1']:.2f}  日期 {result['dates']}"
               + (f"  证据对不上被丢掉 {result['dropped']}、日期对不上 {result['dropped_dates']}" if "dropped" in result else ""))
+        if "speed" in result:
+            s = result["speed"]
+            print(f"       延迟中位数 {s['median_ms']} ms，出错 {s['errors']} 条；每条平均 输入 {s['prompt_tokens']} / 输出 {s['output_tokens']} / 思考 {s['thinking_tokens']} token")
         c = result["clear"]
         print(f"       只看没争议的 {c['alerts']} 条：类型 {c['type_accuracy']:.0%}  景点 F1 {c['attraction_f1']:.2f}  日期 {c['dates']}")
     reports = HERE / "reports"

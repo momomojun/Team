@@ -29,7 +29,7 @@ sys.path.insert(0, str(HERE.parent))
 os.environ.setdefault("COPILOT_LIVE", "0")
 
 from nps_copilot.pipeline import Session, prompt_hashes  # noqa: E402
-from nps_copilot.providers import OllamaProvider, ProviderError, RecordingProvider, ReplayProvider  # noqa: E402
+from nps_copilot.providers import ProviderError, RecordingProvider, ReplayProvider, from_env  # noqa: E402
 from run import subset  # noqa: E402
 
 REFERENCE = "2026-10-18"
@@ -110,7 +110,7 @@ def main() -> int:
     if args.replay:
         provider, label = ReplayProvider(args.replay), f"replay:{args.replay.stem}"
     else:
-        provider = OllamaProvider()
+        provider = from_env()  # 默认本机 Ollama；COPILOT_PROVIDER=gemini / openai 换商业 API（对照实验）
         label = provider.model
         if args.record:
             suffix = args.cases.stem.replace("conversation", "conversation")
