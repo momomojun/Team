@@ -941,6 +941,7 @@ export const en: Dictionary = {
         "Canada's national parks charge a daily admission (family/group pass per vehicle), about {amount}. U.S. annual passes aren't accepted.",
       canadaPass: "For Canada's national parks, a Discovery Pass is the better deal, about {amount} (U.S. annual passes aren't accepted)",
       sites: "Admission, parking, and required tour fees at sites outside the parks: about {amount}. U.S. annual passes don't apply.",
+      parkingTag: "{parks} charges no entrance fee, but parking needs a parking tag (daily or weekly, whichever is cheaper for your stay): about {amount}. National park passes don't cover it.",
       lodgingLine:
         "{nights} {nights|night|nights} × {rooms} {rooms|room|rooms}, estimated from GSA federal per diem lodging rates (FY {year}). Peak season and in-park lodges usually cost more.",
       lodgingGuess:

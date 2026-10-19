@@ -1,4 +1,4 @@
-import { CAD_TO_USD, manualFees } from "@/data/fees-manual";
+import { CAD_TO_USD, manualFees, parkingTagCost, parkingTags } from "@/data/fees-manual";
 import { parkFees } from "@/data/fees.generated";
 import { perDiem, perDiemYear } from "@/data/perdiem.generated";
 import { carRates, DEFAULT_CAR_RATE } from "@/lib/prices/car-rates";
@@ -59,6 +59,9 @@ export interface Budget {
     canadaPass: boolean;
     /** 园外名胜的门票、停车费、必须的跟团费（美元），美国年卡不能抵 */
     sites: number;
+    /** 停车证（大烟山不收门票、停车要买证），年卡不能抵 */
+    parking: number;
+    parkingParks: string[];
   };
   lodging: { total: number; nights: number; guessed: number; year: number };
   meals: { total: number; rate: number };
@@ -87,7 +90,14 @@ export function computeBudget(input: BudgetInput): Budget {
   let canadaDaily = 0;
   let canadaPassPrice = 0;
   let sites = 0;
+  let parking = 0;
+  const parkingParks: string[] = [];
   for (const park of input.parks) {
+    const tag = parkingTags[park.code];
+    if (tag) {
+      parking += parkingTagCost(tag, park.days ?? 1);
+      parkingParks.push(park.code);
+    }
     // 加拿大公园、园外名胜：手动整理的门票，美国年卡管不着
     const manual = manualFees[park.code];
     if (manual) {
@@ -157,11 +167,11 @@ export function computeBudget(input: BudgetInput): Budget {
       : undefined;
   const flights = prefs.flyAndRent ? input.flights : undefined;
 
-  const feesTotal = (usePass ? pass : pay) + canada + sites;
+  const feesTotal = (usePass ? pass : pay) + canada + sites + parking;
   const mealsTotal = mealRate * travelers * input.dayCount;
   const total = feesTotal + lodgingTotal + mealsTotal + fuelTotal + (car?.total ?? 0) + (flights ?? 0);
   return {
-    fees: { total: feesTotal, pay, pass, passKind, usePass, surchargeParks, freeParks, canada, canadaPass, sites },
+    fees: { total: feesTotal, pay, pass, passKind, usePass, surchargeParks, freeParks, canada, canadaPass, sites, parking, parkingParks },
     lodging: { total: lodgingTotal, nights: input.nights.length, guessed: rates.length - known.length, year: perDiemYear },
     meals: { total: mealsTotal, rate: mealRate },
     fuel: { total: fuelTotal, km: input.km, price: fuelPrice, states },
