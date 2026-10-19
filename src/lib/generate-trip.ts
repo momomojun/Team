@@ -42,6 +42,12 @@ export interface GenerateInput {
   lodgingPref: LodgingPref;
   /** 同行的人（小孩、婴儿车、老人、轮椅）；不填是全是成年人 */
   party?: Party;
+  /** 点名一定要去的景点：去得了就当必去排（太难、太远也排），去不了的照样列在没排进去的里 */
+  include?: string[];
+  /** 点名不去的景点 */
+  exclude?: string[];
+  /** 指定的住处：第几晚 → 推荐住宿 id（不管季节、偏好，用户说了算） */
+  nights?: Record<number, string>;
 }
 
 /** 参与挑选的景点：排行程需要的字段 + 热度、季节、许可证 */
@@ -208,7 +214,16 @@ export function closedKind(
   return byMonth && (!roadDecides(road, stop.id) || stop.openMonths?.length === 0) ? "season" : null;
 }
 
-export function generateTrip(input: GenerateInput, context: GenerateContext): { trip: Trip; guide: GuideInfo } {
+export function generateTrip(input: GenerateInput, original: GenerateContext): { trip: Trip; guide: GuideInfo } {
+  // 用户点名不去的不考虑；点名要去的当必去：挑景点、太满时去掉景点、太远时绕不绕路，都和必去的一样对待
+  const include = new Set(input.include ?? []);
+  const exclude = new Set(input.exclude ?? []);
+  const context: GenerateContext = {
+    ...original,
+    stops: original.stops
+      .filter((stop) => !exclude.has(stop.id))
+      .map((stop) => (include.has(stop.id) ? { ...stop, mustSee: true } : stop)),
+  };
   const skipped: Required<GuideSkipped> = {
     permit: [],
     closed: [],
@@ -230,12 +245,13 @@ export function generateTrip(input: GenerateInput, context: GenerateContext): { 
     return schedule !== undefined && datedSchedule(schedule);
   };
   for (const stop of context.stops) {
-    if (tripDates.length === 0 && datedTour(stop)) continue;
+    if (tripDates.length === 0 && datedTour(stop) && !include.has(stop.id)) continue;
     if (closed(stop)) skipped.closed.push(stop.id);
     else if (stop.permit && stop.lottery) skipped.permit.push(stop.id);
     // 带的孩子不到年龄、老人不建议、轮椅去不了的不排；只是要注意的照排，行程里标出提醒
     else if (fitFor(input.party, stop.family).level === "no") skipped.unsuitable.push(stop.id);
     else if (
+      !include.has(stop.id) &&
       stop.kind === "hike" &&
       (stop.durationMin > MAX_HIKE_MIN[input.pace] || (input.pace === "relaxed" && stop.hike?.difficulty === "hard"))
     ) {
@@ -369,6 +385,11 @@ export function generateTrip(input: GenerateInput, context: GenerateContext): { 
   const chooseLodging = (current: Trip): Trip => {
     const next = [...current.nights];
     for (let night = 1; night < current.dayCount; night++) {
+      const fixed = input.nights?.[night];
+      if (fixed && lodgingById.has(fixed)) {
+        next[night] = { kind: "option", id: fixed };
+        continue;
+      }
       const lastStop = stopById.get(current.days[night - 1].at(-1)?.id ?? "");
       const nextStop = stopById.get(current.days[night][0]?.id ?? "");
       const bonus = (lodging: GuideLodging) =>

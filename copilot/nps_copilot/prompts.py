@@ -2,7 +2,7 @@
 
 - 改提示词不覆盖旧文件，新建下一版（intake_v2.txt），旧版留着才能回滚、才能和旧的评测记录对上；
 - 默认用哪一版走 PR 改 defaults.json（CI 会用回放门禁检查）；
-- 已经部署的服务可以不改代码临时切回旧版：环境变量 COPILOT_PROMPT_INTAKE=v1、COPILOT_PROMPT_WRITER=v1、COPILOT_PROMPT_QA=v1；
+- 已经部署的服务可以不改代码临时切回旧版：环境变量 COPILOT_PROMPT_INTAKE=v1、COPILOT_PROMPT_WRITER=v1、COPILOT_PROMPT_QA=v1、COPILOT_PROMPT_DISPATCH=v1；
 - 每次调用的日志里都记版本和 hash（pipeline.prompt_hashes）。
 """
 from __future__ import annotations
@@ -16,7 +16,7 @@ from functools import lru_cache
 from pathlib import Path
 
 DIR = Path(__file__).resolve().parent / "prompts"
-TASKS = ("intake", "writer", "qa")
+TASKS = ("intake", "writer", "qa", "dispatch")
 
 
 @dataclass(frozen=True)

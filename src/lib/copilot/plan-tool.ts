@@ -98,6 +98,18 @@ export function planTrip(input: unknown, options: PlanOptions) {
       }
     });
   }
+  // 点名要去、不去的景点和指定的住处都要是这几座公园的
+  const known = new Set(attractions.filter((a) => request.parks.includes(a.park)).map((a) => a.id));
+  for (const key of ["include", "exclude"] as const) {
+    (request[key] ?? []).forEach((id, i) => {
+      if (!known.has(id)) issues.push({ path: `/${key}/${i}`, message: `${id} 不是 ${request.parks.join(", ")} 的景点` });
+    });
+  }
+  const stays = new Set(lodgingOptions.filter((option) => request.parks.includes(option.park)).map((option) => option.id));
+  (request.lodging ?? []).forEach(({ night, id }, i) => {
+    if (!stays.has(id)) issues.push({ path: `/lodging/${i}/id`, message: `${id} 不是 ${request.parks.join(", ")} 的推荐住宿` });
+    if (night >= request.days) issues.push({ path: `/lodging/${i}/night`, message: `${request.days} 天的行程只有 ${request.days - 1} 晚在外面住` });
+  });
   if (issues.length > 0 || !main) throw new TripRequestError(issues);
 
   const normalized: TripRequest = {
@@ -138,6 +150,9 @@ export function planTrip(input: unknown, options: PlanOptions) {
       pace: normalized.pace!,
       lodgingPref: normalized.lodgingPref!,
       party: normalized.party,
+      include: normalized.include,
+      exclude: normalized.exclude,
+      nights: Object.fromEntries((normalized.lodging ?? []).map(({ night, id }) => [night, id])),
     },
     {
       stops,

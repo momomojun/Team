@@ -150,6 +150,47 @@
         }
       }
     },
+    "include": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z]{4}-[a-z0-9-]+$"
+      }
+    },
+    "exclude": {
+      "type": "array",
+      "maxItems": 40,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z]{4}-[a-z0-9-]+$"
+      }
+    },
+    "lodging": {
+      "type": "array",
+      "maxItems": 13,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "night",
+          "id"
+        ],
+        "properties": {
+          "night": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 13
+          },
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z]{4}-stay-[a-z0-9-]+$"
+          }
+        }
+      }
+    },
     "provenance": {
       "type": "object",
       "propertyNames": {
@@ -162,7 +203,10 @@
           "destination",
           "pace",
           "lodgingPref",
-          "party"
+          "party",
+          "include",
+          "exclude",
+          "lodging"
         ]
       },
       "additionalProperties": {

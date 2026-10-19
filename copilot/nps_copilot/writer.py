@@ -161,6 +161,21 @@ def describe_changes(before: dict, after: dict, zh: bool) -> list[str]:
                      {"rental": "vacation rentals", "hotel": "hotels only", "any": "any lodging"}[pref])
     if before.get("party") != after.get("party"):
         items.append("同行的人更新了" if zh else "updated who's coming")
+    # 用户加减的景点、指定的住处
+    from .knowledge import get
+
+    def name(doc_id: str) -> str:
+        doc = get(doc_id)
+        return (doc.title if zh else doc.names[-1]) if doc else doc_id
+
+    for doc_id in [i for i in after.get("include", []) if i not in before.get("include", [])]:
+        items.append(f"一定去{spaced(name(doc_id))}" if zh else f"must see {name(doc_id)}")
+    for doc_id in [i for i in after.get("exclude", []) if i not in before.get("exclude", [])]:
+        items.append(f"不去{spaced(name(doc_id))}" if zh else f"skip {name(doc_id)}")
+    old_nights = {n["night"]: n["id"] for n in before.get("lodging", [])}
+    for night in after.get("lodging", []):
+        if old_nights.get(night["night"]) != night["id"]:
+            items.append(f"第 {night['night']} 晚住{spaced(name(night['id']))}" if zh else f"night {night['night']} at {name(night['id'])}")
     return items
 
 

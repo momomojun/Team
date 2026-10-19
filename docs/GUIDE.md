@@ -197,7 +197,7 @@ git push -u origin feature/你要做的事
 | 检查 | 查什么 | 没过怎么办 |
 |---|---|---|
 | Website (lint, types, tests) | 网站代码风格、TypeScript 类型、`npm test` | 本机跑 `npm run lint`、`npx next typegen`、`npx tsc --noEmit -p .`、`npm test` |
-| Copilot (tests, replay eval gate) | Copilot 的 pytest、三组回放评测不能低于基线 | 本机跑 `pytest` 和第 4 节 A 的命令（另两组见 `.github/workflows/ci.yml`） |
+| Copilot (tests, replay eval gate) | Copilot 的 pytest、五组回放评测（三组单句、两组多轮对话）不能低于基线 | 本机跑 `pytest` 和第 4 节 A 的命令（另两组见 `.github/workflows/ci.yml`） |
 | Copilot image (build, smoke test) | Docker 镜像能构建、起来以后能排出行程 | 看 GitHub 上这项的日志 |
 | Vercel / Vercel Preview Comments | 网站能在 Vercel 上构建出预览版（不是必需的） | 点进去看构建日志 |
 
@@ -207,7 +207,7 @@ git push -u origin feature/你要做的事
 |---|---|
 | 景点、住宿数据（`src/data/attractions/` 等） | 按 [DEVELOPMENT.md](DEVELOPMENT.md#数据脚本) 重新生成；`npm run copilot:contracts`（Copilot 回答问题用的资料跟着更新）；`npm test` |
 | 公园、机场（`src/data/parks.ts`、`airports.ts`） | `npm run copilot:contracts`；必要时 `python copilot/scripts/regional_names.py`（各地叫法，要联网） |
-| Copilot 的 Python 代码 | `pytest`、三组回放门禁；**加了新汉字也要跑 `npm run copilot:contracts`**（繁简对照表按代码里的汉字生成，不跑网站测试会失败） |
+| Copilot 的 Python 代码 | `pytest`、五组回放门禁（命令见 `.github/workflows/ci.yml`）；**加了新汉字也要跑 `npm run copilot:contracts`**（繁简对照表按代码里的汉字生成，不跑网站测试会失败） |
 | 提示词 | 见下面“改提示词” |
 | 评测样例 | 见下面“加评测样例” |
 | 中文文案 | 有英文版对应的，用 `scripts/rekey-zh.py` 改 |
@@ -278,7 +278,7 @@ git -C D:/LLM/Team tag copilot-v0.2.0 origin/main
 git -C D:/LLM/Team push origin copilot-v0.2.0
 ```
 
-3. `Copilot release` workflow 会检查 tag 和代码里的版本一致，再跑一遍测试和三组门禁，构建镜像、冒烟测试、推到 `ghcr.io/momomojun/team-copilot:<tag>` 和 `:latest`，从 GHCR 拉回来再冒烟一次，最后建 GitHub Release（附评测报告、镜像 digest、默认提示词版本）。任何一步没过都不发。
+3. `Copilot release` workflow 会检查 tag 和代码里的版本一致，再跑一遍测试和五组门禁，构建镜像、冒烟测试、推到 `ghcr.io/momomojun/team-copilot:<tag>` 和 `:latest`，从 GHCR 拉回来再冒烟一次，最后建 GitHub Release（附评测报告、镜像 digest、默认提示词版本）。任何一步没过都不发。
 
 镜像在 GHCR 上是公开的（仓库公开，包跟着公开），任何人不用登录就能拉。发过的版本见仓库的 [Releases](https://github.com/momomojun/Team/releases)。
 
