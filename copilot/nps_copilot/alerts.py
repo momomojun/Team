@@ -209,5 +209,22 @@ def combined(model: Extraction, rules: Extraction) -> Extraction:
     kind = "full" if "full" in (model.type, rules.type) else model.type
     closed = list(dict.fromkeys(model.closed + rules.closed)) if kind == "full" else []
     found_by = [name for name, part in (("model", model), ("rules", rules)) if part.type == "full" and part.closed]
+    # strict：规则也找到的（公告标题里写着）。行程引擎只把这些当关了不排，只有模型找到的照排、提醒（模型的景点精确率还不高）
+    strict = list(rules.closed) if rules.type == "full" else []
     return Extraction(model.alert, model.park, kind, closed, model.start, model.reopen, model.evidence,
-                      {**model.trace, "found_by": found_by})
+                      {**model.trace, "found_by": found_by, "strict": strict})
+
+
+def closures_from(snapshot: dict, provider: Provider) -> dict:
+    """一份公告快照 → 关闭清单（closures-latest.json，行程引擎的 LIVE_CLOSURES 读它，格式见 src/lib/copilot/live.ts）。
+    用模型和规则一起（评测里漏得最少），每条记下是谁找到的"""
+    reference = dt.date.fromisoformat(snapshot["fetched"])
+    closures = []
+    for alert in snapshot["alerts"]:
+        result = combined(extract(alert, provider, reference), rules_extract(alert))
+        if result.type == "full" and result.closed:
+            closures.append({"alert": result.alert, "park": result.park, "attractions": result.closed, "from": result.start,
+                             "reopen": result.reopen, "evidence": result.evidence, "found_by": result.trace.get("found_by", []),
+                             "strict": result.trace.get("strict", []),
+                             "title": alert["title"], "url": alert.get("url")})
+    return {"fetched": snapshot["fetched"], "prompts": prompts.current(), "closures": closures}

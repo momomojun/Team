@@ -115,3 +115,38 @@ test("坐轮椅：去不了的景点不排，列在 skipped 里", () => {
   const planned = new Set(result.days.flatMap((day) => day.stops.map((stop) => stop.id)));
   assert.ok(unsuitable.every((id) => !planned.has(id)));
 });
+
+test("NPS 公告提取出的关闭（漂移测试）：近期出发、清单是新的就不排，附上是哪条公告；不然照旧排", () => {
+  const soon = { ...base, startDate: "2026-10-20", days: 3 };
+  const planned = (result: ReturnType<typeof planTrip>) => new Set(result.days.flatMap((day) => day.stops.map((stop) => stop.id)));
+  assert.ok(planned(planTrip(soon, REFERENCE)).has("yose-tunnel-view"), "没有公告时隧道观景点应该在行程里");
+  const closure = {
+    alert: "test-1", park: "yose", attractions: ["yose-tunnel-view"], from: null, reopen: "2026-11-02",
+    title: "Tunnel View Closed for Repaving", url: "https://www.nps.gov/yose/planyourvisit/conditions.htm", found_by: ["model"],
+  };
+  const closures = { fetched: "2026-10-16", closures: [closure] };
+  const result = planTrip(soon, { ...REFERENCE, closures });
+  assert.ok(!planned(result).has("yose-tunnel-view"));
+  const skipped = result.skipped.find((item) => item.id === "yose-tunnel-view");
+  assert.equal(skipped?.reason, "closed");
+  assert.deepEqual(skipped?.alert, { title: closure.title, url: closure.url, reopen: "2026-11-02" });
+  assert.ok(result.assumptions.some((line) => line.startsWith("live-alerts:")));
+  assert.deepEqual(validateSchema(result, tripResultSchema), []);
+  // 这趟碰不到的、太远的行程、旧的清单、比“今天”还晚的清单：都照旧排
+  const cases: [string, Parameters<typeof planTrip>[1]][] = [
+    ["已经重开", { ...REFERENCE, closures: { ...closures, closures: [{ ...closure, reopen: "2026-10-20" }] } }],
+    ["出发以后才关", { ...REFERENCE, closures: { ...closures, closures: [{ ...closure, from: "2026-10-23" }] } }],
+    ["清单太旧", { ...REFERENCE, closures: { ...closures, fetched: "2026-10-10" } }],
+    ["清单比今天晚", { ...REFERENCE, closures: { ...closures, fetched: "2026-10-19" } }],
+  ];
+  for (const [name, options] of cases) assert.ok(planned(planTrip(soon, options)).has("yose-tunnel-view"), name);
+  // 只有模型读出来的（规则没找到、strict 里没有）：照排，那一站提醒出发前确认
+  const maybe = planTrip(soon, { ...REFERENCE, closures: { ...closures, closures: [{ ...closure, strict: [] }] } });
+  const stop = maybe.days.flatMap((day) => day.stops).find((item) => item.id === "yose-tunnel-view");
+  assert.ok(stop?.warnings.includes("alertMaybeClosed"));
+  assert.equal(stop?.alert?.title, closure.title);
+  assert.deepEqual(validateSchema(maybe, tripResultSchema), []);
+  const far = planTrip({ ...soon, startDate: "2026-11-20" }, { ...REFERENCE, closures });
+  assert.ok(planned(far).has("yose-tunnel-view"), "两周以后出发");
+  assert.ok(far.assumptions.some((line) => line.startsWith("no-live-alerts(too-far)")));
+});

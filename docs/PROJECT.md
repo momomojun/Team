@@ -4,7 +4,7 @@
 
 **English summary.** This repository (`momomojun/Team`) is the CSYE 7374 (LLMOps, Fall 2026) team project of Jun Zhai, Tianyue Chen and Huiling Fu. It builds on **NPS Guide**, a Chinese-language U.S. national park trip planner that Jun Zhai built before the course (copied from `momomojun/NPS-guide` at commit `4590c45`, without history). The course work adds **NPS Guide Copilot**, an LLM layer that understands trip requests, answers questions from the site's own data and explains plans while the deterministic engine does the planning, plus the LLMOps pipeline around it. As of 2026-10-18: contracts and the `plan_trip` tool; the Python Copilot on a local Qwen3.5 4B with three replay eval gates in CI (dev 25/25, regression 37/40, regional wording 17/17); multi-turn conversation fixes and grounded Q&A (retrieval over 1,687 knowledge entries); Docker images, a tag-driven release workflow to GHCR (`copilot-v0.2.0`, `copilot-v0.2.1`), versioned prompts, rollback demos and run-log monitoring. Every requirement and promise, with what's still open, is tracked in [GOALS.md](GOALS.md). Next: let the model orchestrate tools, multi-turn evals, live NPS alerts, and a chat panel on the website.
 
-## 现状（2026-10-18）
+## 现状（2026-10-19）
 
 | 部分 | 状态 |
 |---|---|
@@ -13,6 +13,7 @@
 | 阶段 2：Python Copilot | 完成（PR #5）：Intake → plan_trip → Critic → Writer，Provider 可换，JSONL 日志；默认本机 Qwen3.5 4B。10-18 两次试用后修了多轮对话（PR #12、#14）：相对日期、改了什么、不重印行程、排好以后和排出以前都能提问（在网站资料里查了再答，RAG）。10-18 加了**调度员**：模型看最近的对话、条件和行程，决定这句话要改条件、提问、加减景点、指定某晚住处还是重新开始（可以几件一起），代码去做、去核对；多轮对话评测 20/20，没见过的第一次 14/15（关掉调度员是 6/15）。Writer 还没有逐句附来源 |
 | 阶段 3：CI/CD | 完成（PR #6）：5 项 PR 检查（3 项必需）、Docker 镜像、`release.yml` 发版流程、提示词版本和回滚、监控（命令行统计，没接 MLflow）、Ollama 一键启动。10-18 发了 [`copilot-v0.2.0`](https://github.com/momomojun/Team/releases/tag/copilot-v0.2.0) 和 [`copilot-v0.2.1`](https://github.com/momomojun/Team/releases/tag/copilot-v0.2.1)，镜像在 GHCR 公开可拉；提示词回滚、换镜像回滚都演示过 |
 | 阶段 4：评测和对照实验 | 进行中：单句 25、复杂情况 40、各地写法 17 组，多轮对话 20 组和 15 组，五组都当回归门禁（25/25、37/40、17/17、20/20、15/15）；做了第一个对照（调度员开 / 关）；还缺更多没见过的样例（目标约 150 条）、其他对照实验 |
+| 读 NPS 实时公告 | 进行中（PR #21 和这次）：模型读公告提取关闭（类型 76%、日期 16/24，规则是 58%、0），Copilot 排两周内出发的行程时不排公告说关了的景点；GitHub 每晚抓公告、新的关闭开 issue。模型提取还要在本机跑，网站行程页还是关键词规则 |
 | 阶段 5：接进网站 | 没开始：行程页的对话面板、路线动画 |
 | 仓库 | `main` 受保护（必须走 PR、3 项检查通过）；合并后自动删除分支；协作者 JadenChen10（Tianyue Chen）、huilingfu95-source（Huiling Fu） |
 | 目标清单 | 所有要求和承诺做到哪、还差什么：[GOALS.md](GOALS.md) |
@@ -31,7 +32,7 @@
 按 10-18 商量的顺序（课程时间：10 月 29 日那周交 proposal，11 月 5 日起每周 scrum，12 月 10 日项目演示）。仓库主人 10-18 试用后，先把对话修好，再做别的：
 
 1. **把对话修好**（第一、二批和调度员改造都做完了，见时间线）：第一批（相对日期、出发和回程说清楚、改了什么、季节性关闭的说法）、第二批（**能回答问题**：排好以后的提问从网站自己的资料里查了再答，查不到说不知道，对应课上的 RAG）已经做完，两次试用发现的问题也修了；还没做好的：一句话里既改条件又提问时只答查得到的部分、“紧凑的话要几天”资料里没有（见 [RESULTS.md](../copilot/eval/RESULTS.md)）。第三批把真实的多轮对话写成评测（先写期望再跑），每个 PR 都过。
-2. **读 NPS 实时公告、自动提取关闭信息**（11 月上旬）：每天抓 NPS 公告，本机模型判断哪个景点关了、从哪天到哪天，排行程时用上，取代手动维护的 `closures.ts`；已经人工核对过的 `closures.ts` 当标准答案算准确率。对应计划书标题里的 fast-changing data 和监控、漂移。
+2. **读 NPS 实时公告、自动提取关闭信息**（10-19 提取、评测、接进 Copilot 排行程、每晚抓公告都做了；还差：攒几天新公告当没见过的数据、标答案、改 `alerts_v2`，模型提取每晚自动跑，网站行程页也用上）：每天抓 NPS 公告，本机模型判断哪个景点关了、从哪天到哪天，排行程时用上，取代手动维护的 `closures.ts`；已经人工核对过的 `closures.ts` 当标准答案算准确率。对应计划书标题里的 fast-changing data 和监控、漂移。
 3. **网站行程页加对话面板**（11 月中）：用户用自然语言说需求 → Copilot 追问、确认 → 生成行程（就是现在“自动生成攻略”的结果）→ 用户可以继续说“第二天轻松一点”“换成住 Jackson”；没有 Copilot 时页面照旧能用。要先定 Copilot 放在哪：演示时在笔记本上同时开网站和 Copilot（不花钱），还是租带显卡的服务器。
    - **路线动画**（和对话面板一起做）：**第一次排出行程、改了行程的时候**自动播一段，之后看行程还是文字、卡片和静态地图（仓库主人 10-18 说的：动画是帮人第一眼看懂，不是拿来研究行程的）。第一次：镜头沿真实开车路线一天天走，每站亮起来标几点到、停多久，路上标开多久，日落那站天色变暗，晚上落在住处；全程十几二十秒。改了以后：只播变了的部分（换了的住处、加的减的挪了的景点、新的路线），几秒。播完停在静态地图上，可以重播、暂停、拖到某一站；系统设了“减少动画”的不自动播。用网站现有的 MapLibre 地图、每天的真实路线和行程的时间，不用新数据。导出成短视频分享以后再说。
 4. **评测和对照实验**（11 月底到 12 月初，期末报告要用）：另写一批没看过的样例（holdout-v2），**先提交期望再跑**，逐步扩到约 150 条（中英文和混合；日期冲突；多公园；带小孩、老人、轮椅；改口、否定、错别字；提示注入；要求去关闭、要抽签的景点）；单个模型直接回答 vs 流水线、有 Critic vs 没有、Qwen3.5 4B vs 9B；准备演示脚本和报告。
@@ -252,3 +253,7 @@
 ### 10-19：读 NPS 公告提取临时关闭，第一部分（分支 `feature/alert-extraction`）
 
 - 仓库主人定了下一步做“读 NPS 实时公告”（计划书的 fast-changing data）。抓了 2026-10-19 所有公园的公告快照（151 条），模型跑之前标好标准答案（21 条拿不准的标 ambiguous），模型读公告选出关了的景点、读起止日期，代码核对原话、日期、景点。和网站现有的关键词规则比：类型准确率 58% → 76%，日期 0 → 16/24；整段关闭的召回只有一半，模型和规则一起用召回到 80%。详见 RESULTS.md。第二部分：接进排行程、每晚自动抓新公告（新公告就是没见过的测试数据）、漂移测试。
+
+### 10-19：公告关闭接进排行程、每晚抓公告（分支 `feature/alert-closures-in-plan`）
+
+- 第一部分（#21）合并后做第二部分：Copilot 调行程引擎时带上模型提取的关闭清单，两周内出发的行程用上。用真模型跑今天的 151 条公告时发现模型会把 Biscuit Basin 的关闭说成老忠实泉关了；算了一下评测集上只有模型找到的景点 10 个对 4 个，于是分两档：标题里写着的（规则也找到）不排，说明里说“NPS 最新公告说暂时关闭，几月几日重开”；只有模型找到的照排、在“要注意”里提醒出发前确认；清单超过 3 天、比“今天”还晚（评测）、公告日期碰不到这趟的都不用。漂移测试：塞一条“隧道观景点关到 11 月 1 日”的公告，提取以后 10 月 20 日出发的行程就不排它了，11 月 20 日出发的照排。GitHub Actions 每晚抓一次公告，新的关闭公告开 issue；NPS 接口常回 429，抓取加了重试。评测和测试里关掉关闭清单，门禁成绩不变。

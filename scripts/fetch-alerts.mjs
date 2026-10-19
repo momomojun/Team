@@ -21,7 +21,13 @@ const batch = [...codes.entries()];
 for (let i = 0; i < batch.length; i += 10) {
   const part = batch.slice(i, i + 10);
   const url = `https://developer.nps.gov/api/v1/alerts?parkCode=${part.map(([, nps]) => nps).join(",")}&limit=500&api_key=${API_KEY}`;
-  const res = await fetch(url, { headers: { "User-Agent": USER_AGENT } }).catch(() => null);
+  // 429（请求太多）、5xx 等一会儿再试，最多 3 次
+  let res = null;
+  for (const wait of [0, 5000, 20000]) {
+    if (wait) await sleep(wait);
+    res = await fetch(url, { headers: { "User-Agent": USER_AGENT } }).catch(() => null);
+    if (res?.ok || (res && res.status < 500 && res.status !== 429)) break;
+  }
   if (!res?.ok) {
     failed.push(...part.map(([code]) => code));
     continue;
@@ -43,6 +49,11 @@ for (let i = 0; i < batch.length; i += 10) {
     }
   }
   await sleep(500);
+}
+// 一条都没抓到（被限流、接口挂了）：不覆盖上一份好的快照，退出码 1（每晚的 workflow 会标红）
+if (alerts.length === 0 && failed.length > 0) {
+  console.error(`一条公告都没抓到（${failed.length} 座公园都失败了，多半是被限流），没有覆盖原来的快照`);
+  process.exit(1);
 }
 alerts.sort((a, b) => a.park.localeCompare(b.park) || a.id.localeCompare(b.id));
 mkdirSync(dirname(fileURLToPath(OUT)), { recursive: true });

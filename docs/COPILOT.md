@@ -41,7 +41,9 @@ flowchart LR
 - **按片区、州说的一组公园**：“西雅图附近的三个国家公园都玩”“华盛顿州的国家公园都去”按网站的片区和州换成具体的公园（不超过 4 座），回复里说一句是哪几座；只是问“是哪三个”的不换，交给 QA。
 - **QA（回答问题，RAG）**：`knowledge.search` 在 `knowledge.jsonl`（网站数据整理成的 1687 条短文：景点、住处、公园、片区、州、特别活动、临时关闭）里找 4 条，只在这次行程的公园里找（问题里点名了别的公园就加上那座；片区、州的资料不分公园，问题里说了它的名字才用）。问的是行程里的景点整体（“这些景点好看吗”）时，另外把每一站的一句介绍给模型。问题里直接出现了某条的名字（“El Portal”）的排最前面，“雾径 · 弗纳尔瀑布”只说“雾径”也算；其余按 BM25（中文按相邻两个字切，英文按单词）。模型只看“行程 + 这 4 条”回答，输出 `{found, answer, sources}`；代码检查回答里的时间、数字都在行程或资料里出现过（按整个数比）、引用的编号是给过的，对不上就不用模型写的、改成摘资料原文（问题里点了名的那条），资料里没有就说不知道。回答后面注明用了哪几条资料。不用向量检索、不另外下载模型；以后可以换成嵌入模型做对照实验，接口不变。
 - **打错字反问**（10-19）：认不出的公园叫法和所有公园的叫法比像不像（`catalog.similar`，去掉“国家公园”后 difflib 相似度至少 0.6，两个字的名字首字相同也算），像就反问“你说的“奥林匹亚”是奥林匹克吗？”（`confirm_park`），回是加上、回不是不算、答别的当不是；不像的、前面已经认出别的公园的，说一声“没认出……先没算进去”，不再悄悄丢掉。不把错字当别名加进叫法表。
-- **读 NPS 公告提取临时关闭**（`alerts.py`、提示词 `alerts_v1`，10-19）：`npm run alerts:fetch` 抓所有公园的公告快照（`copilot/data/alerts/latest.json`，不提交），`python -m nps_copilot alerts` 让模型一条条读：从这座公园的景点名单（`contracts/attractions.json`）里选出关了的、读出起止日期。代码核对：证明关闭的原话（evidence）要在公告里，不在就不算关闭；日期要是公告里写到的（“through Nov 19”可以算成 20 日重开）；选的景点公告里要提到（全名、名字里够特别的词或片区）。输出 `closures-latest.json` 用模型和规则（网站的 `closedByAlerts`）的并集，每条记 `found_by`。还没接进排行程（下一步）。
+- **读 NPS 公告提取临时关闭**（`alerts.py`、提示词 `alerts_v1`，10-19）：`npm run alerts:fetch` 抓所有公园的公告快照（`copilot/data/alerts/latest.json`，不提交），`python -m nps_copilot alerts` 让模型一条条读：从这座公园的景点名单（`contracts/attractions.json`）里选出关了的、读出起止日期。代码核对：证明关闭的原话（evidence）要在公告里，不在就不算关闭；日期要是公告里写到的（“through Nov 19”可以算成 20 日重开）；选的景点公告里要提到（全名、名字里够特别的词或片区）。输出 `closures-latest.json` 用模型和规则（网站的 `closedByAlerts`）的并集，每条记 `found_by`。
+- **公告关闭接进排行程**（`src/lib/copilot/live.ts`，10-19）：`plan_client` 调行程引擎时，`copilot/data/alerts/closures-latest.json`（或 `COPILOT_LIVE_CLOSURES` 指的文件）存在就交给它（命令行的 `LIVE_CLOSURES`；走 HTTP 时网站服务器自己设 `LIVE_CLOSURES`）。和行程页读实时公告一样只管今天起两周内出发的；清单要是新的（比“今天”早 3 天以内、不比“今天”晚），公告写了起止日期的，这趟一天都碰不到就不算，碰到了整趟都当关着。**按把握分两档**：规则也找到的（`strict`，公告标题里写着这个景点，和行程页按公告不排的规则一样）不排，`skipped` 里 `reason: closed`、附 `alert`（公告标题、链接、重开日期），Writer 说“NPS 最新公告说暂时关闭，11 月 2 日重开”；只有模型找到的照排，那一站加警告 `alertMaybeClosed` 和 `alert`，Writer 在“要注意”里说“NPS 最新公告里提到它可能关了，出发前确认”。为什么：10-19 的评测里只有模型找到的景点 10 个对 4 个（Biscuit Basin 的公告被说成老忠实泉关了），直接不排会白白少去热门景点；模型准了再放宽。仓库里人工核对过的 `closures.ts` 优先；`assumptions` 写 `live-alerts:` 或 `no-live-alerts(原因)`。评测和测试里 `COPILOT_LIVE=0`，结果才能复现。
+- **每晚读公告**（`.github/workflows/alerts-nightly.yml`，`copilot/scripts/alerts_report.py`）：每天 UTC 14:00 抓所有公园的公告快照（存成 artifact `nps-alerts-snapshot`，留 30 天），以前没报过的关闭公告（分类 Park Closure 或标题写着 closed / closure）开一个 issue（标签 `nps-alerts`，正文里 `<!-- alert:ID -->` 记下报过的）；评测集快照里的算报过。CI 上没有模型，只用规则看一眼；用模型提取要在本机下载快照跑 `python -m nps_copilot alerts --snapshot <快照>`。新的关闭公告是模型没见过的数据，留着做 `alerts_v2` 的评测。
 - **公园名在别的地方名字里**：“冰川点”是优胜美地的景点，里面的“冰川”不当成冰川国家公园（`knowledge.inside_place_name`，记在 trace 的 `ignored_parks`）；只在那个地方属于别的公园时才不算（“大峡谷村”还是大峡谷）。
 
 ## 契约：Copilot 和行程引擎之间的约定
@@ -81,7 +83,9 @@ flowchart LR
 | `copilot/nps_copilot/dates.py`、`text.py` | 读日期（中文、英文的几种顺序、“二〇二七年”、“下个月”）和天数（“5天”“五日”“四日三夜”“一周”）；文本规范化（NFKC、繁转简、空格） |
 | `copilot/nps_copilot/plan_client.py` | 调 plan_trip：默认直接跑仓库里的 Node 命令行（不用开网站），设了 `COPILOT_PLAN_URL` 走 HTTP |
 | `copilot/nps_copilot/critic.py`、`writer.py` | Critic、Writer（模板和忠实度检查 `faithful`） |
-| `copilot/nps_copilot/alerts.py`、`scripts/fetch-alerts.mjs` | 读 NPS 公告提取临时关闭：抓快照、模型提取和代码核对、规则对照、两者合并 |
+| `copilot/nps_copilot/alerts.py`、`scripts/fetch-alerts.mjs` | 读 NPS 公告提取临时关闭：抓快照、模型提取和代码核对、规则对照、两者合并、写关闭清单（`closures_from`） |
+| `src/lib/copilot/live.ts` | 关闭清单 → 行程引擎的 `LiveClosures`：两周内出发、清单是新的、日期碰得到才用 |
+| `copilot/scripts/alerts_report.py`、`.github/workflows/alerts-nightly.yml` | 每晚抓公告、新的关闭公告开 issue |
 | `copilot/nps_copilot/dispatcher.py` | 调度员：给模型看的上下文、输出格式、丢掉编造的名字 |
 | `copilot/nps_copilot/knowledge.py`、`qa.py` | QA：在 `knowledge.jsonl` 里检索（名字命中 + BM25）、让模型只按查到的资料回答、检查回答里的数字，对不上就摘原文 |
 | `copilot/nps_copilot/providers.py` | 模型提供方：本机 Ollama（默认）、回放录好的输出（CI 用，没录到的请求直接报错）、录音、测试用的脚本、云端（留接口、默认关） |
@@ -158,6 +162,9 @@ flowchart LR
 | `OLLAMA_HOST_URL` | `http://127.0.0.1:11435` | Ollama 地址（momomojun 电脑上的便携版用 11435；自己装的默认 11434；Docker 里是 `http://ollama:11434` 或 `http://host.docker.internal:11435`） |
 | `COPILOT_REPLAY` | — | 回放用的录音文件 |
 | `COPILOT_PLAN_URL` | — | 设了就用 HTTP 调 plan_trip，不跑 Node 命令行 |
+| `COPILOT_LIVE_CLOSURES` | `copilot/data/alerts/closures-latest.json` | NPS 公告关闭清单（`python -m nps_copilot alerts` 写的），文件在就交给行程引擎 |
+| `COPILOT_LIVE` | `1` | 设成 `0` 不用公告关闭清单（评测、测试里默认关掉） |
+| `LIVE_CLOSURES` | — | 行程引擎（`npm run copilot:plan`、网站的 `/api/copilot/plan`）读的关闭清单路径；`plan_client` 会自动设 |
 | `COPILOT_RUNS` | `copilot/runs` | 运行日志目录 |
 | `COPILOT_PROMPT_INTAKE`、`COPILOT_PROMPT_WRITER`、`COPILOT_PROMPT_QA`、`COPILOT_PROMPT_DISPATCH` | `defaults.json` 里的 | 临时换提示词版本，比如 `v1` |
 | `COPILOT_DISPATCH` | `1` | 设成 `0` 关掉调度员，每轮都走原来按规则的流程（对照实验、出问题时回滚） |

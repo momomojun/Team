@@ -18,12 +18,15 @@ import argparse
 import datetime as dt
 import json
 import statistics
+import os
 import sys
 import time
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
+# 评测、测试不用本机的 NPS 公告关闭清单（每天会变），结果才能复现
+os.environ.setdefault("COPILOT_LIVE", "0")
 
 from nps_copilot.pipeline import Session, prompt_hashes  # noqa: E402
 from nps_copilot.providers import OllamaProvider, ProviderError, RecordingProvider, ReplayProvider  # noqa: E402

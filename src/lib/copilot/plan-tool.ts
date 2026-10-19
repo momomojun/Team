@@ -4,7 +4,7 @@ import { lodgingOptions } from "../../data/lodging";
 import { parks } from "../../data/parks";
 import { airbnbUrl } from "../airbnb";
 import { addDays, nominalDate } from "../dates";
-import { generateTrip, type GuideSkipped, type LiveClosures } from "../generate-trip";
+import { closedKind, generateTrip, type GuideSkipped, type LiveClosures } from "../generate-trip";
 import { buildTimeline, buildTransferTimeline, NOMINAL_SUN, type LodgingPoint, type PlanStop, type SunWindow } from "../planner";
 import { formatClock, minutesOfDay, sunTimes } from "../sun";
 import { fitFor, type Party } from "../suitability";
@@ -19,6 +19,7 @@ import {
   type TripRequest,
   type ValidationIssue,
 } from "./contract";
+import { liveFromClosures, type ExtractedClosure, type ExtractedClosures } from "./live";
 
 /**
  * plan_trip 工具：拿 TripRequest 调网站同一个自动生成攻略（generate-trip.ts）和时间线（planner.ts），
@@ -27,7 +28,7 @@ import {
  * 和行程页的区别（写进结果的 assumptions，Writer 要照实说）：
  * - 行程页从机场到各景点的车程是浏览器里现查 OSRM；这里用预先算好的“机场 → 公园定位点”加“定位点 → 景点”，
  *   任意地点（不是常用机场）按直线距离估算
- * - 不读 NPS 实时公告（要的话由调用方查好传 live）
+ * - 不联网读 NPS 实时公告：调用方查好传 live，或者传 Copilot 提取好的关闭清单 closures（近期出发、清单是新的才用）
  */
 export const ENGINE = { name: "nps-guide-planner", version: "1" };
 
@@ -45,6 +46,8 @@ export interface PlanOptions {
   referenceDate: string;
   /** NPS 实时公告里说关了的景点（调用方查好传进来） */
   live?: LiveClosures;
+  /** Copilot 读 NPS 公告提取出的临时关闭（python -m nps_copilot alerts 写的 closures-latest.json） */
+  closures?: ExtractedClosures;
 }
 
 const parkByCode = new Map(parks.map((park) => [park.code, park]));
@@ -131,7 +134,20 @@ export function planTrip(input: unknown, options: PlanOptions) {
         : `drive-times: ${place.name} 不是常用机场，到各景点的车程按直线距离估算`,
     );
   }
-  if (!options.live) assumptions.push("no-live-alerts: 没有读 NPS 实时公告，只按仓库里整理的临时关闭");
+  let live = options.live;
+  let byAlert = new Map<string, ExtractedClosure>();
+  let maybeAlert = new Map<string, ExtractedClosure>();
+  if (!live && options.closures) {
+    const from = liveFromClosures(options.closures, normalized.startDate, normalized.days, options.referenceDate);
+    live = from.live;
+    byAlert = from.byStop;
+    maybeAlert = from.maybe;
+    assumptions.push(
+      from.status === "used"
+        ? `live-alerts: 按 ${options.closures.fetched} 的 NPS 公告：标题里写着关了的不排，只有模型读出来的照排、提醒确认`
+        : `no-live-alerts(${from.status}): ${LIVE_NOTES[from.status]}，只按仓库里整理的临时关闭`,
+    );
+  } else if (!live) assumptions.push("no-live-alerts: 没有读 NPS 实时公告，只按仓库里整理的临时关闭");
 
   const stops = attractions.filter((a) => normalized.parks.includes(a.park));
   const lodging = lodgingOptions
@@ -161,7 +177,7 @@ export function planTrip(input: unknown, options: PlanOptions) {
       sunFor: (day) => sunFor(dateFor(day), { park: main.code }),
       dateFor,
       zoneFor: (code) => zoneOf({ park: code }),
-      live: options.live,
+      live,
     },
   );
 
@@ -170,13 +186,32 @@ export function planTrip(input: unknown, options: PlanOptions) {
     engine: ENGINE,
     request: normalized,
     referenceDate: options.referenceDate,
-    days: describeDays(trip, dateFor, Boolean(normalized.startDate), { origin, destination }, normalized.party),
-    skipped: describeSkipped(guide.skipped),
+    days: describeDays(trip, dateFor, Boolean(normalized.startDate), { origin, destination }, normalized.party, maybeAlert),
+    // 公告让它去不了的（不是季节、施工这些原因）附上是哪条公告
+    skipped: describeSkipped(guide.skipped, (id) => {
+      const closure = byAlert.get(id);
+      const stop = stopById.get(id);
+      if (!closure || !stop || !normalized.startDate) return undefined;
+      const dates = Array.from({ length: normalized.days }, (_, day) => dateFor(day));
+      return closedKind(stop, month, dates, dates, live) === "alert" ? closure : undefined;
+    }),
     assumptions: [...new Set(assumptions)],
   };
 }
 
 export type TripResult = ReturnType<typeof planTrip>;
+
+function alertInfo(alert: ExtractedClosure) {
+  return { title: alert.title, ...(alert.url ? { url: alert.url } : {}), ...(alert.reopen ? { reopen: alert.reopen } : {}) };
+}
+
+const LIVE_NOTES = {
+  used: "",
+  "month-only": "只定了月份，公告只说现在的情况，管不到",
+  "too-far": "出发日期不在今天起两周内，公告只说现在的情况，管不到",
+  stale: "公告提取结果太旧了（重新 npm run alerts:fetch、python -m nps_copilot alerts）",
+  future: "公告提取结果比“今天”还晚（评测固定了以前的日期），不用",
+} as const;
 
 /** 逐天的时间线：和行程页一样，早上从前一晚住处出发、晚上回当晚住处，按当天第一站的时区 */
 function describeDays(
@@ -185,6 +220,7 @@ function describeDays(
   exact: boolean,
   endpoints: Record<"origin" | "destination", LodgingPoint & { name: string }>,
   party: Party | undefined,
+  maybeAlert: Map<string, ExtractedClosure>,
 ) {
   const resolve = (
     night: TripLodging | null | undefined,
@@ -252,14 +288,19 @@ function describeDays(
           waitMin: Math.round(entry.waitMin),
           slot: entry.slot,
           ...(entry.shuttle ? { shuttle: entry.shuttle.line } : {}),
-          warnings: [...entry.warnings, ...(fitFor(party, stop.family).serious ? (["familySerious"] as const) : [])],
+          warnings: [
+            ...entry.warnings,
+            ...(fitFor(party, stop.family).serious ? (["familySerious"] as const) : []),
+            ...(maybeAlert.has(stop.id) ? (["alertMaybeClosed"] as const) : []),
+          ],
+          ...(maybeAlert.has(stop.id) ? { alert: alertInfo(maybeAlert.get(stop.id)!) } : {}),
         };
       }),
     };
   });
 }
 
-function describeSkipped(skipped: GuideSkipped) {
+function describeSkipped(skipped: GuideSkipped, alertFor: (id: string) => ExtractedClosure | undefined) {
   return SKIP_REASONS.flatMap((reason) =>
     (skipped[reason] ?? []).flatMap((id) => {
       const stop = stopById.get(id);
@@ -267,7 +308,8 @@ function describeSkipped(skipped: GuideSkipped) {
       // 季节性关闭的：一年里哪几个月开，和为什么不开的第一句（“火瀑只在 2 月中下旬……出现”），Writer 照着说，别说得像是过几天就开
       const months = stop.openMonths ?? [];
       const seasonal = reason === "closed" && months.length > 0 && months.length < 12;
-      const note = reason === "closed" ? stop.closedNote?.split(/[，；。]/)[0] : undefined;
+      const alert = reason === "closed" ? alertFor(id) : undefined;
+      const note = reason === "closed" && !alert ? stop.closedNote?.split(/[，；。]/)[0] : undefined;
       return [
         {
           id,
@@ -277,6 +319,7 @@ function describeSkipped(skipped: GuideSkipped) {
           reason,
           ...(seasonal ? { openMonths: months } : {}),
           ...(note ? { noteZh: note } : {}),
+          ...(alert ? { alert: alertInfo(alert) } : {}),
         },
       ];
     }),
