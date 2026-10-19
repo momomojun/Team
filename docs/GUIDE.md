@@ -11,6 +11,7 @@
 | [README](../README.md) | 网站介绍（给访客看） |
 | **本文件** | 怎么做事：安装、运行、改代码、开 PR、部署、发版、回滚 |
 | [PROJECT.md](PROJECT.md) | 项目现状：做到哪、下一步、待决定的事、做过的决定、按时间的记录 |
+| [GOALS.md](GOALS.md) | 目标清单：仓库主人提过的所有要求、计划书和课程的承诺，每条做到哪了；还没完成的列在最前面 |
 | [DEVELOPMENT.md](DEVELOPMENT.md) | 网站的技术参考：代码结构、数据脚本、数据源和注意事项 |
 | [COPILOT.md](COPILOT.md) | Copilot 的技术参考：设计、契约、文件、提示词版本、评测方法、环境变量 |
 | [ENGLISH.md](ENGLISH.md) | 英文版怎么写 |
@@ -18,7 +19,7 @@
 | [archive/](archive/) | 存档，写完不再改：按官方资料核对事实的记录、交给 AI 助手的任务说明、早期模型实验的讨论记录 |
 | [experiments/](../experiments/README.md) | 早期本地模型实验的脚本和结果（冻结，不改） |
 
-**维护规则**：一件事只写在一个文档里，别处要用就放链接。改了东西，更新对应那一块的文档，再在 [PROJECT.md](PROJECT.md) 的“现状”和“时间线”里各记一笔。
+**维护规则**：一件事只写在一个文档里，别处要用就放链接。改了东西，更新对应那一块的文档，再在 [PROJECT.md](PROJECT.md) 的“现状”和“时间线”里各记一笔；完成了 [GOALS.md](GOALS.md) 里的某一条，把它的状态改掉、打勾；仓库主人提了新要求，也加进 GOALS.md。
 
 ## 1. 这个项目是什么
 
@@ -326,7 +327,7 @@ docker compose -f copilot/docker-compose.yml exec -T copilot python -m nps_copil
 ## 8. 和 AI 助手（Claude Code 等）一起改
 
 - 仓库根目录的 `CLAUDE.md` 会被 Claude Code 自动读到，里面带着 README、本文件和 DEVELOPMENT.md。
-- 让助手先读本文件和 [PROJECT.md](PROJECT.md)。
+- 让助手先读本文件、[PROJECT.md](PROJECT.md) 和 [GOALS.md](GOALS.md)（还没完成的目标）。
 - 这个项目用的 Next.js 16 和助手训练时见过的版本不一样，改网站代码前先看 `node_modules/next/dist/docs/`（`AGENTS.md` 里写了）。
 - 开发服务器用预览工具启动（`.claude/launch.json` 里的 `nps-guide`），不要用后台命令行起。
 - 给人看的命令要能在任何目录下运行，比如用 `git -C`、`npm --prefix`、绝对路径。
