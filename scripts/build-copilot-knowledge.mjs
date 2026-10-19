@@ -6,10 +6,11 @@ import { attractions } from "../src/data/attractions/index.ts";
 import { tempClosures as closures } from "../src/data/closures.ts";
 import { lodgingOptions } from "../src/data/lodging.ts";
 import { nationalParks } from "../src/data/national-parks.ts";
+import { airports } from "../src/data/airports.ts";
 import { parks } from "../src/data/parks.ts";
 import { suitability } from "../src/data/suitability/index.ts";
 import { getDictionary } from "../src/i18n/dictionaries.ts";
-import { travelMinutes } from "../src/lib/travel.ts";
+import { airportMinutes, travelMinutes } from "../src/lib/travel.ts";
 
 const DIFFICULTY = { easy: "轻松", moderate: "中等", hard: "难" };
 
@@ -70,6 +71,27 @@ export function knowledge() {
         members.map((park) => `${label(park.nameZh, park.nameEn)}，${park.stateEn}，${park.tagline}${park.bestMonths?.length ? `，最适合 ${months(park.bestMonths)}` : ""}`).join("；") + "。",
         ...members.filter((park) => park.nearby?.length).map((park) => `${park.nameZh}常和${park.nearby.map((code) => parkById.get(code)?.nameZh ?? code).join("、")}一起玩。`),
       ].join(""),
+    });
+  }
+
+  // 机场、城市：“波特兰附近有什么国家公园”。开车 6 小时以内的，按车程排；park 是空的，问题里说了城市、机场才用
+  for (const airport of Object.values(airports)) {
+    const near = parks
+      .map((park) => ({ park, minutes: airportMinutes(airport.code, park.code) }))
+      .filter(({ minutes: m }) => m !== null && Number.isFinite(m) && m <= 360)
+      .sort((a, b) => a.minutes - b.minutes);
+    if (!near.length) continue;
+    const cities = airport.city.split(" / ").flatMap((city) => [city, city.replace(/（.*）$/, "")]);
+    docs.push({
+      id: `airport:${airport.code}`,
+      type: "airport",
+      park: "",
+      // 标题带上城市全名：两个波特兰（俄勒冈、缅因）要分得清
+      title: `${airport.city}（${airport.code}）附近的国家公园`,
+      names: [...new Set([...cities, ...cities.map((city) => `${city}附近`), airport.nameZh, airport.code])],
+      text:
+        `从${airport.nameZh}（${airport.code}，${airport.city}）开车 6 小时以内能到的国家公园和名胜（按车程排）：` +
+        near.map(({ park, minutes: m }) => `${park.nameZh}${minutes(m)}（${park.tagline}）`).join("，") + "。",
     });
   }
 

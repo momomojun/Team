@@ -102,7 +102,8 @@ def search(question: str, parks: list[str], k: int = 4) -> list[Doc]:
         if not doc.park and not hits:
             continue  # 片区、州的资料只在问题里说了它的名字时才用
         if hits:
-            score += 50 + max(len(name) for name in hits)
+            # 片区的说法（“西雅图附近”）和机场、城市的一样长：片区排前面
+            score += 50 + max(len(name) for name in hits) + (25 if doc.type == "region" else 0)
         elif parts := [part for part in doc.parts if _name_hit(part, query)]:
             score += 25 + max(len(part) for part in parts)
         if score > 0:
@@ -141,9 +142,14 @@ GROUP_GO = re.compile(r"都(去|玩|逛|走|要|想)|全(部|都)(去|玩)?|一�
 
 def group_parks(message: str) -> tuple[str, list[str]] | None:
     """“西雅图附近的三个国家公园都玩”“华盛顿州的国家公园都去”：(说法, 公园代码)；只是问问（“是哪三个”）的不算"""
-    text = normalize(message).lower()
-    if not GROUP_GO.search(text):
+    if not GROUP_GO.search(normalize(message).lower()):
         return None
+    return group_mention(message)
+
+
+def group_mention(message: str) -> tuple[str, list[str]] | None:
+    """说到了某个片区、州的国家公园（“西雅图附近的国家公园”）：(说法, 公园代码)；不管是不是都要去"""
+    text = normalize(message).lower()
     for names, members in groups():
         for name in sorted(names, key=len, reverse=True):
             at = text.find(name)
@@ -180,3 +186,14 @@ def resolve(place: str, parks: list[str], kind: str) -> Doc | None:
                 if best is None or score > best[0]:
                     best = (score, doc)
     return best[1] if best else None
+
+
+def mentioned(text: str, parks: list[str], kind: str) -> list[Doc]:
+    """这段话里点了名的景点（kind="attraction"）或住处（"lodging"）：名字或“·”隔开的半个名字出现在里面的"""
+    query = normalize(text).lower()
+    found = []
+    for doc in index()[0]:
+        if doc.type == kind and (not parks or doc.park in parks):
+            if any(_name_hit(name, query) for name in doc.names) or any(_name_hit(part, query) for part in doc.parts):
+                found.append(doc)
+    return found

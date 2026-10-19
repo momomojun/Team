@@ -83,6 +83,7 @@ def test_new_trip_clears_conditions_and_edits():
 def test_conditions_can_point_back_to_a_park_from_the_conversation():
     provider = ScriptedProvider([
         act({"type": "ask", "query": "黄石几月份去最好"}),
+        extraction(),  # 还没排出行程：每一句也先交给 Intake
         {"found": True, "answer": "黄石最适合 6–9 月去。", "sources": [1]},
         act({"type": "conditions", "place": "黄石"}),
         extraction(dates=["2027年7月10日"], origin="博兹曼", duration="5天", preferences=["节奏适中"]),

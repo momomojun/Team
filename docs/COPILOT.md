@@ -30,7 +30,8 @@ flowchart LR
   - 条件照旧由 Intake 从原话里摘、代码读；“那就 7 月 10 日出发”这种指前面说过的公园的，调度员给出公园名、代码核对是对话里出现过的才用；
   - 问题交给 QA：模型按用户原话回答，补全的问法只帮着找资料（补全有时会补错，比如把“19 号几点出发”补成“从 El Portal 出发”）；
   - 用户的改动（`include`、`exclude`、每晚住处）记在会话里，换了公园、改短天数以后对不上的自动不带；“帮我安排一个新的行程”全部清掉。
-- **退回规则**：调度员调用失败、输出用不了，或者用户只是在回答上一句追问（6 个字以内，比如“5”“是的”），走原来按规则的流程（`pipeline._legacy`），不会因为调度员出错就答不了。`COPILOT_DISPATCH=0` 整个关掉调度员（对照实验、回滚用）。
+- **代码兜底**（10-18 第三次试用后加的）：还没排出行程时每一句都先交给 Intake（这时用户多半在回答追问）；一看就是在问的（问号、“什么”、“吗”）调度员没列提问也补上；补全的问法只在原话用了代词（那、这、它、呢、it、that）时才用；“那就加上它吧”这种代词，用户上一句正好点了一个地方就以它为准；Intake 认不出的叫法只看这一句，说了片区、州又没说“都去”的列出这几座来问。
+- **退回规则**：调度员调用失败、输出用不了，或者用户只是在回答上一句追问（像回答的短句：“5”“5天”“是的”“第二个”；“雷尼尔山呢？”这种不算），走原来按规则的流程（`pipeline._legacy`），不会因为调度员出错就答不了。`COPILOT_DISPATCH=0` 整个关掉调度员（对照实验、回滚用）。
 
 - **Intake**：模型只从当前这条消息里逐字摘片段（公园、日期、天数、出发地、回程地、同行的人、偏好），代码检查片段确实在原话里（先规范化，“6天”“6 天”算一样；摘了原话里没有的就丢掉，记 `dropped_spans`），再读成代码、日期、天数，管对话状态，决定下一句问什么。“今天、明天、这周六、下周末、19号、下个月5号、tomorrow”按“今天”（`reference_date`）算成具体日期（`dates.relative_date`），模型没摘到时规则补；没说年份的月日：今年还没到的按今年、过去两个月以上的按明年，回复里说一句按哪天排，只有刚过去不久的才问是哪一年；否定过的候选不会被后来的“是的”确认；先说的年份和后来补的月日合起来；“我选第二种”“缅因那个”都能对上选项。
 - **规则补**：模型漏了、但原话写得毫不含糊的天数（“N天 / N日 / N晚 / 一周”各最多一处）和公园名（模型一个都没摘时按目录认），用规则补上，trace 里记 `rule_filled`，评测时和模型的成绩分开算。
@@ -107,7 +108,7 @@ flowchart LR
 - 任务有 `intake`、`writer`、`qa`、`dispatch` 四个，文件是 `prompts/<任务>_v<n>.txt`。
 - **不改旧文件，新建下一版**：旧版留着才能回滚，也才能和旧的评测录音对上（回放按“任务 + 提示词全文 + 消息 + schema”的 hash 找录音，提示词改一个字就对不上）。
 - 默认版本改 `defaults.json`，走 PR；已经部署的服务可以不改代码临时切换：`COPILOT_PROMPT_INTAKE=v1`、`COPILOT_PROMPT_WRITER=v1`、`COPILOT_PROMPT_QA=v1`、`COPILOT_PROMPT_DISPATCH=v1`。
-- 现在默认 `intake/v1`、`writer/v1`、`qa/v1`、`dispatch/v1`。`intake_v2.txt` 是没采用的实验版本（回归集变好、开发集变差，门禁挡住了），留着演示回滚，见 [RESULTS.md](../copilot/eval/RESULTS.md)。
+- 现在默认 `intake/v1`、`writer/v1`、`qa/v2`、`dispatch/v1`（`qa/v2` 加了出行日期和英文回答的规则，10-18）。`intake_v2.txt` 是没采用的实验版本（回归集变好、开发集变差，门禁挡住了），留着演示回滚，见 [RESULTS.md](../copilot/eval/RESULTS.md)。
 - 怎么试一个新版本见 [GUIDE.md](GUIDE.md#改提示词)。
 
 ## 评测
@@ -118,6 +119,7 @@ flowchart LR
 | `copilot/eval/cases/holdout-v1.jsonl` | 40 | 复杂情况（改口、矛盾、节假日、繁体、注入、复杂同行人员……），冻结后才跑；看过失败、修了代码，所以现在也算回归集 | `baseline-holdout.json` |
 | `copilot/eval/cases/regional-v1.jsonl` | 17 | 香港、台湾、新马的写法，先提交期望再跑；同样修过，当回归集 | `baseline-regional.json` |
 | `copilot/eval/cases/conversation-v1.jsonl` | 20 组 52 轮 | 多轮对话（`eval/conversation.py` 用完整的 Copilot 一轮轮跑、每轮都查）：仓库主人两次试用的原话、指代、又改又问、加减景点、指定住处、排之前提问、闲聊、资料里没有的、英文；调度员改造的开发集 | `baseline-conversation.json` |
+| `copilot/eval/cases/conversation-v3.jsonl` | 2 组 14 轮 | 仓库主人第三次试用的原话（波特兰附近、西雅图附近、奥林匹亚、不住酒店、看不出哪天在哪、季节对不上），先写期望再跑 | `baseline-conversation-v3.json` |
 | `copilot/eval/cases/conversation-v2.jsonl` | 15 组 34 轮 | 调度员写完以后才写的多轮对话（繁体、粤语、每晚都住某处、公园里没有的地方、“那就加上它”、去掉又加回来、两座公园……），第一次跑 14/15；修了一处，当回归集 | `baseline-conversation-v2.json` |
 
 - `copilot/eval/run.py`：逐轮跑对话，比较最后的状态和 `TripRequest` 是否符合期望。`--replay` 回放录音（CI 用，不要 GPU）、`--record` 用真模型并录音、`--gate` 低于基线就失败、`--plan` 条件齐了再真的调 plan_trip、`--writer` 加 Writer 的成批评测、`--cases` 换样例文件。报告写到 `copilot/eval/reports/`（不提交）。

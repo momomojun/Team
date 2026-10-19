@@ -21,7 +21,7 @@ from typing import Any
 
 from . import catalog, prompts
 from .dates import EN_NUMBERS, ZH_NUMBER, zh_number, DAYS_RE, DAYS_RI, WEEK_RE, DateParts, date_range_days, merge, next_occurrence, parse_date_spans, parse_days, relative_date, relative_month
-from .knowledge import group_parks, inside_place_name
+from .knowledge import group_mention, group_parks, inside_place_name
 from .providers import Provider
 from .text import contains, normalize
 
@@ -159,6 +159,7 @@ class Intake:
             self.language = "en" if is_english(message) else "zh"
         trace: dict[str, Any] = {"prompt": prompts.load("intake").id, "model_called": False}
         notices: list[str] = []
+        self.unsupported = []
         handled = self._answer_pending(message, notices)
         trace["route"] = handled or "extraction"
         trace["absorbed"] = handled not in (None, "partial")
@@ -232,6 +233,12 @@ class Intake:
                 return self._set_year(year, message)
             # 没有候选日期时，单说“是的”不确认任何东西（V3 会确认已经被否定的那个）
             return "ignored_yes" if yes(message) else None
+        if kind == "choose" and pending.get("target") == "parks":
+            named = [code for code, _ in catalog.find_all(message, catalog.parks())]
+            if len(named) >= 2:
+                self.parks = Field(self._order_parks(named[:4]), "user_confirmation", message.strip())
+                self.pending = None
+                return "choice"
         if kind == "choose":
             option = pick_option(message, pending["options"])
             if option is None and pending["target"] in ("origin", "destination"):
@@ -255,6 +262,10 @@ class Intake:
                 self.days = Field(option["value"], "user_confirmation", message.strip())
             elif target == "parks":
                 self.parks = Field(option["value"], "user_confirmation", message.strip())
+                # “那就去奥林匹克吧，2027年7月10日从西雅图出发……”：选了公园，同一句还给了别的条件，接着读
+                label = option.get("zh") or ""
+                if len(normalize(message)) > len(label) + 6:
+                    return "partial"
             return "choice"
         return None
 
@@ -311,6 +322,17 @@ class Intake:
                 self.notes.append(f"Going by the site's regions, that's {', '.join(table[code].name_en for code in self.parks.value)}.")
             else:
                 self.notes.append(f"“{group[0]}”按网站的片区算是{'、'.join(table[code].name_zh for code in self.parks.value)}这 {len(self.parks.value)} 座。")
+        elif (mention := group_mention(message)) and not self.parks.value and not catalog.find_all(message, catalog.parks()):
+            # “我想去西雅图附近的国家公园玩”：按网站的片区列出来，问去哪几座（以前当成“没收录”）
+            name, members = mention
+            table = catalog.parks()
+            zh = self.language != "en"
+            names = [table[code].name_zh if zh else table[code].name_en for code in members]
+            self.pending = {"kind": "choose", "target": "parks",
+                            "text": (f"“{name}”按网站的片区有{'、'.join(names)}这 {len(members)} 座，想去哪几座？都去也可以。" if zh else
+                                     f"Around there the site covers {', '.join(names)}. Which would you like? All of them is fine too."),
+                            "options": [{"value": [code], "zh": table[code].name_zh, "en": table[code].name_en} for code in members]
+                                       + [{"value": list(members), "zh": "都去", "en": "All of them"}]}
         elif kept["parks"]:
             self._read_parks(kept["parks"], message)
         range_days = self._read_dates(kept["dates"], message) if kept["dates"] else None
@@ -539,9 +561,12 @@ class Intake:
             pace = "packed"
         if pace and not re.search(r"不想多看|别太紧凑", text):
             self.pace = Field(pace, "user", span)
-        if re.search(r"不住民宿|不要民宿|只住酒店|住酒店|hotels? only|only hotels?|stay in hotels?|no airbnb", text, re.I):
+        # “不住酒店”“我想全程都住airbnb，不住酒店”：说的是不住酒店，不能因为里面有“住酒店”就当成只住酒店
+        no_hotel = re.search(r"不住酒店|不要酒店|别住酒店|不想住酒店|no hotels?\b", text, re.I)
+        no_rental = re.search(r"不住民宿|不要民宿|别住民宿|不想住民宿|no airbnb|no (vacation )?rentals?", text, re.I)
+        if no_rental or (re.search(r"只住酒店|住酒店|hotels? only|only hotels?|stay in hotels?", text, re.I) and not no_hotel):
             self.lodging = Field("hotel", "user", span)
-        elif re.search(r"民宿|airbnb|vrbo|整套房子", text, re.I):
+        elif no_hotel or re.search(r"民宿|airbnb|vrbo|整套房子", text, re.I):
             self.lodging = Field("rental", "user", span)
         # 合同里还没有的偏好：记下来，Writer 照实说“这一版还不能单独按这个排”
         for key, pattern in (("lessWalking", r"少走路|不想走太多|走不动|less walking|not much walking"),
@@ -610,6 +635,8 @@ class Intake:
         pending = self.pending
         if not pending:
             return None
+        if pending["kind"] == "choose" and pending.get("target") == "parks" and "text" in pending and not self.parks.value:
+            return pending  # “西雅图附近的国家公园”：列出这几座问去哪几座
         if pending["kind"] == "ask_year":
             month, day = pending["month"], pending["day"]
             error = pending.get("error")

@@ -49,6 +49,7 @@ EXTRA_PARK_ALIASES = {
     "mova": ["纪念碑山谷"],
     "wave": ["波浪谷", "The Wave", "Coyote Buttes"],
     "grte": ["大提顿国家公园", "Tetons"],
+    "olym": ["奥林匹亚国家公园", "奥林匹亚"],
     "brca": ["布莱斯", "Bryce"],
     "romo": ["洛基山", "Rocky Mountain"],
     "havo": ["大岛火山", "基拉韦厄"],
