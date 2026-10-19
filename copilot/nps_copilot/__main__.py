@@ -49,17 +49,19 @@ def main() -> None:
                          ensure_ascii=False, indent=1))
         return
     if args.command == "alerts":
-        from .alerts import extract
+        from .alerts import combined, extract, rules_extract
 
         snapshot = json.loads(open(args.snapshot, encoding="utf-8").read())
         reference = dt.date.fromisoformat(snapshot["fetched"])
         provider = from_env()
         closures = []
         for alert in snapshot["alerts"]:
-            result = extract(alert, provider, reference)
+            # 模型和规则一起（评测里漏得最少）；每条记下是谁找到的
+            result = combined(extract(alert, provider, reference), rules_extract(alert))
             if result.type == "full" and result.closed:
                 closures.append({"alert": result.alert, "park": result.park, "attractions": result.closed, "from": result.start,
-                                 "reopen": result.reopen, "evidence": result.evidence, "title": alert["title"], "url": alert.get("url")})
+                                 "reopen": result.reopen, "evidence": result.evidence, "found_by": result.trace.get("found_by", []),
+                                 "title": alert["title"], "url": alert.get("url")})
         out = {"fetched": snapshot["fetched"], "prompts": prompts.current(), "closures": closures}
         with open(args.out, "w", encoding="utf-8") as handle:
             json.dump(out, handle, ensure_ascii=False, indent=1)

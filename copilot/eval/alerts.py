@@ -100,6 +100,7 @@ def main() -> int:
                 provider = RecordingProvider(provider, path)
         predictions = {g["id"]: alerts_module.extract(by_id[g["id"]], provider, reference) for g in labels}
         results["model"] = both(predictions)
+        results["both"] = both({g["id"]: alerts_module.combined(predictions[g["id"]], alerts_module.rules_extract(by_id[g["id"]])) for g in labels})
         results["model"]["dropped"] = sum(1 for p in predictions.values() if p.trace.get("dropped"))
         results["model"]["dropped_dates"] = sum(len(p.trace.get("dropped_dates", [])) for p in predictions.values())
     for name, result in results.items():

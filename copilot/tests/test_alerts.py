@@ -51,3 +51,16 @@ def test_rules_baseline_reads_the_title_only():
     assert partial.type == "partial" and partial.closed == []
     info = alerts.rules_extract({**ALERT, "category": "Information", "title": "Fire restrictions in effect"})
     assert info.type == "none"
+
+
+def test_picked_attraction_must_be_mentioned_and_rules_add_what_the_model_missed():
+    old_faithful = index_of("yell", "yell-old-faithful")
+    biscuit = {"id": "b1", "park": "yell", "category": "Park Closure", "title": "Biscuit Basin Closed Due to Hydrothermal Explosion",
+               "description": "Biscuit Basin and its boardwalks are closed until further notice."}
+    provider = ScriptedProvider([{"type": "full", "closed": [old_faithful], "from": "", "reopen": "", "evidence": "Biscuit Basin and its boardwalks are closed"}])
+    result = alerts.extract(biscuit, provider, TODAY)
+    # 关的是名单里没有的 Biscuit Basin，公告没提老忠实泉：不能算老忠实泉关了
+    assert result.type == "full" and result.closed == [] and result.trace["not_mentioned"] == ["yell-old-faithful"]
+    model_says_partial = alerts.Extraction("a1", "yose", "partial")
+    both = alerts.combined(model_says_partial, alerts.rules_extract(ALERT))
+    assert both.type == "full" and "yose-glacier-point" in both.closed and both.trace["found_by"] == ["rules"]

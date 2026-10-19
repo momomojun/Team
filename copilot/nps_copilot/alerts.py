@@ -107,6 +107,19 @@ def _checked_date(value: str, dates: set[str], reopen: bool) -> str | None:
     return None
 
 
+def mentions(text: str, row: dict) -> bool:
+    """公告里提到了这个景点：全名、名字里够特别的词（5 个字母以上、不是 trail、point 这类通用词），或者片区名"""
+    words = _words(text)
+    name = _words(row["nameEn"]).strip()
+    name = name[4:] if name.startswith("the ") else name
+    if f" {name} " in words:
+        return True
+    if any(f" {w} " in words for w in name.split() if len(w) >= 5 and w not in GENERIC):
+        return True
+    area = row["area"].replace("-", " ")
+    return len(area) >= 4 and area not in GENERIC and f" {area} " in words
+
+
 def build_user(alert: dict, candidates: list[dict], year: int) -> str:
     description = (alert.get("description") or "")[:TEXT_LIMIT]
     lines = [f"Park: {alert['park']} · Category: {alert.get('category', '')} · Year: {year}", f"Title: {alert['title']}",
@@ -138,10 +151,13 @@ def extract(alert: dict, provider: Provider, reference: dt.date) -> Extraction:
     closed = []
     if kind == "full":
         for index in data.get("closed") or []:
-            if isinstance(index, int) and 1 <= index <= len(candidates):
+            if not (isinstance(index, int) and 1 <= index <= len(candidates)):
+                trace.setdefault("bad_index", []).append(index)
+            elif mentions(text, candidates[index - 1]):
                 closed.append(candidates[index - 1]["id"])
             else:
-                trace.setdefault("bad_index", []).append(index)
+                # 公告里根本没提到这个景点（关的是名单里没有的 Biscuit Basin，模型选了旁边的老忠实泉）：不算
+                trace.setdefault("not_mentioned", []).append(candidates[index - 1]["id"])
     dates = mentioned_dates(text, reference.year)
     start = _checked_date(data.get("from", ""), dates, reopen=False)
     reopen = _checked_date(data.get("reopen", ""), dates, reopen=True)
@@ -185,3 +201,13 @@ def rules_extract(alert: dict) -> Extraction:
         if f" {name} " in words or (len(area) >= 4 and area not in GENERIC and f" {area} " in words):
             closed.append(row["id"])
     return Extraction(alert["id"], alert["park"], "full", closed)
+
+
+def combined(model: Extraction, rules: Extraction) -> Extraction:
+    """模型和规则一起：任何一边说整段关了就算关，景点取两边的并集；日期、证据用模型的（规则读不出日期）。
+    排行程时漏掉一个关了的地方（排进去了却去不了）比多删一个景点更糟，所以宁可多算"""
+    kind = "full" if "full" in (model.type, rules.type) else model.type
+    closed = list(dict.fromkeys(model.closed + rules.closed)) if kind == "full" else []
+    found_by = [name for name, part in (("model", model), ("rules", rules)) if part.type == "full" and part.closed]
+    return Extraction(model.alert, model.park, kind, closed, model.start, model.reopen, model.evidence,
+                      {**model.trace, "found_by": found_by})

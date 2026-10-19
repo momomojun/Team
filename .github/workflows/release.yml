@@ -47,6 +47,7 @@ jobs:
           python copilot/eval/conversation.py --replay copilot/eval/recordings/qwen3.5_4b-q4_K_M-conversation-v1.jsonl --gate copilot/eval/baseline-conversation.json
           python copilot/eval/conversation.py --cases copilot/eval/cases/conversation-v2.jsonl --replay copilot/eval/recordings/qwen3.5_4b-q4_K_M-conversation-v2.jsonl --gate copilot/eval/baseline-conversation-v2.json
           python copilot/eval/conversation.py --cases copilot/eval/cases/conversation-v3.jsonl --replay copilot/eval/recordings/qwen3.5_4b-q4_K_M-conversation-v3.jsonl --gate copilot/eval/baseline-conversation-v3.json
+          python copilot/eval/alerts.py --replay copilot/eval/recordings/qwen3.5_4b-q4_K_M-alerts-2026-10-19.jsonl --gate copilot/eval/baseline-alerts.json
 
       - name: Build image
         run: docker build -f copilot/Dockerfile --build-arg COPILOT_BUILD_SHA=${GITHUB_SHA::7} -t "$IMAGE:$GITHUB_REF_NAME" -t "$IMAGE:latest" .
