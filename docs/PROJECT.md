@@ -2,23 +2,28 @@
 
 做到哪了、下一步做什么、有哪些事等仓库主人决定、做过哪些决定和为什么，以及按时间的完整记录。**怎么做事**见 [GUIDE.md](GUIDE.md)。
 
-**English summary.** This repository (`momomojun/Team`) is the CSYE 7374 (LLMOps, Fall 2026) team project. It builds on **NPS Guide**, a Chinese-language U.S. national park trip planner that Jun Zhai built before the course (copied from `momomojun/NPS-guide` at commit `4590c45`, without history). The course work adds **NPS Guide Copilot**, an LLM layer that understands trip requests and explains plans while the deterministic engine does the planning, plus the LLMOps pipeline around it. Phases 1–3 are done as of 2026-10-17: contracts and the `plan_trip` tool; the Python Copilot (Intake → plan_trip → Critic → Writer) on a local Qwen3.5 4B with three replay eval gates in CI (dev 25/25, regression 37/40, regional wording 17/17); and Docker images, a tag-driven release workflow to GHCR, versioned prompts with env-var rollback, run-log monitoring and a rollback demo. The first release, `copilot-v0.2.0`, was published on 2026-10-18 (public image on GHCR). Next: a fresh unseen eval set, ablations, and a chat panel on the website.
+**English summary.** This repository (`momomojun/Team`) is the CSYE 7374 (LLMOps, Fall 2026) team project of Jun Zhai, Tianyue Chen and Huiling Fu. It builds on **NPS Guide**, a Chinese-language U.S. national park trip planner that Jun Zhai built before the course (copied from `momomojun/NPS-guide` at commit `4590c45`, without history). The course work adds **NPS Guide Copilot**, an LLM layer that understands trip requests, answers questions from the site's own data and explains plans while the deterministic engine does the planning, plus the LLMOps pipeline around it. As of 2026-10-18: contracts and the `plan_trip` tool; the Python Copilot on a local Qwen3.5 4B with three replay eval gates in CI (dev 25/25, regression 37/40, regional wording 17/17); multi-turn conversation fixes and grounded Q&A (retrieval over 1,687 knowledge entries); Docker images, a tag-driven release workflow to GHCR (`copilot-v0.2.0`, `copilot-v0.2.1`), versioned prompts, rollback demos and run-log monitoring. Every requirement and promise, with what's still open, is tracked in [GOALS.md](GOALS.md). Next: let the model orchestrate tools, multi-turn evals, live NPS alerts, and a chat panel on the website.
 
-## 现状（2026-10-17）
+## 现状（2026-10-18）
 
 | 部分 | 状态 |
 |---|---|
-| 网站 NPS Guide | 能用：52 座美国国家公园、加拿大 3 座、4 处园外名胜，871 个景点；英文版、同行适合度、时区、59 座全部按官方资料核对过。部署在 Vercel（https://team-peach-five.vercel.app ，不设访问密码） |
-| 阶段 1：契约和工具 | 完成（PR #4）：`TripRequest` / `TripResult` v1、`plan_trip` 工具 |
-| 阶段 2：Python Copilot | 完成（PR #5）：Intake、Critic、Writer、Provider、日志；默认本机 Qwen3.5 4B |
-| 阶段 3：CI/CD | 完成（PR #6）：5 项 PR 检查（3 项必需）、Docker 镜像、`release.yml` 发版流程、提示词版本和回滚、监控、Ollama 一键启动。**10-18 发了 [`copilot-v0.2.0`](https://github.com/momomojun/Team/releases/tag/copilot-v0.2.0) 和 [`copilot-v0.2.1`](https://github.com/momomojun/Team/releases/tag/copilot-v0.2.1)**，镜像在 GHCR 公开可拉；提示词回滚、换镜像回滚都演示过 |
-| 阶段 4：评测和对照实验 | 进行中：开发集 25、复杂情况 40、各地写法 17 组都当回归门禁；还缺一批没见过的、对照实验 |
-| 阶段 5：接进网站 | 没开始 |
-| 仓库 | `main` 受保护（必须走 PR、3 项检查通过）；合并后自动删除分支；协作者 JadenChen10、huilingfu95-source |
+| 网站 NPS Guide | 能用：52 座美国国家公园、加拿大 3 座、4 处园外名胜，871 个景点；英文版、同行适合度、时区、住处营业季节，59 座全部按官方资料核对过。部署在 Vercel（https://team-peach-five.vercel.app ，不设访问密码） |
+| 阶段 1：契约和工具 | 完成（PR #4）：`TripRequest` / `TripResult` v1、`plan_trip` 工具、59 座公园和 86 个机场的目录。单独的查询工具（某天开没开、车程、搜景点）没做，这些信息在 `TripResult` 的 `warnings`、`skipped` 里 |
+| 阶段 2：Python Copilot | 完成（PR #5）：Intake → plan_trip → Critic → Writer，Provider 可换，JSONL 日志；默认本机 Qwen3.5 4B。10-18 两次试用后修了多轮对话（PR #12、#14）：相对日期、改了什么、不重印行程、排好以后和排出以前都能提问（在网站资料里查了再答，RAG）。Writer 还没有逐句附来源；模型只摘条件和按资料回答，对话怎么走是代码定的（仓库主人觉得“不智能”，见下面待决定的事） |
+| 阶段 3：CI/CD | 完成（PR #6）：5 项 PR 检查（3 项必需）、Docker 镜像、`release.yml` 发版流程、提示词版本和回滚、监控（命令行统计，没接 MLflow）、Ollama 一键启动。10-18 发了 [`copilot-v0.2.0`](https://github.com/momomojun/Team/releases/tag/copilot-v0.2.0) 和 [`copilot-v0.2.1`](https://github.com/momomojun/Team/releases/tag/copilot-v0.2.1)，镜像在 GHCR 公开可拉；提示词回滚、换镜像回滚都演示过 |
+| 阶段 4：评测和对照实验 | 进行中：开发集 25、复杂情况 40、各地写法 17 组都当回归门禁（25/25、37/40、17/17）；还缺多轮对话评测、一批没见过的样例（目标约 150 条）、对照实验 |
+| 阶段 5：接进网站 | 没开始：行程页的对话面板、路线动画 |
+| 仓库 | `main` 受保护（必须走 PR、3 项检查通过）；合并后自动删除分支；协作者 JadenChen10（Tianyue Chen）、huilingfu95-source（Huiling Fu） |
+| 目标清单 | 所有要求和承诺做到哪、还差什么：[GOALS.md](GOALS.md) |
 
 ## 等仓库主人决定的事
 
-- 现在没有等决定的事。
+- **要不要把模型改成“调度员”**：看整段对话，自己决定调用排行程、查资料、改某一天、换住处、追问还是回答（工具调用），代码照旧核对事实。能解决“不智能”，也让计划书的“多智能体”名副其实；风险是 4B 模型调度可能不稳，要用多轮对话评测量（10-18 提出）。
+- **每天核对封路的定时任务改查这个仓库**：现在还在查旧目录 `D:\WebWorkplace\NPS-guide` 的旧数据；改的是本机的定时任务设置，要仓库主人同意。
+- **旧仓库 `momomojun/NPS-guide` 和 nps-guide.vercel.app**：停在 10-16，下线、改成跳转到新网址，还是保留。
+- **组员分工**：Tianyue Chen、Huiling Fu 各负责什么（比如评测样例和对照实验、网站对话框、部署）。
+- 演示时 Copilot 放在哪（见下一步第 3 条）。
 
 ## 下一步
 
@@ -26,7 +31,7 @@
 
 按 10-18 商量的顺序（课程时间：10 月 29 日那周交 proposal，11 月 5 日起每周 scrum，12 月 10 日项目演示）。仓库主人 10-18 试用后，先把对话修好，再做别的：
 
-1. **把对话修好**（正在做）：第一批（相对日期、出发和回程说清楚、改了什么、季节性关闭的说法）、第二批（**能回答问题**：排好以后的提问从网站自己的资料里查了再答，查不到说不知道，对应课上的 RAG）已经做完；还没做好的：一句话里既改条件又提问、排出行程以前的提问（见 [RESULTS.md](../copilot/eval/RESULTS.md)）。第三批把真实的多轮对话写成评测（先写期望再跑），每个 PR 都过。
+1. **把对话修好**（正在做）：第一批（相对日期、出发和回程说清楚、改了什么、季节性关闭的说法）、第二批（**能回答问题**：排好以后的提问从网站自己的资料里查了再答，查不到说不知道，对应课上的 RAG）已经做完，两次试用发现的问题也修了；还没做好的：一句话里既改条件又提问时只答查得到的部分、“紧凑的话要几天”资料里没有（见 [RESULTS.md](../copilot/eval/RESULTS.md)）。第三批把真实的多轮对话写成评测（先写期望再跑），每个 PR 都过。
 2. **读 NPS 实时公告、自动提取关闭信息**（11 月上旬）：每天抓 NPS 公告，本机模型判断哪个景点关了、从哪天到哪天，排行程时用上，取代手动维护的 `closures.ts`；已经人工核对过的 `closures.ts` 当标准答案算准确率。对应计划书标题里的 fast-changing data 和监控、漂移。
 3. **网站行程页加对话面板**（11 月中）：用户用自然语言说需求 → Copilot 追问、确认 → 生成行程（就是现在“自动生成攻略”的结果）→ 用户可以继续说“第二天轻松一点”“换成住 Jackson”；没有 Copilot 时页面照旧能用。要先定 Copilot 放在哪：演示时在笔记本上同时开网站和 Copilot（不花钱），还是租带显卡的服务器。
    - **路线动画**（和对话面板一起做）：**第一次排出行程、改了行程的时候**自动播一段，之后看行程还是文字、卡片和静态地图（仓库主人 10-18 说的：动画是帮人第一眼看懂，不是拿来研究行程的）。第一次：镜头沿真实开车路线一天天走，每站亮起来标几点到、停多久，路上标开多久，日落那站天色变暗，晚上落在住处；全程十几二十秒。改了以后：只播变了的部分（换了的住处、加的减的挪了的景点、新的路线），几秒。播完停在静态地图上，可以重播、暂停、拖到某一站；系统设了“减少动画”的不自动播。用网站现有的 MapLibre 地图、每天的真实路线和行程的时间，不用新数据。导出成短视频分享以后再说。
@@ -39,8 +44,8 @@
   - 做一个端到端的 LLMOps 系统，从 5 个方向里选一个重点：微调、多智能体、API 系统、PromptOps、监控治理；
   - 必须有简化的 CI/CD（自动测试、版本管理、部署）；
   - 先交 1–2 页的 proposal。
-- **计划书**：同一目录的 `Project_Proposal_NPS_Guide_Copilot.docx` 和 PDF。标题 *NPS Guide Copilot: An End-to-End LLMOps Pipeline for a Grounded Multi-Agent Assistant over Fast-Changing Data*；按老师模板 1–9 节写，第 3 节讲为什么是 LLMOps 问题（知识过时、悄悄变差、成本不透明；这个领域的错误可以用代码客观判定），第 4 节按生命周期列组件，第 10 节对应老师的 4 个学习目标。
-- **团队**：1–3 人。Jun Zhai（momomojun，仓库主人）和 Tianyue Chen（chen.t2@northeastern.edu），可能还有第三人。
+- **计划书**：同一目录的 `Project_Proposal_NPS_Guide_Copilot.docx` 和 PDF。标题 *NPS Guide Copilot: An End-to-End LLMOps Pipeline for a Grounded Multi-Agent Assistant over Fast-Changing Data*；按老师模板 1–9 节写，第 3 节讲为什么是 LLMOps 问题（知识过时、悄悄变差、成本不透明；这个领域的错误可以用代码客观判定），第 4 节按生命周期列组件，第 8 节对应老师的 4 个学习目标。
+- **团队**（3 人）：Jun Zhai（GitHub momomojun，仓库主人）、Tianyue Chen（JadenChen10，chen.t2@northeastern.edu）、Huiling Fu（huilingfu95-source）。计划书第 2 节的第 3 人还是占位，要写上 Huiling Fu 和分工。
 - **仓库主人**：用中文交流，在美国，Next.js 开发者，去过 7 座国家公园；不熟悉 DevOps，解释部署、CI 这些要从头讲、多打比方。
 
 ## 做过的决定
@@ -95,16 +100,6 @@
 - 做得好：实验规范（冻结 hash、失败全留、结论克制）、职责划分对（模型摘、代码算）、全部本地可复测。
 - 当时的缺口（后来在阶段 1–3 里补上了）：只做了 Intake、没接行程引擎；没有 CI/CD；字段和网站的 `WizardInput` 没对齐；只认 3 座公园；样本少；几个状态机 bug（拒绝过的候选日期会被确认、年份丢失、认不出“我选第二种”、“6天”和“6 天”不一样、追问里露出内部字段名）。
 - 实验目录里的历史版本是冻结的，不要改；新实验另建版本目录。
-
-## LLMOps 分阶段计划
-
-| 阶段 | 内容 | 状态 |
-|---|---|---|
-| 1. 契约和工具 | `TripRequest` / `TripResult` 契约、`plan_trip` 工具、全部 59 座公园和 86 个机场的目录 | 完成。单独的查询工具（某天关没关、山路把握、要提前订的、适合度、时区提醒）没做，这些信息已经在 `TripResult` 的 `warnings`、`skipped` 里 |
-| 2. 最小 Copilot | Intake → plan_trip → Critic → Writer；Provider 可换；JSONL 日志 | 完成。计划里的 Writer“每句事实带来源”还没做，现在是模板 + 忠实度检查 |
-| 3. CI/CD | PR 检查和回放门禁、Docker、按 tag 发版、提示词版本、回滚、监控 | 完成，没发过版。日志用 JSONL，没接 MLflow |
-| 4. 评测和对照实验 | 约 150 条评测集、分项报告、对照实验 | 进行中 |
-| 5. 接进网站 | 行程页的对话面板 | 没开始 |
 
 ## 时间线
 
@@ -161,7 +156,7 @@
 
 ### 10-16：LLMOps 现状评估
 
-- 评估了另一个助手的实验（见上面），定了分阶段计划（见上面“LLMOps 分阶段计划”）。
+- 评估了另一个助手的实验（见上面），定了分阶段计划（阶段 1–5，现在的状态见上面“现状”）。
 
 ### 10-17：阶段 1（PR #4）
 
@@ -237,3 +232,4 @@
 
 - 仓库主人问“以前的要求都完成了吗”：把 9 月 23 日起所有会话里仓库主人说过的话、课程作业、计划书逐条对照仓库核对，网站 82 条、Copilot 和课程 119 条。仓库主人说核对表要存起来、当目标去完成，写成 [GOALS.md](GOALS.md)：还没完成的列在最前面，做完一条就改状态、打勾。
 - 核对时发现的：10-16 在旧目录写好的停车证和租车价没提交（已补，PR #16）；每天的封路核对任务还在查旧目录；计划书和现在的做法有几处不一样，仓库主人定“先不改、把项目做好”。
+- 按仓库主人的要求更新本文件过时的地方：“现状”改到 10-18，把原来重复的“LLMOps 分阶段计划”表并进“现状”；补上等决定的事；计划书对应学习目标的是第 8 节；团队是 Jun Zhai、Tianyue Chen（JadenChen10）、Huiling Fu（huilingfu95-source）。
