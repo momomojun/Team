@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import json
 import re
+from difflib import SequenceMatcher
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
@@ -49,7 +50,6 @@ EXTRA_PARK_ALIASES = {
     "mova": ["纪念碑山谷"],
     "wave": ["波浪谷", "The Wave", "Coyote Buttes"],
     "grte": ["大提顿国家公园", "Tetons"],
-    "olym": ["奥林匹亚国家公园", "奥林匹亚"],
     "brca": ["布莱斯", "Bryce"],
     "romo": ["洛基山", "Rocky Mountain"],
     "havo": ["大岛火山", "基拉韦厄"],
@@ -154,3 +154,48 @@ def _english_cities() -> dict[str, list[str]]:
 def english_city(code: str) -> str | None:
     names = _english_cities().get(code)
     return names[0] if names else None
+
+
+# 叫法里不算名字的部分：比较像不像时去掉
+_SUFFIX = re.compile(r"national parks?|national park|国家公园|国家森林|公园|\bthe\b|\bnp\b")
+_SPLIT = re.compile(r"[|，,、。！!？?\s/&+]|和|与|及|跟|还有|以及|比如|例如|或者|还是|national parks?|国家公园|公园")
+_FILLER = re.compile(r"^(我想去|想去|我要去|要去|我们去|去|玩|看看|看)|(吧|呢|啊|吗|的|玩|一下|看看)$")
+SIMILAR_MIN = 0.6
+
+
+def _core(text: str) -> str:
+    return _SUFFIX.sub("", normalize(text).lower()).strip(" ，,。.、")
+
+
+def similar(token: str, table: dict) -> tuple[str, str, float] | None:
+    """没认出来的叫法最像哪个（打错字：“奥林匹亚”→奥林匹克、“Yosemity”→Yosemite）：(代码, 叫法, 相似度)；都不够像是 None。
+    两个字的名字错一个字只有 0.5，首字相同时也算（“黄时”→黄石）"""
+    core = _core(token)
+    if len(core) < 2 or (core.isascii() and len(core) < 4):
+        return None
+    best: tuple[str, str, float] | None = None
+    for code, item in table.items():
+        for alias in item.aliases:
+            target = _core(alias)
+            if len(target) < 2 or target.isascii() != core.isascii() or target == core:
+                continue
+            score = SequenceMatcher(None, core, target).ratio()
+            if len(core) == len(target) == 2 and core[0] == target[0]:
+                score = max(score, SIMILAR_MIN)
+            if best is None or score > best[2]:
+                best = (code, alias, score)
+    return best if best and best[2] >= SIMILAR_MIN else None
+
+
+def unknown_parts(text: str, table: dict) -> list[str]:
+    """去掉认出来的名字以后还剩下的、像是一个名字的片段（“北瀑布，雷尼尔山和奥林匹亚” → ["奥林匹亚"]）"""
+    haystack = normalize(text).lower()
+    for item in table.values():
+        for alias in sorted(item.aliases, key=len, reverse=True):
+            haystack = _pattern(alias).sub("|", haystack)
+    parts = []
+    for piece in _SPLIT.split(haystack):
+        piece = _FILLER.sub("", piece.strip())
+        if len(piece) >= 2 and not re.fullmatch(r"[\d\s]+", piece):
+            parts.append(piece)
+    return parts
