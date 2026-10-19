@@ -88,3 +88,23 @@ export const manualFees: Record<string, ManualFees> = {
 /** 加元换美元（预算里统一按美元算） */
 export const CAD_TO_USD = 0.707;
 export const cadRateDate = "2026-09-28";
+
+/** 不收门票、但停车要买停车证的公园（美元，一车一证）：国家公园年卡不能代替 */
+export interface ParkingTag {
+  day: number;
+  week: number;
+  year: number;
+  source: string;
+  checked: string;
+}
+
+export const parkingTags: Record<string, ParkingTag> = {
+  // 大烟山 2023 年起在园内停车超过 15 分钟都要挂停车证
+  grsm: { day: 5, week: 15, year: 40, source: "https://www.nps.gov/grsm/planyourvisit/fees.htm", checked: "2026-10-15" },
+};
+
+/** 在这座公园待 days 天要花的停车证钱：日证、周证、年证里最便宜的组合 */
+export function parkingTagCost(tag: ParkingTag, days: number): number {
+  const d = Math.max(days, 1);
+  return Math.min(Math.floor(d / 7) * tag.week + Math.min((d % 7) * tag.day, tag.week), tag.year);
+}

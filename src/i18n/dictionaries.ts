@@ -916,6 +916,7 @@ const zhHans = {
       canadaDaily: "加拿大国家公园按天收门票（一车家庭 / 团体票），约 {amount}，美国年卡不能用",
       canadaPass: "加拿大国家公园买 Discovery Pass 更划算，约 {amount}（美国年卡不能用）",
       sites: "园外名胜的门票、停车费和必须的跟团费约 {amount}，美国年卡不能抵",
+      parkingTag: "{parks}不收门票，但停车要买停车证（日证、周证按天数取便宜的）约 {amount}，国家公园年卡不能抵",
       lodgingLine: "{nights} 晚 × {rooms} 间，按 GSA 联邦出差住宿标准（{year} 财年）估；旺季和园内酒店通常更贵",
       lodgingGuess: "其中 {n} 晚没有参考价（自定义住处，或者阿拉斯加、夏威夷），按其他几晚的平均估",
       mealsLine: "{people} 人 × {days} 天，按 GSA 餐饮标准每人每天约 {rate}；自己买菜做饭能省一半以上",
