@@ -150,3 +150,16 @@ test("NPS 公告提取出的关闭（漂移测试）：近期出发、清单是�
   assert.ok(planned(far).has("yose-tunnel-view"), "两周以后出发");
   assert.ok(far.assumptions.some((line) => line.startsWith("no-live-alerts(too-far)")));
 });
+
+test("结果里带着网站行程页能直接用的 trip：每天的景点、每晚住处和 days 一致（行程页的对话框原样放进去）", () => {
+  const result = planTrip(base, REFERENCE);
+  const trip = result.trip;
+  assert.equal(trip.version, 2);
+  assert.equal(trip.dayCount, base.days);
+  assert.deepEqual(
+    trip.days.map((items) => items.map((item) => item.id)),
+    result.days.map((day) => day.stops.map((stop) => stop.id)),
+  );
+  assert.equal(trip.nights.length, base.days + 1);
+  assert.deepEqual(trip.nights.slice(1, -1).map((night) => night?.id), result.days.slice(0, -1).map((day) => day.lodging?.id));
+});

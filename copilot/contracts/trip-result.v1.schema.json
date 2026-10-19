@@ -441,6 +441,9 @@
       "items": {
         "type": "string"
       }
+    },
+    "trip": {
+      "type": "object"
     }
   }
 }

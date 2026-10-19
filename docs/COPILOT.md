@@ -44,6 +44,7 @@ flowchart LR
 - **读 NPS 公告提取临时关闭**（`alerts.py`、提示词 `alerts_v1`，10-19）：`npm run alerts:fetch` 抓所有公园的公告快照（`copilot/data/alerts/latest.json`，不提交），`python -m nps_copilot alerts` 让模型一条条读：从这座公园的景点名单（`contracts/attractions.json`）里选出关了的、读出起止日期。代码核对：证明关闭的原话（evidence）要在公告里，不在就不算关闭；日期要是公告里写到的（“through Nov 19”可以算成 20 日重开）；选的景点公告里要提到（全名、名字里够特别的词或片区）。输出 `closures-latest.json` 用模型和规则（网站的 `closedByAlerts`）的并集，每条记 `found_by`。
 - **公告关闭接进排行程**（`src/lib/copilot/live.ts`，10-19）：`plan_client` 调行程引擎时，`copilot/data/alerts/closures-latest.json`（或 `COPILOT_LIVE_CLOSURES` 指的文件）存在就交给它（命令行的 `LIVE_CLOSURES`；走 HTTP 时网站服务器自己设 `LIVE_CLOSURES`）。和行程页读实时公告一样只管今天起两周内出发的；清单要是新的（比“今天”早 3 天以内、不比“今天”晚），公告写了起止日期的，这趟一天都碰不到就不算，碰到了整趟都当关着。**按把握分两档**：规则也找到的（`strict`，公告标题里写着这个景点，和行程页按公告不排的规则一样）不排，`skipped` 里 `reason: closed`、附 `alert`（公告标题、链接、重开日期），Writer 说“NPS 最新公告说暂时关闭，11 月 2 日重开”；只有模型找到的照排，那一站加警告 `alertMaybeClosed` 和 `alert`，Writer 在“要注意”里说“NPS 最新公告里提到它可能关了，出发前确认”。为什么：10-19 的评测里只有模型找到的景点 10 个对 4 个（Biscuit Basin 的公告被说成老忠实泉关了），直接不排会白白少去热门景点；模型准了再放宽。仓库里人工核对过的 `closures.ts` 优先；`assumptions` 写 `live-alerts:` 或 `no-live-alerts(原因)`。评测和测试里 `COPILOT_LIVE=0`，结果才能复现。
 - **每晚读公告**（`.github/workflows/alerts-nightly.yml`，`copilot/scripts/alerts_report.py`）：每天 UTC 14:00 抓所有公园的公告快照（存成 artifact `nps-alerts-snapshot`，留 30 天），以前没报过的关闭公告（分类 Park Closure 或标题写着 closed / closure）开一个 issue（标签 `nps-alerts`，正文里 `<!-- alert:ID -->` 记下报过的）；评测集快照里的算报过。CI 上没有模型，只用规则看一眼；用模型提取要在本机下载快照跑 `python -m nps_copilot alerts --snapshot <快照>`。新的关闭公告是模型没见过的数据，留着做 `alerts_v2` 的评测。
+- **网站行程页的对话框**（`src/components/plan/copilot-chat.tsx`、中转接口 `src/app/api/copilot/chat/route.ts`，10-19）：浏览器 → 网站的 `/api/copilot/chat` → Copilot 服务（`COPILOT_URL`，默认 `http://127.0.0.1:8765`）。`GET` 看 Copilot 开着没有（要像 Copilot 的 `/health` 才算，端口上是别的程序也不算），没开就不显示对话框；`POST {text, session}` 没有会话先开一个，Copilot 重启过（会话没了）就开个新的再说一遍。`plan_trip` 的结果里多了 `trip`（网站的 Trip：每天的景点、每晚住处、攻略说明），排出行程时对话框把它原样放进行程页，页面上看到的就是 Copilot 说的那一份；第一次换掉已有的行程前问一声，之后接着说改出来的直接换，只是回答问题、行程没变的不重新放（不冲掉手动调整）。追问带选项的（选公园、机场、节奏）显示成按钮。部署在 Vercel 上时连不到 Copilot，对话框不出现
 - **公园名在别的地方名字里**：“冰川点”是优胜美地的景点，里面的“冰川”不当成冰川国家公园（`knowledge.inside_place_name`，记在 trace 的 `ignored_parks`）；只在那个地方属于别的公园时才不算（“大峡谷村”还是大峡谷）。
 
 ## 契约：Copilot 和行程引擎之间的约定
@@ -92,6 +93,7 @@ flowchart LR
 | `copilot/nps_copilot/prompts.py`、`prompts/` | 提示词版本，见下一节 |
 | `copilot/nps_copilot/pipeline.py` | 把上面串起来；每轮写一条 JSONL 日志到 `copilot/runs/<日期>.jsonl`（Docker 里是 `/data/runs`） |
 | `copilot/nps_copilot/monitor.py` | `python -m nps_copilot stats`：按版本统计运行日志 |
+| `src/components/plan/copilot-chat.tsx`、`src/app/api/copilot/chat/route.ts` | 网站行程页的对话框和中转接口 |
 | `copilot/nps_copilot/api.py`、`__main__.py` | HTTP 服务（FastAPI：`GET /health`、`POST /sessions`、`POST /sessions/{id}/messages`）和命令行（`chat`、`serve`、`stats`、`version`） |
 | `copilot/nps_copilot/data/regional_names.json` | 各地中文叫法（三藩市、卡加利、愛民頓、洛磯山、班芙、宰恩、傑克森……），`copilot/scripts/regional_names.py` 从维基数据和中文维基各地区的标题、重定向生成；人工补的（`MANUAL`）和排除的（`EXCLUDE`：太泛的巨杉、冰河，和网站用词冲突的红杉）写在脚本里，附原因。只用来认名字，回答用户时用网站自己的中文名 |
 | `copilot/tests/` | pytest：Intake 每个修好的问题各有测试、各地写法、Critic、Writer 的忠实度检查、提示词切换、监控统计、接真行程引擎的端到端 |
@@ -161,6 +163,7 @@ flowchart LR
 | `COPILOT_MODEL` | `qwen3.5:4b-q4_K_M` | Ollama 里的模型名 |
 | `OLLAMA_HOST_URL` | `http://127.0.0.1:11435` | Ollama 地址（momomojun 电脑上的便携版用 11435；自己装的默认 11434；Docker 里是 `http://ollama:11434` 或 `http://host.docker.internal:11435`） |
 | `COPILOT_REPLAY` | — | 回放用的录音文件 |
+| `COPILOT_URL` | `http://127.0.0.1:8765` | 网站（不是 Python）读的：行程页的对话框连哪个 Copilot 服务，写在 `.env.local` |
 | `COPILOT_PLAN_URL` | — | 设了就用 HTTP 调 plan_trip，不跑 Node 命令行 |
 | `COPILOT_LIVE_CLOSURES` | `copilot/data/alerts/closures-latest.json` | NPS 公告关闭清单（`python -m nps_copilot alerts` 写的），文件在就交给行程引擎 |
 | `COPILOT_LIVE` | `1` | 设成 `0` 不用公告关闭清单（评测、测试里默认关掉） |
