@@ -150,3 +150,33 @@ def group_parks(message: str) -> tuple[str, list[str]] | None:
             if at >= 0 and re.match(r".{0,8}?(国家公园|national parks)", text[at + len(name):]) and 1 <= len(members) <= 4:
                 return name, list(members)
     return None
+
+
+def resolve(place: str, parks: list[str], kind: str) -> Doc | None:
+    """用户说的名字（“塔夫特点”“the Narrows”“El Portal”）对应这几座公园里的哪个景点（kind="attraction"）或住处（"lodging"）。
+    只按名字认：完全一样的最好，其次是名字包含说法或说法包含名字（长的优先），再次是“·”隔开的半个名字；都对不上就是 None"""
+    said = normalize(place).lower().strip(" 的了吧")
+    said = re.sub(r"^(the|a)\s+", "", said)
+    if len(said) < 2:
+        return None
+    best: tuple[float, Doc] | None = None
+    for doc in index()[0]:
+        if doc.type != kind or (parks and doc.park not in parks):
+            continue
+        for name in doc.names:
+            name = re.sub(r"^(the)\s+", "", normalize(name).lower())
+            if name == said:
+                score = 1000.0
+            elif name in said or said in name:
+                score = 100 + min(len(name), len(said)) - abs(len(name) - len(said)) / 10
+            else:
+                continue
+            if best is None or score > best[0]:
+                best = (score, doc)
+        for part in doc.parts:
+            part = normalize(part).lower()
+            if part == said or (len(part) >= 2 and part in said):
+                score = 80 + len(part)
+                if best is None or score > best[0]:
+                    best = (score, doc)
+    return best[1] if best else None

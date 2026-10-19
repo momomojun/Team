@@ -6,26 +6,37 @@ Copilot 是怎么设计的、每个文件做什么、提示词和评测怎么管
 
 ## 原则和流程
 
-**LLM 负责理解需求和解释结果，行程由网站现有的确定性引擎排。** Copilot 把用户的话整理成一个 `TripRequest`，交给 `plan_trip` 工具，拿回 `TripResult` 再检查、解释。
+**LLM 负责理解需求、决定做什么、解释结果，行程由网站现有的确定性引擎排。** 每一轮先由调度员（模型）决定这句话要做哪几件事，再由代码去做：条件整理成 `TripRequest` 交给 `plan_trip` 工具，拿回 `TripResult` 再检查、解释；问题去网站资料里查了再答。
 
 ```mermaid
 flowchart LR
-    U[用户的话] --> I[Intake<br>模型逐字摘片段<br>代码读日期、认公园和机场、决定追问]
+    U[用户的话] --> D[调度员<br>模型看最近的对话、条件和行程<br>决定做哪几件事]
+    D -- 改条件 --> I[Intake<br>模型逐字摘片段<br>代码读日期、认公园和机场、决定追问]
     I -- 条件不齐 --> Q[追问 / 选项]
     Q --> U
+    D -- 加减景点、指定住处 --> E[代码在资料里<br>把名字对成 id]
     I -- TripRequest --> P[plan_trip<br>网站的行程引擎]
+    E -- include / exclude / lodging --> P
     P -- TripResult --> C[Critic<br>代码检查提醒代码<br>必要时改一次再排]
     C --> W[Writer<br>模板，或模型改写 + 忠实度检查]
     W --> A[回复]
-    A -. 排好以后接着问 .-> R[QA<br>在网站资料里查几条<br>模型只按查到的回答 + 检查数字]
+    D -- 提问 --> R[QA<br>在网站资料里查几条<br>模型只按查到的回答 + 检查数字]
     R --> A
+    D -. 出错、输出用不了 .-> L[原来按规则的流程]
 ```
+
+- **调度员**（`dispatcher.py`，提示词 `dispatch_v1`）：模型看最近 4 轮对话、现在的条件、现在的行程（每天去哪、住哪）和最新一句，输出要做的几件事（`{"actions": [...]}`，最多 4 件，按用户说的顺序）：`conditions` 改条件或回答追问、`ask` 提问（附一句按上下文补全的问法，“那条步道”→“雾径”）、`add_stop` / `remove_stop` 加减景点、`set_lodging` 指定某晚住处、`new_trip` 重新开始、`chat` 道谢闲聊。模型只出“做什么”，不出事实：
+  - 景点、住处的名字必须是这句话或最近对话里说过的，模型编的丢掉（trace 记 `dropped`）；代码在这次行程公园的资料里把名字对成 id（`knowledge.resolve`），对不上的告诉用户“没找到”，不瞎改；
+  - 条件照旧由 Intake 从原话里摘、代码读；“那就 7 月 10 日出发”这种指前面说过的公园的，调度员给出公园名、代码核对是对话里出现过的才用；
+  - 问题交给 QA：模型按用户原话回答，补全的问法只帮着找资料（补全有时会补错，比如把“19 号几点出发”补成“从 El Portal 出发”）；
+  - 用户的改动（`include`、`exclude`、每晚住处）记在会话里，换了公园、改短天数以后对不上的自动不带；“帮我安排一个新的行程”全部清掉。
+- **退回规则**：调度员调用失败、输出用不了，或者用户只是在回答上一句追问（6 个字以内，比如“5”“是的”），走原来按规则的流程（`pipeline._legacy`），不会因为调度员出错就答不了。`COPILOT_DISPATCH=0` 整个关掉调度员（对照实验、回滚用）。
 
 - **Intake**：模型只从当前这条消息里逐字摘片段（公园、日期、天数、出发地、回程地、同行的人、偏好），代码检查片段确实在原话里（先规范化，“6天”“6 天”算一样；摘了原话里没有的就丢掉，记 `dropped_spans`），再读成代码、日期、天数，管对话状态，决定下一句问什么。“今天、明天、这周六、下周末、19号、下个月5号、tomorrow”按“今天”（`reference_date`）算成具体日期（`dates.relative_date`），模型没摘到时规则补；没说年份的月日：今年还没到的按今年、过去两个月以上的按明年，回复里说一句按哪天排，只有刚过去不久的才问是哪一年；否定过的候选不会被后来的“是的”确认；先说的年份和后来补的月日合起来；“我选第二种”“缅因那个”都能对上选项。
 - **规则补**：模型漏了、但原话写得毫不含糊的天数（“N天 / N日 / N晚 / 一周”各最多一处）和公园名（模型一个都没摘时按目录认），用规则补上，trace 里记 `rule_filled`，评测时和模型的成绩分开算。
 - **Critic**：把每天、每站的提醒代码整理成 findings（hard / soft）；节奏是默认值、又有几天太满时改成轻松再排一次。用户自己说的节奏、天数、公园不擅自改；最多改一次。
 - **Writer**：默认按模板写（只用结果里的事实）：每天几点从哪出发、开多久，晚上住哪，最后一天开回机场要多久、几点到；第一站超过 4 小时的提醒、列出近一些的常用机场；住民宿附 Airbnb 链接；没排进去的写清楚原因（季节性的写一年里什么时候才有）。打开模型改写时，再检查说明里的时间、数字都在结果里，对不上就退回模板。
-- **多轮**：排出行程以后再说话，条件变了先说改了什么、哪几晚换了住处，再给新行程；条件没变的不重印行程：“好的、谢谢”简短回一句，提问交给 QA。是改行程还是提问不另外让模型判断：Intake 从这句话里摘不出任何新条件、行程没变，才算提问。一句话里既改了条件又在问（“三座都玩，要几天？”），先给新行程，QA 查得到再在后面回答。还没排出行程时的提问（“西雅图附近的三个国家公园是哪三个”）先回答再接着追问。说“新的行程”“重新开始”“start over”就清掉前面所有条件从头问。刚问了“玩几天”“孩子几岁”，只回一个数（“5”）也算。
+- **多轮**：排出行程以后再说话，条件或改动变了先说改了什么（“好，改了：不去马里波萨巨杉林、第 1 晚住 El Portal。”）、哪几晚换了住处，再给新行程；点名要去、但这几天去不了的说清楚为什么没排；条件没变的不重印行程：“好的、谢谢”简短回一句，提问交给 QA。一句话里几件事的（改天数又问问题、去掉一个换成另一个），按顺序都做。还没排出行程时的提问先回答再接着追问。刚问了“玩几天”“孩子几岁”，只回一个数（“5”）也算。（调度员关掉时，原来的规则是：Intake 摘不出新条件、行程没变才算提问；“新的行程”“start over”这类说法按正则认。）
 - **按片区、州说的一组公园**：“西雅图附近的三个国家公园都玩”“华盛顿州的国家公园都去”按网站的片区和州换成具体的公园（不超过 4 座），回复里说一句是哪几座；只是问“是哪三个”的不换，交给 QA。
 - **QA（回答问题，RAG）**：`knowledge.search` 在 `knowledge.jsonl`（网站数据整理成的 1687 条短文：景点、住处、公园、片区、州、特别活动、临时关闭）里找 4 条，只在这次行程的公园里找（问题里点名了别的公园就加上那座；片区、州的资料不分公园，问题里说了它的名字才用）。问的是行程里的景点整体（“这些景点好看吗”）时，另外把每一站的一句介绍给模型。问题里直接出现了某条的名字（“El Portal”）的排最前面，“雾径 · 弗纳尔瀑布”只说“雾径”也算；其余按 BM25（中文按相邻两个字切，英文按单词）。模型只看“行程 + 这 4 条”回答，输出 `{found, answer, sources}`；代码检查回答里的时间、数字都在行程或资料里出现过（按整个数比）、引用的编号是给过的，对不上就不用模型写的、改成摘资料原文（问题里点了名的那条），资料里没有就说不知道。回答后面注明用了哪几条资料。不用向量检索、不另外下载模型；以后可以换成嵌入模型做对照实验，接口不变。
 - **公园名在别的地方名字里**：“冰川点”是优胜美地的景点，里面的“冰川”不当成冰川国家公园（`knowledge.inside_place_name`，记在 trace 的 `ignored_parks`）；只在那个地方属于别的公园时才不算（“大峡谷村”还是大峡谷）。
@@ -42,7 +53,7 @@ flowchart LR
 | `copilot/contracts/examples/` | 样例请求 |
 
 - 这些 JSON 都是 `npm run copilot:contracts`（`scripts/build-copilot-contracts.mjs`）从 TypeScript 生成的，来源是 `src/lib/copilot/contract.ts`、`src/data/parks.ts`、`src/data/airports.ts`，`knowledge.jsonl` 还用到景点、住宿、活动、临时关闭、同行适合度和车程表，不要手改；`tests/copilot-plan.test.ts` 检查文件和代码一致。**改了 Copilot 的 Python 文件、加了新汉字、改了景点住宿这些数据都要重跑**，不然网站测试会失败。
-- 改契约字段要升版本号（`trip-request/v2`），旧的评测记录才对得上。只加可选字段不升（10-18 给 TripResult 加了每天的 `returnDriveMin`、住处的 `rental` 和 `airbnbUrl`、没排进去的 `openMonths` 和 `noteZh`）。
+- 改契约字段要升版本号（`trip-request/v2`），旧的评测记录才对得上。只加可选字段不升（10-18 给 TripResult 加了每天的 `returnDriveMin`、住处的 `rental` 和 `airbnbUrl`、没排进去的 `openMonths` 和 `noteZh`；给 TripRequest 加了用户的改动：`include` 点名要去的景点（去得了就当必去排，太难、太远也排；去不了的照样列在没排进去的里）、`exclude` 不去的景点、`lodging` 指定第几晚住哪家推荐住宿，id 要属于这几座公园，`plan_trip` 检查）。
 
 ### plan_trip 工具
 
@@ -67,6 +78,7 @@ flowchart LR
 | `copilot/nps_copilot/dates.py`、`text.py` | 读日期（中文、英文的几种顺序、“二〇二七年”、“下个月”）和天数（“5天”“五日”“四日三夜”“一周”）；文本规范化（NFKC、繁转简、空格） |
 | `copilot/nps_copilot/plan_client.py` | 调 plan_trip：默认直接跑仓库里的 Node 命令行（不用开网站），设了 `COPILOT_PLAN_URL` 走 HTTP |
 | `copilot/nps_copilot/critic.py`、`writer.py` | Critic、Writer（模板和忠实度检查 `faithful`） |
+| `copilot/nps_copilot/dispatcher.py` | 调度员：给模型看的上下文、输出格式、丢掉编造的名字 |
 | `copilot/nps_copilot/knowledge.py`、`qa.py` | QA：在 `knowledge.jsonl` 里检索（名字命中 + BM25）、让模型只按查到的资料回答、检查回答里的数字，对不上就摘原文 |
 | `copilot/nps_copilot/providers.py` | 模型提供方：本机 Ollama（默认）、回放录好的输出（CI 用，没录到的请求直接报错）、录音、测试用的脚本、云端（留接口、默认关） |
 | `copilot/nps_copilot/prompts.py`、`prompts/` | 提示词版本，见下一节 |
@@ -92,10 +104,10 @@ flowchart LR
 
 ### 提示词版本
 
-- 任务有 `intake`、`writer`、`qa` 三个，文件是 `prompts/<任务>_v<n>.txt`。
+- 任务有 `intake`、`writer`、`qa`、`dispatch` 四个，文件是 `prompts/<任务>_v<n>.txt`。
 - **不改旧文件，新建下一版**：旧版留着才能回滚，也才能和旧的评测录音对上（回放按“任务 + 提示词全文 + 消息 + schema”的 hash 找录音，提示词改一个字就对不上）。
-- 默认版本改 `defaults.json`，走 PR；已经部署的服务可以不改代码临时切换：`COPILOT_PROMPT_INTAKE=v1`、`COPILOT_PROMPT_WRITER=v1`、`COPILOT_PROMPT_QA=v1`。
-- 现在默认 `intake/v1`、`writer/v1`、`qa/v1`。`intake_v2.txt` 是没采用的实验版本（回归集变好、开发集变差，门禁挡住了），留着演示回滚，见 [RESULTS.md](../copilot/eval/RESULTS.md)。
+- 默认版本改 `defaults.json`，走 PR；已经部署的服务可以不改代码临时切换：`COPILOT_PROMPT_INTAKE=v1`、`COPILOT_PROMPT_WRITER=v1`、`COPILOT_PROMPT_QA=v1`、`COPILOT_PROMPT_DISPATCH=v1`。
+- 现在默认 `intake/v1`、`writer/v1`、`qa/v1`、`dispatch/v1`。`intake_v2.txt` 是没采用的实验版本（回归集变好、开发集变差，门禁挡住了），留着演示回滚，见 [RESULTS.md](../copilot/eval/RESULTS.md)。
 - 怎么试一个新版本见 [GUIDE.md](GUIDE.md#改提示词)。
 
 ## 评测
@@ -105,11 +117,14 @@ flowchart LR
 | `copilot/eval/cases/intake-v1.jsonl` | 25 | 开发集：改代码时一直在看的 | `baseline.json` |
 | `copilot/eval/cases/holdout-v1.jsonl` | 40 | 复杂情况（改口、矛盾、节假日、繁体、注入、复杂同行人员……），冻结后才跑；看过失败、修了代码，所以现在也算回归集 | `baseline-holdout.json` |
 | `copilot/eval/cases/regional-v1.jsonl` | 17 | 香港、台湾、新马的写法，先提交期望再跑；同样修过，当回归集 | `baseline-regional.json` |
+| `copilot/eval/cases/conversation-v1.jsonl` | 20 组 52 轮 | 多轮对话（`eval/conversation.py` 用完整的 Copilot 一轮轮跑、每轮都查）：仓库主人两次试用的原话、指代、又改又问、加减景点、指定住处、排之前提问、闲聊、资料里没有的、英文；调度员改造的开发集 | `baseline-conversation.json` |
+| `copilot/eval/cases/conversation-v2.jsonl` | 15 组 34 轮 | 调度员写完以后才写的多轮对话（繁体、粤语、每晚都住某处、公园里没有的地方、“那就加上它”、去掉又加回来、两座公园……），第一次跑 14/15；修了一处，当回归集 | `baseline-conversation-v2.json` |
 
 - `copilot/eval/run.py`：逐轮跑对话，比较最后的状态和 `TripRequest` 是否符合期望。`--replay` 回放录音（CI 用，不要 GPU）、`--record` 用真模型并录音、`--gate` 低于基线就失败、`--plan` 条件齐了再真的调 plan_trip、`--writer` 加 Writer 的成批评测、`--cases` 换样例文件。报告写到 `copilot/eval/reports/`（不提交）。
 - 录音在 `copilot/eval/recordings/<模型>[-<样例>][-intake_v<n>].jsonl`：默认样例不加后缀，不是默认版本的提示词另加后缀，不会互相覆盖。
 - `copilot/eval/plan_quality.py`：排出来的行程有没有硬问题（关闭、抽签、过了入场时间、太满）。
 - 分开报：对话是否达到期望、追问类型对不对、模型调用次数和耗时、被丢掉的片段数、规则补的条数。成绩是“这一版提示词 + 代码 + 模型”组合的结果，不是模型的通用能力。
+- `copilot/eval/conversation.py`：多轮对话评测，每一轮可以查状态、回复里有没有（`say` / `say_any` / `not_say`）、条件、行程里有没有某个景点、某晚住哪、是不是清掉重来了；`--replay`、`--record`、`--gate`、`--cases` 和 `run.py` 一样。录音在 `recordings/<模型>-conversation-v<n>.jsonl`。
 - **新样例先写期望、提交，再第一次跑**；看过失败再修代码的那一批就不再是没见过的数据，当回归门禁用，下一批要另写。
 
 ## 监控指标
@@ -123,6 +138,7 @@ flowchart LR
 | dropped_spans | 模型摘了原话里没有的东西、被代码丢掉 | 模型在编造 |
 | rule_fills | 模型漏了、靠规则补上的条件 | 模型漏得多了 |
 | writer_fallback | 模型改写的说明没通过忠实度检查、退回模板 | Writer 编造 |
+| dispatched / legacy / dispatch_dropped / dispatch_errors | 调度员定了做什么的轮数 / 走原来按规则流程的轮数 / 调度员编了对话里没有的地方被丢掉的动作 / 调度员调用失败 | legacy、dropped 变多：调度员变差（提示词或模型）；errors 变多：模型服务有问题 |
 | questions / qa_model / qa_not_found / qa_fallback | 排好以后的提问；用了模型的回答 / 资料里没有、说了不知道 / 回答里有资料里没有的数字，改成摘原文 | qa_fallback 变多：QA 在编造；qa_not_found 变多：资料不够或检索变差 |
 
 什么时候该回滚、怎么回滚见 [GUIDE.md](GUIDE.md#回滚)。
@@ -137,7 +153,8 @@ flowchart LR
 | `COPILOT_REPLAY` | — | 回放用的录音文件 |
 | `COPILOT_PLAN_URL` | — | 设了就用 HTTP 调 plan_trip，不跑 Node 命令行 |
 | `COPILOT_RUNS` | `copilot/runs` | 运行日志目录 |
-| `COPILOT_PROMPT_INTAKE`、`COPILOT_PROMPT_WRITER`、`COPILOT_PROMPT_QA` | `defaults.json` 里的 | 临时换提示词版本，比如 `v1` |
+| `COPILOT_PROMPT_INTAKE`、`COPILOT_PROMPT_WRITER`、`COPILOT_PROMPT_QA`、`COPILOT_PROMPT_DISPATCH` | `defaults.json` 里的 | 临时换提示词版本，比如 `v1` |
+| `COPILOT_DISPATCH` | `1` | 设成 `0` 关掉调度员，每轮都走原来按规则的流程（对照实验、出问题时回滚） |
 | `COPILOT_ALLOW_CLOUD` | — | 设成 `1` 才允许云端模型（还没实现） |
 | `COPILOT_BUILD_SHA` | — | 镜像构建时写入，`/health` 显示 |
 | `COPILOT_TAG`、`COPILOT_PORT`、`OLLAMA_MODELS` | `latest`、`8765`、Docker 卷 | 只给 docker compose 用：用哪个版本的镜像、本机端口、已经下好的模型目录 |

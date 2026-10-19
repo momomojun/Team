@@ -6,6 +6,8 @@ Writer 退回模板的比例、耗时有没有变差。指标的意思：
 - dropped_spans：模型摘了用户原话里没有的东西，被代码丢掉（越少越好）
 - rule_fills：模型漏了、靠规则补上的条件
 - writer_fallback：模型改写的说明没通过忠实度检查、退回模板
+- dispatched / legacy：调度员定了做什么的轮数 / 走原来按规则流程的轮数（调度员出错、输出用不了、只是回答追问）；
+  dispatch_dropped：调度员编了对话里没有的地方、被代码丢掉的动作数；dispatch_errors：调度员调用失败
 - questions：排出行程以后的提问；qa_model 用了模型的回答，qa_not_found 资料里没有、说了不知道，
   qa_fallback 模型的回答里有资料里没有的数字（或者出错），改成摘资料原文
 """
@@ -44,7 +46,9 @@ def summarize(rows: list[dict]) -> dict[str, dict]:
         latencies = [item["latency_ms"] for item in items if isinstance(item.get("latency_ms"), (int, float))]
         intake = [item.get("intake", {}) for item in items]
         writers = [item["writer"] for item in items if item.get("writer")]
-        answers = [item["qa"].get("answer") for item in items if item.get("qa")]
+        qa_rows = [row for item in items for row in (item["qa"] if isinstance(item.get("qa"), list) else [item["qa"]] if item.get("qa") else [])]
+        answers = [row.get("answer") for row in qa_rows]
+        dispatches = [item["dispatch"] for item in items if item.get("dispatch")]
         summary[key] = {
             "turns": len(items),
             "sessions": len({item.get("session") for item in items}),
@@ -57,6 +61,10 @@ def summarize(rows: list[dict]) -> dict[str, dict]:
             "rule_fills": sum(len(trace.get("rule_filled", [])) for trace in intake),
             "writer_model": sum(1 for writer in writers if writer.get("prompt")),
             "writer_fallback": sum(1 for writer in writers if writer.get("fallback")),
+            "dispatched": sum(1 for item in items if item.get("dispatch") and item.get("route") != "legacy"),
+            "legacy": sum(1 for item in items if item.get("route") == "legacy"),
+            "dispatch_dropped": sum(len(d.get("dropped", [])) for d in dispatches),
+            "dispatch_errors": sum(1 for d in dispatches if d.get("error")),
             "questions": len(answers),
             "qa_model": answers.count("model"),
             "qa_not_found": answers.count("not_found"),
@@ -76,6 +84,7 @@ def report(days: int = 7, runs: Path = RUNS) -> str:
         lines.append(f"  耗时中位 {item['median_latency_ms']} ms" + (f"，P90 {item['p90_latency_ms']} ms" if item["p90_latency_ms"] else ""))
         lines.append(f"  模型编造被丢掉的片段 {item['dropped_spans']}，规则补的 {item['rule_fills']}，"
                      f"Writer 用模型 {item['writer_model']} 次、退回模板 {item['writer_fallback']} 次")
+        lines.append(f"  调度员定的 {item['dispatched']} 轮，走原来流程 {item['legacy']} 轮；编造被丢掉的动作 {item['dispatch_dropped']}，调用失败 {item['dispatch_errors']}")
         if item["questions"]:
             lines.append(f"  提问 {item['questions']} 次：模型回答 {item['qa_model']}，资料里没有 {item['qa_not_found']}，"
                          f"回答对不上资料、改成摘原文 {item['qa_fallback']}")

@@ -51,8 +51,11 @@ def stop_briefs(stops: list[str]) -> list[str]:
     return lines
 
 
-def build_user(question: str, trip: str, docs: list[Doc], briefs: list[str] | None = None) -> str:
-    parts = [f"问题：{question}", "", "[0] 行程：", trip]
+def build_user(question: str, trip: str, docs: list[Doc], briefs: list[str] | None = None, meaning: str = "") -> str:
+    parts = [f"问题：{question}"]
+    if meaning and normalize(meaning) != normalize(question):
+        parts.append(f"（按前面的对话，大概是问：{meaning}。以用户原话为准）")
+    parts += ["", "[0] 行程：", trip]
     if briefs:
         parts += ["行程里的景点：", *briefs]
     parts += ["", "资料："]
@@ -90,8 +93,10 @@ def fallback(question: str, docs: list[Doc], zh: bool) -> str:
 
 
 def answer(question: str, parks: list[str], plan_text: str, provider: Provider | None, zh: bool,
-           stops: list[str] | None = None) -> tuple[str, dict]:
-    docs = search(question, parks)
+           stops: list[str] | None = None, meaning: str = "") -> tuple[str, dict]:
+    """question 是用户原话；meaning 是调度员按上下文补全的问法（“那条步道”→“雾径”），只用来帮着找资料、给模型参考，
+    回答和“问题里点了名的那条”都以原话为准（补全有时会补错）"""
+    docs = search(f"{question} {meaning}" if meaning else question, parks)
     trace: dict = {"retrieved": [doc.id for doc in docs]}
     briefs = stop_briefs(stops) if stops and ABOUT_TRIP.search(normalize(question)) else []
     trip = trip_context(plan_text)
@@ -100,7 +105,7 @@ def answer(question: str, parks: list[str], plan_text: str, provider: Provider |
         return fallback(question, docs, zh), trace
     prompt = prompts.load("qa")
     trace["prompt"] = prompt.id
-    user = build_user(question, trip, docs, briefs)
+    user = build_user(question, trip, docs, briefs, meaning)
     trace["stop_briefs"] = len(briefs)
     try:
         completion = provider.complete_json("qa", prompt.text, user, QA_SCHEMA)

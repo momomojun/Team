@@ -70,7 +70,7 @@ def test_critic_relaxes_a_default_pace_only(yosemite):
 def test_session_end_to_end(tmp_path, monkeypatch):
     monkeypatch.setenv("COPILOT_RUNS", str(tmp_path))
     provider = ScriptedProvider([extraction(parks=["优胜美地"], dates=["2027年6月1日"], duration="4天", origin="弗雷斯诺", preferences=["适中"])])
-    session = Session(provider, "2026-10-16", log=False)
+    session = Session(provider, "2026-10-16", log=False, dispatcher=False)
     reply = session.send("2027年6月1日从弗雷斯诺去优胜美地玩4天，适中")
     assert reply.status == "planned"
     assert reply.request["parks"] == ["yose"] and len(reply.result["days"]) == 4
@@ -87,7 +87,7 @@ def test_owner_trial_conversation():
         {"found": True, "answer": "El Portal 是优胜美地西侧园外最近的住处，到山谷约 20 分钟。", "sources": [1]},
         extraction(),                                                      # 第 6 句：“好的”
     ])
-    session = Session(provider, "2026-10-18", log=False)
+    session = Session(provider, "2026-10-18", log=False, dispatcher=False)
     first = session.send("我想在明天出发去优胜美地玩，你给我规划一下，大概3天左右吧")
     assert "2026 年 10 月 19 日" in first.text and first.question["kind"] == "choose"
     session.send("我从ont出发")
@@ -115,7 +115,7 @@ def test_restart_and_change_with_a_question():
         {"found": True, "answer": "西雅图周边一共 3 处：雷尼尔山、奥林匹克、北瀑布。", "sources": [1]},
         extraction(),
     ])
-    session = Session(provider, "2026-10-18", log=False)
+    session = Session(provider, "2026-10-18", log=False, dispatcher=False)
     assert session.send("2027年7月10日从SEA去雷尼尔山3天，节奏适中").status == "planned"
     changed = session.send("西雅图附近的三个国家公园都玩，要几天？")
     assert changed.status == "planned" and sorted(changed.request["parks"]) == ["mora", "noca", "olym"]

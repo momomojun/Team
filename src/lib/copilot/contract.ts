@@ -40,6 +40,12 @@ export interface TripRequest {
   pace?: Pace;
   lodgingPref?: LodgingPref;
   party?: { youngestKid?: number; stroller?: boolean; seniors?: boolean; wheelchair?: boolean };
+  /** 用户点名一定要去的景点（景点 id）：去得了就一定排；去不了的照样列在没排进去的里，写原因 */
+  include?: string[];
+  /** 用户说不去的景点 */
+  exclude?: string[];
+  /** 用户指定的某几晚住处：第 night 晚（第 night 天晚上）住推荐住宿里的哪一家 */
+  lodging?: { night: number; id: string }[];
   provenance?: Partial<Record<RequestField, FieldSource>>;
 }
 
@@ -53,6 +59,9 @@ export const REQUEST_FIELDS = [
   "pace",
   "lodgingPref",
   "party",
+  "include",
+  "exclude",
+  "lodging",
 ] as const;
 export type RequestField = (typeof REQUEST_FIELDS)[number];
 
@@ -115,6 +124,21 @@ export const tripRequestSchema = {
         stroller: { type: "boolean" },
         seniors: { type: "boolean" },
         wheelchair: { type: "boolean" },
+      },
+    },
+    include: { type: "array", maxItems: 20, uniqueItems: true, items: { type: "string", pattern: "^[a-z]{4}-[a-z0-9-]+$" } },
+    exclude: { type: "array", maxItems: 40, uniqueItems: true, items: { type: "string", pattern: "^[a-z]{4}-[a-z0-9-]+$" } },
+    lodging: {
+      type: "array",
+      maxItems: MAX_TRIP_DAYS - 1,
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["night", "id"],
+        properties: {
+          night: { type: "integer", minimum: 1, maximum: MAX_TRIP_DAYS - 1 },
+          id: { type: "string", pattern: "^[a-z]{4}-stay-[a-z0-9-]+$" },
+        },
       },
     },
     provenance: {
