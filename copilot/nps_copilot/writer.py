@@ -45,8 +45,11 @@ PACE_EN = {"relaxed": "relaxed", "normal": "balanced", "packed": "packed"}
 def template(request: dict, result: dict, critique: Critique, language: str, preferences: dict | None = None) -> str:
     zh = language != "en"
     table = catalog.parks()
-    names = [table[code].name_zh if zh else table[code].name_en for code in request["parks"]]
     days = result["days"]
+    # 公园按行程里先去的排（以前按请求的顺序，第一天其实在第二座公园，看着乱）
+    order = list(dict.fromkeys([stop["park"] for day in days for stop in day["stops"] if stop.get("park") in table] + list(request["parks"])))
+    names = [table[code].name_zh if zh else table[code].name_en for code in order]
+    multi = len(request["parks"]) > 1
     lines: list[str] = []
     first = days[0]["date"]
     when = first if days[0].get("dateIsExact") else first[:7]
@@ -69,8 +72,13 @@ def template(request: dict, result: dict, critique: Critique, language: str, pre
             if drive >= 45:
                 leave += f"（开车{duration(drive, zh)}）" if zh else f" ({duration(drive, zh)} drive)"
             leave += " → "
+        # 几座公园的行程：每天写上在哪座（仓库主人 10-18：“我不知道哪一天是哪一个国家公园的”）
+        where = ""
+        if multi:
+            here = list(dict.fromkeys(stop["park"] for stop in stops if stop.get("park") in table))
+            where = ("，" if zh else ", ") + ("、" if zh else " & ").join(table[c].name_zh if zh else table[c].name_en for c in here) if here else ""
         if zh:
-            head = f"第 {day['day']} 天（{day['date']}）："
+            head = f"第 {day['day']} 天（{day['date']}{where}）："
             body = "、".join(f"{stop['start']} {stop['nameZh']}" + (f"（当地 {stop['localStart']}）" if stop.get("localStart") else "") for stop in stops) or "路上 / 休息"
             if endpoint:
                 end = f"；最后开回{spaced(lodging['nameZh'])}"
@@ -79,7 +87,7 @@ def template(request: dict, result: dict, critique: Critique, language: str, pre
             else:
                 end = f"；晚上住{spaced(lodging['nameZh'])}" if lodging else ""
         else:
-            head = f"Day {day['day']} ({day['date']}): "
+            head = f"Day {day['day']} ({day['date']}{where}): "
             body = ", ".join(f"{stop['start']} {stop['nameEn']}" + (f" ({stop['localStart']} local)" if stop.get("localStart") else "") for stop in stops) or "travel / rest"
             if endpoint:
                 name = place_name(request.get("destination") or request.get("origin"), zh)
