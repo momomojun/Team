@@ -1,0 +1,16 @@
+{
+ "frozen_at": "2026-10-19T05:03:47+00:00",
+ "note": "没见过的多轮对话（held-out）：15 组 37 轮，在调度员改造写完、conversation-v1 已经 20/20 之后才写，期望写好、冻结后只跑一次；冻结时的代码 hash 记在这里（代码还没提交，所以记文件 hash）。第一次的分数按这一版代码报告，之后改代码再跑要另外标明。",
+ "sha256": {
+  "eval/cases/conversation-v2.jsonl": "0590d9b918b6b6c45b746d3b9c18c5fe5a7e0a4727e3140fce1b8b0c6c6c9eb1",
+  "nps_copilot/pipeline.py": "43f78614e5924ffb7dea4670c06f915d0478f1ea0e193f10ec3a25560303e2a1",
+  "nps_copilot/dispatcher.py": "ba06d6ff33845d712a1373f1dbf090e447411061d04f68f3cdb7a68630fd0b87",
+  "nps_copilot/intake.py": "769c27aeb8033fe34fa7deb6b59cdcd15ce854e3ea257022ebf3fa8b6d249178",
+  "nps_copilot/qa.py": "eb6a57c33f3121118cff9ed2f1ce0f55db190915a37f298173fb63c04a26ecca",
+  "nps_copilot/knowledge.py": "7888b69b958c92986cf45652d93adc6f0322467a81dea48da9a529e80804d581",
+  "nps_copilot/writer.py": "828b50c93f418081aec80206c76b31a8329cae60dd0f71abbcb68557222731b7",
+  "nps_copilot/prompts/dispatch_v1.txt": "2387b6f09634f0c95c8bf9fb736d369af2986a76bce519992ed2deb9d36abe95",
+  "nps_copilot/prompts/intake_v1.txt": "79d3b5f861f097f04fb47c92326cb6f6bf46cf21e1af1f32e820636feff6fd08",
+  "nps_copilot/prompts/qa_v1.txt": "3a4035784d0fdf79d3d1b4ca631f38408507faf8d84d40d6ddd9829a546b3cb4"
+ }
+}
