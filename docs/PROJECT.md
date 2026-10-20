@@ -306,3 +306,7 @@
 
 - 仓库主人拿到一把 Groq 的 key（免费档，不用绑卡）。加了 `GroqProvider`（和 OpenAI 一样的接口；模型不认 JSON Schema 就退成普通 JSON 模式，不认推理设置就去掉；一天的 token 用完直接报错），`COPILOT_PROVIDER=groq` 才用，聊天的顺序不变。所有请求加了程序标识（User-Agent）：Groq 前面的 Cloudflare 会拦 Python 默认的标识（403，error code 1010）。
 - 第三轮对照（190 次，$0）：Qwen3.8 27B 没见过的单句 38/40（和 GPT-4.1 mini 一样），读公告景点 F1 0.44；gpt-oss-120b 不按格式填，单句 35/40、公告 0.27。两个都快（每次半秒多），但免费档每分钟 8000 token，只能当备用。详见 [RESULTS.md](../copilot/eval/RESULTS.md)。
+
+### 10-19：每周核对营地名单
+
+- Huiling 加了每周一 15:00 UTC 的 GitHub Action（`campgrounds-weekly.yml`，也可以在 Actions 页手动跑）：对照 Recreation.gov 的国家公园营地搜索和 `campgrounds.ts`。已知故意没收的 7 个（新河峡谷 Grandview 五座 shelter、瓜达卢佩 Guadalupe Peak、大峡谷 Trailer Village）写在 `scripts/campground-watch-ignore.json`，不变就不开 issue。定时任务只在合并进 `main` 之后才会跑。
