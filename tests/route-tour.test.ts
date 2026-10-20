@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { changedDays, cumulative, drawMs, km, sliceTo, stopDistances } from "../src/components/map/route-tour";
+import { changedDays, cumulative, drawMs, easeInOut, fade, flyMs, km, overallProgress, sliceTo, stopDistances } from "../src/components/map/route-tour";
 
 // 一条往东、再往北的折线：大约 0.1 度经度 + 0.1 度纬度
 const path: [number, number][] = [
@@ -35,9 +35,17 @@ test("各站在路线上的位置按顺序往后找；同一条路来回时回�
 });
 
 test("一天画多久：整段控制在二十秒上下，天数少的每天也不会太长", () => {
-  assert.equal(drawMs(1), 3200);
-  assert.ok(drawMs(7) * 7 <= 16100);
-  assert.equal(drawMs(14), 1800);
+  assert.equal(drawMs(1), 2800);
+  assert.ok(drawMs(7) * 7 <= 12100);
+  assert.equal(drawMs(14), 1500);
+  assert.ok(flyMs(10) < flyMs(3));
+  assert.equal(easeInOut(0), 0);
+  assert.equal(easeInOut(1), 1);
+  assert.ok(Math.abs(easeInOut(0.5) - 0.5) < 1e-9);
+  assert.equal(overallProgress(1, 4, 0.5), 0.375);
+  assert.equal(overallProgress(3, 4, 2), 1);
+  assert.equal(fade("#a04c2e", 0.35), "rgba(160,76,46,0.35)");
+  assert.equal(fade("red", 0.5), "red");
 });
 
 test("改了行程只播变了的那几天；天数变了全部播", () => {

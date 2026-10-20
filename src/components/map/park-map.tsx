@@ -1,9 +1,9 @@
 "use client";
 
 import "maplibre-gl/dist/maplibre-gl.css";
-import type { GeoJSONSource, Map as MapLibreMap, Marker } from "maplibre-gl";
+import type { ExpressionSpecification, GeoJSONSource, Map as MapLibreMap, Marker } from "maplibre-gl";
 import { useEffect, useEffectEvent, useRef, useState, type ReactNode } from "react";
-import { bounds, cumulative, drawMs, sliceTo, stopDistances, type TourDay } from "./route-tour";
+import { bounds, cumulative, drawMs, easeInOut, fade, flyMs, overallProgress, sliceTo, stopDistances, type TourDay } from "./route-tour";
 import { EOX_ATTRIBUTION, EOX_IMAGERY_TILES, IMAGERY_TILES, STYLE_URL, TERRAIN_TILES, type Imagery } from "./sources";
 
 export interface MapPoint {
@@ -55,6 +55,8 @@ export interface MapText {
   tourResume: string;
   tourSkip: string;
   tourDay: string;
+  /** 最后拉远看全程时控制条上的字 */
+  tourAll: string;
 }
 
 /** 请地图自动播一次路线动画：key 变了才播；days 是要播的那几天（改了行程只播变了的） */
@@ -63,17 +65,26 @@ export interface TourRequest {
   days: number[];
 }
 
-// 动画的节奏：每天先把镜头移过去，再沿路线画，画完停一下
-const FLY_MS = 900;
-const HOLD_MS = 900;
+// 动画的节奏：每天先出开场卡片、把镜头移过去，再沿路线画（到站停一下），画完停一下；最后拉远看全程
+const HOLD_MS = 700;
+const ARRIVE_MS = 300;
+const FINALE_MS = 1800;
+// 播放时镜头微微倾斜，像航拍（北还是朝上，不转，免得看不出方向）；系统设了“减少动画”就不倾斜
+const TOUR_PITCH = 38;
+// 播放时其他天的景点淡下去，突出这一天
+const DIM = 0.18;
 // 路线还没查到真实道路时最多等这么久，再不来就按直线播
 const ROUTE_WAIT_MS = 6000;
 
 interface TourState {
   days: TourDay[];
   index: number;
-  phase: "fly" | "draw" | "hold";
+  phase: "fly" | "draw" | "hold" | "finale";
   phaseStart: number;
+  /** 上一帧的时间：到站停一下时把这段时间从画线的进度里扣掉 */
+  last: number;
+  arriveUntil: number;
+  calm: boolean;
   pausedAt: number | null;
   raf: number;
   cum: number[];
@@ -86,21 +97,44 @@ interface TourState {
 
 const reducedMotion = () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-/** 车头开到一站时弹出的小牌子；用 textContent 填字，不拼 HTML */
-function captionElement(label: string, caption: string, lodging: boolean): HTMLDivElement {
-  const element = document.createElement("div");
-  element.className = `pointer-events-none whitespace-nowrap px-2 py-1 text-[11px] leading-4 shadow-sm ${
-    lodging ? "bg-ink text-paper" : "bg-paper/95 text-ink"
+/** 车头开到一站时弹出的小牌子（弹一下出来，下面一圈波纹）；用 textContent 填字，不拼 HTML */
+function captionElement(label: string, caption: string, lodging: boolean, color: string, badge: string): HTMLDivElement {
+  const wrap = document.createElement("div");
+  wrap.className = "pointer-events-none relative flex flex-col items-center";
+  const card = document.createElement("div");
+  card.className = `tour-pop flex items-center gap-2 whitespace-nowrap border py-1 pr-2.5 pl-1 text-[11px] leading-4 ${
+    lodging ? "border-ink bg-ink text-paper" : "border-ink/15 bg-paper text-ink"
   }`;
+  const number = document.createElement("span");
+  number.className = "flex size-5 shrink-0 items-center justify-center rounded-full text-[10px] font-medium text-white";
+  number.style.backgroundColor = lodging ? "transparent" : color;
+  number.style.border = lodging ? "1px solid rgba(244,239,231,.6)" : "none";
+  number.textContent = badge;
+  const text = document.createElement("div");
   const name = document.createElement("div");
   name.className = "font-medium";
   name.textContent = label;
   const line = document.createElement("div");
-  line.className = lodging ? "text-paper/80" : "text-ink-soft";
+  line.className = lodging ? "text-paper/75" : "text-ink-soft";
   line.textContent = caption;
-  element.append(name, line);
-  return element;
+  text.append(name, line);
+  card.append(number, text);
+  const ring = document.createElement("span");
+  ring.className = "tour-ring absolute -bottom-[22px] size-4 rounded-full";
+  ring.style.boxShadow = `0 0 0 2px ${color}`;
+  wrap.append(card, ring);
+  return wrap;
 }
+
+// 播放时淡下去的图层：{图层: 要改的透明度属性}
+type PaintName = Parameters<MapLibreMap["setPaintProperty"]>[1];
+const DIM_LAYERS: [string, PaintName[]][] = [
+  ["points", ["circle-opacity", "circle-stroke-opacity"]],
+  ["points-badge", ["text-opacity"]],
+  ["points-label", ["text-opacity"]],
+  ["camps", ["icon-opacity", "text-opacity"]],
+  ["trails", ["line-opacity"]],
+];
 
 // worker 文件由 scripts/copy-maplibre-worker.mjs 复制到 public/
 const WORKER_URL = "/maplibre/maplibre-gl-worker.mjs";
@@ -208,6 +242,7 @@ export function ParkMap({
   imagery = "usgs",
   tour,
   tourRequest = null,
+  tourSummary,
   text,
   className = "",
   children,
@@ -235,6 +270,8 @@ export function ParkMap({
   tour?: TourDay[];
   /** 请地图自动播一次（第一次排出行程、改了行程时） */
   tourRequest?: TourRequest | null;
+  /** 动画最后拉远看全程时的一句总结，比如“4 天，14 个景点，开车约 9 小时 40 分” */
+  tourSummary?: string;
   text: MapText;
   className?: string;
   /** 叠在地图上的内容，比如选中景点的卡片 */
@@ -247,6 +284,7 @@ export function ParkMap({
   const [ready, setReady] = useState(false);
   const [satellite, setSatellite] = useState(false);
   const [terrain, setTerrain] = useState(false);
+  const terrainRef = useRef(false);
   const markerClass = useRef<typeof Marker | null>(null);
   const tourRef = useRef<TourState | null>(null);
   const pointsRef = useRef(points);
@@ -254,9 +292,19 @@ export function ParkMap({
     index: number;
     days: { day: number; color: string }[];
     title: string;
+    heading?: string;
+    date?: string;
+    subtitle?: string;
+    color: string;
+    /** 每天开头的大字卡片显示着 */
+    card: boolean;
+    /** 最后拉远看全程 */
+    finale: boolean;
     paused: boolean;
     dusk: boolean;
   } | null>(null);
+  // 底下那条细细的进度条：每帧直接改宽度，不经过 React
+  const progressRef = useRef<HTMLDivElement>(null);
   // 地图在不在屏幕上：自动播放要等看得见了再播
   const [visible, setVisible] = useState(false);
   const playedKey = useRef("");
@@ -489,7 +537,18 @@ export function ParkMap({
           },
           "points-selected",
         );
-        instance.addSource("tour-line", { type: "geojson", data: EMPTY });
+        // lineMetrics：线要按“画到百分之几”上渐变色（尾巴淡、车头浓）
+        instance.addSource("tour-line", { type: "geojson", data: EMPTY, lineMetrics: true });
+        instance.addLayer(
+          {
+            id: "tour-glow",
+            type: "line",
+            source: "tour-line",
+            layout: { "line-join": "round", "line-cap": "round" },
+            paint: { "line-color": ["get", "color"], "line-width": 16, "line-blur": 8, "line-opacity": 0.35 },
+          },
+          "points-selected",
+        );
         instance.addLayer(
           {
             id: "tour-line",
@@ -501,6 +560,12 @@ export function ParkMap({
           "points-selected",
         );
         instance.addSource("tour-head", { type: "geojson", data: EMPTY });
+        instance.addLayer({
+          id: "tour-pulse",
+          type: "circle",
+          source: "tour-head",
+          paint: { "circle-radius": 14, "circle-color": ["get", "color"], "circle-opacity": 0.22, "circle-blur": 0.5 },
+        });
         instance.addLayer({
           id: "tour-head",
           type: "circle",
@@ -590,6 +655,17 @@ export function ParkMap({
     state.markers = [];
   };
 
+  /** ids 里的景点照常显示，别的淡下去；ids 是 null 时全部恢复 */
+  const focusOn = (ids: string[] | null) => {
+    const map = mapRef.current;
+    if (!map) return;
+    const value: ExpressionSpecification | number = ids ? ["case", ["in", ["get", "id"], ["literal", ids]], 1, DIM] : 1;
+    for (const [layer, properties] of DIM_LAYERS) {
+      if (!map.getLayer(layer)) continue;
+      for (const property of properties) map.setPaintProperty(layer, property, layer === "trails" && ids ? DIM : value);
+    }
+  };
+
   const finishTour = () => {
     const state = tourRef.current;
     const map = mapRef.current;
@@ -600,8 +676,34 @@ export function ParkMap({
     ["tour-done", "tour-line", "tour-head"].forEach((id) => setLine(id, []));
     map.setLayoutProperty("legs", "visibility", "visible");
     map.setLayoutProperty("legs-straight", "visibility", "visible");
+    focusOn(null);
     setTourUi(null);
+    if (progressRef.current) progressRef.current.style.width = "0%";
+    map.easeTo({ pitch: terrainRef.current ? 60 : 0, bearing: 0, duration: 600 });
     fitToPoints(map, pointsRef.current, true);
+  };
+
+  /** 最后一天画完：所有天的路线都留着，镜头拉远看全程，停一会儿再回到平常的地图 */
+  const beginFinale = (state: TourState, now: number) => {
+    const map = mapRef.current;
+    if (!map) return;
+    clearMarkers(state);
+    state.phase = "finale";
+    state.phaseStart = now;
+    focusOn(null);
+    const all = state.days.flatMap((day) => [...day.path, ...day.stops.map((stop) => [stop.lon, stop.lat] as [number, number])]);
+    if (all.length > 1) {
+      const lons = all.map((p) => p[0]);
+      const lats = all.map((p) => p[1]);
+      map.fitBounds(
+        [
+          [Math.min(...lons), Math.min(...lats)],
+          [Math.max(...lons), Math.max(...lats)],
+        ],
+        { padding: 64, maxZoom: 12, duration: 1100, pitch: 0, bearing: 0 },
+      );
+    }
+    setTourUi((ui) => (ui ? { ...ui, card: false, finale: true, dusk: false } : ui));
   };
 
   const beginDay = (state: TourState, index: number, now: number) => {
@@ -616,10 +718,34 @@ export function ParkMap({
     state.total = state.cum[state.cum.length - 1] ?? 0;
     state.stopKm = stopDistances(day.path, state.cum, day.stops);
     state.shown = 0;
+    state.arriveUntil = 0;
     setLine("tour-line", []);
     setLine("tour-head", []);
-    map.fitBounds(bounds(day), { padding: 72, maxZoom: 12, duration: FLY_MS });
-    setTourUi({ index, days: state.days.map(({ day: n, color }) => ({ day: n, color })), title: day.title, paused: false, dusk: false });
+    focusOn(day.stops.map((stop) => stop.id));
+    // 线从尾巴的淡到车头的浓
+    map.setPaintProperty("tour-line", "line-gradient", ["interpolate", ["linear"], ["line-progress"], 0, fade(day.color, 0.35), 1, day.color]);
+    // 左下有章节字幕：底部多留一点，路线不被盖住
+    const height = map.getContainer().clientHeight;
+    map.fitBounds(bounds(day), {
+      padding: { top: Math.round(height * 0.14), bottom: Math.round(height * 0.34), left: 56, right: 56 },
+      maxZoom: 12.5,
+      duration: flyMs(state.days.length),
+      pitch: state.calm ? 0 : TOUR_PITCH,
+      bearing: 0,
+    });
+    setTourUi({
+      index,
+      days: state.days.map(({ day: n, color }) => ({ day: n, color })),
+      title: day.title,
+      heading: day.heading,
+      date: day.date,
+      subtitle: day.subtitle,
+      color: day.color,
+      card: true,
+      finale: false,
+      paused: false,
+      dusk: false,
+    });
   };
 
   const frame = (now: number) => {
@@ -627,35 +753,54 @@ export function ParkMap({
     const map = mapRef.current;
     if (!state || !map) return;
     state.raf = requestAnimationFrame(frame);
+    const delta = now - state.last;
+    state.last = now;
     if (state.pausedAt !== null) return;
     const day = state.days[state.index];
+    if (state.phase === "draw" && now < state.arriveUntil) {
+      // 到站停一下：这段时间不算进画线的进度
+      state.phaseStart += delta;
+      return;
+    }
     const elapsed = now - state.phaseStart;
     if (state.phase === "fly") {
-      if (elapsed >= FLY_MS) {
+      // 卡片显示到镜头快到位，再收起来开始画
+      const fly = flyMs(state.days.length);
+      if (elapsed >= fly * 0.85) setTourUi((ui) => (ui && ui.card ? { ...ui, card: false } : ui));
+      if (elapsed >= fly) {
         state.phase = "draw";
         state.phaseStart = now;
       }
+      if (progressRef.current) progressRef.current.style.width = `${overallProgress(state.index, state.days.length, 0) * 100}%`;
       return;
     }
     if (state.phase === "draw") {
       const progress = Math.min(1, elapsed / drawMs(state.days.length));
-      // 慢慢起步、慢慢停下
-      const eased = progress < 0.5 ? 2 * progress * progress : 1 - (-2 * progress + 2) ** 2 / 2;
+      const eased = easeInOut(progress);
       const distance = eased * state.total;
       const { line, head } = sliceTo(day.path, state.cum, distance);
       setLine("tour-line", line.length > 1 ? [lineFeature(line, day.color)] : []);
       setLine("tour-head", [{ type: "Feature", geometry: { type: "Point", coordinates: head }, properties: { color: day.color } }]);
+      if (progressRef.current) progressRef.current.style.width = `${overallProgress(state.index, state.days.length, eased) * 100}%`;
       while (state.shown < day.stops.length && state.stopKm[state.shown] <= distance + 1e-6) {
         const stop = day.stops[state.shown];
         if (markerClass.current) {
-          const marker = new markerClass.current({ element: captionElement(stop.label, stop.caption, stop.lodging ?? false), anchor: "bottom", offset: [0, -14] })
+          const badge = stop.lodging ? "住" : String(state.shown + 1);
+          const marker = new markerClass.current({
+            element: captionElement(stop.label, stop.caption, stop.lodging ?? false, day.color, badge),
+            anchor: "bottom",
+            offset: [0, -14],
+          })
             .setLngLat([stop.lon, stop.lat])
             .addTo(map);
           state.markers.push(marker);
-          // 一天最多同时留三个牌子，免得挤成一团
+          // 一天最多同时留三个牌子，免得挤成一团；旧的先淡下去
           if (state.markers.length > 3) state.markers.shift()?.remove();
+          state.markers.slice(0, -1).forEach((old) => (old.getElement().style.opacity = "0.55"));
         }
         state.shown += 1;
+        // 起点那一站（前一晚的住处）不停
+        if (state.stopKm[state.shown - 1] > 0.05) state.arriveUntil = now + ARRIVE_MS;
       }
       if (day.dusk && progress > 0.75) setTourUi((ui) => (ui && !ui.dusk ? { ...ui, dusk: true } : ui));
       if (progress >= 1) {
@@ -664,14 +809,19 @@ export function ParkMap({
       }
       return;
     }
-    if (elapsed >= HOLD_MS) {
-      state.done.push(lineFeature(day.path, day.color));
-      setLine("tour-done", state.done);
-      setLine("tour-line", []);
-      setLine("tour-head", []);
-      if (state.index + 1 < state.days.length) beginDay(state, state.index + 1, now);
-      else finishTour();
+    if (state.phase === "hold") {
+      if (elapsed >= HOLD_MS) {
+        state.done.push(lineFeature(day.path, day.color));
+        setLine("tour-done", state.done);
+        setLine("tour-line", []);
+        setLine("tour-head", []);
+        if (state.index + 1 < state.days.length) beginDay(state, state.index + 1, now);
+        else beginFinale(state, now);
+      }
+      return;
     }
+    if (progressRef.current) progressRef.current.style.width = "100%";
+    if (elapsed >= FINALE_MS) finishTour();
   };
 
   const startTour = (days: TourDay[], from = 0) => {
@@ -688,6 +838,9 @@ export function ParkMap({
       index: from,
       phase: "fly",
       phaseStart: 0,
+      last: performance.now(),
+      arriveUntil: 0,
+      calm: reducedMotion(),
       pausedAt: null,
       raf: 0,
       cum: [],
@@ -791,6 +944,7 @@ export function ParkMap({
   useEffect(() => {
     const map = mapRef.current;
     // 只在开关真正变化时动，免得打断刚开始的缩放动画
+    terrainRef.current = terrain;
     if (!ready || !map || terrain === (map.getTerrain() !== null)) return;
     map.setTerrain(terrain ? { source: "terrain-dem", exaggeration: 1.3 } : null);
     map.easeTo({ pitch: terrain ? 60 : 0, duration: 800 });
@@ -863,12 +1017,55 @@ export function ParkMap({
           </div>
         )}
       </div>
-      {tourUi?.dusk && <div className="pointer-events-none absolute inset-0 bg-ink/25 transition-opacity duration-700" />}
+      {/* 黄昏：画到最后天色慢慢暗下来，上面暖一点 */}
+      <div
+        className={`pointer-events-none absolute inset-0 bg-gradient-to-b from-clay-900/15 via-ink/20 to-ink/40 transition-opacity duration-1000 ${
+          tourUi?.dusk ? "opacity-100" : "opacity-0"
+        }`}
+      />
+      {/* 章节字幕：每天开头在左下出一行大字（像纪录片换章），最后一天画完换成全程的总结；不挡地图中间 */}
+      {tourUi && (
+        <div
+          className={`pointer-events-none absolute inset-x-0 bottom-0 z-10 pt-16 pb-24 pl-5 pr-6 transition-opacity duration-500 sm:pl-8 ${
+            tourUi.card || tourUi.finale ? "opacity-100" : "opacity-0"
+          }`}
+          style={{ background: "linear-gradient(to top, rgba(244,239,231,0.92) 0%, rgba(244,239,231,0.7) 55%, rgba(244,239,231,0) 100%)" }}
+          aria-hidden={!(tourUi.card || tourUi.finale)}
+        >
+          <div
+            className={`border-l-[3px] pl-4 transition-transform duration-700 ${tourUi.card || tourUi.finale ? "translate-x-0" : "-translate-x-2"}`}
+            style={{ borderColor: tourUi.finale ? "#1c1b18" : tourUi.color }}
+          >
+            {tourUi.finale ? (
+              <>
+                <p className="font-serif text-[clamp(1.75rem,5vw,3rem)] leading-none lining-nums">{text.tourAll}</p>
+                {tourSummary && <p className="mt-2 text-[13px] text-ink-soft lining-nums">{tourSummary}</p>}
+              </>
+            ) : (
+              <>
+                <p className="font-serif text-[clamp(1.75rem,5vw,3rem)] leading-none lining-nums">{tourUi.heading ?? tourUi.title}</p>
+                {(tourUi.date || tourUi.subtitle) && (
+                  <p className="mt-2 text-[13px] text-ink-soft lining-nums">
+                    {tourUi.date && <span className="mr-3 text-ink">{tourUi.date}</span>}
+                    {tourUi.subtitle}
+                  </p>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      )}
+      {tourUi && (
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[3px] bg-ink/10">
+          <div ref={progressRef} className="h-full transition-[background-color] duration-500" style={{ width: "0%", backgroundColor: tourUi.color }} />
+        </div>
+      )}
       {ready && tourDays.length > 0 && (
         <div className="absolute bottom-9 left-3 z-10 flex max-w-[calc(100%-1.5rem)] flex-wrap items-center gap-x-3 gap-y-1.5 bg-paper/95 px-3 py-2 text-[11px] tracking-[0.08em] shadow-sm">
           {tourUi ? (
             <>
-              <span className="font-serif text-sm tracking-normal">{tourUi.title}</span>
+              {/* 章节字幕显示着的时候不重复标题 */}
+              {!tourUi.card && !tourUi.finale && <span className="font-serif text-sm tracking-normal lining-nums">{tourUi.title}</span>}
               <button type="button" className="link-line" onClick={togglePause}>
                 {tourUi.paused ? text.tourResume : text.tourPause}
               </button>
@@ -886,9 +1083,13 @@ export function ParkMap({
                       const days = tourRef.current?.days;
                       if (days) startTour(days, k);
                     }}
-                    className="size-2.5 rounded-full border border-ink/40"
-                    style={{ backgroundColor: k <= tourUi.index ? day.color : "transparent" }}
-                  />
+                    className="flex size-6 items-center justify-center"
+                  >
+                    <span
+                      className={`block rounded-full border border-ink/40 transition-all duration-300 ${k === tourUi.index ? "size-3" : "size-2.5"}`}
+                      style={{ backgroundColor: k <= tourUi.index || tourUi.finale ? day.color : "transparent" }}
+                    />
+                  </button>
                 ))}
               </span>
             </>

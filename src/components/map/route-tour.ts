@@ -7,6 +7,10 @@ export interface TourDay {
   color: string;
   /** 左上角的大字，比如“第 2 天 · 10 月 21 日” */
   title: string;
+  /** 每天开头的章节字幕：大字“第 2 天”、日期、一句“6 个景点，开车 5 小时 25 分” */
+  heading?: string;
+  date?: string;
+  subtitle?: string;
   /** 开车路线（[经度, 纬度]），还没查到真实道路时是按顺序连起来的直线 */
   path: [number, number][];
   straight?: boolean;
@@ -85,9 +89,34 @@ export function stopDistances(path: [number, number][], cum: number[], stops: { 
   return out;
 }
 
-/** 一天画多久（毫秒）：按全程有几天分配，整段动画控制在二十秒上下；路线短的天也不会一闪而过 */
+/** 慢慢起步、慢慢停下（0–1 → 0–1） */
+export function easeInOut(progress: number): number {
+  const p = Math.min(1, Math.max(0, progress));
+  return p < 0.5 ? 2 * p * p : 1 - (-2 * p + 2) ** 2 / 2;
+}
+
+/** 整段动画放到哪了（0–1）：前面几天算整天，这一天按画到的比例 */
+export function overallProgress(index: number, days: number, dayProgress: number): number {
+  if (days <= 0) return 0;
+  return Math.min(1, (index + Math.min(1, Math.max(0, dayProgress))) / days);
+}
+
+/** 线的颜色从尾巴的淡到车头的浓（line-gradient 用）：#rrggbb → rgba */
+export function fade(color: string, alpha: number): string {
+  const hex = color.replace("#", "");
+  if (!/^[0-9a-f]{6}$/i.test(hex)) return color;
+  const [r, g, b] = [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16));
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+/** 一天画多久（毫秒）：按全程有几天分配，画线的部分一共十二秒上下（加上每天的开场卡片、到站停顿，四天的行程约二十五秒）；路线短的天也不会一闪而过 */
 export function drawMs(days: number): number {
-  return Math.round(Math.min(3200, Math.max(1800, 16000 / Math.max(1, days))));
+  return Math.round(Math.min(2800, Math.max(1500, 12000 / Math.max(1, days))));
+}
+
+/** 每天开场（卡片 + 镜头飞过去）多久：天数多的行程短一点 */
+export function flyMs(days: number): number {
+  return days > 5 ? 1300 : 1700;
 }
 
 /** 这一天的范围（给地图缩放用） */

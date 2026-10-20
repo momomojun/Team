@@ -28,7 +28,7 @@
 - [x] 监控：token、成本、看板（P25；10-19 每轮日志记下每次模型调用的模型和 token，`stats` 和 `GET /stats` 按模型算花费；网站后台 `/zh-Hans/admin` 画成图表。计划书写的 MLflow 没用）
 - [ ] 护栏：限流；外部接口挂了退回快照（P26）
 - [ ] CI：Python 的 Ruff 检查；评测分数贴到 PR 评论；镜像 tag 带提示词版本和数据 hash；staging 环境（P27、P28、P29、P24）
-- [ ] 不同的步骤可以用不同的模型（P12）
+- [ ] 不同的步骤可以用不同的模型（P12；10-20 做了机制 `COPILOT_STEP_MODELS`，默认还是每一步都按 Gemini → OpenAI → 本机；按对照成绩怎么分配等仓库主人定）
 - [ ] Writer 的行程说明逐句附来源（P17）；Critic 最多退回 3 轮（P16，现在有意只改一次）；数据快照用 Pydantic 校验（P6）
 - [ ] 路线动画导出成短视频（第一版动画 10-19 做了）；Copilot 的线上部署（O53、A1）。网站行程页的对话框 10-19 做了（O61）
 - [ ] 明星同款：中国大陆明星、更多公园（O22）
@@ -206,7 +206,7 @@
 | P9 | 10-13 | 每份快照有内容 hash，每个回答记下用的哪份数据 | §3、§4 | 没做 | 日志每轮记 Copilot 版本、提示词 hash、`reference_date`；`/health` 有构建提交；`TripResult.engine.version` 写死 "1"；没有数据 hash | |
 | P10 | 10-13 | Provider 抽象 + 测试用的 mock provider（不需要密钥） | §4、§6 | 已完成 | `providers.py`：Ollama、Replay、Recording、Scripted；CI 用回放 | |
 | P11 | 10-13 | 一个低成本商业 API 模型 + 一个开源模型（Ollama）对比，按配置切换 | §4、§7 | 部分完成 | 10-19 仓库主人改了主意：加了 Gemini、OpenAI 的 Provider（`COPILOT_PROVIDER=gemini / openai`），读公告这一项和本机 4B 比过（RESULTS.md）；对话那几步还没比，默认还是本机 | 仓库主人对另一个助手说过“目前不希望依赖云端 API”（archive/LLMOPS_WORK_LOG.md）；计划书要改 |
-| P12 | 10-13 | 每个 agent 可以用不同的模型 | §4 | 没做 | 只有一个 `COPILOT_MODEL`，Intake、Writer、QA 共用 | |
+| P12 | 10-13 | 每个 agent 可以用不同的模型 | §4 | 部分完成 | 10-20：`COPILOT_STEP_MODELS` 让调度员、摘条件、回答问题、写说明各自换模型（出错退回平常的顺序），后台显示换了哪几步；读公告本来就单独设（`COPILOT_ALERTS_PROVIDER`）。默认分配还没定 | |
 | P13 | 10-13 | 提示词进仓库、有版本，每次评测记下提示词版本 | §4 | 已完成 | `prompts/intake_v1.txt`、`intake_v2.txt`、`writer_v1.txt`、`qa_v1.txt`，`defaults.json`，环境变量切换；日志和 Release 记 hash | 计划书写 YAML，实际是 txt |
 | P14 | 10-13 | LangGraph 编排 5 个 agent（Intake、Retriever、Planner、Critic、Writer） | §4、§5 | 部分完成 | 自己写的固定流水线（`pipeline.py`），没有 LangGraph；Planner 是确定性引擎，不是 agent；Retriever 只在 QA 里；10-18 加了调度员（`dispatcher.py`）：模型决定改条件、提问、加减景点、指定住处、重新开始，代码执行和核对；仍然没有 LangGraph | 仓库主人 10-18 嫌“不智能”，助手建议改成模型调度工具（O60） |
 | P15 | 10-13 | Planner 能调用 search_attractions、is_open、drive_time 和行程引擎 | §4 | 部分完成 | 只有 `plan_trip`（+ QA 的资料检索）；单独的查询工具没做 | PROJECT.md 阶段 1 备注 |
@@ -290,7 +290,7 @@
 | O50 | 10-18 | 试用后“非常不行”：听不懂明天、反复追问、住机场、不会回答问题……要修 | 仓库主人 | 已完成（第一批） | PR #12；那段对话写进 `copilot/tests/test_pipeline.py` | |
 | O51 | 10-18 | 修法是训练还是加规则？37/40 不就是没过吗？ | 仓库主人 | 已完成（解释） | 聊天；RESULTS.md 记了 H05、H20、H38 | |
 | O52 | 10-18 | H05、H20、H38 先不修，规则不要加太多 | 仓库主人 | 已完成（决定） | PROJECT.md“暂时不修的”；门禁仍是不低于 37/40 | |
-| O53 | 10-18 | 行程做成动画：只在第一次看到、改了行程时播 | 仓库主人 | 部分完成 | 10-19 第一版：行程地图的路线动画（`route-tour.ts`、`park-map.tsx`），第一次排出、Copilot 改了行程时自动播，只播变了的天，可以暂停、跳过、重播；导出短视频没做 | |
+| O53 | 10-18 | 行程做成动画：只在第一次看到、改了行程时播 | 仓库主人 | 部分完成 | 10-19 第一版：行程地图的路线动画（`route-tour.ts`、`park-map.tsx`），第一次排出、Copilot 改了行程时自动播，只播变了的天，可以暂停、跳过、重播；10-20 仓库主人说“动画做好一点”，加了章节字幕、彗星拖尾、到站停顿和编号牌子、只突出当天、全程总结，按 frontend-design 技能收过一遍；导出短视频没做（可以用 Remotion 插件） | |
 | O54 | 10-18 | 第二批：能回答问题 | 仓库主人 | 已完成 | PR #14；`knowledge.jsonl`、`qa.py`、`prompts/qa_v1.txt` | |
 | O55 | 10-18 | 我试用一下 → 看聊天记录接着修 | 仓库主人 | 已完成 | 6 个问题修了 5 个（PR #14）；“一句话既改条件又提问”“紧凑要几天”还不行；10-18 调度员改造后，一句话里又改又问能按顺序都做（conversation-v1 C04、C14，v2 V05、V13）；“紧凑要几天”资料里本来就没有，不编 | 第 6 个问题转成 O56 |
 | O56 | 10-18 | 住处加营业季节，关门的住处不要排 | 仓库主人（任务卡片） | 已完成 | PR #15（56 家季节性住处，`src/data/lodging-seasons.ts`） | |
