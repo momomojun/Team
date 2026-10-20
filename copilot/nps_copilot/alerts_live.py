@@ -2,7 +2,7 @@
 
 - 读过的公告记在缓存里（按公告 id + 更新时间 + 提示词版本），同一条没改过就不再交给模型，每晚只读新出现、改过的几条；
   模型出错（额度用完、服务忙）的那条这次按规则算、不进缓存，下次再试
-- 读公告用哪个模型：COPILOT_ALERTS_PROVIDER（gemini / openai / openrouter / ollama / rules）；没设时和聊天一样按
+- 读公告用哪个模型：COPILOT_ALERTS_PROVIDER（gemini / openai / openrouter / groq / ollama / rules）；没设时和聊天一样按
   Gemini 3.5 Flash Lite → OpenAI GPT-4.1 mini → 本机的顺序，没配 key 的跳过；COPILOT_ALERTS_MODEL 换型号
 - 聊天时（plan_client 调行程引擎之前）：两周内出发、要去的公园今天还没读过公告，就当场只抓这几座公园的公告读一遍，
   合进关闭清单（每座公园记下哪天读的，src/lib/copilot/live.ts 按要去的公园看新不新）
@@ -19,7 +19,7 @@ from pathlib import Path
 
 from . import prompts
 from .alerts import combined, extract, rules_extract
-from .providers import (GeminiProvider, OllamaProvider, OpenAIProvider, OpenRouterProvider, Provider, ProviderChain, ProviderError,
+from .providers import (GeminiProvider, GroqProvider, OllamaProvider, OpenAIProvider, OpenRouterProvider, Provider, ProviderChain, ProviderError,
                         cloud_chain, secret)
 
 DATA = Path(__file__).resolve().parents[1] / "data" / "alerts"
@@ -46,9 +46,11 @@ def alerts_provider() -> Provider | None:
         return OpenAIProvider(**({"model": model} if model else {}))
     if kind == "openrouter":
         return OpenRouterProvider(**({"model": model} if model else {}))
+    if kind == "groq":
+        return GroqProvider(**({"model": model} if model else {}))
     if kind == "ollama":
         return OllamaProvider(**({"model": model} if model else {}))
-    raise ProviderError(f"不认识的 COPILOT_ALERTS_PROVIDER：{kind}（gemini / openai / openrouter / ollama / rules）")
+    raise ProviderError(f"不认识的 COPILOT_ALERTS_PROVIDER：{kind}（gemini / openai / openrouter / groq / ollama / rules）")
 
 
 def _cache_key(alert: dict) -> str:

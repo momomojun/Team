@@ -177,6 +177,36 @@ def test_chat_falls_back_gemini_then_openai_then_local(monkeypatch, tmp_path, fa
     assert isinstance(chat_provider(), OllamaProvider)
 
 
+def test_groq_uses_schema_output_and_falls_back_to_json_mode_when_the_model_rejects_it(fake_api, monkeypatch):
+    from nps_copilot.providers import GroqProvider
+
+    monkeypatch.setenv("GROQ_API_KEY", "test-groq-key")
+    ok = {"choices": [{"message": {"content": '{"park": "Zion"}'}}],
+          "usage": {"prompt_tokens": 30, "completion_tokens": 9, "completion_tokens_details": {"reasoning_tokens": 4}}}
+    sent = fake_api(ok)
+    provider = GroqProvider(rpm=0)
+    completion = provider.complete_json("intake", "s", "u", SCHEMA)
+    assert completion.data == {"park": "Zion"} and completion.meta["thinking_tokens"] == 4
+    assert sent[0]["url"] == "https://api.groq.com/openai/v1/chat/completions"
+    assert sent[0]["headers"]["Authorization"] == "Bearer test-groq-key"
+    assert sent[0]["body"]["model"] == "openai/gpt-oss-120b" and sent[0]["body"]["reasoning_effort"] == "low"
+    assert sent[0]["body"]["response_format"]["type"] == "json_schema"
+    # 不认 JSON Schema 的模型：退成 JSON 模式，schema 写进系统提示词，之后一直这样发
+    sent.clear()
+    sent = fake_api(http_error(400, "This model does not support response format `json_schema`"), ok, ok)
+    qwen = GroqProvider(model="qwen/qwen3.8-27b", rpm=0)
+    qwen.complete_json("intake", "s", "u", SCHEMA)
+    qwen.complete_json("intake", "s", "u", SCHEMA)
+    assert [r["body"]["response_format"]["type"] for r in sent] == ["json_schema", "json_object", "json_object"]
+    assert '"park"' in sent[1]["body"]["messages"][0]["content"]
+    # 一天的 token 用完了：不重试
+    sent.clear()
+    sent = fake_api(http_error(429, "Rate limit reached on tokens per day (TPD): Limit 200000"))
+    with pytest.raises(QuotaError):
+        provider.complete_json("intake", "s", "u", SCHEMA)
+    assert len(sent) == 1
+
+
 def test_openrouter_reasoning_level_comes_from_the_environment(monkeypatch):
     from nps_copilot.providers import OpenRouterProvider
 

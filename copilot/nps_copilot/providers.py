@@ -4,8 +4,9 @@
 - ReplayProvider：读录好的模型输出（CI 上没有 GPU，用它跑评测门禁；没录到的请求直接报错，不瞎猜）
 - RecordingProvider：包一个真模型，把每次调用录下来，给 ReplayProvider 用
 - ScriptedProvider：单元测试用，按顺序返回写好的输出
-- GeminiProvider、OpenAIProvider、OpenRouterProvider：商业 API（10-19、10-20 加的，对照实验用），要明确设 COPILOT_PROVIDER=gemini / openai / openrouter 才会用，
-  不会自动退到云端。key 从环境变量或仓库根目录的 .env.local 读（GEMINI_API_KEY、OPENAI_API_KEY、OPENROUTER_API_KEY），只放在请求头里，不写日志
+- GeminiProvider、OpenAIProvider、OpenRouterProvider、GroqProvider：商业 API（10-19 加的）。key 从环境变量或仓库根目录的
+  .env.local 读（GEMINI_API_KEY、OPENAI_API_KEY、OPENROUTER_API_KEY、GROQ_API_KEY），只放在请求头里，不写日志；
+  聊天按 chat_provider() 的顺序用，评测要明确设 COPILOT_PROVIDER
 - FallbackProvider：主模型出错（额度用完、服务忙）时退回本机模型，给 Copilot 服务用；评测不用它（要量的是主模型本身）
 """
 from __future__ import annotations
@@ -158,8 +159,10 @@ def secret(name: str) -> str:
 
 
 def _post(url: str, body: dict, headers: dict, timeout: float) -> dict:
-    """发一个 JSON 请求；HTTP 出错时抛 HTTPError（调用方看状态码决定重试还是放弃）。测试里会被换掉，不真的联网"""
-    request = urllib.request.Request(url, data=json.dumps(body).encode("utf-8"), headers={"Content-Type": "application/json", **headers})
+    """发一个 JSON 请求；HTTP 出错时抛 HTTPError（调用方看状态码决定重试还是放弃）。测试里会被换掉，不真的联网。
+    写明是哪个程序：Groq 前面的 Cloudflare 会拦 Python 默认的 Python-urllib（403，error code 1010）"""
+    request = urllib.request.Request(url, data=json.dumps(body).encode("utf-8"), headers={
+        "Content-Type": "application/json", "User-Agent": "nps-guide-copilot (+https://github.com/momomojun/Team)", **headers})
     with urllib.request.urlopen(request, timeout=timeout) as response:
         return json.loads(response.read().decode("utf-8"))
 
@@ -374,6 +377,68 @@ class OpenRouterProvider:
         return Completion(data=_json_text(text), model=self.model, latency_ms=self.pace.last_ms, raw=text, meta=meta)
 
 
+# Groq 免费档（Settings → Limits，10-19）：每个模型每分钟 30 次、8000 token，每天 1000 次、20 万 token。
+# 卡住的是每分钟的 token：一次约 1500（问题 + 想的过程 + 回答），按每分钟 4 次放慢
+GROQ_RPM = {"openai/gpt-oss-120b": 4, "openai/gpt-oss-20b": 4, "qwen/qwen3.8-27b": 4}
+
+
+@dataclass
+class GroqProvider:
+    """Groq（自己的芯片跑开源模型，很快，有免费档）。接口和 OpenAI 的 Chat Completions 一样。
+    gpt-oss 认 JSON Schema 输出和 reasoning_effort（开到 low）；别的模型不认就退成普通 JSON 模式、把 schema 写进提示词，
+    推理设置不认就去掉。一天的 token 用完了 429 里写着 per day，直接报错不再试"""
+    model: str = "openai/gpt-oss-120b"
+    timeout: float = 120.0
+    name: str = "groq"
+    rpm: float | None = None
+    max_tokens: int = 1536
+    json_mode: str = "schema"  # schema → object（模型不认 JSON Schema 时）
+    reasoning: str | None = field(default_factory=lambda: (
+        None if os.environ.get("COPILOT_REASONING") == "none" else os.environ.get("COPILOT_REASONING") or "low"))
+
+    def __post_init__(self) -> None:
+        self.key = secret("GROQ_API_KEY")
+        self.pace = _Paced(self.rpm if self.rpm is not None else GROQ_RPM.get(self.model, 4))
+
+    def complete_json(self, task: str, system: str, user: str, schema: dict) -> Completion:
+        while True:
+            prompt = system
+            if self.json_mode == "schema":
+                response_format = {"type": "json_schema", "json_schema": {"name": task, "schema": schema, "strict": False}}
+            else:
+                response_format = {"type": "json_object"}
+                prompt = f"{system}\n\n只输出一个 JSON 对象，符合这个 JSON Schema：\n{json.dumps(schema, ensure_ascii=False)}"
+            body: dict = {
+                "model": self.model, "messages": [{"role": "system", "content": prompt}, {"role": "user", "content": user}],
+                "response_format": response_format, "temperature": 0, "seed": 42,
+                "max_completion_tokens": self.max_tokens * (3 if task == "writer" else 1),
+            }
+            if self.reasoning is not None:
+                body["reasoning_effort"] = self.reasoning
+            try:
+                reply = self.pace.run(lambda: _post("https://api.groq.com/openai/v1/chat/completions", body,
+                                                    {"Authorization": f"Bearer {self.key}"}, self.timeout))
+                break
+            except ProviderError as error:
+                message = str(error)
+                if "（400）" in message and "reasoning" in message and self.reasoning is not None:
+                    self.reasoning = None
+                    continue
+                if "（400）" in message and ("json_schema" in message or "response_format" in message) and self.json_mode == "schema":
+                    self.json_mode = "object"
+                    continue
+                raise
+        try:
+            text = reply["choices"][0]["message"]["content"] or ""
+        except (KeyError, IndexError) as error:
+            raise ProviderError(f"Groq 没有返回内容：{json.dumps(reply, ensure_ascii=False)[:200]}") from error
+        usage = reply.get("usage", {})
+        meta = {"prompt_tokens": usage.get("prompt_tokens"), "output_tokens": usage.get("completion_tokens"),
+                "thinking_tokens": (usage.get("completion_tokens_details") or {}).get("reasoning_tokens"),
+                "json_mode": self.json_mode}
+        return Completion(data=_json_text(text), model=self.model, latency_ms=self.pace.last_ms, raw=text, meta=meta)
+
+
 @dataclass
 class FallbackProvider:
     """主模型出错（额度用完、服务一直忙、没网）时这一次改用本机模型，meta 里记下来"""
@@ -450,7 +515,7 @@ def chat_provider() -> Provider:
 
 
 def from_env() -> Provider:
-    """COPILOT_PROVIDER=ollama（默认）/ gemini / openai / replay；COPILOT_MODEL 选型号；
+    """COPILOT_PROVIDER=ollama（默认）/ gemini / openai / openrouter / groq / replay；COPILOT_MODEL 选型号；
     COPILOT_FALLBACK=ollama 时商业 API 出错退回本机（Copilot 服务用，评测别开：要量的是主模型本身）"""
     kind = os.environ.get("COPILOT_PROVIDER", "ollama")
     model = os.environ.get("COPILOT_MODEL")
@@ -458,10 +523,10 @@ def from_env() -> Provider:
         return OllamaProvider(**({"model": model} if model else {}))
     if kind == "replay":
         return ReplayProvider(Path(os.environ["COPILOT_REPLAY"]))
-    if kind in ("gemini", "openai", "openrouter"):
-        cls = {"gemini": GeminiProvider, "openai": OpenAIProvider, "openrouter": OpenRouterProvider}[kind]
+    if kind in ("gemini", "openai", "openrouter", "groq"):
+        cls = {"gemini": GeminiProvider, "openai": OpenAIProvider, "openrouter": OpenRouterProvider, "groq": GroqProvider}[kind]
         provider: Provider = cls(**({"model": model} if model else {}))
         if os.environ.get("COPILOT_FALLBACK") == "ollama":
             provider = FallbackProvider(provider, OllamaProvider())
         return provider
-    raise ProviderError(f"不认识的 COPILOT_PROVIDER：{kind}（ollama / gemini / openai / openrouter / replay）")
+    raise ProviderError(f"不认识的 COPILOT_PROVIDER：{kind}（ollama / gemini / openai / openrouter / groq / replay）")
