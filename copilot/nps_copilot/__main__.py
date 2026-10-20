@@ -15,7 +15,7 @@ import sys
 
 from . import __version__, prompts
 from .pipeline import Session
-from .providers import ProviderError, from_env
+from .providers import ProviderError, chat_provider
 
 DATA = __import__("pathlib").Path(__file__).resolve().parents[1] / "data"
 
@@ -69,7 +69,7 @@ def main() -> None:
         print(report(args.days))
         return
 
-    session = Session(from_env(), args.reference, writer_model=args.writer_model)
+    session = Session(chat_provider(), args.reference, writer_model=args.writer_model)
     print("说说你的行程（空行退出）。Describe your trip (blank line to quit).")
     while True:
         try:

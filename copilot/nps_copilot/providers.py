@@ -334,7 +334,9 @@ class OpenRouterProvider:
     name: str = "openrouter"
     rpm: float = 18
     max_tokens: int = 1024
-    reasoning: dict | None = field(default_factory=lambda: {"effort": "low"})
+    # COPILOT_REASONING=minimal / low / medium / high / none 换推理档位（none 是不传这个设置）
+    reasoning: dict | None = field(default_factory=lambda: (
+        None if os.environ.get("COPILOT_REASONING") == "none" else {"effort": os.environ.get("COPILOT_REASONING") or "low"}))
 
     def __post_init__(self) -> None:
         self.key = secret("OPENROUTER_API_KEY")
@@ -379,6 +381,10 @@ class FallbackProvider:
     backup: Provider
     name: str = "fallback"
 
+    @property
+    def model(self) -> str:
+        return getattr(self.primary, "model", self.primary.name)
+
     def complete_json(self, task: str, system: str, user: str, schema: dict) -> Completion:
         try:
             return self.primary.complete_json(task, system, user, schema)
@@ -387,6 +393,19 @@ class FallbackProvider:
             completion.meta = {**completion.meta, "fallback_from": getattr(self.primary, "model", self.primary.name),
                                "fallback_reason": str(error)[:120]}
             return completion
+
+
+def chat_provider() -> Provider:
+    """Copilot 聊天（serve、chat）用的模型。10-19 仓库主人定了先用 Gemini：没设 COPILOT_PROVIDER 时，有 GEMINI_API_KEY
+    就用 Gemini 3.5 Flash Lite，出错（额度用完、服务忙）的那一次退回本机模型；没有 key 的照旧用本机模型。
+    评测脚本不走这里（用 from_env，默认本机，录音才对得上）"""
+    if os.environ.get("COPILOT_PROVIDER"):
+        return from_env()
+    try:
+        gemini = GeminiProvider(model=os.environ.get("COPILOT_MODEL") or "gemini-3.5-flash-lite")
+    except ProviderError:
+        return OllamaProvider()
+    return FallbackProvider(gemini, OllamaProvider())
 
 
 def from_env() -> Provider:

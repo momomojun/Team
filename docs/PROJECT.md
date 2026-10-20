@@ -293,3 +293,7 @@
 
 - 仓库主人拿到一把 OpenRouter 的 key（有免费模型），要一起比。加了 `OpenRouterProvider`（和 OpenAI 一样的接口，免费模型每天的次数用完直接报错）。评测脚本加了“前 3 次都出错就停”、`--sample`（读公告只抽一部分，给每天只有 50 次的免费额度用）、模型名里的 `/` 不再当成文件夹。
 - 第二轮对照：GPT-4.1 mini 跑完全部六组（267 次，约 $0.11），没见过的 holdout 38/40、真实对话 v3 15/15，都比本机 4B 好；Gemini 3.5 Flash Lite 多轮对话三组跑完，真实对话 15/15，单句下次跑；MiniMax 读 26 条公告 F1 0.50，真实对话出错没跑完。详见 RESULTS.md。
+
+### 10-19：Copilot 聊天先用 Gemini（分支 `feature/default-gemini`）
+
+- 看了第二轮对照，仓库主人定了先用 Gemini、之后再说：`chat_provider()`——没设 `COPILOT_PROVIDER` 时有 `GEMINI_API_KEY` 就用 Gemini 3.5 Flash Lite，那一次出错（额度用完、服务忙）退回本机 4B；没有 key 的组员照旧用本机。评测、CI 不变（`from_env` 默认本机，回放录音）。OpenRouter 的推理档位可以用 `COPILOT_REASONING` 换（仓库主人问能不能开高：免费额度按次数算、不按推理多少，开高主要是慢，下次用同样 26 条比 low 和 high）。

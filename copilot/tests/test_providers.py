@@ -147,3 +147,32 @@ def test_openrouter_uses_the_openai_style_api_and_stops_on_the_daily_free_limit(
     with pytest.raises(QuotaError):
         provider.complete_json("intake", "s", "u", SCHEMA)
     assert len(sent) == 2  # 每天的免费额度用完了：不重试
+
+
+def test_chat_uses_gemini_with_local_fallback_when_a_key_exists(monkeypatch, tmp_path):
+    from nps_copilot.providers import OllamaProvider, chat_provider
+
+    monkeypatch.delenv("COPILOT_PROVIDER", raising=False)
+    monkeypatch.delenv("COPILOT_MODEL", raising=False)
+    monkeypatch.setenv("GEMINI_API_KEY", "test-gemini-key")
+    chosen = chat_provider()
+    assert isinstance(chosen, FallbackProvider) and chosen.model == "gemini-3.5-flash-lite"
+    assert isinstance(chosen.backup, OllamaProvider)
+    # 没有 key（组员没配）：照旧用本机模型
+    monkeypatch.delenv("GEMINI_API_KEY")
+    monkeypatch.setattr(providers, "ROOT", tmp_path)
+    assert isinstance(chat_provider(), OllamaProvider)
+    # 明确指定了就按指定的
+    monkeypatch.setenv("COPILOT_PROVIDER", "ollama")
+    monkeypatch.setenv("GEMINI_API_KEY", "test-gemini-key")
+    assert isinstance(chat_provider(), OllamaProvider)
+
+
+def test_openrouter_reasoning_level_comes_from_the_environment(monkeypatch):
+    from nps_copilot.providers import OpenRouterProvider
+
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-openrouter-key")
+    monkeypatch.setenv("COPILOT_REASONING", "high")
+    assert OpenRouterProvider().reasoning == {"effort": "high"}
+    monkeypatch.setenv("COPILOT_REASONING", "none")
+    assert OpenRouterProvider().reasoning is None
