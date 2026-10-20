@@ -282,3 +282,7 @@
 ### 10-20：路线动画（分支 `feature/route-animation`）
 
 - 仓库主人要赶紧做路线动画。第一版：第一次排出行程（自动生成攻略、Copilot 对话框）和 Copilot 接着改了行程时自动播，改了只播变了的那几天；每天镜头移过去、沿真实开车路线画出来，每到一站弹出几点到、停多久，最后停在当晚住处；看日落、星空的天最后天色变暗；一天两三秒、整段二十秒上下；可以暂停、跳过、点圆点跳到某一天；播完回到静态地图，可以再点“播放路线”。地图看得见了才播，系统设了“减少动画”不自动播。在浏览器里看过自动播、各站的牌子和播完恢复；暂停、跳过、手机宽度那次浏览器窗口在后台、页面不渲染，没来得及看。
+
+### 10-19：每周核对营地名单
+
+- Huiling 加了每周一 15:00 UTC 的 GitHub Action（`campgrounds-weekly.yml`，也可以在 Actions 页手动跑）：对照 Recreation.gov 的国家公园营地搜索和 `campgrounds.ts`。已知故意没收的 7 个（新河峡谷 Grandview 五座 shelter、瓜达卢佩 Guadalupe Peak、大峡谷 Trailer Village）写在 `scripts/campground-watch-ignore.json`，不变就不开 issue。定时任务只在合并进 `main` 之后才会跑。
