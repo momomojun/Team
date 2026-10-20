@@ -1,11 +1,15 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
 
 export interface SectionLink {
-  /** 页面上对应元素的 id */
+  /** 页面上对应元素的 id；有 href 时只用来标记当前页 */
   id: string;
   label: string;
+  /** 单独一页时的地址。不写就还是本页的 #id */
+  href?: string;
   /** 小色条，比如每天的颜色 */
   color?: string;
   /** 只在窄屏显示（比如行程页的地图：宽屏时地图一直在右边） */
@@ -45,9 +49,11 @@ export function SectionNav({
   /** 右边的按钮，比如“生成这个公园的攻略” */
   actions?: ReactNode;
 }) {
+  const pathname = usePathname();
+  const linked = items.some((item) => item.href);
   // 宽屏时只在窄屏显示的项不参与高亮
   const ids = items.map((item) => `${item.mobileOnly ? "~" : ""}${item.id}`).join("|");
-  const active = useSyncExternalStore(
+  const scrolled = useSyncExternalStore(
     subscribe,
     () => {
       // 滚过那条线的区块里，离线最近（最靠下）的那个；吸顶的地图这种一直贴在上面的不算
@@ -68,6 +74,7 @@ export function SectionNav({
     },
     () => null,
   );
+  const active = linked ? (items.find((item) => item.href === pathname)?.id ?? null) : scrolled;
 
   // 窄屏时导航条可以横向滚动：当前那一项滚到看得见的地方
   const listRef = useRef<HTMLUListElement>(null);
@@ -90,17 +97,31 @@ export function SectionNav({
             const current = item.id === active;
             return (
               <li key={item.id} className={item.mobileOnly ? "lg:hidden" : undefined}>
-                <a
-                  href={`#${item.id}`}
-                  data-section={item.id}
-                  aria-current={current ? "location" : undefined}
-                  className={`flex items-center gap-1.5 border-b-2 py-3 transition-colors ${
-                    current ? "border-ink text-ink" : "border-transparent text-mute hover:text-ink"
-                  }`}
-                >
-                  {item.color && <span aria-hidden className="inline-block h-[3px] w-3" style={{ backgroundColor: item.color }} />}
-                  {item.label}
-                </a>
+                {item.href ? (
+                  <Link
+                    href={item.href}
+                    data-section={item.id}
+                    aria-current={current ? "page" : undefined}
+                    className={`flex items-center gap-1.5 border-b-2 py-3 transition-colors ${
+                      current ? "border-ink text-ink" : "border-transparent text-mute hover:text-ink"
+                    }`}
+                  >
+                    {item.color && <span aria-hidden className="inline-block h-[3px] w-3" style={{ backgroundColor: item.color }} />}
+                    {item.label}
+                  </Link>
+                ) : (
+                  <a
+                    href={`#${item.id}`}
+                    data-section={item.id}
+                    aria-current={current ? "location" : undefined}
+                    className={`flex items-center gap-1.5 border-b-2 py-3 transition-colors ${
+                      current ? "border-ink text-ink" : "border-transparent text-mute hover:text-ink"
+                    }`}
+                  >
+                    {item.color && <span aria-hidden className="inline-block h-[3px] w-3" style={{ backgroundColor: item.color }} />}
+                    {item.label}
+                  </a>
+                )}
               </li>
             );
           })}

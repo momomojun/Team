@@ -195,7 +195,7 @@ export function CreatorRoutes({
                               {i > 0 && <span className="px-1 text-mute">→</span>}
                               {known(stop) ? (
                                 <Link
-                                  href={`/${locale}/parks/${stopNames[stop].park}#attraction-${stop}`}
+                                  href={`/${locale}/parks/${stopNames[stop].park}/attractions#attraction-${stop}`}
                                   className="text-ink underline decoration-line underline-offset-4 hover:text-clay-700"
                                 >
                                   {stopNames[stop].nameZh}

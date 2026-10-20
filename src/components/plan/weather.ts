@@ -1,9 +1,10 @@
 import type { MonthClimate } from "@/data/climate.generated";
+import type { AirDay } from "@/lib/air-types";
 import type { DailyWeather, WeatherAlert } from "@/lib/weather-types";
 
 /** 某一天的天气：16 天内有预报，更远或者只定了月份时用往年同期 */
 export type DayWeather =
-  | { kind: "forecast"; day: DailyWeather; alerts: WeatherAlert[] }
+  | { kind: "forecast"; day: DailyWeather; alerts: WeatherAlert[]; air?: AirDay }
   | { kind: "climate"; month: number; climate: MonthClimate };
 
 export type Condition = "clear" | "partly" | "cloudy" | "fog" | "drizzle" | "rain" | "showers" | "snow" | "thunder";

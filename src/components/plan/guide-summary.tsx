@@ -81,14 +81,16 @@ export function GuideSummary({
   const lodgingTag = (lodging: ResolvedLodging) => (
     <span
       className={`ml-2 border px-1.5 text-[10px] ${
-        lodging.rental
-          ? "border-clay-600/50 text-clay-700"
-          : lodging.inPark
-            ? "border-pine-600/50 text-pine-700"
-            : "border-line text-mute"
+        lodging.camp
+          ? "border-pine-600/50 text-pine-700"
+          : lodging.rental
+            ? "border-clay-600/50 text-clay-700"
+            : lodging.inPark
+              ? "border-pine-600/50 text-pine-700"
+              : "border-line text-mute"
       }`}
     >
-      {lodging.rental ? g.rental : lodging.inPark ? g.inPark : g.outside}
+      {lodging.camp ? g.camp : lodging.rental ? g.rental : lodging.inPark ? g.inPark : g.outside}
     </span>
   );
   const airbnbLink = (href: string | undefined, label: string) =>
@@ -127,11 +129,12 @@ export function GuideSummary({
               <ul className="mt-4 divide-y divide-line border-y border-line">
                 {nights.map(({ night, lodging, ranked, airbnbHref }) => {
                   const alternatives = ranked
-                    .filter((rank) => rank.lodging.id !== lodging?.id && !rank.lodging.rental)
+                    .filter((rank) => rank.lodging.id !== lodging?.id && !rank.lodging.rental && !rank.lodging.camp)
                     .slice(0, 2)
                     .map((rank) => rank.lodging.name);
-                  // 住的不是民宿时，另外给一个最顺路的民宿区
+                  // 住的不是民宿时，另外给一个最顺路的民宿区；住的不是营地时，另外给一个最顺路的营地
                   const rental = lodging?.rental ? undefined : ranked.find((rank) => rank.lodging.rental)?.lodging;
+                  const camp = lodging?.camp ? undefined : ranked.find((rank) => rank.lodging.camp)?.lodging;
                   return (
                     <li key={night} className="grid gap-1 py-3 sm:grid-cols-[5rem_1fr]">
                       <span className="text-xs text-mute">{fill(g.night, { n: night })}</span>
@@ -150,6 +153,16 @@ export function GuideSummary({
                           <span className="mt-0.5 flex flex-wrap items-center gap-x-3 text-xs text-mute">
                             {fill(g.rentalOption, { name: rental.name })}
                             {airbnbLink(airbnbHref(rental), g.airbnb)}
+                          </span>
+                        )}
+                        {camp && (
+                          <span className="mt-0.5 flex flex-wrap items-center gap-x-3 text-xs text-mute">
+                            {fill(g.campOption, { name: camp.name })}
+                            {camp.bookUrl && (
+                              <a href={camp.bookUrl} target="_blank" rel="noreferrer" className="link-line text-clay-700">
+                                {g.book}
+                              </a>
+                            )}
                           </span>
                         )}
                       </span>

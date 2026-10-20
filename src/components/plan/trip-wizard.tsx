@@ -55,7 +55,7 @@ const useSearchParam = (name: string): string | null =>
 
 /** 从公园页的“用这个公园生成攻略”过来时，网址里带着 ?park=yell */
 export const useRequestedPark = () => useSearchParam("park");
-const LODGING_PREFS: LodgingPref[] = ["any", "hotel", "rental"];
+const LODGING_PREFS: LodgingPref[] = ["any", "hotel", "rental", "camp"];
 
 const chip = (active: boolean) =>
   `border px-3 py-1.5 text-xs transition-colors ${

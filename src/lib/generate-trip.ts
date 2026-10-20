@@ -24,8 +24,8 @@ import { planTrip } from "./trip-plan";
 import type { Trip, TripItem, TripLodging } from "./trip-store";
 
 export type Pace = "relaxed" | "normal" | "packed";
-/** 住宿偏好：不限 / 只住酒店和园内住宿 / 优先民宿（Airbnb 等整套房子） */
-export type LodgingPref = "any" | "hotel" | "rental";
+/** 住宿偏好：不限 / 只住酒店和园内住宿 / 优先民宿（Airbnb 等整套房子） / 只住园内营地 */
+export type LodgingPref = "any" | "hotel" | "rental" | "camp";
 
 type Endpoint = Extract<TripLodging, { kind: "custom" }>;
 
@@ -74,6 +74,8 @@ export interface GuideLodging extends LodgingPoint {
   rental?: boolean;
   /** 能在 Airbnb 上搜到房子的地方（民宿区和门户小镇） */
   airbnb?: string;
+  /** 园内营地 */
+  camp?: boolean;
 }
 
 export interface GenerateContext {
@@ -291,14 +293,20 @@ export function generateTrip(input: GenerateInput, original: GenerateContext): {
 
   const stopById = new Map<string, PlanStop>(context.stops.map((stop) => [stop.id, stop]));
   const lodgingById = new Map(context.lodging.map((option) => [option.id, option]));
-  // 只住酒店：去掉民宿区；优先民宿：只在能订 Airbnb 的民宿区和门户小镇里挑（这个公园没有的话不限）
-  const rentalChoices = context.lodging.filter((option) => option.rental || (option.airbnb && !option.inPark));
+  // 只住酒店：去掉民宿区和营地。优先民宿：只在能订 Airbnb 的民宿区和门户小镇里挑（这个公园没有的话不限）。
+  // 露营：只排营地；这座公园没有营地时，退回酒店和民宿。不选露营时，营地不参与自动安排。
+  const withoutCamps = context.lodging.filter((option) => !option.camp);
+  const campChoices = context.lodging.filter((option) => option.camp);
+  const rentalChoices = withoutCamps.filter((option) => option.rental || (option.airbnb && !option.inPark));
   const lodgingChoices =
     input.lodgingPref === "hotel"
-      ? context.lodging.filter((option) => !option.rental)
+      ? withoutCamps.filter((option) => !option.rental)
       : input.lodgingPref === "rental" && rentalChoices.length > 0
         ? rentalChoices
-        : context.lodging;
+        : input.lodgingPref === "camp" && campChoices.length > 0
+          ? campChoices
+          : withoutCamps;
+  const fallbackPool = input.lodgingPref === "camp" ? context.lodging : withoutCamps;
   const resolve = (lodging: TripLodging | null | undefined): LodgingPoint | undefined =>
     !lodging ? undefined : lodging.kind === "custom" ? lodging : lodgingById.get(lodging.id);
   // 排行程时每天的日出日落、日期要查上百万次，每天算一次存起来
@@ -398,7 +406,7 @@ export function generateTrip(input: GenerateInput, original: GenerateContext): {
       // 这晚不营业的不住（季节性的园内酒店、阿拉斯加的夏季旅馆）；按偏好挑的都关了，就在营业的里面挑，全都关了才照旧
       const checkIn = dateFor(night - 1);
       const openChoices = lodgingChoices.filter((option) => lodgingOpenOn(option.id, checkIn));
-      const openAny = context.lodging.filter((option) => lodgingOpenOn(option.id, checkIn));
+      const openAny = fallbackPool.filter((option) => lodgingOpenOn(option.id, checkIn));
       const choices = openChoices.length > 0 ? openChoices : openAny.length > 0 ? openAny : lodgingChoices;
       const ranking = rankLodging(choices, lastStop, nextStop, { back: checkIn, out: dateFor(night) }).sort(
         (a, b) => cost(a) - cost(b),

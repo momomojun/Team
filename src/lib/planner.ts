@@ -4,7 +4,7 @@ import { closureOn } from "./closures";
 import { aroundMinutes } from "./roads";
 import { departuresOn, weekdayOf, type Departures } from "./tours";
 import { zoneOf, zoneShift } from "./time-zone";
-import { gatewayNode, travelMinutes } from "./travel";
+import { gatewayNode, travelMinutes, travelNodeListed } from "./travel";
 
 export interface PlanStop {
   id: string;
@@ -129,11 +129,11 @@ function distanceKm(a: { lat: number; lon: number }, b: { lat: number; lon: numb
 export function lodgingLeg(lodging: LodgingPoint, stop: PlanStop, direction: "out" | "back"): number {
   const known = lodging.minutes?.[stop.id];
   if (known !== undefined) return known + TRANSITION_MIN;
-  if (!lodging.id.startsWith("custom-")) {
+  if (!lodging.id.startsWith("custom-") && travelNodeListed(lodging.id)) {
     const minutes = direction === "out" ? travelMinutes(lodging.id, stop.id) : travelMinutes(stop.id, lodging.id);
     return minutes + TRANSITION_MIN;
   }
-  // 没查到路网车程时按直线估算：绕路系数 1.35、平均时速 55 公里
+  // 没查到路网车程时（自定义住处，或还没进车程表的营地）按直线估算：绕路系数 1.35、平均时速 55 公里
   return Math.round(((distanceKm(lodging, stop.start ?? stop) * 1.35) / 55) * 60) + TRANSITION_MIN;
 }
 

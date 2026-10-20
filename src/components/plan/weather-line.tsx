@@ -71,6 +71,9 @@ export function weatherNotes(weather: DayWeather, text: PlannerText): string[] {
   const t = text.plan.weather;
   if (weather.kind === "forecast") {
     const notes = forecastWarnings(weather.day).map((warning) => fill(t.warnings[warning], { low: degrees(weather.day.low), lowF: degrees(fahrenheit(weather.day.low)) }));
+    if (weather.air && weather.air.pm25Aqi >= 101) {
+      notes.push(fill(t.warnings.smoke, { n: weather.air.pm25Aqi }));
+    }
     for (const alert of weather.alerts) {
       const name = t.nwsEvents[alert.event];
       notes.push(fill(t.nws, { event: name && name !== alert.event ? `${name}${fill(text.units.paren, { x: alert.event })}` : alert.event }));

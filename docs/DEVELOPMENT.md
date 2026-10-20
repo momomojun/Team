@@ -10,7 +10,7 @@
 
 | 位置 | 内容 |
 |---|---|
-| `src/app/[locale]/` | 页面：首页、公园页 `parks/[code]`、行程页 `plan`、什么时候去 `when`、博主路线 `routes`、机票租车油价 `prices`。`zh-Hans` 简体、`zh-Hant` 繁体；`src/proxy.ts` 按浏览器语言跳转 |
+| `src/app/[locale]/` | 页面：首页、公园页 `parks/[code]`（概览、活动、预约、景点、博主、更多攻略、明星、影视、实时信息各自一页）、行程页 `plan`、什么时候去 `when`、博主路线 `routes`、机票 `prices`、租车 `prices/car`、油价 `prices/gas`、榜单 `rankings`（游客人次、设立时间、媒体推荐、世界遗产各自一页）。`zh-Hans` 简体、`zh-Hant` 繁体；`src/proxy.ts` 按浏览器语言跳转 |
 | `src/proxy.ts`、`src/lib/site-auth.ts`、`src/app/[locale]/login/`、`src/app/api/login/` | 访问密码：设了 `SITE_PASSWORD`，没登录的页面跳到登录页、接口返回 401；登录后存一个一年有效的 HttpOnly cookie（值是密码的哈希，改密码就全部失效）。图标、manifest、service worker 这些静态文件不拦 |
 | `src/i18n/en/`、`scripts/i18n-en.mjs`、`docs/ENGLISH.md` | 英文版（`/en`）：给英语母语读者另写的，不是逐句翻译，写法见 [ENGLISH.md](ENGLISH.md)。界面文案在 `en/dictionary.ts`（和中文字典同样的结构，类型检查保证不漏键）；数据里的中文（景点介绍、提示、同行适合度、公园介绍、封路、住宿……）按原文查 `en/content/<组>.ts`（中文原文 → 英文），`localize(text, "en")` 查不到时先显示中文。`npm run i18n:en` 从数据里找出要显示的中文、给每组补上待写的空条目（中文改了就会多出新的空条目），`tests/i18n-en.test.ts` 检查已经写完的批次没有漏写、英文里没有混进汉字。英文模板里 `{n|day|days}` 按数字选单复数，`{m:month}` 写英文月份名；单位用英制（`units.km` 用 `{mi}`、`units.meters` 用 `{ft}`、温度用华氏那组占位符）；顿号、冒号、括号、星期这些都在 `units` 里，代码里不要写死中文标点。英文版的 NPS 公告直接显示原文 |
 | `scripts/rekey-zh.py`、`scripts/check-en.mjs`、`docs/archive/audit/`、`docs/archive/agent-briefs/` | 改中文原文时用 `rekey-zh.py` 同时改英文表里的键（直接改中文会让英文失效）；`check-en.mjs` 检查某几组英文有没有空值、汉字、没换英制的数；`docs/archive/audit/` 是按官方资料核对事实的逐园记录（改了什么、来源），`docs/archive/agent-briefs/` 是交给 AI 助手做数据整理、翻译、核对时的任务说明（等于这些数据的 prompt 版本） |
@@ -171,7 +171,9 @@ README 里的截图用 `npm run docs:screenshots` 重新生成（`scripts/screen
 
 - [x] 季节性山路：14 条冬天封闭的山路按近 20 年的开通、关闭日期算“往年这一天通没通车”，行程里对到具体哪天、自动生成攻略按日期挑，公园页画出历年通车时段
 - [ ] 日期开放（其余）：营地、游客中心、更多支路的历年开关日期（NPS 实时 alerts 已经对到行程里）
-- [ ] 补能地图：手机信号；桩的可靠度评分 + 打卡（能用 / 坏了 / 找不到）（充电桩和加油站已经能画到行程地图上）
+- [x] 充电桩打卡：公园页和行程补给里的快充可以标能用 / 坏了 / 找不到，存在这台设备上（`src/lib/place-checks.ts`）
+- [x] 山火烟雾：公园页显示当前 PM2.5（Open-Meteo / 哥白尼 CAMS）；行程里指数到 101 时写进“要注意”（`src/lib/air.ts`）
+- [ ] 手机信号覆盖地图。现在只在公园页列出景点说明里写过信号不好的地方（`src/lib/signal-notes.ts`）
 - [x] 亚洲补给补漏：OSM 的亚洲超市很不全，用 Overture Maps 的地点数据补（人工看过一遍，去掉标错的），各公园常用机场附近也各收最近的 5 家，行程页补给里有“落地后”
 - [x] 根据实际打卡学习个人配速，自动调整后续时间估算：“今天”里到了、走了各点一下，徒步和其他景点分开学倍数
 - [x] 车程也按实际打卡校准：OSRM 在园区里偏乐观，路边停车、堵车都没算；按“今天”里前后两站的打卡学开车倍数，后面的车程跟着调整
@@ -193,7 +195,7 @@ README 里的截图用 `npm run docs:screenshots` 重新生成（`scripts/screen
 | 天气预报、往年同期 | Open-Meteo（预报 16 天；历史 ERA5，CC BY 4.0） | 不需要 |
 | 天气预警 | NWS（`api.weather.gov`） | 不需要 |
 | 季节性山路历年开通、关闭日期 | NPS 历年表（优胜美地 Tioga Road、冰川点路；冰川 Logan Pass；拉森公园公路、落基山 Trail Ridge Road 1980 年起，Old Fall River Road 1985 年起；火山口湖环湖路、北入口路 2004–2023 年）、WSDOT 山口历年表（Chinook、Cayuse、North Cascades Highway）；最近几年按官方新闻稿和当地新闻补。雷尼尔山 Sunrise Road、Stevens Canyon Road 没有官方历年表，按 NPS 新闻稿、路况页的历次存档（Wayback Machine，每版都写着更新日期）和当地报纸逐年整理（2008 年起） | 不需要 |
-| 空气质量 / 山火烟雾 | AirNow API | 单独申请 |
+| 空气质量 / 山火烟雾 | Open-Meteo 空气质量（哥白尼 CAMS，PM2.5）。美国官方当前数值是 AirNow，没接 | 不需要 |
 | 油价 | AAA 各州均价（自用阶段 12 小时读一次 AAA 页面，读不到用 2026-09-26 快照）；加拿大两省用 finder.com 2026-09-22 的省均价快照；以后可换 EIA API | 不需要 |
 | 公告翻译 | DeepL API Free（每月 50 万字符）；没配就用 MyMemory（免费，匿名每天约 5,000 字符），自用阶段再退到 Google 网页翻译 | DeepL 可选 |
 | 机票 | 自用阶段低频抓取 Google Flights 结果页；配了 key 用 SerpApi | SerpApi 可选 |
@@ -269,7 +271,7 @@ README 里的截图用 `npm run docs:screenshots` 重新生成（`scripts/screen
   - 恶地：Notch 步道 2026 年 8 月 31 日起关闭修木梯，没有重开日期（openMonths: []）；White River 游客中心冬季关到 5 月下旬；2026 年 7 月获国际暗夜公园认证。民兵导弹遗址、拉什莫尔山是 NPS 的独立单位，挂在恶地、风洞下面当园外景点，查不到它们自己的公告
   - 风洞：电梯 2025 年 1 月修好，2026 年导览正常；天然入口导览每年 10 月 1 日起冬季停；导览票约一半在 Recreation.gov（120 天前开放、2 天前截止）、一半当天现场卖；2026 年 1–4 月的班次没有存档，按 2026–27 冬季的估；卡斯特州立公园入园证每车 $25，国家公园年卡不能用
   - 西奥多·罗斯福：South Unit 景观环路封了 6 年的那段 2025 年 11 月 25 日修好重开，恢复成 58 公里一圈；North Unit 用中部时间、South Unit 用山地时间，整个公园按 South Unit 算，North Unit 的景点提示里写了时差；Painted Canyon 游客中心 2026 年 10 月 25 日到 2027 年 6 月 15 日冬季关闭；Medora 音乐剧按班次排（19:30，周一停演）；总统图书馆 2026 年 7 月 4 日开馆，分时段入场
-  - 只有营位的营地（大盆地 Lehman Creek、巨人柱 Gilbert Ray、瓜达卢佩山 Pine Springs 和 Dog Canyon、恶地 Cedar Pass、风洞 Elk Mountain、西奥多·罗斯福 Cottonwood 和 Juniper）没放进住宿，只在要提前订的里列出；尖峰石阵营地有帐篷小屋，放进了住宿
+  - 只有营位的营地（大盆地 Lehman Creek、巨人柱 Gilbert Ray、瓜达卢佩山 Pine Springs 和 Dog Canyon、恶地 Cedar Pass、风洞 Elk Mountain、西奥多·罗斯福 Cottonwood 和 Juniper）不进默认的酒店安排，只在要提前订的里列出；尖峰石阵营地有帐篷小屋，放进了住宿。2026-10-19 起 Recreation.gov 上的园内营地在 `src/data/campgrounds.ts`，住宿偏好选“露营”才自动排，不选时一键安排住宿仍然不选营地
   - OSM 上画不出来的几条短步道（恶地 Cliff Shelf、化石展示步道，巨人柱 Desert Discovery、Freeman Homestead，瓜达卢佩山 McKittrick 自然步道）地图上不画（`build-trails.mjs` 现在会跳过不到资料长度三成的路线）；新景点还没查 Google 评分；Buck Hill、几个洞穴导览等 5 个景点在 Commons 上没有合适的照片
 - 东部的大烟山、仙纳度、新河峡谷、阿卡迪亚、大沼泽地、比斯坎、干龟是 2026-10-15 加的（来源和现况按各公园官网、Recreation.gov、特许经营商整理，同一天查的；每条来源在调研笔记里）：
   - 大烟山：不收门票，但停车超过 15 分钟要买停车证（每天 $5、每周 $15、每年 $40，国家公园年卡不能代替），预算里按在园里的天数取日证、周证、年证最便宜的组合（`parkingTags`，`src/data/fees-manual.ts`）；Laurel Falls 2025 年 1 月起整修，NPS 说 2027 年才开（openMonths: []）；Cades Cove 环路 5–9 月每个周三不让车进，按 `weekdays` 写进临时关闭（2027 年按往年估）；Kuwohi（原 Clingmans Dome）路 2026 年 4 月 1 日到 11 月 29 日通车、Roaring Fork 4 月 17 日到 11 月 29 日（WATE 报道写 5 月 1 日，按 NPS 的表）；Helene 飓风后北卡一侧 Cataloochee 谷只能开到 Beech Grove 学校，I-40 州界那段到 2029 年都只有单车道，车程可能偏乐观；Deep Creek 在 Commons 上没有合适的照片

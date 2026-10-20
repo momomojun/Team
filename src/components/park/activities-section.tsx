@@ -28,13 +28,23 @@ function groupByNote(list: AttractionWithPhoto[]): AttractionWithPhoto[][] {
 }
 
 /** 几个景点的名字，用顿号隔开，各自链到景点卡片 */
-function Names({ group, className, sep }: { group: AttractionWithPhoto[]; className: string; sep: string }) {
+function Names({
+  group,
+  className,
+  sep,
+  hrefFor,
+}: {
+  group: AttractionWithPhoto[];
+  className: string;
+  sep: string;
+  hrefFor: (id: string) => string;
+}) {
   return (
     <span>
       {group.map((attraction, index) => (
         <Fragment key={attraction.id}>
           {index > 0 && <span className="text-mute">{sep}</span>}
-          <a href={`#attraction-${attraction.id}`} className={className}>
+          <a href={hrefFor(attraction.id)} className={className}>
             {attraction.nameZh}
           </a>
         </Fragment>
@@ -49,11 +59,14 @@ export function ActivitiesSection({
   attractions,
   closures,
   dict,
+  hrefFor,
 }: {
   activities: ParkActivity[];
   attractions: AttractionWithPhoto[];
   closures: ParkClosure[];
   dict: Dictionary;
+  /** 景点名点出去的地址。景点已经不在这一页上 */
+  hrefFor: (id: string) => string;
 }) {
   const t = dict.park.activities;
   const closedNow = attractions.filter((a) => a.openMonths?.length === 0);
@@ -85,7 +98,7 @@ export function ActivitiesSection({
                 {(activity.url || (activity.attraction && hasAttraction(activity.attraction))) && (
                   <p className="flex flex-wrap gap-x-5 pt-1">
                     {activity.attraction && hasAttraction(activity.attraction) && (
-                      <a href={`#attraction-${activity.attraction}`} className="link-line text-xs tracking-[0.1em]">
+                      <a href={hrefFor(activity.attraction)} className="link-line text-xs tracking-[0.1em]">
                         {t.seeAttraction}
                       </a>
                     )}
@@ -114,6 +127,7 @@ export function ActivitiesSection({
                   <li key={closure.ids.join()} className="text-sm leading-6">
                     <Names
                       sep={dict.units.listSep}
+                      hrefFor={hrefFor}
                       group={closure.ids.flatMap((id) => byId.get(id) ?? [])}
                       className="font-serif text-base hover:text-clay-700"
                     />
@@ -135,7 +149,7 @@ export function ActivitiesSection({
                 ))}
                 {groupByNote(closedNow).map((group) => (
                   <li key={group[0].id} className="text-sm leading-6">
-                    <Names group={group} className="font-serif text-base hover:text-clay-700" sep={dict.units.listSep} />
+                    <Names group={group} className="font-serif text-base hover:text-clay-700" sep={dict.units.listSep} hrefFor={hrefFor} />
                     {group[0].closedNote && (
                       <span className="mt-0.5 block text-xs leading-6 text-clay-800">{group[0].closedNote}</span>
                     )}
@@ -151,7 +165,7 @@ export function ActivitiesSection({
                 {groupByNote(seasonal).map((group) => (
                   <li key={group[0].id} className="py-3 text-sm leading-6">
                     <p className="flex flex-wrap items-baseline justify-between gap-x-3">
-                      <Names group={group} className="font-serif text-base hover:text-clay-700" sep={dict.units.listSep} />
+                      <Names group={group} className="font-serif text-base hover:text-clay-700" sep={dict.units.listSep} hrefFor={hrefFor} />
                       <span className="text-xs text-ink-soft">{formatMonths(group[0].openMonths ?? [], dict.units)}</span>
                     </p>
                     {group[0].closedNote && <p className="mt-0.5 text-xs leading-6 text-mute">{group[0].closedNote}</p>}

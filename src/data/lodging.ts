@@ -1,5 +1,5 @@
 export interface LodgingOption {
-  /** 统一以 "<公园代码>-stay-" 开头，车程表按公园查 */
+  /** 酒店以 "<公园代码>-stay-" 开头，营地以 "<公园代码>-camp-" 开头；车程表按公园查 */
   id: string;
   park: string;
   /** 简体中文名，繁体由 OpenCC 转换 */
@@ -14,6 +14,10 @@ export interface LodgingOption {
   rental?: boolean;
   /** 在 Airbnb 上搜索用的地名（英文，如 "West Yellowstone, MT"）；有就显示按行程日期搜民宿的链接 */
   airbnb?: string;
+  /** 园内营地。默认安排住宿不选；住宿偏好选“露营”时才自动排 */
+  camp?: boolean;
+  /** 订营位的页面（Recreation.gov） */
+  bookUrl?: string;
 }
 
 // 园内酒店通常提前一年左右开放预订，旺季很快订满；园外小镇选择多、便宜，但每天要多开车

@@ -202,6 +202,7 @@ npm run dev                  # 打开 http://localhost:3000
 | `DATA_GOV_API_KEY` | NPS 公告和门票、充电桩、住宿餐饮标准（不填用 `DEMO_KEY`，每小时 30 次） | [api.data.gov](https://api.data.gov/signup/)，免费 |
 | `SERPAPI_API_KEY` | 更稳定的机票价格 | [serpapi.com](https://serpapi.com)，免费每月 250 次 |
 | `DEEPL_API_KEY` | 质量更好的公告中文翻译 | [DeepL API Free](https://www.deepl.com/pro-api)，免费每月 50 万字符 |
+| `YOUTUBE_API_KEY` | 公园页「更多攻略」：行程、打卡点、餐厅的 YouTube 搜索（只存标题和链接） | [YouTube Data API v3](https://console.cloud.google.com/apis/library/youtube.googleapis.com)。不填时这一页说明怎么配置 |
 | `SITE_PASSWORD` | 访问密码：设了之后打开网站要先输密码（部署到公网时用） | 自己定 |
 
 构建版：`npm run build && npm run start`。测试、Copilot、改代码和开 PR 的完整步骤见 [docs/GUIDE.md](docs/GUIDE.md)；代码结构、数据脚本见 [开发文档](docs/DEVELOPMENT.md)。

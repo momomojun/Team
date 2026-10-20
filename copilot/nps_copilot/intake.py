@@ -596,7 +596,10 @@ class Intake:
         # “不住酒店”“我想全程都住airbnb，不住酒店”：说的是不住酒店，不能因为里面有“住酒店”就当成只住酒店
         no_hotel = re.search(r"不住酒店|不要酒店|别住酒店|不想住酒店|no hotels?\b", text, re.I)
         no_rental = re.search(r"不住民宿|不要民宿|别住民宿|不想住民宿|no airbnb|no (vacation )?rentals?", text, re.I)
-        if no_rental or (re.search(r"只住酒店|住酒店|hotels? only|only hotels?|stay in hotels?", text, re.I) and not no_hotel):
+        no_camp = re.search(r"不露营|不要露营|不住营地|no camping", text, re.I)
+        if re.search(r"露营|住营地|camping|campground", text, re.I) and not no_camp:
+            self.lodging = Field("camp", "user", span)
+        elif no_rental or (re.search(r"只住酒店|住酒店|hotels? only|only hotels?|stay in hotels?", text, re.I) and not no_hotel):
             self.lodging = Field("hotel", "user", span)
         elif no_hotel or re.search(r"民宿|airbnb|vrbo|整套房子", text, re.I):
             self.lodging = Field("rental", "user", span)

@@ -19,6 +19,8 @@ export interface MapPoint {
   badge?: string;
   /** 小白点（步道口），不显示标签、不能点 */
   small?: boolean;
+  /** 营地画成帐篷，和景点的圆点分开 */
+  shape?: "camp";
 }
 
 export interface MapTrail {
@@ -45,6 +47,7 @@ export interface MapText {
   loading: string;
   trailLegend: string;
   roadLegend: string;
+  campLegend: string;
 }
 
 // worker 文件由 scripts/copy-maplibre-worker.mjs 复制到 public/
@@ -56,6 +59,35 @@ const TRAIL_HIGHLIGHT = "#6b2a16";
 export const ROAD_COLOR = "#2f4a5a";
 
 const EMPTY: GeoJSON.FeatureCollection = { type: "FeatureCollection", features: [] };
+const CAMP_COLOR = "#3f6b4e";
+
+/** 帐篷图标：营地用这个，景点仍是圆点 */
+function campTentImage(): ImageData {
+  const size = 64;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return new ImageData(size, size);
+  ctx.beginPath();
+  ctx.moveTo(32, 6);
+  ctx.lineTo(58, 56);
+  ctx.lineTo(6, 56);
+  ctx.closePath();
+  ctx.fillStyle = CAMP_COLOR;
+  ctx.fill();
+  ctx.lineJoin = "round";
+  ctx.lineWidth = 6;
+  ctx.strokeStyle = "#ffffff";
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(32, 56);
+  ctx.lineTo(32, 30);
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = "#f4efe7";
+  ctx.stroke();
+  return ctx.getImageData(0, 0, size, size);
+}
 
 function pointsToGeoJSON(points: MapPoint[]): GeoJSON.FeatureCollection {
   return {
@@ -71,6 +103,7 @@ function pointsToGeoJSON(points: MapPoint[]): GeoJSON.FeatureCollection {
         small: point.small ?? false,
         ...(point.sublabel ? { sublabel: point.sublabel } : {}),
         ...(point.badge === undefined ? {} : { badge: point.badge }),
+        ...(point.shape === "camp" ? { camp: true } : {}),
       },
     })),
   };
@@ -318,6 +351,7 @@ export function ParkMap({
           id: "points",
           type: "circle",
           source: "points",
+          filter: ["!=", ["get", "camp"], true],
           paint: {
             "circle-radius": [
               "case",
@@ -338,7 +372,7 @@ export function ParkMap({
           id: "points-badge",
           type: "symbol",
           source: "points",
-          filter: ["has", "badge"],
+          filter: ["all", ["has", "badge"], ["!=", ["get", "camp"], true]],
           layout: {
             "text-field": ["get", "badge"],
             "text-font": ["Noto Sans Bold"],
@@ -351,7 +385,7 @@ export function ParkMap({
           id: "points-label",
           type: "symbol",
           source: "points",
-          filter: ["!=", ["get", "small"], true],
+          filter: ["all", ["!=", ["get", "small"], true], ["!=", ["get", "camp"], true]],
           layout: {
             // 中文名一行，英文名小一号放第二行
             "text-field": [
@@ -369,16 +403,49 @@ export function ParkMap({
           },
           paint: { "text-color": "#1c1b18", "text-halo-color": "#f4efe7", "text-halo-width": 1.6 },
         });
-
-        instance.on("click", "points", (event) => {
-          const feature = event.features?.[0];
-          const id = feature?.properties?.id;
-          if (typeof id === "string" && feature?.properties?.small !== true) handleSelect(id);
+        if (!instance.hasImage("camp-tent")) instance.addImage("camp-tent", campTentImage(), { pixelRatio: 2 });
+        instance.addLayer({
+          id: "camps",
+          type: "symbol",
+          source: "points",
+          filter: ["==", ["get", "camp"], true],
+          layout: {
+            "icon-image": "camp-tent",
+            "icon-size": 1,
+            "icon-allow-overlap": true,
+            "icon-ignore-placement": true,
+            "text-field": [
+              "case",
+              ["has", "sublabel"],
+              ["format", ["get", "label"], {}, "\n", {}, ["get", "sublabel"], { "font-scale": 0.8 }],
+              ["get", "label"],
+            ],
+            "text-font": ["Noto Sans Regular"],
+            "text-size": 12,
+            "text-offset": [0, 1.5],
+            "text-anchor": "top",
+            "text-optional": true,
+          },
+          paint: { "text-color": "#1c1b18", "text-halo-color": "#f4efe7", "text-halo-width": 1.6 },
         });
+
+        const selectPoint = (event: { features?: { properties?: Record<string, unknown> | null }[] }) => {
+          const properties = event.features?.[0]?.properties;
+          const id = properties?.id;
+          if (typeof id === "string" && properties?.small !== true) handleSelect(id);
+        };
+        instance.on("click", "points", selectPoint);
+        instance.on("click", "camps", selectPoint);
         instance.on("mouseenter", "points", () => {
           instance.getCanvas().style.cursor = "pointer";
         });
         instance.on("mouseleave", "points", () => {
+          instance.getCanvas().style.cursor = "";
+        });
+        instance.on("mouseenter", "camps", () => {
+          instance.getCanvas().style.cursor = "pointer";
+        });
+        instance.on("mouseleave", "camps", () => {
           instance.getCanvas().style.cursor = "";
         });
 
@@ -422,6 +489,9 @@ export function ParkMap({
     const map = mapRef.current;
     if (!ready || !map) return;
     map.setFilter("points-selected", ["==", ["get", "id"], selectedId ?? ""]);
+    if (map.getLayer("camps")) {
+      map.setLayoutProperty("camps", "icon-size", ["case", ["==", ["get", "id"], selectedId ?? ""], 1.35, 1]);
+    }
     map.setFilter("trails-highlight", ["==", ["get", "id"], highlightTrailId ?? ""]);
     const point = points.find((p) => p.id === selectedId);
     if (point) map.easeTo({ center: [point.lon, point.lat], zoom: Math.max(map.getZoom(), 12), duration: 800 });
@@ -445,6 +515,7 @@ export function ParkMap({
   const toggle = (active: boolean) =>
     `px-3 py-1.5 transition-colors ${active ? "bg-ink text-paper" : "text-ink hover:bg-paper-deep"}`;
   const hasTrails = (trails?.length ?? 0) > 0;
+  const hasCamps = points.some((point) => point.shape === "camp");
   const hasRoad = legs?.some((leg) => !leg.straight && leg.path.length > 1) ?? false;
   const showStraightRoute = legs?.some((leg) => leg.straight && leg.path.length > 1) ?? false;
   const legendItems = legend ?? (hasRoad ? [{ color: legs?.find((leg) => !leg.straight)?.color ?? ROAD_COLOR, label: text.roadLegend }] : []);
@@ -475,7 +546,7 @@ export function ParkMap({
             {text.terrain}
           </button>
         </div>
-        {(hasTrails || legendItems.length > 0 || showStraightRoute || (extras?.length ?? 0) > 0) && (
+        {(hasTrails || hasCamps || legendItems.length > 0 || showStraightRoute || (extras?.length ?? 0) > 0) && (
           <div className="flex w-fit max-w-[14rem] flex-col gap-1 bg-paper/90 px-3 py-2 text-[11px] text-ink-soft shadow-sm">
             {legendItems.map((item) => (
               <span key={item.label} className="flex items-center gap-1.5">
@@ -483,6 +554,14 @@ export function ParkMap({
                 {item.label}
               </span>
             ))}
+            {hasCamps && (
+              <span className="flex items-center gap-1.5">
+                <svg width="14" height="12" viewBox="0 0 14 12" aria-hidden="true" className="shrink-0">
+                  <path d="M7 0.5 L13.2 11.5 L0.8 11.5 Z" fill={CAMP_COLOR} stroke="#ffffff" strokeWidth="1.2" />
+                </svg>
+                {text.campLegend}
+              </span>
+            )}
             {hasTrails && (
               <span className="flex items-center gap-1.5">
                 <span className="inline-block w-5 border-t-2 border-dashed" style={{ borderColor: TRAIL_COLOR }} />

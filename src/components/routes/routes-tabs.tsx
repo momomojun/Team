@@ -22,7 +22,8 @@ export function RoutesTabs({
   }, [tabs]);
   const pick = (id: string) => {
     setActive(id);
-    window.history.replaceState(null, "", id === tabs[0].id ? window.location.pathname + window.location.search : `#${id}`);
+    const search = window.location.search;
+    window.history.replaceState(null, "", id === tabs[0].id ? window.location.pathname + search : `${window.location.pathname}${search}#${id}`);
   };
 
   return (

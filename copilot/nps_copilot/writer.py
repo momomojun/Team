@@ -167,8 +167,8 @@ def describe_changes(before: dict, after: dict, zh: bool) -> list[str]:
         items.append(f"节奏改成{PACE_ZH[after['pace']]}" if zh else f"{PACE_EN[after['pace']]} pace")
     if before.get("lodgingPref") != after.get("lodgingPref"):
         pref = after.get("lodgingPref", "any")
-        items.append({"rental": "住宿改成民宿", "hotel": "住宿改成酒店", "any": "住宿不限"}[pref] if zh else
-                     {"rental": "vacation rentals", "hotel": "hotels only", "any": "any lodging"}[pref])
+        items.append({"rental": "住宿改成民宿", "hotel": "住宿改成酒店", "camp": "住宿改成露营", "any": "住宿不限"}[pref] if zh else
+                     {"rental": "vacation rentals", "hotel": "hotels only", "camp": "camping", "any": "any lodging"}[pref])
     if before.get("party") != after.get("party"):
         items.append("同行的人更新了" if zh else "updated who's coming")
     # 用户加减的景点、指定的住处

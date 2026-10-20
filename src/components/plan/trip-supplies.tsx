@@ -2,8 +2,10 @@
 
 import type { ComponentType, SVGProps } from "react";
 import { IconBolt, IconBowl, IconCart, IconFuel } from "@/components/icons";
+import { PlaceCheckButtons } from "@/components/park/place-check";
 import type { ServiceKind, ServicePoint } from "@/data/services.generated";
 import { fill } from "@/i18n/format";
+import { pointCheckKey } from "@/lib/place-check-keys";
 import type { PlannerText } from "./types";
 
 export const SERVICE_COLORS: Record<ServiceKind, string> = {
@@ -110,6 +112,7 @@ export function TripSupplies({
               {kind === "dcFast" && hit.point.tesla && <span className="ml-1.5 text-mute">{t.tesla}</span>}
               {kind === "dcFast" && hit.point.ports ? <span className="ml-1.5 text-mute">{fill(t.ports, { n: hit.point.ports })}</span> : null}
               <span className="ml-1.5 text-mute tabular-nums">{fill(t.km, { km: kmText(hit.km), mi: kmText(hit.km / 1.609) })}</span>
+              {kind === "dcFast" && <PlaceCheckButtons id={pointCheckKey(hit.point.lat, hit.point.lon)} text={t.check} />}
             </>
           )}
           {hit && kind === "asianGrocery" && hit.km > NEAR_KM[kind] && (

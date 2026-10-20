@@ -22,6 +22,7 @@ export function LodgingSelector({
   onChange,
   measure,
   airbnbHref,
+  preferCamp = false,
 }: {
   label: string;
   hint?: string;
@@ -41,6 +42,8 @@ export function LodgingSelector({
   measure: (place: { lat: number; lon: number }) => Promise<Record<string, number>>;
   /** 这晚（连住就是整段）的 Airbnb 搜索链接；住处没有 Airbnb 地名时返回 undefined */
   airbnbHref?: (lodging: ResolvedLodging) => string | undefined;
+  /** 生成攻略时选了露营：快捷按钮先给营地 */
+  preferCamp?: boolean;
 }) {
   const t = text.plan.lodging;
   const [open, setOpen] = useState(false);
@@ -95,14 +98,16 @@ export function LodgingSelector({
     lodging.custom ? null : (
       <span
         className={`ml-2 border px-1.5 text-[10px] ${
-          lodging.rental
-            ? "border-clay-600/50 text-clay-700"
-            : lodging.inPark
-              ? "border-pine-600/50 text-pine-700"
-              : "border-line text-mute"
+          lodging.camp
+            ? "border-pine-600/50 text-pine-700"
+            : lodging.rental
+              ? "border-clay-600/50 text-clay-700"
+              : lodging.inPark
+                ? "border-pine-600/50 text-pine-700"
+                : "border-line text-mute"
         }`}
       >
-        {lodging.rental ? t.rental : lodging.inPark ? t.inPark : t.outside}
+        {lodging.camp ? t.camp : lodging.rental ? t.rental : lodging.inPark ? t.inPark : t.outside}
       </span>
     );
   const airbnbLink = (lodging: ResolvedLodging) => {
@@ -113,8 +118,9 @@ export function LodgingSelector({
       </a>
     ) : null;
   };
-  const hotels = ranked.filter((rank) => !rank.lodging.rental);
+  const hotels = ranked.filter((rank) => !rank.lodging.rental && !rank.lodging.camp);
   const rentals = ranked.filter((rank) => rank.lodging.rental);
+  const camps = ranked.filter((rank) => rank.lodging.camp);
   const optionList = (list: LodgingRank<ResolvedLodging>[]) => (
     <ul className="divide-y divide-line bg-paper">
       {list.map((rank) => (
@@ -129,6 +135,11 @@ export function LodgingSelector({
             <p className="mt-0.5 flex flex-wrap items-center gap-x-3 text-xs text-ink-soft">
               {legs(rank)}
               {airbnbLink(rank.lodging)}
+              {rank.lodging.bookUrl && (
+                <a href={rank.lodging.bookUrl} target="_blank" rel="noreferrer" className="link-line text-clay-700">
+                  {t.book}
+                </a>
+              )}
             </p>
           </div>
           <button
@@ -162,6 +173,13 @@ export function LodgingSelector({
           {current && closedNote && <p className="mt-1 pl-6 text-xs text-clay-700">{closedNote}</p>}
           {current && status && <p className="mt-1 pl-6 text-xs text-mute">{status}</p>}
           {current && airbnbHref?.(current) && <p className="mt-1 pl-6">{airbnbLink(current)}</p>}
+          {current?.bookUrl && (
+            <p className="mt-1 pl-6">
+              <a href={current.bookUrl} target="_blank" rel="noreferrer" className="link-line text-xs text-clay-700">
+                {t.book}
+              </a>
+            </p>
+          )}
           {!current && hint && <p className="mt-1 pl-6 text-xs text-mute">{hint}</p>}
           {notice && <p className="mt-1 pl-6 text-xs text-clay-700">{notice}</p>}
         </div>
@@ -169,7 +187,7 @@ export function LodgingSelector({
           {!current &&
             !open &&
             ranked
-              .filter((rank) => !rank.closed)
+              .filter((rank) => !rank.closed && (preferCamp ? rank.lodging.camp : !rank.lodging.camp))
               .slice(0, 2)
               .map((rank) => (
               <button
@@ -202,10 +220,16 @@ export function LodgingSelector({
             </button>
           )}
 
-          {hotels.length > 0 && (
+          {(preferCamp ? camps : hotels).length > 0 && (
             <div>
-              <p className="eyebrow mb-2 text-mute">{t.suggested}</p>
-              {optionList(hotels.slice(0, 6))}
+              <p className="eyebrow mb-2 text-mute">{preferCamp ? t.camps : t.suggested}</p>
+              {optionList((preferCamp ? camps : hotels).slice(0, preferCamp ? 8 : 6))}
+            </div>
+          )}
+          {(!preferCamp ? camps : hotels).length > 0 && (
+            <div>
+              <p className="eyebrow mb-2 text-mute">{preferCamp ? t.suggested : t.camps}</p>
+              {optionList((preferCamp ? hotels : camps).slice(0, preferCamp ? 6 : 8))}
             </div>
           )}
           {rentals.length > 0 && (

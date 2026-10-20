@@ -1,5 +1,7 @@
 // 天气接口（/api/weather）返回的数据，浏览器和服务端共用
 
+import type { AirDay } from "./air-types";
+
 export interface DailyWeather {
   /** "2026-10-10"（当地日期） */
   date: string;
@@ -28,4 +30,6 @@ export interface WeatherResponse {
   /** 和请求的地点一一对应，查不到的是 null */
   forecasts: (DailyWeather[] | null)[];
   alerts: WeatherAlert[][];
+  /** 未来几天的 PM2.5，和地点一一对应；旧缓存或查不到时可能没有 */
+  air?: (AirDay[] | null)[];
 }
