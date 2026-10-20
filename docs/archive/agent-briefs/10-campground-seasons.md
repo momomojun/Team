@@ -50,7 +50,7 @@ Copilot 也认得“露营”了（PR #26 改了 `copilot/nps_copilot/intake.py`
 
 - 跑 `npm run lint`、`npx tsc --noEmit -p .`、`npm test`、`python -m pytest -q copilot/tests`，都要过；改了中文数据的话跑一次 `npm run copilot:contracts`（Copilot 用的资料跟着更新）。
 - 提交说明、PR 标题和描述写**中文 + 英文**（看 `git log` 里的例子），提交结尾按仓库的习惯写；一个 PR 只做这一件事。
-- 在 `docs/DEVELOPMENT.md` 讲 `lodging-seasons.ts` 的那一行里补一句“营地也写在这里”，在 `docs/PROJECT.md` 的时间线里记一笔（哪天、做了什么、查了多少个营地、哪些没查到）。
+- 在 `docs/DEVELOPMENT.md` 讲 `lodging-seasons.ts` 的那一行里补一句“营地也写在这里”，在 `docs/timeline/` 里新建一个文件记一笔（哪天、做了什么、查了多少个营地、哪些没查到；10-19 起时间线一个改动一个文件，写法见 `docs/timeline/README.md`）。
 
 ## 规矩（项目的约定，GUIDE.md 第 5 节有完整的）
 
