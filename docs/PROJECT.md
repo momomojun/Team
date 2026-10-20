@@ -273,3 +273,8 @@
 
 - 仓库主人合并了 Huiling 的 #26（78 个文件：公园页拆成六个小页，价格、榜单各自拆页，灵活日期机票、租车保险和取还车、手机信号、山火烟雾、充电桩打卡、YouTube 攻略，营地地图和住宿偏好“露营”，Copilot 也认得“露营”）。#26 是在 #27 之前写的、检查跑在旧代码上，合并后在最新的 main 上重新跑：网站测试 140、Copilot 测试 148、七组门禁都过，读公告接进排行程的代码没被冲掉；23 个新旧页面都能打开、浏览器没报错，英文页没有混进中文，手机宽度不横向滚动；住宿偏好“不限”时不会排进营地；YouTube 搜索结果缓存 7 天。
 - 发现的问题：营地没有开放季节，1 月选“露营”会排进火山口湖 Mazama Village、雷尼尔山 Cougar Rock、落基山 Glacier Basin、黄石 Slough Creek 这些夏季营地。仓库主人定了交给 Huiling 修，任务说明写在 [archive/agent-briefs/10-campground-seasons.md](archive/agent-briefs/10-campground-seasons.md)。另外：`price-center.tsx` 有一个没用到的变量（lint 警告）；“更多攻略”要另配 `YOUTUBE_API_KEY`（本机、Vercel 都还没配）；提交说明和 PR 标题只有中文、`PROJECT.md` 没记、一个 PR 做了很多件事，跟她说一声以后照 GUIDE 的约定来。
+
+### 10-20：公告只读新的、聊天时现读（分支 `feature/alerts-incremental`）
+
+- 仓库主人问要不要每晚读公告。150 条里大部分几周都不变，每晚全读是重做同一份作业；定了两个都做：每晚在 GitHub 上用 Gemini（仓库主人加了 secret `GEMINI_API_KEY`）只读新出现、改过的几条（读过的记在 actions/cache 里），issue 里多一列模型找到的景点；聊天时，两周内出发、要去的公园今天还没读过，就当场只读这几座。出错都退回原来的清单或规则，不影响排行程。第一晚缓存是空的，会读一遍全部（约 150 次，Gemini 免费档每天 500 次），之后每晚只有几条到十几条。
+- 仓库主人关了 issue #23：4 条里 Boquillas 口岸的公告不到一天就撤了，另外三条是季节性封路和临时的计划烧除，都不用改数据；Boquillas 那条规则漏了（标题和景点名对不上），正好说明要让模型读全文。

@@ -163,3 +163,19 @@ test("结果里带着网站行程页能直接用的 trip：每天的景点、每
   assert.equal(trip.nights.length, base.days + 1);
   assert.deepEqual(trip.nights.slice(1, -1).map((night) => night?.id), result.days.slice(0, -1).map((day) => day.lodging?.id));
 });
+
+test("关闭清单按要去的公园看新不新：别的公园今天读过不算数；别的公园的关闭不管", () => {
+  const soon = { ...base, startDate: "2026-10-20", days: 3 };
+  const closure = { alert: "t1", park: "yose", attractions: ["yose-tunnel-view"], from: null, reopen: null, title: "Tunnel View Closed" };
+  const planned = (result: ReturnType<typeof planTrip>) => new Set(result.days.flatMap((day) => day.stops.map((stop) => stop.id)));
+  // 优胜美地的公告 10 天前读的、锡安的今天读的：这趟去优胜美地，清单算旧的
+  const stale = { fetched: "2026-10-16", parks: { yose: "2026-10-06", zion: "2026-10-16" }, closures: [closure] };
+  const old = planTrip(soon, { ...REFERENCE, closures: stale });
+  assert.ok(planned(old).has("yose-tunnel-view"));
+  assert.ok(old.assumptions.some((line) => line.startsWith("no-live-alerts(stale)")));
+  const fresh = { ...stale, parks: { yose: "2026-10-16" } };
+  assert.ok(!planned(planTrip(soon, { ...REFERENCE, closures: fresh })).has("yose-tunnel-view"));
+  // 清单里锡安的关闭不影响优胜美地的行程
+  const other = { ...fresh, closures: [{ ...closure, park: "zion" }] };
+  assert.ok(planned(planTrip(soon, { ...REFERENCE, closures: other })).has("yose-tunnel-view"));
+});
