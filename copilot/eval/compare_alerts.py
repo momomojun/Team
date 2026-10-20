@@ -13,14 +13,9 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-PRICES = {  # 输入, 输出（每百万 token）
-    "gpt-5-nano": (0.05, 0.40),
-    "gpt-4.1-mini": (0.40, 1.60),
-    "gpt-6-luna": (0.10, 0.50),
-    "gemini-3.5-flash-lite": (0.0, 0.0),
-    "gemma-4-31b-it": (0.0, 0.0),
-    "qwen3.5:4b-q4_K_M": (0.0, 0.0),
-}
+sys.path.insert(0, str(HERE.parent))
+
+from nps_copilot.monitor import PRICES  # noqa: E402  价格表只放一处
 
 
 def main() -> None:

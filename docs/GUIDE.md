@@ -342,6 +342,8 @@ docker compose -f copilot/docker-compose.yml exec -T copilot python -m nps_copil
 - Writer 退回模板变多；
 - 耗时中位数明显变长。
 
+最后一段“模型用量”按模型列出调用次数、出错、token 和花费：Gemini 出错多、轮到 GPT-4.1 mini 的变多，说明免费额度不够了，花费会跟着涨。
+
 ## 8. 和 AI 助手（Claude Code 等）一起改
 
 - 仓库根目录的 `CLAUDE.md` 会被 Claude Code 自动读到，里面带着 README、本文件和 DEVELOPMENT.md。

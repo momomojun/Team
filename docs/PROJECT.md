@@ -306,3 +306,7 @@
 
 - 仓库主人拿到一把 Groq 的 key（免费档，不用绑卡）。加了 `GroqProvider`（和 OpenAI 一样的接口；模型不认 JSON Schema 就退成普通 JSON 模式，不认推理设置就去掉；一天的 token 用完直接报错），`COPILOT_PROVIDER=groq` 才用，聊天的顺序不变。所有请求加了程序标识（User-Agent）：Groq 前面的 Cloudflare 会拦 Python 默认的标识（403，error code 1010）。
 - 第三轮对照（190 次，$0）：Qwen3.8 27B 没见过的单句 38/40（和 GPT-4.1 mini 一样），读公告景点 F1 0.44；gpt-oss-120b 不按格式填，单句 35/40、公告 0.27。两个都快（每次半秒多），但免费档每分钟 8000 token，只能当备用。详见 [RESULTS.md](../copilot/eval/RESULTS.md)。
+
+### 10-19：记下每次模型调用用了多少 token、花了多少钱（分支 `feature/usage-monitor`）
+
+- 聊天已经用上 Gemini 和 OpenAI，要看得到用了多少、花了多少（GOALS P25）。`providers.Metered` 包住 Session 用的模型，记下每次调用是哪个模型回答的、token、耗时、前面哪几个出了错，每轮写进日志的 `calls`；`python -m nps_copilot stats` 多了一段“模型用量”（按模型的调用、出错、轮到备用的次数、token、花费，每天花费），HTTP 服务加了 `GET /stats`。价格表搬到 `monitor.PRICES`，`eval/compare_alerts.py` 也用它。回放的录音带着 token，回放评测也能算用量。还差：图表看板。
