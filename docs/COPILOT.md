@@ -161,9 +161,9 @@ flowchart LR
 
 | 变量 | 默认 | 作用 |
 |---|---|---|
-| `COPILOT_PROVIDER` | `ollama` | `ollama` / `gemini` / `openai` / `replay`。评测脚本（`eval/run.py`、`conversation.py`、`alerts.py`）也认，`--record` 录到 `recordings/<模型>…jsonl` |
+| `COPILOT_PROVIDER` | `ollama` | `ollama` / `gemini` / `openai` / `openrouter` / `replay`。评测脚本（`eval/run.py`、`conversation.py`、`alerts.py`）也认，`--record` 录到 `recordings/<模型>…jsonl` |
 | `COPILOT_MODEL` | Ollama：`qwen3.5:4b-q4_K_M`；Gemini：`gemini-3.5-flash-lite`；OpenAI：`gpt-5-nano` | 模型名（Gemini 免费档能用的有 `gemma-4-31b-it`、`gemini-3.8-flash` 等，见 AI Studio 的“速率限制”页） |
-| `GEMINI_API_KEY`、`OPENAI_API_KEY` | — | 商业 API 的 key，写在仓库根目录的 `.env.local`（不提交）或设成环境变量；只放在请求头里，不写日志、不进录音 |
+| `GEMINI_API_KEY`、`OPENAI_API_KEY`、`OPENROUTER_API_KEY` | — | 商业 API 的 key，写在仓库根目录的 `.env.local`（不提交）或设成环境变量；只放在请求头里，不写日志、不进录音 |
 | `COPILOT_FALLBACK` | — | 设成 `ollama`：商业 API 出错（额度用完、一直忙）时这一次改用本机模型。Copilot 服务用，评测别开 |
 | `OLLAMA_HOST_URL` | `http://127.0.0.1:11435` | Ollama 地址（momomojun 电脑上的便携版用 11435；自己装的默认 11434；Docker 里是 `http://ollama:11434` 或 `http://host.docker.internal:11435`） |
 | `COPILOT_REPLAY` | — | 回放用的录音文件 |

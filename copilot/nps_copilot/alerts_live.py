@@ -19,7 +19,7 @@ from pathlib import Path
 
 from . import prompts
 from .alerts import combined, extract, rules_extract
-from .providers import GeminiProvider, OllamaProvider, OpenAIProvider, Provider, ProviderError, secret
+from .providers import GeminiProvider, OllamaProvider, OpenAIProvider, OpenRouterProvider, Provider, ProviderError, secret
 
 DATA = Path(__file__).resolve().parents[1] / "data" / "alerts"
 CLOSURES = DATA / "closures-latest.json"
@@ -45,9 +45,11 @@ def alerts_provider() -> Provider | None:
         return GeminiProvider(**({"model": model} if model else {}))
     if kind == "openai":
         return OpenAIProvider(**({"model": model} if model else {}))
+    if kind == "openrouter":
+        return OpenRouterProvider(**({"model": model} if model else {}))
     if kind == "ollama":
         return OllamaProvider(**({"model": model} if model else {}))
-    raise ProviderError(f"不认识的 COPILOT_ALERTS_PROVIDER：{kind}（gemini / openai / ollama / rules）")
+    raise ProviderError(f"不认识的 COPILOT_ALERTS_PROVIDER：{kind}（gemini / openai / openrouter / ollama / rules）")
 
 
 def _cache_key(alert: dict) -> str:
