@@ -85,3 +85,16 @@ def test_chat_time_refresh_failure_keeps_the_old_list(tmp_path, monkeypatch):
     monkeypatch.setattr(alerts_live, "fetch_alerts", offline)
     info = alerts_live.refresh_for({"parks": ["yose"], "startDate": "2026-10-22", "days": 2}, "2026-10-20", path, tmp_path / "c.json")
     assert info["why"] == "error" and json.loads(path.read_text(encoding="utf-8"))["fetched"] == "2026-10-18"
+
+
+def test_status_for_the_admin_page(tmp_path, monkeypatch):
+    monkeypatch.setattr(alerts_live, "CLOSURES", tmp_path / "closures-latest.json")
+    monkeypatch.setattr(alerts_live, "CACHE", tmp_path / "extracted.json")
+    assert alerts_live.status() == {"closures_file": False, "cache_entries": 0}
+    (tmp_path / "closures-latest.json").write_text(json.dumps({
+        "fetched": "2026-10-19", "prompts": {"alerts": "alerts/v1"}, "parks": {"yose": "2026-10-19", "zion": "2026-10-17"},
+        "closures": [{"found_by": ["model", "rules"], "strict": ["x"]}, {"found_by": ["model"], "strict": []}]}), encoding="utf-8")
+    (tmp_path / "extracted.json").write_text(json.dumps({"a": {}, "b": {}, "c": {}}), encoding="utf-8")
+    got = alerts_live.status()
+    assert (got["fetched"], got["closures"], got["strict"], got["model_only"]) == ("2026-10-19", 2, 1, 1)
+    assert (got["parks"], got["oldest_park"], got["cache_entries"], got["prompts"]) == (2, "2026-10-17", 3, "alerts/v1")

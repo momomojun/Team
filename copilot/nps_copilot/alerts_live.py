@@ -53,6 +53,25 @@ def alerts_provider() -> Provider | None:
     raise ProviderError(f"不认识的 COPILOT_ALERTS_PROVIDER：{kind}（gemini / openai / openrouter / groq / ollama / rules）")
 
 
+def status() -> dict:
+    """后台看的：关闭清单是哪天的、几条（几条是代码也确认了的）、各公园最旧的是哪天；读过的公告缓存了几条"""
+    out: dict = {"closures_file": CLOSURES.exists(), "cache_entries": 0}
+    if CLOSURES.exists():
+        data = json.loads(CLOSURES.read_text(encoding="utf-8"))
+        closures = data.get("closures", [])
+        parks = data.get("parks") or {}
+        out.update({
+            "fetched": data.get("fetched"), "closures": len(closures),
+            "strict": sum(1 for item in closures if item.get("strict")),
+            "model_only": sum(1 for item in closures if item.get("found_by") == ["model"]),
+            "parks": len(parks), "oldest_park": min(parks.values()) if parks else None,
+            "prompts": data.get("prompts", {}).get("alerts"),
+        })
+    if CACHE.exists():
+        out["cache_entries"] = len(json.loads(CACHE.read_text(encoding="utf-8")))
+    return out
+
+
 def _cache_key(alert: dict) -> str:
     return f"{alert['id']}|{alert.get('updated') or ''}|{prompts.current().get('alerts', '')}"
 

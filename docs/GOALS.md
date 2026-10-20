@@ -30,7 +30,7 @@
 - [ ] 漂移测试（插入一条新的关闭公告，看多久反映出来；10-19 有了测试，还没量时间）、故障测试（模型超时、NPS 接口挂了）（P36、P37）
 - [ ] 每天读 NPS 实时公告、模型提取关闭信息，取代手动的 `closures.ts`（10-19 提取、评测、接进 Copilot 排行程、每晚自动抓公告开 issue 都做了；还差：模型提取每晚自动跑、网站行程页也用模型提取的结果、取代 `closures.ts`）；每晚定时：刷新 → 重建资料 → 重跑评测 → 分数漂移开 issue（O60、P8、P30）
 - [ ] 数据版本：快照的 hash，每个回答记下模型名和数据版本（P9、P32、P33、A4）
-- [ ] 监控：token、成本、看板（P25；10-19 每轮日志记下每次模型调用的模型和 token，`stats` 和 `GET /stats` 按模型算花费；还差看板，没有图表）
+- [x] 监控：token、成本、看板（P25；10-19 每轮日志记下每次模型调用的模型和 token，`stats` 和 `GET /stats` 按模型算花费；网站后台 `/zh-Hans/admin` 画成图表。计划书写的 MLflow 没用）
 - [ ] 护栏：限流；外部接口挂了退回快照（P26）
 - [ ] CI：Python 的 Ruff 检查；评测分数贴到 PR 评论；镜像 tag 带提示词版本和数据 hash；staging 环境（P27、P28、P29、P24）
 - [ ] 不同的步骤可以用不同的模型（P12）
@@ -224,7 +224,7 @@
 | P22 | 10-13 | Streamlit 演示界面 / demo UI | §4、§8 | 已完成 | 改成了网站行程页的对话框（10-19），不做 Streamlit | |
 | P23 | 10-13 | Docker Compose | §4 | 已完成 | `copilot/docker-compose.yml`、`.ollama.yml`、`.gpu.yml`、`Dockerfile` | |
 | P24 | 10-13 | 部署到 staging（AWS Academy 或 Render） | §4、§6 | 没做 | 只有 GHCR 公开镜像 + 本机 compose；网站在 Vercel，但 Copilot 没有线上环境 | 演示时 Copilot 放哪还没定 |
-| P25 | 10-13 | MLflow 追踪每一步（token、费用、延迟、工具调用、Critic 退回） | §4、§7 | 部分完成 | JSONL 日志 + `python -m nps_copilot stats`（按版本统计排出率、追问、出错、被丢掉的片段、Writer 退回、耗时中位数和 P90）；10-19 加了按模型的调用次数、出错、退到备用模型的次数、token 和花费（每轮日志的 `calls`，`GET /stats`）；没有 MLflow、没有图表 | 计划书要改 |
+| P25 | 10-13 | MLflow 追踪每一步（token、费用、延迟、工具调用、Critic 退回） | §4、§7 | 部分完成 | JSONL 日志 + `python -m nps_copilot stats`（按版本统计排出率、追问、出错、被丢掉的片段、Writer 退回、耗时中位数和 P90）；10-19 加了按模型的调用次数、出错、退到备用模型的次数、token 和花费（每轮日志的 `calls`，`GET /stats`），网站后台 `/zh-Hans/admin`（每天的图、按模型的花费、最近几轮、每晚读公告的结果）；没有 MLflow | 计划书要改 |
 | P26 | 10-13 | 护栏：没查到来源不说开没开、输入校验、限流、外部 API 挂了退回缓存快照 | §4 | 部分完成 | 输入校验、提示注入没得逞（holdout 两组）、QA 数字核对和“查不到说不知道”有；没有限流、没有缓存回退（plan_trip 本来就不联网） | |
 | P27 | 10-13 | 每个 PR：Ruff lint、mock pytest、数据快照校验、工具契约测试 | §6 | 部分完成 | pytest、契约测试（`tests/copilot-plan.test.ts`、契约文件是否最新）都有；**没有 Ruff**（只有网站的 ESLint） | |
 | P28 | 10-13 | 改了提示词/agent/模型/数据的 PR 跑评测门禁，分数表贴到 PR 评论 | §6 | 部分完成 | 每个 PR 都跑 3 组回放门禁（不能低于基线），报告上传为 artifact；**没有贴 PR 评论**；只能拦代码改坏，改提示词要本机重录 | |

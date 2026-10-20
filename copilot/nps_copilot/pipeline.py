@@ -341,6 +341,7 @@ class Session:
         reply.trace["status"] = reply.status
         reply.trace["latency_ms"] = round((time.perf_counter() - start) * 1000)
         reply.trace["calls"] = self.provider.take()
+        reply.trace["at"] = dt.datetime.now().astimezone().isoformat(timespec="seconds")
         if self.log:
             RUNS.mkdir(parents=True, exist_ok=True)
             path = RUNS / f"{dt.date.today().isoformat()}.jsonl"

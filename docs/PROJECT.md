@@ -314,3 +314,7 @@
 ### 10-19：记下每次模型调用用了多少 token、花了多少钱（分支 `feature/usage-monitor`）
 
 - 聊天已经用上 Gemini 和 OpenAI，要看得到用了多少、花了多少（GOALS P25）。`providers.Metered` 包住 Session 用的模型，记下每次调用是哪个模型回答的、token、耗时、前面哪几个出了错，每轮写进日志的 `calls`；`python -m nps_copilot stats` 多了一段“模型用量”（按模型的调用、出错、轮到备用的次数、token、花费，每天花费），HTTP 服务加了 `GET /stats`。价格表搬到 `monitor.PRICES`，`eval/compare_alerts.py` 也用它。回放的录音带着 token，回放评测也能算用量。还差：图表看板。
+
+### 10-19：Copilot 后台（分支 `feature/admin-dashboard`）
+
+- 仓库主人说监控“做一个专门的后台去监管”。网站加了 `/zh-Hans/admin`：服务状态（版本、按顺序用的几个模型、提示词）、对话轮数和排出比例、出错、耗时、模型调用和花费、每天的柱状图、按模型的用量、按版本的质量、本机关闭清单和 GitHub 上每晚读公告的结果、最近 30 轮对话，每 30 秒刷新。Copilot 的 `/stats` 多给了按天的数字、最近几轮（每轮日志加了时间 `at`）和关闭清单状态（`alerts_live.status()`），`/health` 多给了模型顺序（`chain`）。不进导航、不让搜索引擎收录；部署到公网又没设访问密码时不给数据。在浏览器里看过电脑和手机宽度（没有横向溢出），Copilot 没开时也看过。
