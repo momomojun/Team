@@ -215,3 +215,37 @@ def test_openrouter_reasoning_level_comes_from_the_environment(monkeypatch):
     assert OpenRouterProvider().reasoning == {"effort": "high"}
     monkeypatch.setenv("COPILOT_REASONING", "none")
     assert OpenRouterProvider().reasoning is None
+
+
+def test_openrouter_rewrites_type_lists_that_minimax_rejects():
+    from nps_copilot.providers import _no_type_lists
+
+    schema = {"type": "object", "properties": {
+        "origin": {"type": ["string", "null"], "description": "从哪出发"},
+        "days": {"type": ["integer", "null"], "minimum": 1},
+        "parks": {"type": "array", "items": {"type": "string"}}}}
+    out = _no_type_lists(schema)
+    assert out["properties"]["origin"] == {"description": "从哪出发", "anyOf": [{"type": "string"}, {"type": "null"}]}
+    assert out["properties"]["days"] == {"anyOf": [{"type": "integer", "minimum": 1}, {"type": "null"}]}
+    assert out["properties"]["parks"] == schema["properties"]["parks"] and schema["properties"]["origin"]["type"] == ["string", "null"]
+
+
+def test_step_models_send_some_steps_to_their_own_model(monkeypatch, fake_api):
+    from nps_copilot.providers import OllamaProvider, StepRouter, chat_provider
+
+    monkeypatch.delenv("COPILOT_PROVIDER", raising=False)
+    monkeypatch.setenv("COPILOT_STEP_MODELS", "intake=openai:gpt-4.1-mini, qa=ollama:qwen3.5:4b-q4_K_M")
+    chosen = chat_provider()
+    assert isinstance(chosen, StepRouter) and chosen.model == "gemini-3.5-flash-lite"
+    assert [getattr(p, "model", "") for p in chosen.steps["intake"].providers][:1] == ["gpt-4.1-mini"]
+    assert chosen.steps["qa"].providers[0].model == "qwen3.5:4b-q4_K_M" and isinstance(chosen.steps["qa"].providers[0], OllamaProvider)
+    openai_ok = {"choices": [{"message": {"content": '{"park": "Zion"}'}}], "usage": {}}
+    sent = fake_api(openai_ok, gemini_reply('{"park": "Yosemite"}'))
+    assert chosen.complete_json("intake", "s", "u", SCHEMA).data == {"park": "Zion"}  # 摘条件走 OpenAI
+    assert chosen.complete_json("dispatch", "s", "u", SCHEMA).data == {"park": "Yosemite"}  # 没写的步骤照旧
+    assert [r["url"].split("/")[2] for r in sent] == ["api.openai.com", "generativelanguage.googleapis.com"]
+    # 写错了不悄悄忽略
+    for wrong in ("planner=openai", "intake=claude", "intake="):
+        monkeypatch.setenv("COPILOT_STEP_MODELS", wrong)
+        with pytest.raises(ProviderError):
+            chat_provider()

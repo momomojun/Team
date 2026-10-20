@@ -329,6 +329,24 @@ class OpenAIProvider:
         return Completion(data=_json_text(text), model=self.model, latency_ms=latency, raw=text, meta=meta)
 
 
+def _no_type_lists(schema):
+    """把 {"type": ["string", "null"]} 改成等价的 {"anyOf": [{"type": "string"}, {"type": "null"}]}：
+    OpenRouter 上的 MiniMax 不认 type 写成数组（10-20：invalid params, Mismatch type string with value array）"""
+    if isinstance(schema, list):
+        return [_no_type_lists(item) for item in schema]
+    if not isinstance(schema, dict):
+        return schema
+    out = {key: _no_type_lists(value) for key, value in schema.items()}
+    kinds = out.get("type")
+    if isinstance(kinds, list):
+        del out["type"]
+        rest = {key: value for key, value in out.items() if key not in ("description", "title", "default")}
+        keep = {key: value for key, value in out.items() if key in ("description", "title", "default")}
+        # 别的约束（enum、items、properties……）跟着各自的类型走：只放进不是 null 的那一支
+        out = {**keep, "anyOf": [{"type": kind, **(rest if kind != "null" else {})} for kind in kinds]}
+    return out
+
+
 @dataclass
 class OpenRouterProvider:
     """OpenRouter（一个接口用很多家的模型，有免费模型，名字以 :free 结尾）。接口和 OpenAI 的 Chat Completions 一样；
@@ -351,7 +369,7 @@ class OpenRouterProvider:
         while True:
             body: dict = {
                 "model": self.model, "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
-                "response_format": {"type": "json_schema", "json_schema": {"name": task, "schema": schema, "strict": False}},
+                "response_format": {"type": "json_schema", "json_schema": {"name": task, "schema": _no_type_lists(schema), "strict": False}},
                 "max_tokens": (3072 if task == "writer" else self.max_tokens) * 4, "temperature": 0, "seed": 42,
             }
             if self.reasoning is not None:
@@ -547,14 +565,64 @@ def cloud_chain(batch: bool = False) -> list:
     return chain
 
 
+CHAT_STEPS = ("dispatch", "intake", "qa", "writer")
+KINDS = {"gemini": "GeminiProvider", "openai": "OpenAIProvider", "openrouter": "OpenRouterProvider", "groq": "GroqProvider", "ollama": "OllamaProvider"}
+
+
+def make_provider(spec: str, chat: bool = True) -> Provider:
+    """按“哪家:型号”造一个模型：gemini、openai:gpt-4.1-mini、openrouter:minimax/minimax-m3.1-flash:free、
+    groq:qwen/qwen3.8-27b、ollama:qwen3.5:4b-q4_K_M（型号里可以有冒号，只按第一个冒号分）。
+    chat=True 时商业 API 不按免费档排队、服务忙只重试一次（和 cloud_chain 一样）"""
+    kind, _, model = spec.strip().partition(":")
+    if kind not in KINDS:
+        raise ProviderError(f"不认识的模型提供方：{kind}（{' / '.join(KINDS)}）")
+    provider = globals()[KINDS[kind]](**({"model": model} if model else {}))
+    if chat and hasattr(provider, "pace"):
+        provider.pace.rpm = 0
+        provider.pace.waits = (2,)
+    return provider
+
+
+@dataclass
+class StepRouter:
+    """不同的步骤用不同的模型（GOALS P12）：steps 里写了的步骤用它自己的，出错再退回 default；没写的直接用 default"""
+    default: Provider
+    steps: dict
+    name: str = "router"
+
+    @property
+    def model(self) -> str:
+        return getattr(self.default, "model", self.default.name)
+
+    def complete_json(self, task: str, system: str, user: str, schema: dict) -> Completion:
+        return self.steps.get(task, self.default).complete_json(task, system, user, schema)
+
+
+def step_models(default: Provider) -> Provider:
+    """COPILOT_STEP_MODELS="intake=openai:gpt-4.1-mini,qa=groq:qwen/qwen3.8-27b"：这几步单独换模型，出错退回平常的顺序。
+    步骤只有 dispatch（调度员）、intake（摘条件）、qa（回答问题）、writer（写说明）；读公告另用 COPILOT_ALERTS_PROVIDER。
+    写错了（步骤、提供方不认识，或者那一家没配 key）直接报错，不悄悄忽略"""
+    raw = os.environ.get("COPILOT_STEP_MODELS", "").strip()
+    if not raw:
+        return default
+    steps = {}
+    for part in filter(None, (item.strip() for item in raw.split(","))):
+        step, _, spec = part.partition("=")
+        if step not in CHAT_STEPS or not spec:
+            raise ProviderError(f"COPILOT_STEP_MODELS 里的“{part}”看不懂：要写成 步骤=提供方[:型号]，步骤是 {' / '.join(CHAT_STEPS)}")
+        steps[step] = ProviderChain([make_provider(spec), default])
+    return StepRouter(default, steps)
+
+
 def chat_provider() -> Provider:
     """Copilot 聊天（serve、chat）用的模型。10-19 仓库主人定的顺序：Gemini → OpenAI → 本机模型，没配 key 的那一家跳过
     （组员什么 key 都没配就跟以前一样只用本机）。设了 COPILOT_PROVIDER 就按设的、不再按顺序退。
+    COPILOT_STEP_MODELS 可以给某几步单独换模型（step_models）。
     评测脚本不走这里（用 from_env，默认本机，录音才对得上）"""
     if os.environ.get("COPILOT_PROVIDER"):
-        return from_env()
+        return step_models(from_env())
     chain = cloud_chain()
-    return ProviderChain([*chain, OllamaProvider()]) if chain else OllamaProvider()
+    return step_models(ProviderChain([*chain, OllamaProvider()]) if chain else OllamaProvider())
 
 
 def from_env() -> Provider:

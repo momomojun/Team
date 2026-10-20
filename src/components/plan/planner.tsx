@@ -872,6 +872,9 @@ export function Planner({
         day: route.day,
         color: dayColor(route.day),
         title: view.date ? fill(t.tour.titleDate, { n: route.day + 1, date: formatDate(view.date) }) : fill(t.tour.title, { n: route.day + 1 }),
+        heading: fill(t.tour.title, { n: route.day + 1 }),
+        ...(view.date ? { date: formatDate(view.date) } : {}),
+        subtitle: fill(t.tour.subtitle, { n: view.rows.length, drive: duration(view.timeline.driveMin) }),
         path: road?.path ?? route.points.map((point) => [point.lon, point.lat] as [number, number]),
         straight: !road,
         stops,
@@ -1712,6 +1715,11 @@ export function Planner({
               legs={mapLegs}
               legend={mapLegend}
               tour={campMap ? undefined : tourDays}
+              tourSummary={fill(t.tour.summary, {
+                days: dayViews.length,
+                n: dayViews.reduce((sum, view) => sum + view.rows.length, 0),
+                drive: duration(dayViews.reduce((sum, view) => sum + view.timeline.driveMin, 0)),
+              })}
               tourRequest={campMap ? null : tourRequest}
               fitKey={campMap ? "camps" : showAll ? "all" : String(mapIndex)}
               extras={supplyExtras}

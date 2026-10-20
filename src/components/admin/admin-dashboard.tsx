@@ -93,6 +93,10 @@ interface AdminData {
     build: string | null;
     model: string | null;
     chain?: string[];
+    /** COPILOT_STEP_MODELS 单独换了模型的步骤：{步骤: [先试的, 出错再按平常的顺序]} */
+    steps?: Record<string, string[]>;
+    /** 模型配置写错了（比如 COPILOT_STEP_MODELS 看不懂、没配 key） */
+    error?: string;
     prompts: Record<string, string>;
     plan_tool: string;
   } | null;
@@ -114,6 +118,7 @@ interface AdminData {
 const PERIODS = [1, 7, 30];
 /** 和 src/lib/copilot/live.ts 的 LIVE_STALE_DAYS 一样：关闭清单超过 3 天就不用了 */
 const STALE_DAYS = 3;
+const STEP_TEXT: Record<string, string> = { dispatch: "调度员", intake: "摘条件", qa: "回答问题", writer: "写说明" };
 const STATUS_TEXT: Record<string, string> = { planned: "排出行程", needs_input: "追问", error: "出错" };
 
 const ms = (value: number | null | undefined) =>
@@ -324,8 +329,16 @@ export function AdminDashboard() {
             </span>
             <span>
               <span className="text-mute">模型顺序 </span>
-              {(health.chain ?? [health.model ?? "?"]).join(" → ")}
+              {health.error ? <span className="text-clay-700">{health.error}</span> : (health.chain ?? [health.model ?? "?"]).join(" → ")}
             </span>
+            {health.steps && Object.keys(health.steps).length > 0 && (
+              <span>
+                <span className="text-mute">单独换了模型 </span>
+                {Object.entries(health.steps)
+                  .map(([step, models]) => `${STEP_TEXT[step] ?? step} ${models[0]}`)
+                  .join("，")}
+              </span>
+            )}
             <span>
               <span className="text-mute">提示词 </span>
               {Object.keys(health.prompts).join("、") || "—"}

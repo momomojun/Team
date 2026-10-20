@@ -34,14 +34,21 @@ class Message(BaseModel):
 
 @app.get("/health")
 def health() -> dict:
-    provider = chat_provider()
+    try:
+        provider = chat_provider()
+    except ProviderError as error:  # COPILOT_STEP_MODELS 写错、没配 key：照样回 /health，写明是什么错
+        return {"version": VERSION, "build": os.environ.get("COPILOT_BUILD_SHA"), "provider": None, "model": None,
+                "error": str(error), "prompts": prompt_hashes(), "plan_tool": "missing"}
+    names = lambda item: [getattr(p, "model", p.name) for p in getattr(item, "providers", [item])]  # noqa: E731
     return {
         "version": VERSION,
         "build": os.environ.get("COPILOT_BUILD_SHA"),
         "provider": provider.name,
         "model": getattr(provider, "model", None),
         # 按顺序试的几个模型（前一个出错换下一个）
-        "chain": [getattr(p, "model", p.name) for p in getattr(provider, "providers", [provider])],
+        "chain": names(getattr(provider, "default", provider)),
+        # 单独换了模型的步骤：{步骤: [先试的, 出错再按平常的顺序]}
+        "steps": {step: names(item) for step, item in getattr(provider, "steps", {}).items()},
         "prompts": prompt_hashes(),
         "plan_tool": "http" if os.environ.get("COPILOT_PLAN_URL") else ("cli" if shutil.which("node") else "missing"),
     }

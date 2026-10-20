@@ -402,3 +402,43 @@ body {
   background: rgb(244 239 231 / 0.85) !important;
   font-size: 10px;
 }
+
+/* ── 路线动画（src/components/map/park-map.tsx）── */
+/* 到站的小牌子弹一下出来 */
+@keyframes tour-pop {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.86);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+/* 到站的那一点泛开一圈波纹，只泛一次 */
+@keyframes tour-ring {
+  from {
+    opacity: 0.9;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 0;
+    transform: scale(3.2);
+  }
+}
+.tour-pop {
+  animation: tour-pop 420ms cubic-bezier(0.2, 0.9, 0.3, 1.25) both;
+  transition: opacity 400ms;
+}
+.tour-ring {
+  animation: tour-ring 900ms ease-out forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tour-pop,
+  .tour-ring {
+    animation: none;
+  }
+  .tour-ring {
+    opacity: 0;
+  }
+}

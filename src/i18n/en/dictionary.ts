@@ -443,6 +443,7 @@ export const en: Dictionary = {
     tourResume: "Resume",
     tourSkip: "Skip",
     tourDay: "Day {n}",
+    tourAll: "The whole trip",
     loading: "Loading map…",
     trailLegend: "Trail",
     roadLegend: "Driving route",
@@ -1321,6 +1322,8 @@ export const en: Dictionary = {
       stop: "Arrive {time} · stay {stay}",
       night: "Arrive {time} · tonight's stay",
       end: "Arrive {time}",
+      subtitle: "{n} {n|stop|stops}, {drive} of driving",
+      summary: "{days} {days|day|days}, {n} {n|stop|stops}, about {drive} of driving",
     },
     copilot: {
       eyebrow: "Copilot · just describe it",

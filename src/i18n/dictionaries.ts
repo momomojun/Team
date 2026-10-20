@@ -426,6 +426,7 @@ const zhHans = {
     tourResume: "继续",
     tourSkip: "跳过",
     tourDay: "第 {n} 天",
+    tourAll: "全程",
     loading: "地图加载中…",
     trailLegend: "步道",
     roadLegend: "开车路线",
@@ -1288,6 +1289,8 @@ const zhHans = {
       stop: "{time} 到 · 停 {stay}",
       night: "{time} 到 · 今晚住这里",
       end: "{time} 到",
+      subtitle: "{n} 个景点，开车 {drive}",
+      summary: "{days} 天，{n} 个景点，开车约 {drive}",
     },
     copilot: {
       eyebrow: "Copilot · 用一句话说需求",
