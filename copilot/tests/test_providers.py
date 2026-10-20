@@ -147,3 +147,41 @@ def test_openrouter_uses_the_openai_style_api_and_stops_on_the_daily_free_limit(
     with pytest.raises(QuotaError):
         provider.complete_json("intake", "s", "u", SCHEMA)
     assert len(sent) == 2  # 每天的免费额度用完了：不重试
+
+
+def test_chat_falls_back_gemini_then_openai_then_local(monkeypatch, tmp_path, fake_api):
+    from nps_copilot.providers import OllamaProvider, ProviderChain, chat_provider
+
+    monkeypatch.delenv("COPILOT_PROVIDER", raising=False)
+    chosen = chat_provider()  # fake_api 设好了两把假 key
+    assert isinstance(chosen, ProviderChain) and chosen.model == "gemini-3.5-flash-lite"
+    assert [type(p).__name__ for p in chosen.providers] == ["GeminiProvider", "OpenAIProvider", "OllamaProvider"]
+    assert chosen.providers[1].model == "gpt-4.1-mini"
+    # 聊天不排队、只重试一次：Gemini 忙就很快换 OpenAI
+    assert chosen.providers[0].pace.rpm == 0 and chosen.providers[0].pace.waits == (2,)
+    openai_ok = {"choices": [{"message": {"content": '{"park": "Zion"}'}}], "usage": {}}
+    sent = fake_api(http_error(429, "PerDay quota"), openai_ok)
+    completion = chosen.complete_json("intake", "s", "u", SCHEMA)
+    assert completion.data == {"park": "Zion"} and completion.meta["fallback_from"][0]["model"] == "gemini-3.5-flash-lite"
+    assert [r["url"].split("/")[2] for r in sent] == ["generativelanguage.googleapis.com", "api.openai.com"]
+    # 只有 OpenAI 的 key：OpenAI → 本机
+    monkeypatch.delenv("GEMINI_API_KEY")
+    monkeypatch.setattr(providers, "ROOT", tmp_path)
+    assert [type(p).__name__ for p in chat_provider().providers] == ["OpenAIProvider", "OllamaProvider"]
+    # 什么 key 都没有（组员）：照旧本机
+    monkeypatch.delenv("OPENAI_API_KEY")
+    assert isinstance(chat_provider(), OllamaProvider)
+    # 明确指定了就按指定的
+    monkeypatch.setenv("COPILOT_PROVIDER", "ollama")
+    monkeypatch.setenv("GEMINI_API_KEY", "test-gemini-key")
+    assert isinstance(chat_provider(), OllamaProvider)
+
+
+def test_openrouter_reasoning_level_comes_from_the_environment(monkeypatch):
+    from nps_copilot.providers import OpenRouterProvider
+
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-openrouter-key")
+    monkeypatch.setenv("COPILOT_REASONING", "high")
+    assert OpenRouterProvider().reasoning == {"effort": "high"}
+    monkeypatch.setenv("COPILOT_REASONING", "none")
+    assert OpenRouterProvider().reasoning is None

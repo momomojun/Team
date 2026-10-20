@@ -334,7 +334,9 @@ class OpenRouterProvider:
     name: str = "openrouter"
     rpm: float = 18
     max_tokens: int = 1024
-    reasoning: dict | None = field(default_factory=lambda: {"effort": "low"})
+    # COPILOT_REASONING=minimal / low / medium / high / none 换推理档位（none 是不传这个设置）
+    reasoning: dict | None = field(default_factory=lambda: (
+        None if os.environ.get("COPILOT_REASONING") == "none" else {"effort": os.environ.get("COPILOT_REASONING") or "low"}))
 
     def __post_init__(self) -> None:
         self.key = secret("OPENROUTER_API_KEY")
@@ -379,6 +381,10 @@ class FallbackProvider:
     backup: Provider
     name: str = "fallback"
 
+    @property
+    def model(self) -> str:
+        return getattr(self.primary, "model", self.primary.name)
+
     def complete_json(self, task: str, system: str, user: str, schema: dict) -> Completion:
         try:
             return self.primary.complete_json(task, system, user, schema)
@@ -387,6 +393,60 @@ class FallbackProvider:
             completion.meta = {**completion.meta, "fallback_from": getattr(self.primary, "model", self.primary.name),
                                "fallback_reason": str(error)[:120]}
             return completion
+
+
+@dataclass
+class ProviderChain:
+    """几个模型按顺序试：前一个出错（额度用完、服务忙、没网、key 不对）这一次就换下一个，最后一个也出错才报错。
+    meta 里记下前面哪几个出了错、为什么"""
+    providers: list
+    name: str = "chain"
+
+    @property
+    def model(self) -> str:
+        return getattr(self.providers[0], "model", self.providers[0].name)
+
+    def complete_json(self, task: str, system: str, user: str, schema: dict) -> Completion:
+        failed = []
+        for provider in self.providers:
+            try:
+                completion = provider.complete_json(task, system, user, schema)
+            except ProviderError as error:
+                failed.append({"model": getattr(provider, "model", provider.name), "reason": str(error)[:120]})
+                if len(failed) == len(self.providers):
+                    raise
+                continue
+            if failed:
+                completion.meta = {**completion.meta, "fallback_from": failed}
+            return completion
+        raise ProviderError("没有可用的模型")
+
+
+def cloud_chain(batch: bool = False) -> list:
+    """有 key 的商业 API，按仓库主人 10-19 定的顺序：Gemini 3.5 Flash Lite → OpenAI GPT-4.1 mini（第二轮对照里最准）。
+    聊天（batch=False）不按免费档的每分钟次数排队、服务忙只重试一次，免得一句话等很久，超了就换下一个；
+    一次读一批公告（batch=True）照常按免费档放慢、多重试几次"""
+    chain: list = []
+    for cls, model in ((GeminiProvider, "gemini-3.5-flash-lite"), (OpenAIProvider, "gpt-4.1-mini")):
+        try:
+            provider = cls(model=model)
+        except ProviderError:
+            continue
+        if not batch:
+            provider.pace.rpm = 0
+            provider.pace.waits = (2,)
+        chain.append(provider)
+    return chain
+
+
+def chat_provider() -> Provider:
+    """Copilot 聊天（serve、chat）用的模型。10-19 仓库主人定的顺序：Gemini → OpenAI → 本机模型，没配 key 的那一家跳过
+    （组员什么 key 都没配就跟以前一样只用本机）。设了 COPILOT_PROVIDER 就按设的、不再按顺序退。
+    评测脚本不走这里（用 from_env，默认本机，录音才对得上）"""
+    if os.environ.get("COPILOT_PROVIDER"):
+        return from_env()
+    chain = cloud_chain()
+    return ProviderChain([*chain, OllamaProvider()]) if chain else OllamaProvider()
 
 
 def from_env() -> Provider:
