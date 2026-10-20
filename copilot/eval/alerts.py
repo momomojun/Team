@@ -23,6 +23,7 @@ sys.path.insert(0, str(HERE.parent))
 
 from nps_copilot import alerts as alerts_module  # noqa: E402
 from nps_copilot.pipeline import prompt_hashes  # noqa: E402
+from guard import safe_name  # noqa: E402
 from nps_copilot.providers import RecordingProvider, ReplayProvider, from_env  # noqa: E402
 
 SNAPSHOT = HERE / "alerts" / "snapshot-2026-10-19.json"
@@ -73,11 +74,21 @@ def main() -> int:
     parser.add_argument("--record", action="store_true")
     parser.add_argument("--gate", type=Path)
     parser.add_argument("--rules-only", action="store_true")
+    parser.add_argument("--sample", type=int, help="只抽这么多条（固定种子；给每天只有几十次的免费额度用），录音另存一份")
     args = parser.parse_args()
     sys.stdout.reconfigure(encoding="utf-8")
     snapshot = json.loads(args.snapshot.read_text(encoding="utf-8"))
     by_id = {alert["id"]: alert for alert in snapshot["alerts"]}
     labels = [json.loads(line) for line in args.labels.read_text(encoding="utf-8").splitlines() if line.strip()]
+    if args.sample:
+        # 固定种子抽样，几个模型抽到的是同一批；整段关闭的多抽一些（总共只有 30 条），分数才有意义
+        import random
+
+        rng = random.Random(42)
+        full = [g for g in labels if g["type"] == "full"]
+        rest = [g for g in labels if g["type"] != "full"]
+        take = min(len(full), args.sample // 2)
+        labels = sorted(rng.sample(full, take) + rng.sample(rest, args.sample - take), key=lambda g: g["id"])
     reference = dt.date.fromisoformat(snapshot["fetched"])
     # 标准答案里拿不准的（ambiguous：比如标题写 Partial Closure、但我们的景点整段在关的那段上）另算一份“只看没争议的”
     clear = [g for g in labels if not g.get("ambiguous")]
@@ -96,7 +107,8 @@ def main() -> int:
             provider = from_env()  # 默认本机 Ollama；COPILOT_PROVIDER=gemini / openai 换商业 API（对照实验）
             label = provider.model
             if args.record:
-                path = HERE / "recordings" / f"{provider.model.replace(':', '_')}-alerts-{snapshot['fetched']}.jsonl"
+                sample = f"-sample{args.sample}" if args.sample else ""
+                path = HERE / "recordings" / f"{safe_name(provider.model)}-alerts-{snapshot['fetched']}{sample}.jsonl"
                 path.unlink(missing_ok=True)
                 provider = RecordingProvider(provider, path)
         predictions = {}

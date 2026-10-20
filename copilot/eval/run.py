@@ -31,6 +31,7 @@ from nps_copilot.intake import Intake  # noqa: E402
 from nps_copilot.writer import template, write  # noqa: E402
 from nps_copilot.pipeline import prompt_hashes  # noqa: E402
 from nps_copilot.plan_client import PlanError, plan_trip  # noqa: E402
+from guard import StopEarly, safe_name  # noqa: E402
 from nps_copilot.providers import ProviderError, RecordingProvider, ReplayProvider, from_env  # noqa: E402
 
 REFERENCE = "2026-10-16"
@@ -121,7 +122,7 @@ def main() -> int:
         provider = ReplayProvider(Path(args.replay))
         model = "replay:" + Path(args.replay).stem
     else:
-        provider = from_env()  # 默认本机 Ollama；COPILOT_PROVIDER=gemini / openai 换商业 API（对照实验）
+        provider = StopEarly(from_env())  # 默认本机 Ollama；COPILOT_PROVIDER=gemini / openai / openrouter 换商业 API（对照实验）
         model = provider.model
         if args.record:
             # 默认样例录到 recordings/<模型>.jsonl，别的样例文件录到 recordings/<模型>-<样例文件名>.jsonl
@@ -130,7 +131,7 @@ def main() -> int:
             # 不是默认版本的提示词另外录一份，不覆盖默认版的录音（回放门禁用的是默认版）
             if prompts.version("intake") != prompts.defaults()["intake"]:
                 suffix += f"-intake_{prompts.version('intake')}"
-            path = HERE / "recordings" / (provider.model.replace(":", "_") + suffix + ".jsonl")
+            path = HERE / "recordings" / (safe_name(provider.model) + suffix + ".jsonl")
             path.unlink(missing_ok=True)
             provider = RecordingProvider(provider, path)
     start = time.perf_counter()
