@@ -15,7 +15,7 @@ from pydantic import BaseModel
 
 from . import __version__
 from .pipeline import VERSION, Session, prompt_hashes
-from .providers import ProviderError, from_env
+from .providers import ProviderError, chat_provider
 
 app = FastAPI(title="NPS Guide Copilot", version=__version__)
 sessions: dict[str, Session] = {}
@@ -32,7 +32,7 @@ class Message(BaseModel):
 
 @app.get("/health")
 def health() -> dict:
-    provider = from_env()
+    provider = chat_provider()
     return {
         "version": VERSION,
         "build": os.environ.get("COPILOT_BUILD_SHA"),
@@ -45,7 +45,7 @@ def health() -> dict:
 
 @app.post("/sessions")
 def create(body: NewSession) -> dict:
-    session = Session(from_env(), body.reference_date or dt.date.today().isoformat(), writer_model=body.writer_model)
+    session = Session(chat_provider(), body.reference_date or dt.date.today().isoformat(), writer_model=body.writer_model)
     sessions[session.id] = session
     return {"session": session.id, "greeting": "说说你的行程：想去哪、什么时候、玩几天、从哪飞。"}
 

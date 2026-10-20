@@ -29,6 +29,7 @@ sys.path.insert(0, str(HERE.parent))
 os.environ.setdefault("COPILOT_LIVE", "0")
 
 from nps_copilot.pipeline import Session, prompt_hashes  # noqa: E402
+from guard import StopEarly, safe_name  # noqa: E402
 from nps_copilot.providers import ProviderError, RecordingProvider, ReplayProvider, from_env  # noqa: E402
 from run import subset  # noqa: E402
 
@@ -110,18 +111,19 @@ def main() -> int:
     if args.replay:
         provider, label = ReplayProvider(args.replay), f"replay:{args.replay.stem}"
     else:
-        provider = from_env()  # 默认本机 Ollama；COPILOT_PROVIDER=gemini / openai 换商业 API（对照实验）
+        provider = StopEarly(from_env())  # 默认本机 Ollama；COPILOT_PROVIDER=gemini / openai / openrouter 换商业 API（对照实验）
         label = provider.model
         if args.record:
             suffix = args.cases.stem.replace("conversation", "conversation")
-            path = HERE / "recordings" / f"{provider.model.replace(':', '_')}-{suffix}.jsonl"
+            path = HERE / "recordings" / f"{safe_name(provider.model)}-{suffix}.jsonl"
             path.unlink(missing_ok=True)
             provider = RecordingProvider(provider, path)
     results = [run_case(case, provider) for case in cases]
     passed = sum(r["ok"] for r in results)
     turns = [t for r in results for t in r["turns"]]
     turn_ok = sum(t["ok"] for t in turns)
-    latencies = [t["latency_ms"] for t in turns]
+    # 模型调用失败的那一轮没有耗时
+    latencies = [t["latency_ms"] for t in turns if "latency_ms" in t] or [0]
     for r in results:
         if not r["ok"]:
             for i, t in enumerate(r["turns"], 1):

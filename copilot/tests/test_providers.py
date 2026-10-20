@@ -131,3 +131,87 @@ def test_openai_drops_a_setting_the_model_rejects_and_remembers(fake_api):
     provider.complete_json("intake", "s", "u", SCHEMA)
     assert [r["body"].get("reasoning_effort") for r in sent] == ["minimal", "low", "low"]
     assert all("temperature" not in r["body"] for r in sent)
+
+
+def test_openrouter_uses_the_openai_style_api_and_stops_on_the_daily_free_limit(fake_api, monkeypatch):
+    from nps_copilot.providers import OpenRouterProvider
+
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-openrouter-key")
+    ok = {"choices": [{"message": {"content": '{"park": "Zion"}'}}], "usage": {"prompt_tokens": 30, "completion_tokens": 5}, "provider": "MiniMax"}
+    sent = fake_api(ok, http_error(429, '{"error": {"message": "Rate limit exceeded: free-models-per-day"}}'))
+    provider = OpenRouterProvider(rpm=0)
+    assert provider.complete_json("intake", "s", "u", SCHEMA).data == {"park": "Zion"}
+    assert sent[0]["url"] == "https://openrouter.ai/api/v1/chat/completions"
+    assert sent[0]["body"]["model"] == "minimax/minimax-m3.1-flash:free" and sent[0]["body"]["reasoning"] == {"effort": "low"}
+    assert sent[0]["headers"]["Authorization"] == "Bearer test-openrouter-key"
+    with pytest.raises(QuotaError):
+        provider.complete_json("intake", "s", "u", SCHEMA)
+    assert len(sent) == 2  # 每天的免费额度用完了：不重试
+
+
+def test_chat_falls_back_gemini_then_openai_then_local(monkeypatch, tmp_path, fake_api):
+    from nps_copilot.providers import OllamaProvider, ProviderChain, chat_provider
+
+    monkeypatch.delenv("COPILOT_PROVIDER", raising=False)
+    chosen = chat_provider()  # fake_api 设好了两把假 key
+    assert isinstance(chosen, ProviderChain) and chosen.model == "gemini-3.5-flash-lite"
+    assert [type(p).__name__ for p in chosen.providers] == ["GeminiProvider", "OpenAIProvider", "OllamaProvider"]
+    assert chosen.providers[1].model == "gpt-4.1-mini"
+    # 聊天不排队、只重试一次：Gemini 忙就很快换 OpenAI
+    assert chosen.providers[0].pace.rpm == 0 and chosen.providers[0].pace.waits == (2,)
+    openai_ok = {"choices": [{"message": {"content": '{"park": "Zion"}'}}], "usage": {}}
+    sent = fake_api(http_error(429, "PerDay quota"), openai_ok)
+    completion = chosen.complete_json("intake", "s", "u", SCHEMA)
+    assert completion.data == {"park": "Zion"} and completion.meta["fallback_from"][0]["model"] == "gemini-3.5-flash-lite"
+    assert [r["url"].split("/")[2] for r in sent] == ["generativelanguage.googleapis.com", "api.openai.com"]
+    # 只有 OpenAI 的 key：OpenAI → 本机
+    monkeypatch.delenv("GEMINI_API_KEY")
+    monkeypatch.setattr(providers, "ROOT", tmp_path)
+    assert [type(p).__name__ for p in chat_provider().providers] == ["OpenAIProvider", "OllamaProvider"]
+    # 什么 key 都没有（组员）：照旧本机
+    monkeypatch.delenv("OPENAI_API_KEY")
+    assert isinstance(chat_provider(), OllamaProvider)
+    # 明确指定了就按指定的
+    monkeypatch.setenv("COPILOT_PROVIDER", "ollama")
+    monkeypatch.setenv("GEMINI_API_KEY", "test-gemini-key")
+    assert isinstance(chat_provider(), OllamaProvider)
+
+
+def test_groq_uses_schema_output_and_falls_back_to_json_mode_when_the_model_rejects_it(fake_api, monkeypatch):
+    from nps_copilot.providers import GroqProvider
+
+    monkeypatch.setenv("GROQ_API_KEY", "test-groq-key")
+    ok = {"choices": [{"message": {"content": '{"park": "Zion"}'}}],
+          "usage": {"prompt_tokens": 30, "completion_tokens": 9, "completion_tokens_details": {"reasoning_tokens": 4}}}
+    sent = fake_api(ok)
+    provider = GroqProvider(rpm=0)
+    completion = provider.complete_json("intake", "s", "u", SCHEMA)
+    assert completion.data == {"park": "Zion"} and completion.meta["thinking_tokens"] == 4
+    assert sent[0]["url"] == "https://api.groq.com/openai/v1/chat/completions"
+    assert sent[0]["headers"]["Authorization"] == "Bearer test-groq-key"
+    assert sent[0]["body"]["model"] == "openai/gpt-oss-120b" and sent[0]["body"]["reasoning_effort"] == "low"
+    assert sent[0]["body"]["response_format"]["type"] == "json_schema"
+    # 不认 JSON Schema 的模型：退成 JSON 模式，schema 写进系统提示词，之后一直这样发
+    sent.clear()
+    sent = fake_api(http_error(400, "This model does not support response format `json_schema`"), ok, ok)
+    qwen = GroqProvider(model="qwen/qwen3.8-27b", rpm=0)
+    qwen.complete_json("intake", "s", "u", SCHEMA)
+    qwen.complete_json("intake", "s", "u", SCHEMA)
+    assert [r["body"]["response_format"]["type"] for r in sent] == ["json_schema", "json_object", "json_object"]
+    assert '"park"' in sent[1]["body"]["messages"][0]["content"]
+    # 一天的 token 用完了：不重试
+    sent.clear()
+    sent = fake_api(http_error(429, "Rate limit reached on tokens per day (TPD): Limit 200000"))
+    with pytest.raises(QuotaError):
+        provider.complete_json("intake", "s", "u", SCHEMA)
+    assert len(sent) == 1
+
+
+def test_openrouter_reasoning_level_comes_from_the_environment(monkeypatch):
+    from nps_copilot.providers import OpenRouterProvider
+
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-openrouter-key")
+    monkeypatch.setenv("COPILOT_REASONING", "high")
+    assert OpenRouterProvider().reasoning == {"effort": "high"}
+    monkeypatch.setenv("COPILOT_REASONING", "none")
+    assert OpenRouterProvider().reasoning is None
