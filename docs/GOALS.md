@@ -9,7 +9,7 @@
 | 部分 | 已完成 | 部分完成 | 没做 | 改主意或放弃 | 规则、决定（已执行） |
 |---|---:|---:|---:|---:|---:|
 | 网站（W） | 64 | 7 | 3 | 1 | 10 |
-| Copilot 和课程（A、P、O、R） | 79 | 29 | 10 | 2 | — |
+| Copilot 和课程（A、P、O、R） | 80 | 28 | 10 | 2 | — |
 
 ## 还没完成的（按方向分组，括号里是下面完整表里的编号）
 
@@ -206,7 +206,7 @@
 | P5 | 10-13 | 把 NPS Guide 数据导出成 JSON 快照 | §4 数据管理 | 已完成 | `copilot/contracts/parks.json`、`airports.json`、`knowledge.jsonl`（1600 多条），`npm run copilot:contracts` 生成，测试检查是不是最新 | |
 | P6 | 10-13 | 快照用 Pydantic 做 schema 校验 | §4 | 部分完成 | `TripRequest`/`TripResult` 用 JSON Schema（TS 里写、生成给 Python），请求逐字段报错；没有对数据快照本身做 Pydantic 校验 | |
 | P7 | 10-13 | 切块、做 embedding、存进 Chroma（向量检索） | §4、§7 | 改主意或放弃 | QA 用名字命中 + BM25，不用向量；COPILOT.md 写了“以后可以换嵌入模型做对照” | 计划书要改 |
-| P8 | 10-13 | 每晚刷新 NPS 公告 | §4、§6 | 部分完成 | 关闭信息还是手动维护的 `src/data/closures.ts`；`npm run check:closures` 只在本机定时任务里每天报告、不改数据、不在 CI 里；10-19 能抓快照、模型提取了（`npm run alerts:fetch`、`python -m nps_copilot alerts`），每晚自动跑和接进排行程还没做；10-19 GitHub 每晚抓一次（`alerts-nightly.yml`），新的关闭公告开 issue；模型提取在本机跑，没有自动接进数据 | PROJECT.md“下一步”第 2 条 |
+| P8 | 10-13 | 每晚刷新 NPS 公告 | §4、§6 | 已完成 | 关闭信息还是手动维护的 `src/data/closures.ts`；`npm run check:closures` 只在本机定时任务里每天报告、不改数据、不在 CI 里；10-19 能抓快照、模型提取了（`npm run alerts:fetch`、`python -m nps_copilot alerts`），每晚自动跑和接进排行程还没做；10-19 GitHub 每晚抓一次（`alerts-nightly.yml`），新的关闭公告开 issue；模型提取在本机跑，没有自动接进数据；10-20 每晚在 GitHub 上用 Gemini 只读新的、改过的公告，issue 里列出模型找到的景点；聊天时要去的公园今天没读过就现读 | PROJECT.md“下一步”第 2 条 |
 | P9 | 10-13 | 每份快照有内容 hash，每个回答记下用的哪份数据 | §3、§4 | 没做 | 日志每轮记 Copilot 版本、提示词 hash、`reference_date`；`/health` 有构建提交；`TripResult.engine.version` 写死 "1"；没有数据 hash | |
 | P10 | 10-13 | Provider 抽象 + 测试用的 mock provider（不需要密钥） | §4、§6 | 已完成 | `providers.py`：Ollama、Replay、Recording、Scripted；CI 用回放 | |
 | P11 | 10-13 | 一个低成本商业 API 模型 + 一个开源模型（Ollama）对比，按配置切换 | §4、§7 | 部分完成 | 10-19 仓库主人改了主意：加了 Gemini、OpenAI 的 Provider（`COPILOT_PROVIDER=gemini / openai`），读公告这一项和本机 4B 比过（RESULTS.md）；对话那几步还没比，默认还是本机 | 仓库主人对另一个助手说过“目前不希望依赖云端 API”（archive/LLMOPS_WORK_LOG.md）；计划书要改 |

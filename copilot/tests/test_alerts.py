@@ -116,3 +116,15 @@ def test_nightly_report_lists_only_new_closure_alerts():
     # 下一晚：报过的不再报
     assert module.report(snapshot, set(module.MARK.findall(text)) | {"c1"})[0] == []
     assert module.labelled(), "评测集的快照里的公告算报过"
+
+
+def test_nightly_report_shows_what_the_model_found():
+    import importlib.util
+    from pathlib import Path
+
+    spec = importlib.util.spec_from_file_location("alerts_report", Path(__file__).resolve().parents[1] / "scripts" / "alerts_report.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    closures = {"closures": [{"alert": "a1", "attractions": ["yose-glacier-point"], "found_by": ["model", "rules"], "reopen": "2026-10-25"}]}
+    _, text = module.report({"fetched": "2026-10-20", "alerts": [ALERT]}, set(), closures)
+    assert "冰川点（model+rules） | 2026-10-25 |" in text and "模型（Gemini）读了全文" in text

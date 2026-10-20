@@ -35,6 +35,7 @@ def main() -> None:
     alerts_cmd = sub.add_parser("alerts")
     alerts_cmd.add_argument("--snapshot", default=str(DATA / "alerts" / "latest.json"))
     alerts_cmd.add_argument("--out", default=str(DATA / "alerts" / "closures-latest.json"))
+    alerts_cmd.add_argument("--cache", default=str(DATA / "alerts" / "extracted.json"), help="读过的公告记在这里，下次只读新的、改过的")
     args = parser.parse_args()
     sys.stdout.reconfigure(encoding="utf-8")
 
@@ -49,13 +50,18 @@ def main() -> None:
                          ensure_ascii=False, indent=1))
         return
     if args.command == "alerts":
-        from .alerts import closures_from
+        from pathlib import Path
+
+        from .alerts_live import alerts_provider, closures_file, save_json
 
         snapshot = json.loads(open(args.snapshot, encoding="utf-8").read())
-        out = closures_from(snapshot, from_env())
-        with open(args.out, "w", encoding="utf-8") as handle:
-            json.dump(out, handle, ensure_ascii=False, indent=1)
-        print(f"{len(snapshot['alerts'])} 条公告，{len(out['closures'])} 条关了网站上的景点，写到 {args.out}")
+        provider = alerts_provider()
+        out, stats = closures_file(snapshot, provider, Path(args.cache))
+        save_json(Path(args.out), out)
+        who = getattr(provider, "model", "规则") if provider else "规则"
+        print(f"{len(snapshot['alerts'])} 条公告（{who}：新读 {stats['read']} 条，用了缓存 {stats['cached']} 条，按规则算 {stats['rules_only']} 条），"
+              f"{len(out['closures'])} 条关了网站上的景点，写到 {args.out}")
+        print(f"STATS={json.dumps(stats)}")
         return
     if args.command == "stats":
         from .monitor import report

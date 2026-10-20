@@ -5,6 +5,7 @@
     "nameEn": "Yosemite",
     "kind": "park",
     "country": "US",
+    "nps": "yose",
     "timeZone": "America/Los_Angeles",
     "airports": [
       "FAT",
@@ -34,6 +35,7 @@
     "nameEn": "Sequoia & Kings Canyon",
     "kind": "park",
     "country": "US",
+    "nps": "seki",
     "timeZone": "America/Los_Angeles",
     "airports": [
       "FAT",
@@ -59,6 +61,7 @@
     "nameEn": "Pinnacles",
     "kind": "park",
     "country": "US",
+    "nps": "pinn",
     "timeZone": "America/Los_Angeles",
     "airports": [
       "SJC",
@@ -89,6 +92,7 @@
     "nameEn": "Channel Islands",
     "kind": "park",
     "country": "US",
+    "nps": "chis",
     "timeZone": "America/Los_Angeles",
     "airports": [
       "LAX",
@@ -114,6 +118,7 @@
     "nameEn": "Joshua Tree",
     "kind": "park",
     "country": "US",
+    "nps": "jotr",
     "timeZone": "America/Los_Angeles",
     "airports": [
       "PSP",
@@ -145,6 +150,7 @@
     "nameEn": "Redwood",
     "kind": "park",
     "country": "US",
+    "nps": "redw",
     "timeZone": "America/Los_Angeles",
     "airports": [
       "ACV",
@@ -175,6 +181,7 @@
     "nameEn": "Lassen Volcanic",
     "kind": "park",
     "country": "US",
+    "nps": "lavo",
     "timeZone": "America/Los_Angeles",
     "airports": [
       "RDD",
@@ -204,6 +211,7 @@
     "nameEn": "Crater Lake",
     "kind": "park",
     "country": "US",
+    "nps": "crla",
     "timeZone": "America/Los_Angeles",
     "airports": [
       "MFR",
@@ -233,6 +241,7 @@
     "nameEn": "Mount Rainier",
     "kind": "park",
     "country": "US",
+    "nps": "mora",
     "timeZone": "America/Los_Angeles",
     "airports": [
       "SEA",
@@ -259,6 +268,7 @@
     "nameEn": "Olympic",
     "kind": "park",
     "country": "US",
+    "nps": "olym",
     "timeZone": "America/Los_Angeles",
     "airports": [
       "SEA",
@@ -287,6 +297,7 @@
     "nameEn": "North Cascades",
     "kind": "park",
     "country": "US",
+    "nps": "noca",
     "timeZone": "America/Los_Angeles",
     "airports": [
       "SEA",
@@ -312,6 +323,7 @@
     "nameEn": "Yellowstone",
     "kind": "park",
     "country": "US",
+    "nps": "yell",
     "timeZone": "America/Denver",
     "airports": [
       "BZN",
@@ -348,6 +360,7 @@
     "nameEn": "Grand Teton",
     "kind": "park",
     "country": "US",
+    "nps": "grte",
     "timeZone": "America/Denver",
     "airports": [
       "JAC",
@@ -377,6 +390,7 @@
     "nameEn": "Glacier",
     "kind": "park",
     "country": "US",
+    "nps": "glac",
     "timeZone": "America/Denver",
     "airports": [
       "FCA",
@@ -408,6 +422,7 @@
     "nameEn": "Rocky Mountain",
     "kind": "park",
     "country": "US",
+    "nps": "romo",
     "timeZone": "America/Denver",
     "airports": [
       "DEN"
@@ -432,6 +447,7 @@
     "nameEn": "Mesa Verde",
     "kind": "park",
     "country": "US",
+    "nps": "meve",
     "timeZone": "America/Denver",
     "airports": [
       "DRO",
@@ -468,6 +484,7 @@
     "nameEn": "Great Sand Dunes",
     "kind": "park",
     "country": "US",
+    "nps": "grsa",
     "timeZone": "America/Denver",
     "airports": [
       "ALS",
@@ -498,6 +515,7 @@
     "nameEn": "Black Canyon of the Gunnison",
     "kind": "park",
     "country": "US",
+    "nps": "blca",
     "timeZone": "America/Denver",
     "airports": [
       "MTJ",
@@ -531,6 +549,7 @@
     "nameEn": "Death Valley",
     "kind": "park",
     "country": "US",
+    "nps": "deva",
     "timeZone": "America/Los_Angeles",
     "airports": [
       "LAS"
@@ -553,6 +572,7 @@
     "nameEn": "Zion",
     "kind": "park",
     "country": "US",
+    "nps": "zion",
     "timeZone": "America/Denver",
     "airports": [
       "LAS",
@@ -585,6 +605,7 @@
     "nameEn": "Bryce Canyon",
     "kind": "park",
     "country": "US",
+    "nps": "brca",
     "timeZone": "America/Denver",
     "airports": [
       "LAS",
@@ -616,6 +637,7 @@
     "nameEn": "Grand Canyon",
     "kind": "park",
     "country": "US",
+    "nps": "grca",
     "timeZone": "America/Phoenix",
     "airports": [
       "LAS",
@@ -647,6 +669,7 @@
     "nameEn": "Great Basin",
     "kind": "park",
     "country": "US",
+    "nps": "grba",
     "timeZone": "America/Los_Angeles",
     "airports": [
       "SLC",
@@ -675,6 +698,7 @@
     "nameEn": "Antelope Canyon",
     "kind": "site",
     "country": "US",
+    "nps": null,
     "timeZone": "America/Phoenix",
     "airports": [
       "LAS",
@@ -711,6 +735,7 @@
     "nameEn": "Horseshoe Bend",
     "kind": "site",
     "country": "US",
+    "nps": "glca",
     "timeZone": "America/Phoenix",
     "airports": [
       "LAS",
@@ -747,6 +772,7 @@
     "nameEn": "Monument Valley",
     "kind": "site",
     "country": "US",
+    "nps": null,
     "timeZone": "America/Denver",
     "airports": [
       "PHX",
@@ -782,6 +808,7 @@
     "nameEn": "The Wave",
     "kind": "site",
     "country": "US",
+    "nps": null,
     "timeZone": "America/Denver",
     "airports": [
       "LAS",
@@ -816,6 +843,7 @@
     "nameEn": "Arches",
     "kind": "park",
     "country": "US",
+    "nps": "arch",
     "timeZone": "America/Denver",
     "airports": [
       "CNY",
@@ -851,6 +879,7 @@
     "nameEn": "Canyonlands",
     "kind": "park",
     "country": "US",
+    "nps": "cany",
     "timeZone": "America/Denver",
     "airports": [
       "CNY",
@@ -884,6 +913,7 @@
     "nameEn": "Capitol Reef",
     "kind": "park",
     "country": "US",
+    "nps": "care",
     "timeZone": "America/Denver",
     "airports": [
       "SLC",
@@ -916,6 +946,7 @@
     "nameEn": "White Sands",
     "kind": "park",
     "country": "US",
+    "nps": "whsa",
     "timeZone": "America/Denver",
     "airports": [
       "ELP",
@@ -940,6 +971,7 @@
     "nameEn": "Carlsbad Caverns",
     "kind": "park",
     "country": "US",
+    "nps": "cave",
     "timeZone": "America/Denver",
     "airports": [
       "ELP",
@@ -967,6 +999,7 @@
     "nameEn": "Petrified Forest",
     "kind": "park",
     "country": "US",
+    "nps": "pefo",
     "timeZone": "America/Phoenix",
     "airports": [
       "PHX",
@@ -999,6 +1032,7 @@
     "nameEn": "Saguaro",
     "kind": "park",
     "country": "US",
+    "nps": "sagu",
     "timeZone": "America/Phoenix",
     "airports": [
       "TUS",
@@ -1025,6 +1059,7 @@
     "nameEn": "Guadalupe Mountains",
     "kind": "park",
     "country": "US",
+    "nps": "gumo",
     "timeZone": "America/Denver",
     "airports": [
       "ELP",
@@ -1053,6 +1088,7 @@
     "nameEn": "Big Bend",
     "kind": "park",
     "country": "US",
+    "nps": "bibe",
     "timeZone": "America/Chicago",
     "airports": [
       "MAF",
@@ -1083,6 +1119,7 @@
     "nameEn": "Badlands",
     "kind": "park",
     "country": "US",
+    "nps": "badl",
     "timeZone": "America/Denver",
     "airports": [
       "RAP",
@@ -1109,6 +1146,7 @@
     "nameEn": "Wind Cave",
     "kind": "park",
     "country": "US",
+    "nps": "wica",
     "timeZone": "America/Denver",
     "airports": [
       "RAP",
@@ -1135,6 +1173,7 @@
     "nameEn": "Theodore Roosevelt",
     "kind": "park",
     "country": "US",
+    "nps": "thro",
     "timeZone": "America/Denver",
     "airports": [
       "BIS",
@@ -1165,6 +1204,7 @@
     "nameEn": "Great Smoky Mountains",
     "kind": "park",
     "country": "US",
+    "nps": "grsm",
     "timeZone": "America/New_York",
     "airports": [
       "TYS",
@@ -1195,6 +1235,7 @@
     "nameEn": "Shenandoah",
     "kind": "park",
     "country": "US",
+    "nps": "shen",
     "timeZone": "America/New_York",
     "airports": [
       "IAD",
@@ -1223,6 +1264,7 @@
     "nameEn": "New River Gorge",
     "kind": "park",
     "country": "US",
+    "nps": "neri",
     "timeZone": "America/New_York",
     "airports": [
       "CRW",
@@ -1253,6 +1295,7 @@
     "nameEn": "Acadia",
     "kind": "park",
     "country": "US",
+    "nps": "acad",
     "timeZone": "America/New_York",
     "airports": [
       "BGR",
@@ -1280,6 +1323,7 @@
     "nameEn": "Everglades",
     "kind": "park",
     "country": "US",
+    "nps": "ever",
     "timeZone": "America/New_York",
     "airports": [
       "MIA",
@@ -1308,6 +1352,7 @@
     "nameEn": "Biscayne",
     "kind": "park",
     "country": "US",
+    "nps": "bisc",
     "timeZone": "America/New_York",
     "airports": [
       "MIA",
@@ -1333,6 +1378,7 @@
     "nameEn": "Dry Tortugas",
     "kind": "park",
     "country": "US",
+    "nps": "drto",
     "timeZone": "America/New_York",
     "airports": [
       "EYW",
@@ -1361,6 +1407,7 @@
     "nameEn": "Denali",
     "kind": "park",
     "country": "US",
+    "nps": "dena",
     "timeZone": "America/Anchorage",
     "airports": [
       "ANC",
@@ -1389,6 +1436,7 @@
     "nameEn": "Kenai Fjords",
     "kind": "park",
     "country": "US",
+    "nps": "kefj",
     "timeZone": "America/Anchorage",
     "airports": [
       "ANC"
@@ -1415,6 +1463,7 @@
     "nameEn": "Wrangell–St. Elias",
     "kind": "park",
     "country": "US",
+    "nps": "wrst",
     "timeZone": "America/Anchorage",
     "airports": [
       "ANC",
@@ -1441,6 +1490,7 @@
     "nameEn": "Glacier Bay",
     "kind": "park",
     "country": "US",
+    "nps": "glba",
     "timeZone": "America/Juneau",
     "airports": [
       "GST"
@@ -1462,6 +1512,7 @@
     "nameEn": "Gates of the Arctic",
     "kind": "park",
     "country": "US",
+    "nps": "gaar",
     "timeZone": "America/Anchorage",
     "airports": [
       "FAI"
@@ -1485,6 +1536,7 @@
     "nameEn": "Kobuk Valley",
     "kind": "park",
     "country": "US",
+    "nps": "kova",
     "timeZone": "America/Nome",
     "airports": [
       "OTZ"
@@ -1505,6 +1557,7 @@
     "nameEn": "Katmai",
     "kind": "park",
     "country": "US",
+    "nps": "katm",
     "timeZone": "America/Anchorage",
     "airports": [
       "ANC",
@@ -1531,6 +1584,7 @@
     "nameEn": "Lake Clark",
     "kind": "park",
     "country": "US",
+    "nps": "lacl",
     "timeZone": "America/Anchorage",
     "airports": [
       "ANC",
@@ -1557,6 +1611,7 @@
     "nameEn": "Hawaiʻi Volcanoes",
     "kind": "park",
     "country": "US",
+    "nps": "havo",
     "timeZone": "Pacific/Honolulu",
     "airports": [
       "ITO",
@@ -1579,6 +1634,7 @@
     "nameEn": "Haleakalā",
     "kind": "park",
     "country": "US",
+    "nps": "hale",
     "timeZone": "Pacific/Honolulu",
     "airports": [
       "OGG"
@@ -1600,6 +1656,7 @@
     "nameEn": "Banff",
     "kind": "park",
     "country": "CA",
+    "nps": null,
     "timeZone": "America/Edmonton",
     "airports": [
       "YYC",
@@ -1628,6 +1685,7 @@
     "nameEn": "Jasper",
     "kind": "park",
     "country": "CA",
+    "nps": null,
     "timeZone": "America/Edmonton",
     "airports": [
       "YEG",
@@ -1656,6 +1714,7 @@
     "nameEn": "Yoho",
     "kind": "park",
     "country": "CA",
+    "nps": null,
     "timeZone": "America/Edmonton",
     "airports": [
       "YYC",

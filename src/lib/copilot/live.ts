@@ -27,6 +27,8 @@ export interface ExtractedClosure {
 
 export interface ExtractedClosures {
   fetched: string;
+  /** 每座公园的公告是哪天读的（每晚整份读、聊天时只现读要去的几座）；旧格式没有，按 fetched 算 */
+  parks?: Record<string, string>;
   closures: ExtractedClosure[];
 }
 
@@ -43,16 +45,26 @@ export interface LiveFromClosures {
   maybe: Map<string, ExtractedClosure>;
 }
 
-export function liveFromClosures(file: ExtractedClosures, startDate: string | undefined, days: number, referenceDate: string): LiveFromClosures {
+export function liveFromClosures(
+  file: ExtractedClosures,
+  startDate: string | undefined,
+  days: number,
+  referenceDate: string,
+  parks: string[] = [],
+): LiveFromClosures {
   const byStop = new Map<string, ExtractedClosure>();
   const maybe = new Map<string, ExtractedClosure>();
   if (!startDate) return { status: "month-only", byStop, maybe };
   const until = addDays(referenceDate, LIVE_ALERT_DAYS);
   if (startDate > until) return { status: "too-far", byStop, maybe };
-  if (file.fetched > referenceDate) return { status: "future", byStop, maybe };
-  if (file.fetched < addDays(referenceDate, -LIVE_STALE_DAYS)) return { status: "stale", byStop, maybe };
+  // 要去的公园里最旧的那一份算（有公园没读过就按整份的 fetched）
+  const dates = parks.length > 0 && file.parks ? parks.map((code) => file.parks?.[code] ?? file.fetched) : [file.fetched];
+  const fetched = dates.reduce((a, b) => (a < b ? a : b));
+  if (dates.some((date) => date > referenceDate)) return { status: "future", byStop, maybe };
+  if (fetched < addDays(referenceDate, -LIVE_STALE_DAYS)) return { status: "stale", byStop, maybe };
   const last = addDays(startDate, days - 1);
   for (const closure of file.closures) {
+    if (parks.length > 0 && !parks.includes(closure.park)) continue;
     if (closure.reopen && closure.reopen <= startDate) continue;
     if (closure.from && closure.from > last) continue;
     const strict = new Set(closure.strict ?? closure.attractions);

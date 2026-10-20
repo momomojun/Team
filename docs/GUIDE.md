@@ -104,7 +104,7 @@ npm --prefix D:/LLM/Team run alerts:fetch
 cd D:/LLM/Team/copilot && python -m nps_copilot alerts
 ```
 
-  第二条要开着 Ollama，151 条公告约 5 分钟。GitHub 上每天也会自动抓一次，有新的关闭公告就开一个 `nps-alerts` 标签的 issue；仓库设置里加 secret `DATA_GOV_API_KEY` 更稳（不加用 DEMO_KEY，常常被限流）。
+  第二条：`.env.local` 里有 `GEMINI_API_KEY` 就用 Gemini 读（免费档），没有就用本机 Ollama（要开着）；读过的记在 `copilot/data/alerts/extracted.json`，下次只读新出现、改过的几条。其实不跑也行：用 Copilot 排两周内出发的行程时，要去的公园今天还没读过，它会当场只抓这几座公园的公告读一遍。GitHub 上每天也会自动抓一次，有新的关闭公告就开一个 `nps-alerts` 标签的 issue；仓库设置里加 secret `DATA_GOV_API_KEY` 更稳（不加用 DEMO_KEY，常常被限流）。
 
 ### Copilot：三种跑法，选一个
 

@@ -140,7 +140,7 @@ export function planTrip(input: unknown, options: PlanOptions) {
   let byAlert = new Map<string, ExtractedClosure>();
   let maybeAlert = new Map<string, ExtractedClosure>();
   if (!live && options.closures) {
-    const from = liveFromClosures(options.closures, normalized.startDate, normalized.days, options.referenceDate);
+    const from = liveFromClosures(options.closures, normalized.startDate, normalized.days, options.referenceDate, normalized.parks);
     live = from.live;
     byAlert = from.byStop;
     maybeAlert = from.maybe;

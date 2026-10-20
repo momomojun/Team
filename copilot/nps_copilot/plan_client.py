@@ -31,6 +31,8 @@ class PlanCall:
     result: dict
     latency_ms: int
     via: str
+    # 聊天时现读公告的情况（refreshed、读了哪几座公园、新读了几条……），记进日志
+    refresh: dict | None = None
 
 
 def live_closures() -> str | None:
@@ -44,6 +46,11 @@ def live_closures() -> str | None:
 def plan_trip(request: dict, reference_date: str) -> PlanCall:
     url = os.environ.get("COPILOT_PLAN_URL")
     start = time.perf_counter()
+    refresh = None
+    if os.environ.get("COPILOT_LIVE") != "0" and not os.environ.get("COPILOT_LIVE_CLOSURES"):
+        # 两周内出发、要去的公园今天还没读过公告：当场只抓这几座公园的读一遍（出错就用原来的清单）
+        from .alerts_live import refresh_for
+        refresh = refresh_for(request, reference_date)
     if url:
         body = json.dumps(request, ensure_ascii=False).encode("utf-8")
         http = urllib.request.Request(f"{url}?reference={reference_date}", data=body, headers={"Content-Type": "application/json"})
@@ -72,4 +79,4 @@ def plan_trip(request: dict, reference_date: str) -> PlanCall:
             raise PlanError(f"plan_trip 出错：{completed.stderr.decode('utf-8', 'replace')[-500:]}")
         result = json.loads(output)
         via = "cli"
-    return PlanCall(result=result, latency_ms=round((time.perf_counter() - start) * 1000), via=via)
+    return PlanCall(result=result, latency_ms=round((time.perf_counter() - start) * 1000), via=via, refresh=refresh)
