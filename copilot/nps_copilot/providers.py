@@ -4,8 +4,8 @@
 - ReplayProvider：读录好的模型输出（CI 上没有 GPU，用它跑评测门禁；没录到的请求直接报错，不瞎猜）
 - RecordingProvider：包一个真模型，把每次调用录下来，给 ReplayProvider 用
 - ScriptedProvider：单元测试用，按顺序返回写好的输出
-- GeminiProvider、OpenAIProvider：商业 API（10-19 加的，对照实验用），要明确设 COPILOT_PROVIDER=gemini / openai 才会用，
-  不会自动退到云端。key 从环境变量或仓库根目录的 .env.local 读（GEMINI_API_KEY、OPENAI_API_KEY），只放在请求头里，不写日志
+- GeminiProvider、OpenAIProvider、OpenRouterProvider：商业 API（10-19、10-20 加的，对照实验用），要明确设 COPILOT_PROVIDER=gemini / openai / openrouter 才会用，
+  不会自动退到云端。key 从环境变量或仓库根目录的 .env.local 读（GEMINI_API_KEY、OPENAI_API_KEY、OPENROUTER_API_KEY），只放在请求头里，不写日志
 - FallbackProvider：主模型出错（额度用完、服务忙）时退回本机模型，给 Copilot 服务用；评测不用它（要量的是主模型本身）
 """
 from __future__ import annotations
@@ -208,7 +208,7 @@ class _Paced:
                 return result
             except urllib.error.HTTPError as error:
                 detail = error.read().decode("utf-8", "replace")[:600]
-                if error.code == 429 and "PerDay" in detail:
+                if error.code == 429 and ("PerDay" in detail or "per-day" in detail.lower() or "per day" in detail.lower()):
                     raise QuotaError(f"今天的免费额度用完了（{error.code}）") from error
                 if error.code not in (429, 500, 502, 503, 504) or attempt == len(self.waits):
                     raise ProviderError(f"API 出错（{error.code}）：{detail[:200]}") from error
@@ -325,6 +325,54 @@ class OpenAIProvider:
 
 
 @dataclass
+class OpenRouterProvider:
+    """OpenRouter（一个接口用很多家的模型，有免费模型，名字以 :free 结尾）。接口和 OpenAI 的 Chat Completions 一样；
+    按 JSON Schema 输出，推理开到 low（推理模型关得太狠会乱答，10-19 的 GPT-5 nano 就是这样）。
+    免费模型有每天的次数上限（没充值过的账户约 50 次 / 天），用完了 429 里写着 per-day，直接报错不再试"""
+    model: str = "minimax/minimax-m3.1-flash:free"
+    timeout: float = 120.0
+    name: str = "openrouter"
+    rpm: float = 18
+    max_tokens: int = 1024
+    reasoning: dict | None = field(default_factory=lambda: {"effort": "low"})
+
+    def __post_init__(self) -> None:
+        self.key = secret("OPENROUTER_API_KEY")
+        self.pace = _Paced(self.rpm)
+
+    def complete_json(self, task: str, system: str, user: str, schema: dict) -> Completion:
+        while True:
+            body: dict = {
+                "model": self.model, "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
+                "response_format": {"type": "json_schema", "json_schema": {"name": task, "schema": schema, "strict": False}},
+                "max_tokens": (3072 if task == "writer" else self.max_tokens) * 4, "temperature": 0, "seed": 42,
+            }
+            if self.reasoning is not None:
+                body["reasoning"] = self.reasoning
+            try:
+                reply = self.pace.run(lambda: _post("https://openrouter.ai/api/v1/chat/completions", body,
+                                                    {"Authorization": f"Bearer {self.key}", "X-Title": "NPS Guide Copilot"}, self.timeout))
+                break
+            except ProviderError as error:
+                # 这个模型不认推理设置：去掉再发
+                if "（400）" in str(error) and "reasoning" in str(error) and self.reasoning is not None:
+                    self.reasoning = None
+                    continue
+                raise
+        if "error" in reply:
+            raise ProviderError(f"OpenRouter 出错：{json.dumps(reply['error'], ensure_ascii=False)[:200]}")
+        try:
+            text = reply["choices"][0]["message"]["content"] or ""
+        except (KeyError, IndexError) as error:
+            raise ProviderError(f"OpenRouter 没有返回内容：{json.dumps(reply, ensure_ascii=False)[:200]}") from error
+        usage = reply.get("usage", {})
+        meta = {"prompt_tokens": usage.get("prompt_tokens"), "output_tokens": usage.get("completion_tokens"),
+                "thinking_tokens": (usage.get("completion_tokens_details") or {}).get("reasoning_tokens"),
+                "provider": reply.get("provider")}
+        return Completion(data=_json_text(text), model=self.model, latency_ms=self.pace.last_ms, raw=text, meta=meta)
+
+
+@dataclass
 class FallbackProvider:
     """主模型出错（额度用完、服务一直忙、没网）时这一次改用本机模型，meta 里记下来"""
     primary: Provider
@@ -350,10 +398,10 @@ def from_env() -> Provider:
         return OllamaProvider(**({"model": model} if model else {}))
     if kind == "replay":
         return ReplayProvider(Path(os.environ["COPILOT_REPLAY"]))
-    if kind in ("gemini", "openai"):
-        cls = GeminiProvider if kind == "gemini" else OpenAIProvider
+    if kind in ("gemini", "openai", "openrouter"):
+        cls = {"gemini": GeminiProvider, "openai": OpenAIProvider, "openrouter": OpenRouterProvider}[kind]
         provider: Provider = cls(**({"model": model} if model else {}))
         if os.environ.get("COPILOT_FALLBACK") == "ollama":
             provider = FallbackProvider(provider, OllamaProvider())
         return provider
-    raise ProviderError(f"不认识的 COPILOT_PROVIDER：{kind}（ollama / gemini / openai / replay）")
+    raise ProviderError(f"不认识的 COPILOT_PROVIDER：{kind}（ollama / gemini / openai / openrouter / replay）")
