@@ -4,7 +4,8 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { seriousNote, unsuitableNote } from "@/components/attractions/family-fit";
 import { KIND_COLORS } from "@/components/attractions/kinds";
 import { IconBed, IconClose, IconGrip } from "@/components/icons";
-import { ParkMap, type MapLeg, type MapPoint, type MapTrail } from "@/components/map/park-map";
+import { ParkMap, type MapLeg, type MapPoint, type MapTrail, type TourRequest } from "@/components/map/park-map";
+import { changedDays, type TourDay } from "@/components/map/route-tour";
 import { SectionNav, type SectionLink } from "@/components/site/section-nav";
 import { AddToTripButton } from "@/components/trip/add-to-trip-button";
 import { buttonPrimary, buttonSecondary } from "@/components/ui";
@@ -131,6 +132,8 @@ export function Planner({
   const t = text.plan;
   const trip = useTrip();
   const [mapDay, setMapDay] = useState(ALL_DAYS);
+  // 路线动画：第一次排出行程、改了行程时请地图自动播一次（改了只播变了的那几天）
+  const [tourRequest, setTourRequest] = useState<TourRequest | null>(null);
   const [campMap, setCampMap] = useState(false);
   const [campPick, setCampPick] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -185,6 +188,7 @@ export function Planner({
   );
 
   const duration = (minutes: number) => formatDuration(minutes, text.units);
+  const formatDate = (date: string) => dateFormat.format(new Date(`${date}T00:00:00Z`));
   /** 显示用的日期：只有定了具体出发日期才有 */
   const dateOf = (day: number) => (trip.startDate ? addDays(trip.startDate, day) : null);
   /** 算日出日落、季节提示用的日期：只定了月份时按那个月的 15 号 */
@@ -490,10 +494,20 @@ export function Planner({
     }
   };
 
+  // 每天的“景点 + 当晚住处”，比较改了行程以后哪几天变了
+  const daySignatures = (value: Trip) =>
+    value.days.map((items, day) => `${items.map((item) => item.id).join(",")}|${value.nights[day + 1]?.id ?? ""}`);
+  const requestTour = (before: Trip | null, after: Trip) => {
+    const days = changedDays(before ? daySignatures(before) : null, daySignatures(after));
+    if (days.length > 0) setTourRequest({ key: `${Date.now()}`, days });
+  };
+
   // 对话框（Copilot）排出的行程：原样放进行程页。第一次换掉手里已有的行程前问一声，之后接着说改出来的直接换
   const copilotOwnsTrip = useRef(false);
   const applyCopilotTrip = (next: Trip) => {
     if (!copilotOwnsTrip.current && allIds.length > 0 && !window.confirm(t.copilot.replaceConfirm)) return false;
+    // 接着改的（Copilot 上一次排的）只播变了的那几天；第一次放进来的整趟都播
+    requestTour(copilotOwnsTrip.current ? trip : null, next);
     copilotOwnsTrip.current = true;
     updateTrip(() => next);
     setMapDay(ALL_DAYS);
@@ -559,6 +573,7 @@ export function Planner({
         },
       );
       updateTrip(() => generated);
+      requestTour(null, generated);
       setMapDay(ALL_DAYS);
       setOpenId(null);
       setWizardOpen(false);
@@ -823,6 +838,47 @@ export function Planner({
   const mapLegend = showAll
     ? shownRoutes.map((route) => ({ color: dayColor(route.day), label: fill(t.day, { n: route.day + 1 }) }))
     : undefined;
+  // 路线动画的每一天：沿当天的开车路线，经过的每一站弹出“几点到、停多久”，最后停在当晚住处
+  const clockOf = (minutes: number | undefined) => (minutes === undefined ? "" : formatClock(minutes, text.units.clock));
+  const tourDays: TourDay[] = allRoutes.flatMap((route, k) => {
+    const view = dayViews[route.day];
+    if (!view) return [];
+    const road = roadRoutes[routeKeys[k]];
+    const stops = view.rows.map(({ stop }, i) => {
+      const entry = view.timeline.entries[i];
+      const at = stop.start ?? stop;
+      return {
+        id: stop.id,
+        lon: at.lon,
+        lat: at.lat,
+        label: stop.nameZh,
+        caption: entry ? fill(t.tour.stop, { time: clockOf(entry.start), stay: duration(entry.end - entry.start) }) : "",
+      };
+    });
+    if (view.to) {
+      const endpoint = view.to.endpoint === "destination" || view.to.endpoint === "origin";
+      stops.push({
+        id: `lodging-${view.to.id}`,
+        lon: view.to.lon,
+        lat: view.to.lat,
+        label: view.to.name,
+        caption: fill(endpoint ? t.tour.end : t.tour.night, { time: clockOf(view.timeline.returnAt) }),
+        ...(endpoint ? {} : { lodging: true }),
+      });
+    }
+    const last = view.timeline.entries.at(-1);
+    return [
+      {
+        day: route.day,
+        color: dayColor(route.day),
+        title: view.date ? fill(t.tour.titleDate, { n: route.day + 1, date: formatDate(view.date) }) : fill(t.tour.title, { n: route.day + 1 }),
+        path: road?.path ?? route.points.map((point) => [point.lon, point.lat] as [number, number]),
+        straight: !road,
+        stops,
+        dusk: last?.slot === "sunset" || last?.slot === "night",
+      },
+    ];
+  });
   // 全程公里数：有真实路线用路线长度，还没查到的按车程估（平均时速 65 公里）
   let totalKm = 0;
   let distanceEstimated = false;
@@ -836,7 +892,6 @@ export function Planner({
   });
   const parkNameEn = (code: string) => parkByCode.get(code)?.nameEn ?? "";
   const parkName = (code: string) => parkByCode.get(code)?.nameZh ?? code;
-  const formatDate = (date: string) => dateFormat.format(new Date(`${date}T00:00:00Z`));
   const formatFullDate = (date: string) => fullDateFormat.format(new Date(`${date}T00:00:00Z`));
   /** 一个行程的简介：去哪几个公园、几天、什么时候、几个景点 */
   const summarizeTrip = (other: Trip) => {
@@ -1656,6 +1711,8 @@ export function Planner({
               highlightTrailId={selectedId}
               legs={mapLegs}
               legend={mapLegend}
+              tour={campMap ? undefined : tourDays}
+              tourRequest={campMap ? null : tourRequest}
               fitKey={campMap ? "camps" : showAll ? "all" : String(mapIndex)}
               extras={supplyExtras}
               extrasLegend={supplyLegend}

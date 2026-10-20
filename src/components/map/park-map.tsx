@@ -1,8 +1,9 @@
 "use client";
 
 import "maplibre-gl/dist/maplibre-gl.css";
-import type { GeoJSONSource, Map as MapLibreMap } from "maplibre-gl";
+import type { GeoJSONSource, Map as MapLibreMap, Marker } from "maplibre-gl";
 import { useEffect, useEffectEvent, useRef, useState, type ReactNode } from "react";
+import { bounds, cumulative, drawMs, sliceTo, stopDistances, type TourDay } from "./route-tour";
 import { EOX_ATTRIBUTION, EOX_IMAGERY_TILES, IMAGERY_TILES, STYLE_URL, TERRAIN_TILES, type Imagery } from "./sources";
 
 export interface MapPoint {
@@ -48,6 +49,57 @@ export interface MapText {
   trailLegend: string;
   roadLegend: string;
   campLegend: string;
+  /** 路线动画的按钮 */
+  tourPlay: string;
+  tourPause: string;
+  tourResume: string;
+  tourSkip: string;
+  tourDay: string;
+}
+
+/** 请地图自动播一次路线动画：key 变了才播；days 是要播的那几天（改了行程只播变了的） */
+export interface TourRequest {
+  key: string;
+  days: number[];
+}
+
+// 动画的节奏：每天先把镜头移过去，再沿路线画，画完停一下
+const FLY_MS = 900;
+const HOLD_MS = 900;
+// 路线还没查到真实道路时最多等这么久，再不来就按直线播
+const ROUTE_WAIT_MS = 6000;
+
+interface TourState {
+  days: TourDay[];
+  index: number;
+  phase: "fly" | "draw" | "hold";
+  phaseStart: number;
+  pausedAt: number | null;
+  raf: number;
+  cum: number[];
+  total: number;
+  stopKm: number[];
+  shown: number;
+  done: GeoJSON.Feature[];
+  markers: Marker[];
+}
+
+const reducedMotion = () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/** 车头开到一站时弹出的小牌子；用 textContent 填字，不拼 HTML */
+function captionElement(label: string, caption: string, lodging: boolean): HTMLDivElement {
+  const element = document.createElement("div");
+  element.className = `pointer-events-none whitespace-nowrap px-2 py-1 text-[11px] leading-4 shadow-sm ${
+    lodging ? "bg-ink text-paper" : "bg-paper/95 text-ink"
+  }`;
+  const name = document.createElement("div");
+  name.className = "font-medium";
+  name.textContent = label;
+  const line = document.createElement("div");
+  line.className = lodging ? "text-paper/80" : "text-ink-soft";
+  line.textContent = caption;
+  element.append(name, line);
+  return element;
 }
 
 // worker 文件由 scripts/copy-maplibre-worker.mjs 复制到 public/
@@ -154,6 +206,8 @@ export function ParkMap({
   extras,
   extrasLegend,
   imagery = "usgs",
+  tour,
+  tourRequest = null,
   text,
   className = "",
   children,
@@ -177,6 +231,10 @@ export function ParkMap({
   extrasLegend?: { color: string; label: string }[];
   /** 卫星图：美国用 USGS，加拿大的公园用 EOX（USGS 不覆盖加拿大） */
   imagery?: Imagery;
+  /** 路线动画用的每一天（排好的行程才有）；有就显示“播放路线” */
+  tour?: TourDay[];
+  /** 请地图自动播一次（第一次排出行程、改了行程时） */
+  tourRequest?: TourRequest | null;
   text: MapText;
   className?: string;
   /** 叠在地图上的内容，比如选中景点的卡片 */
@@ -189,6 +247,22 @@ export function ParkMap({
   const [ready, setReady] = useState(false);
   const [satellite, setSatellite] = useState(false);
   const [terrain, setTerrain] = useState(false);
+  const markerClass = useRef<typeof Marker | null>(null);
+  const tourRef = useRef<TourState | null>(null);
+  const pointsRef = useRef(points);
+  const [tourUi, setTourUi] = useState<{
+    index: number;
+    days: { day: number; color: string }[];
+    title: string;
+    paused: boolean;
+    dusk: boolean;
+  } | null>(null);
+  // 地图在不在屏幕上：自动播放要等看得见了再播
+  const [visible, setVisible] = useState(false);
+  const playedKey = useRef("");
+  // 这次自动播放的请求是什么时候来的（等路线查到最多等 6 秒）；tick 用来到点了再看一次
+  const requestStart = useRef<{ key: string; at: number } | null>(null);
+  const [tick, setTick] = useState(0);
 
   const handleSelect = useEffectEvent((id: string) => onSelect?.(id));
 
@@ -215,9 +289,10 @@ export function ParkMap({
     let cancelled = false;
     let map: MapLibreMap | undefined;
 
-    import("maplibre-gl").then(({ Map, NavigationControl, ScaleControl, AttributionControl, setWorkerUrl }) => {
+    import("maplibre-gl").then(({ Map, Marker: MarkerClass, NavigationControl, ScaleControl, AttributionControl, setWorkerUrl }) => {
       if (cancelled || !containerRef.current) return;
       setWorkerUrl(WORKER_URL);
+      markerClass.current = MarkerClass;
       const instance = new Map({
         container: containerRef.current,
         style: STYLE_URL,
@@ -403,6 +478,35 @@ export function ParkMap({
           },
           paint: { "text-color": "#1c1b18", "text-halo-color": "#f4efe7", "text-halo-width": 1.6 },
         });
+        instance.addSource("tour-done", { type: "geojson", data: EMPTY });
+        instance.addLayer(
+          {
+            id: "tour-done",
+            type: "line",
+            source: "tour-done",
+            layout: { "line-join": "round", "line-cap": "round" },
+            paint: { "line-color": ["get", "color"], "line-width": 3.5, "line-opacity": 0.55 },
+          },
+          "points-selected",
+        );
+        instance.addSource("tour-line", { type: "geojson", data: EMPTY });
+        instance.addLayer(
+          {
+            id: "tour-line",
+            type: "line",
+            source: "tour-line",
+            layout: { "line-join": "round", "line-cap": "round" },
+            paint: { "line-color": ["get", "color"], "line-width": 5, "line-opacity": 0.95 },
+          },
+          "points-selected",
+        );
+        instance.addSource("tour-head", { type: "geojson", data: EMPTY });
+        instance.addLayer({
+          id: "tour-head",
+          type: "circle",
+          source: "tour-head",
+          paint: { "circle-radius": 7, "circle-color": ["get", "color"], "circle-stroke-width": 3, "circle-stroke-color": "#ffffff" },
+        });
         if (!instance.hasImage("camp-tent")) instance.addImage("camp-tent", campTentImage(), { pixelRatio: 2 });
         instance.addLayer({
           id: "camps",
@@ -456,10 +560,185 @@ export function ParkMap({
 
     return () => {
       cancelled = true;
+      if (tourRef.current) cancelAnimationFrame(tourRef.current.raf);
+      tourRef.current = null;
       map?.remove();
       mapRef.current = null;
     };
   }, [near]);
+
+  useEffect(() => {
+    const element = containerRef.current;
+    if (!element) return;
+    const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting && entry.intersectionRatio >= 0.5), {
+      threshold: [0, 0.5, 1],
+    });
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  // ---------- 路线动画 ----------
+  const setLine = (id: string, features: GeoJSON.Feature[]) =>
+    (mapRef.current?.getSource(id) as GeoJSONSource | undefined)?.setData({ type: "FeatureCollection", features });
+  const lineFeature = (line: [number, number][], color: string): GeoJSON.Feature => ({
+    type: "Feature",
+    geometry: { type: "LineString", coordinates: line },
+    properties: { color },
+  });
+  const clearMarkers = (state: TourState) => {
+    state.markers.forEach((marker) => marker.remove());
+    state.markers = [];
+  };
+
+  const finishTour = () => {
+    const state = tourRef.current;
+    const map = mapRef.current;
+    if (!state || !map) return;
+    cancelAnimationFrame(state.raf);
+    clearMarkers(state);
+    tourRef.current = null;
+    ["tour-done", "tour-line", "tour-head"].forEach((id) => setLine(id, []));
+    map.setLayoutProperty("legs", "visibility", "visible");
+    map.setLayoutProperty("legs-straight", "visibility", "visible");
+    setTourUi(null);
+    fitToPoints(map, pointsRef.current, true);
+  };
+
+  const beginDay = (state: TourState, index: number, now: number) => {
+    const map = mapRef.current;
+    if (!map) return;
+    const day = state.days[index];
+    clearMarkers(state);
+    state.index = index;
+    state.phase = "fly";
+    state.phaseStart = now;
+    state.cum = cumulative(day.path);
+    state.total = state.cum[state.cum.length - 1] ?? 0;
+    state.stopKm = stopDistances(day.path, state.cum, day.stops);
+    state.shown = 0;
+    setLine("tour-line", []);
+    setLine("tour-head", []);
+    map.fitBounds(bounds(day), { padding: 72, maxZoom: 12, duration: FLY_MS });
+    setTourUi({ index, days: state.days.map(({ day: n, color }) => ({ day: n, color })), title: day.title, paused: false, dusk: false });
+  };
+
+  const frame = (now: number) => {
+    const state = tourRef.current;
+    const map = mapRef.current;
+    if (!state || !map) return;
+    state.raf = requestAnimationFrame(frame);
+    if (state.pausedAt !== null) return;
+    const day = state.days[state.index];
+    const elapsed = now - state.phaseStart;
+    if (state.phase === "fly") {
+      if (elapsed >= FLY_MS) {
+        state.phase = "draw";
+        state.phaseStart = now;
+      }
+      return;
+    }
+    if (state.phase === "draw") {
+      const progress = Math.min(1, elapsed / drawMs(state.days.length));
+      // 慢慢起步、慢慢停下
+      const eased = progress < 0.5 ? 2 * progress * progress : 1 - (-2 * progress + 2) ** 2 / 2;
+      const distance = eased * state.total;
+      const { line, head } = sliceTo(day.path, state.cum, distance);
+      setLine("tour-line", line.length > 1 ? [lineFeature(line, day.color)] : []);
+      setLine("tour-head", [{ type: "Feature", geometry: { type: "Point", coordinates: head }, properties: { color: day.color } }]);
+      while (state.shown < day.stops.length && state.stopKm[state.shown] <= distance + 1e-6) {
+        const stop = day.stops[state.shown];
+        if (markerClass.current) {
+          const marker = new markerClass.current({ element: captionElement(stop.label, stop.caption, stop.lodging ?? false), anchor: "bottom", offset: [0, -14] })
+            .setLngLat([stop.lon, stop.lat])
+            .addTo(map);
+          state.markers.push(marker);
+          // 一天最多同时留三个牌子，免得挤成一团
+          if (state.markers.length > 3) state.markers.shift()?.remove();
+        }
+        state.shown += 1;
+      }
+      if (day.dusk && progress > 0.75) setTourUi((ui) => (ui && !ui.dusk ? { ...ui, dusk: true } : ui));
+      if (progress >= 1) {
+        state.phase = "hold";
+        state.phaseStart = now;
+      }
+      return;
+    }
+    if (elapsed >= HOLD_MS) {
+      state.done.push(lineFeature(day.path, day.color));
+      setLine("tour-done", state.done);
+      setLine("tour-line", []);
+      setLine("tour-head", []);
+      if (state.index + 1 < state.days.length) beginDay(state, state.index + 1, now);
+      else finishTour();
+    }
+  };
+
+  const startTour = (days: TourDay[], from = 0) => {
+    const map = mapRef.current;
+    if (!map || days.length === 0) return;
+    if (tourRef.current) {
+      cancelAnimationFrame(tourRef.current.raf);
+      clearMarkers(tourRef.current);
+    }
+    map.setLayoutProperty("legs", "visibility", "none");
+    map.setLayoutProperty("legs-straight", "visibility", "none");
+    const state: TourState = {
+      days,
+      index: from,
+      phase: "fly",
+      phaseStart: 0,
+      pausedAt: null,
+      raf: 0,
+      cum: [],
+      total: 0,
+      stopKm: [],
+      shown: 0,
+      done: days.slice(0, from).map((day) => lineFeature(day.path, day.color)),
+      markers: [],
+    };
+    tourRef.current = state;
+    setLine("tour-done", state.done);
+    beginDay(state, from, performance.now());
+    state.raf = requestAnimationFrame(frame);
+  };
+
+  const togglePause = () => {
+    const state = tourRef.current;
+    if (!state) return;
+    if (state.pausedAt === null) state.pausedAt = performance.now();
+    else {
+      state.phaseStart += performance.now() - state.pausedAt;
+      state.pausedAt = null;
+    }
+    setTourUi((ui) => (ui ? { ...ui, paused: state.pausedAt !== null } : ui));
+  };
+
+  // 自动播放：请求的 key 变了、地图看得见、要播的那几天路线都查到了（最多等 6 秒）才播；系统设了“减少动画”的不自动播
+  const tourDays = tour ?? [];
+  const wanted = tourRequest ? tourDays.filter((day) => tourRequest.days.includes(day.day)) : [];
+  const waitingRoads = wanted.some((day) => day.straight);
+  const startRequested = useEffectEvent(() => {
+    if (!tourRequest || wanted.length === 0) return;
+    playedKey.current = tourRequest.key;
+    startTour(wanted);
+  });
+  useEffect(() => {
+    if (!tourRequest || tourRequest.key === playedKey.current) return;
+    if (requestStart.current?.key !== tourRequest.key) requestStart.current = { key: tourRequest.key, at: Date.now() };
+    if (reducedMotion()) {
+      playedKey.current = tourRequest.key;
+      return;
+    }
+    if (!ready || !visible || wanted.length === 0) return;
+    const waited = Date.now() - requestStart.current.at;
+    if (waitingRoads && waited < ROUTE_WAIT_MS) {
+      const timer = setTimeout(() => setTick((n) => n + 1), ROUTE_WAIT_MS - waited);
+      return () => clearTimeout(timer);
+    }
+    startRequested();
+  }, [tourRequest, ready, visible, wanted.length, waitingRoads, tick]);
+  const stopTour = useEffectEvent(() => finishTour());
 
   useEffect(() => {
     const map = mapRef.current;
@@ -471,7 +750,12 @@ export function ParkMap({
     (map.getSource("legs") as GeoJSONSource).setData(
       linesToGeoJSON((legs ?? []).map((leg) => ({ id: leg.id, coordinates: leg.path, color: leg.color, straight: leg.straight }))),
     );
+    pointsRef.current = points;
     const key = `${fitKey}#${points.map((p) => p.id).join("|")}`;
+    if (key !== fittedKeyRef.current && tourRef.current) {
+      // 播放中换了显示的内容（点了某一天、营地地图）：停掉动画，按新的内容缩放
+      stopTour();
+    }
     if (key !== fittedKeyRef.current) {
       // 第一次直接跳过去，之后换点集再用动画
       fitToPoints(map, points, fittedKeyRef.current !== "");
@@ -579,6 +863,42 @@ export function ParkMap({
           </div>
         )}
       </div>
+      {tourUi?.dusk && <div className="pointer-events-none absolute inset-0 bg-ink/25 transition-opacity duration-700" />}
+      {ready && tourDays.length > 0 && (
+        <div className="absolute bottom-9 left-3 z-10 flex max-w-[calc(100%-1.5rem)] flex-wrap items-center gap-x-3 gap-y-1.5 bg-paper/95 px-3 py-2 text-[11px] tracking-[0.08em] shadow-sm">
+          {tourUi ? (
+            <>
+              <span className="font-serif text-sm tracking-normal">{tourUi.title}</span>
+              <button type="button" className="link-line" onClick={togglePause}>
+                {tourUi.paused ? text.tourResume : text.tourPause}
+              </button>
+              <button type="button" className="link-line" onClick={finishTour}>
+                {text.tourSkip}
+              </button>
+              <span className="flex gap-1" role="group" aria-label={text.tourPlay}>
+                {tourUi.days.map((day, k) => (
+                  <button
+                    key={day.day}
+                    type="button"
+                    aria-label={text.tourDay.replace("{n}", String(day.day + 1))}
+                    aria-current={k === tourUi.index}
+                    onClick={() => {
+                      const days = tourRef.current?.days;
+                      if (days) startTour(days, k);
+                    }}
+                    className="size-2.5 rounded-full border border-ink/40"
+                    style={{ backgroundColor: k <= tourUi.index ? day.color : "transparent" }}
+                  />
+                ))}
+              </span>
+            </>
+          ) : (
+            <button type="button" className="link-line" onClick={() => startTour(tourDays)}>
+              ▶ {text.tourPlay}
+            </button>
+          )}
+        </div>
+      )}
       {children}
     </div>
   );
