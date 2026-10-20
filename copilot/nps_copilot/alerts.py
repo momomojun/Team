@@ -139,7 +139,7 @@ def extract(alert: dict, provider: Provider, reference: dt.date) -> Extraction:
         trace["error"] = str(error)
         return Extraction(alert["id"], alert["park"], "none", trace=trace)
     data = completion.data
-    trace.update(model=completion.model, latency_ms=completion.latency_ms, output=data)
+    trace.update(model=completion.model, latency_ms=completion.latency_ms, output=data, usage=completion.meta)
     kind = data.get("type") if data.get("type") in TYPES else "none"
     evidence = (data.get("evidence") or "").strip()
     text = alert_text(alert)

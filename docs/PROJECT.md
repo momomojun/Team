@@ -263,3 +263,7 @@
 
 - 仓库主人让每晚的公告检查改在加州时间 0 点跑（#24），然后做下一步：行程页加对话框。浏览器 → 网站的 `/api/copilot/chat` 中转 → 本机的 Copilot 服务；`plan_trip` 的结果里带上网站的 Trip，排出来的行程原样放进行程页（聊天里说的和页面上的是同一份）。试了“6 月带爸妈去优胜美地玩 4 天，从旧金山飞”：问一次节奏，点“轻松玩”就排好放进行程页；接着说“不去冰川点了”“第三晚住 Yosemite Valley Lodge”“换成 9 月去”都改对了。Copilot 没开时对话框不显示。Copilot 放哪还没定，先按本机做。
 - 装 FastAPI 时不小心用了 Anaconda 的 pip（这台电脑上 `pip` 和 `python` 不是同一个），升级了 Anaconda 里的 anyio、pydantic 等，已经改回去了（typing-extensions 原来的版本查不到，装的 4.12.2，满足 torch、grpcio、python-docx 的要求）。以后一律用 `python -m pip`。
+
+### 10-19：商业 API 对照（分支 `feature/gemini-provider`）
+
+- 仓库主人问本机 4B 不够用时换 API 值不值、哪个最便宜。算了用量（每句话约 2 千输入 token），便宜一档的 API 一次对话不到 1 美分，钱不是问题；要比的是准不准、快不快。仓库主人申请了 Gemini 的免费 key、拿出手上的 OpenAI key（都写在 `.env.local`，不提交）。加了 `GeminiProvider`、`OpenAIProvider`（按免费档限速、服务忙重试、额度用完报错、模型不认的设置自动换一档，单元测试全用假的网络回复）和退回本机的 `FallbackProvider`。读公告这一项比了 6 个模型：GPT-4.1 mini 最准，Gemini 3.5 Flash Lite 免费、差得不多，本机 4B 第四，GPT-5 nano 最差，Gemma 4 31B 出错太多作废。OpenAI 一共花了约 $0.09。仓库主人提醒别拿 key 随手测试：以后真调用之前先说要调多少次。

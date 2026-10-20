@@ -31,7 +31,7 @@ from nps_copilot.intake import Intake  # noqa: E402
 from nps_copilot.writer import template, write  # noqa: E402
 from nps_copilot.pipeline import prompt_hashes  # noqa: E402
 from nps_copilot.plan_client import PlanError, plan_trip  # noqa: E402
-from nps_copilot.providers import OllamaProvider, ProviderError, RecordingProvider, ReplayProvider  # noqa: E402
+from nps_copilot.providers import ProviderError, RecordingProvider, ReplayProvider, from_env  # noqa: E402
 
 REFERENCE = "2026-10-16"
 
@@ -121,7 +121,7 @@ def main() -> int:
         provider = ReplayProvider(Path(args.replay))
         model = "replay:" + Path(args.replay).stem
     else:
-        provider = OllamaProvider()
+        provider = from_env()  # 默认本机 Ollama；COPILOT_PROVIDER=gemini / openai 换商业 API（对照实验）
         model = provider.model
         if args.record:
             # 默认样例录到 recordings/<模型>.jsonl，别的样例文件录到 recordings/<模型>-<样例文件名>.jsonl

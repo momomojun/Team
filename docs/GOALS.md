@@ -9,7 +9,7 @@
 | 部分 | 已完成 | 部分完成 | 没做 | 改主意或放弃 | 规则、决定（已执行） |
 |---|---:|---:|---:|---:|---:|
 | 网站（W） | 64 | 7 | 3 | 1 | 10 |
-| Copilot 和课程（A、P、O、R） | 79 | 28 | 10 | 3 | — |
+| Copilot 和课程（A、P、O、R） | 79 | 29 | 10 | 2 | — |
 
 ## 还没完成的（按方向分组，括号里是下面完整表里的编号）
 
@@ -208,7 +208,7 @@
 | P8 | 10-13 | 每晚刷新 NPS 公告 | §4、§6 | 部分完成 | 关闭信息还是手动维护的 `src/data/closures.ts`；`npm run check:closures` 只在本机定时任务里每天报告、不改数据、不在 CI 里；10-19 能抓快照、模型提取了（`npm run alerts:fetch`、`python -m nps_copilot alerts`），每晚自动跑和接进排行程还没做；10-19 GitHub 每晚抓一次（`alerts-nightly.yml`），新的关闭公告开 issue；模型提取在本机跑，没有自动接进数据 | PROJECT.md“下一步”第 2 条 |
 | P9 | 10-13 | 每份快照有内容 hash，每个回答记下用的哪份数据 | §3、§4 | 没做 | 日志每轮记 Copilot 版本、提示词 hash、`reference_date`；`/health` 有构建提交；`TripResult.engine.version` 写死 "1"；没有数据 hash | |
 | P10 | 10-13 | Provider 抽象 + 测试用的 mock provider（不需要密钥） | §4、§6 | 已完成 | `providers.py`：Ollama、Replay、Recording、Scripted；CI 用回放 | |
-| P11 | 10-13 | 一个低成本商业 API 模型 + 一个开源模型（Ollama）对比，按配置切换 | §4、§7 | 改主意或放弃 | 只用本机 Ollama（Qwen3.5 4B 默认，9B 对照）；`CloudProvider` 留了接口但默认关、没实现 | 仓库主人对另一个助手说过“目前不希望依赖云端 API”（archive/LLMOPS_WORK_LOG.md）；计划书要改 |
+| P11 | 10-13 | 一个低成本商业 API 模型 + 一个开源模型（Ollama）对比，按配置切换 | §4、§7 | 部分完成 | 10-19 仓库主人改了主意：加了 Gemini、OpenAI 的 Provider（`COPILOT_PROVIDER=gemini / openai`），读公告这一项和本机 4B 比过（RESULTS.md）；对话那几步还没比，默认还是本机 | 仓库主人对另一个助手说过“目前不希望依赖云端 API”（archive/LLMOPS_WORK_LOG.md）；计划书要改 |
 | P12 | 10-13 | 每个 agent 可以用不同的模型 | §4 | 没做 | 只有一个 `COPILOT_MODEL`，Intake、Writer、QA 共用 | |
 | P13 | 10-13 | 提示词进仓库、有版本，每次评测记下提示词版本 | §4 | 已完成 | `prompts/intake_v1.txt`、`intake_v2.txt`、`writer_v1.txt`、`qa_v1.txt`，`defaults.json`，环境变量切换；日志和 Release 记 hash | 计划书写 YAML，实际是 txt |
 | P14 | 10-13 | LangGraph 编排 5 个 agent（Intake、Retriever、Planner、Critic、Writer） | §4、§5 | 部分完成 | 自己写的固定流水线（`pipeline.py`），没有 LangGraph；Planner 是确定性引擎，不是 agent；Retriever 只在 QA 里；10-18 加了调度员（`dispatcher.py`）：模型决定改条件、提问、加减景点、指定住处、重新开始，代码执行和核对；仍然没有 LangGraph | 仓库主人 10-18 嫌“不智能”，助手建议改成模型调度工具（O60） |
@@ -232,7 +232,7 @@
 | P32 | 10-13 | 每个回答能追溯到模型、提示词、数据版本 | §8 目标 1 | 部分完成 | 日志有 Copilot 版本、提示词 hash；没有模型名（只在 `version` 命令和环境变量里）、没有数据版本 | |
 | P33 | 10-13 | 提示词、模型、数据都有版本；镜像打 tag；能回滚 | §8 目标 2 | 部分完成 | 提示词、代码、镜像有版本，两种回滚都演示过；数据没有版本 | |
 | P34 | 10-13 | 回归注入测试：故意合进更差的提示词、更弱的模型、坏数据，证明门禁都能拦住 | §8 目标 3 | 部分完成 | 更差的提示词：intake v2 开发集 24/25 被门禁拦下（RESULTS.md）；更弱的模型：Qwen3 4B 20/25 只做了对比，没当成注入跑门禁；坏数据：没做 | |
-| P35 | 10-13 | 对照实验：(A) 单个提示词的 LLM、(B) 只加检索、(C) 完整系统；指标：约束违规率、依据性、recall@5、Critic 轮数、p50/p95 延迟、每次请求成本 | §8 目标 4 | 部分完成 | 只有模型之间的对比（Qwen3.5 4B / 9B / Qwen3 4B）；没有 A/B/C，没有 recall@5、成本；10-18 做了第一个对照：调度员关掉（`COPILOT_DISPATCH=0`）vs 打开，没见过的多轮对话 6/15 → 14/15（RESULTS.md）；A/B/C、recall@5、成本还没做；10-19 公告提取做了规则 / 模型 / 两者合并的对照（RESULTS.md） | PROJECT.md“下一步”第 4 条 |
+| P35 | 10-13 | 对照实验：(A) 单个提示词的 LLM、(B) 只加检索、(C) 完整系统；指标：约束违规率、依据性、recall@5、Critic 轮数、p50/p95 延迟、每次请求成本 | §8 目标 4 | 部分完成 | 只有模型之间的对比（Qwen3.5 4B / 9B / Qwen3 4B）；没有 A/B/C，没有 recall@5、成本；10-18 做了第一个对照：调度员关掉（`COPILOT_DISPATCH=0`）vs 打开，没见过的多轮对话 6/15 → 14/15（RESULTS.md）；A/B/C、recall@5、成本还没做；10-19 公告提取做了规则 / 模型 / 两者合并的对照（RESULTS.md）；10-19 读公告比了 6 个模型（本机 4B、GPT-4.1 mini、GPT-6 luna、GPT-5 nano、Gemini 3.5 Flash Lite、Gemma 4 31B），有了每 1000 次的成本和延迟 | PROJECT.md“下一步”第 4 条 |
 | P36 | 10-13 | 漂移测试：插入一条新的关闭公告，量回答多久能反映出来 | §8 | 部分完成 | 依赖 P810-19：`tests/copilot-plan.test.ts` 和 `test_alerts.py` 的漂移测试，塞一条新的关闭公告，下一次提取后的行程就不排这个景点、说明里说是公告说的；“多久反映出来”取决于本机多久跑一次提取，还没量 | |
 | P37 | 10-13 | 故障测试：模型超时、NPS API 宕机 | §8 | 没做 | pytest 里没有超时、宕机的测试 | |
 | P38 | 10-13 | 主重点多智能体编排，次重点 PromptOps / 自动评测 | §5 | 部分完成 | 次重点做到了；主重点见 P14；主重点 10-18 加了调度员，见 P14 | |
