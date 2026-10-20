@@ -288,3 +288,8 @@
 - 仓库主人看雷尼尔山的“预约和班车”页觉得“要提前订的”孤零零的：`bookings.ts` 里这座公园只有 1 条（还是“2026 年不用预约”），园内酒店、营地、野外许可的开订规则当初没查到官方写明的就没收；同样只有 1 条的共 9 处。定了：数据助手来补（营地用 Huiling 的营地 id，行程页也会提醒营地哪天开订），页面条目少时空一大块交给 Huiling（写进 [archive/agent-briefs/10-campground-seasons.md](archive/agent-briefs/10-campground-seasons.md)）。
 - Tianyue Chen（JadenChen10）提议加“国家公园可能遇到的危险”（棕熊等野生动物伤人这类），加进 GOALS 的 O63，之后做。
 - 改正：这一天几处时间线写成了“10-20”（UTC 的日期），按加州时间改回 10-19。
+
+### 10-19：聊天那几步的模型对照、接 OpenRouter（分支 `feature/openrouter-provider`）
+
+- 仓库主人拿到一把 OpenRouter 的 key（有免费模型），要一起比。加了 `OpenRouterProvider`（和 OpenAI 一样的接口，免费模型每天的次数用完直接报错）。评测脚本加了“前 3 次都出错就停”、`--sample`（读公告只抽一部分，给每天只有 50 次的免费额度用）、模型名里的 `/` 不再当成文件夹。
+- 第二轮对照：GPT-4.1 mini 跑完全部六组（267 次，约 $0.11），没见过的 holdout 38/40、真实对话 v3 15/15，都比本机 4B 好；Gemini 3.5 Flash Lite 多轮对话三组跑完，真实对话 15/15，单句下次跑；MiniMax 读 26 条公告 F1 0.50，真实对话出错没跑完。详见 RESULTS.md。

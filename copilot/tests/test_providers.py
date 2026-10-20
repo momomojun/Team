@@ -131,3 +131,19 @@ def test_openai_drops_a_setting_the_model_rejects_and_remembers(fake_api):
     provider.complete_json("intake", "s", "u", SCHEMA)
     assert [r["body"].get("reasoning_effort") for r in sent] == ["minimal", "low", "low"]
     assert all("temperature" not in r["body"] for r in sent)
+
+
+def test_openrouter_uses_the_openai_style_api_and_stops_on_the_daily_free_limit(fake_api, monkeypatch):
+    from nps_copilot.providers import OpenRouterProvider
+
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-openrouter-key")
+    ok = {"choices": [{"message": {"content": '{"park": "Zion"}'}}], "usage": {"prompt_tokens": 30, "completion_tokens": 5}, "provider": "MiniMax"}
+    sent = fake_api(ok, http_error(429, '{"error": {"message": "Rate limit exceeded: free-models-per-day"}}'))
+    provider = OpenRouterProvider(rpm=0)
+    assert provider.complete_json("intake", "s", "u", SCHEMA).data == {"park": "Zion"}
+    assert sent[0]["url"] == "https://openrouter.ai/api/v1/chat/completions"
+    assert sent[0]["body"]["model"] == "minimax/minimax-m3.1-flash:free" and sent[0]["body"]["reasoning"] == {"effort": "low"}
+    assert sent[0]["headers"]["Authorization"] == "Bearer test-openrouter-key"
+    with pytest.raises(QuotaError):
+        provider.complete_json("intake", "s", "u", SCHEMA)
+    assert len(sent) == 2  # 每天的免费额度用完了：不重试
