@@ -300,4 +300,4 @@
 
 ### 10-19：Copilot 聊天先用 Gemini（分支 `feature/default-gemini`）
 
-- 看了第二轮对照，仓库主人定了先用 Gemini、之后再说：`chat_provider()`——没设 `COPILOT_PROVIDER` 时有 `GEMINI_API_KEY` 就用 Gemini 3.5 Flash Lite，那一次出错（额度用完、服务忙）退回本机 4B；没有 key 的组员照旧用本机。评测、CI 不变（`from_env` 默认本机，回放录音）。OpenRouter 的推理档位可以用 `COPILOT_REASONING` 换（仓库主人问能不能开高：免费额度按次数算、不按推理多少，开高主要是慢，下次用同样 26 条比 low 和 high）。
+- 看了第二轮对照，仓库主人定了先用 Gemini、之后再说，出了问题依次换 OpenAI、本机：`chat_provider()`——没设 `COPILOT_PROVIDER` 时按 Gemini 3.5 Flash Lite → GPT-4.1 mini → 本机 4B 的顺序（`ProviderChain`），前一个出错（额度用完、服务忙）这一句就换下一个，没配 key 的跳过，组员什么 key 都没有就照旧用本机；聊天不按免费档排队、服务忙只重试一次，免得一句话等很久。读公告没指定模型时也是这个顺序（每晚 GitHub 上只配了 Gemini，出错按规则算）。评测、CI 不变（`from_env` 默认本机，回放录音）。OpenRouter 的推理档位可以用 `COPILOT_REASONING` 换（仓库主人问能不能开高：免费额度按次数算、不按推理多少，开高主要是慢，下次用同样 26 条比 low 和 high）。

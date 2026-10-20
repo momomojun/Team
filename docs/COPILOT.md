@@ -161,7 +161,7 @@ flowchart LR
 
 | 变量 | 默认 | 作用 |
 |---|---|---|
-| `COPILOT_PROVIDER` | 聊天：有 `GEMINI_API_KEY` 用 Gemini（出错退回本机），没有用 `ollama`；评测：`ollama` | `ollama` / `gemini` / `openai` / `openrouter` / `replay`，设了就按设的（10-19 仓库主人定了聊天先用 Gemini）。评测脚本（`eval/run.py`、`conversation.py`、`alerts.py`）也认，`--record` 录到 `recordings/<模型>…jsonl` |
+| `COPILOT_PROVIDER` | 聊天、读公告：Gemini 3.5 Flash Lite → OpenAI GPT-4.1 mini → `ollama`，前一个出错换下一个、没配 key 的跳过（`ProviderChain`）；评测：`ollama` | `ollama` / `gemini` / `openai` / `openrouter` / `replay`，设了就按设的（10-19 仓库主人定了聊天先用 Gemini）。评测脚本（`eval/run.py`、`conversation.py`、`alerts.py`）也认，`--record` 录到 `recordings/<模型>…jsonl` |
 | `COPILOT_MODEL` | Ollama：`qwen3.5:4b-q4_K_M`；Gemini：`gemini-3.5-flash-lite`；OpenAI：`gpt-5-nano` | 模型名（Gemini 免费档能用的有 `gemma-4-31b-it`、`gemini-3.8-flash` 等，见 AI Studio 的“速率限制”页） |
 | `GEMINI_API_KEY`、`OPENAI_API_KEY`、`OPENROUTER_API_KEY` | — | 商业 API 的 key，写在仓库根目录的 `.env.local`（不提交）或设成环境变量；只放在请求头里，不写日志、不进录音 |
 | `COPILOT_REASONING` | `low` | OpenRouter 推理模型的推理档位：`minimal` / `low` / `medium` / `high` / `none`（不传） |
