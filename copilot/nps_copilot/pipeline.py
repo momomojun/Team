@@ -259,7 +259,7 @@ class Session:
             return Reply("error", "\n".join([*head, text]), None, request, None, trace)
         result = call.result
         review = critique(request, result)
-        trace["plan"] = {"latency_ms": call.latency_ms, "via": call.via}
+        trace["plan"] = {"latency_ms": call.latency_ms, "via": call.via, **({"alerts": call.refresh} if call.refresh else {})}
         if review.revision is not None:
             trace["revision"] = review.reason
             revised = plan_trip(review.revision, self.reference_date)

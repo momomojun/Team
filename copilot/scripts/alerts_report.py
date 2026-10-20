@@ -34,25 +34,31 @@ def closure_alerts(snapshot: dict) -> list[dict]:
     return [a for a in snapshot["alerts"] if a.get("category") == "Park Closure" or CLOSURE_TITLE.search(a["title"])]
 
 
-def report(snapshot: dict, known: set[str]) -> tuple[list[dict], str]:
+def report(snapshot: dict, known: set[str], closures: dict | None = None) -> tuple[list[dict], str]:
+    """closures：模型读出来的关闭清单（closures-latest.json）；有就多一列“模型和规则找到的景点”"""
     new = [a for a in closure_alerts(snapshot) if a["id"] not in known]
     names = {row["id"]: row["nameZh"] for rows in alerts.attractions().values() for row in rows}
+    found = {c["alert"]: c for c in (closures or {}).get("closures", [])}
     lines = [
         f"NPS 公告快照 {snapshot['fetched']}（{len(snapshot['alerts'])} 条）里有 {len(new)} 条以前没报过的关闭公告。",
         "",
-        "CI 上只用规则看了一眼（规则只读标题，召回只有一半左右）。用模型提取：下载这次运行的 artifact `nps-alerts-snapshot`，在本机跑",
-        "`python -m nps_copilot alerts --snapshot <快照>`，再看要不要写进 `src/data/closures.ts`。",
-        "这些公告模型没见过，也可以标好答案，做下一版提示词（alerts_v2）的评测。",
+        ("模型（Gemini）读了全文，“模型和规则找到的”一列是排行程时会用的结果：标题里写着的（规则也找到）不排，只有模型找到的照排、提醒确认。"
+         if closures else "这次只用规则看了一眼（规则只读标题，召回只有一半左右）。"),
+        "要不要写进人工核对的 `src/data/closures.ts`，看完公告再定。这些公告模型没见过，也可以标好答案，做下一版提示词（alerts_v2）的评测。",
         "",
-        "| 公园 | 分类 | 标题 | 规则对到的景点 |",
-        "|---|---|---|---|",
+        "| 公园 | 分类 | 标题 | 规则对到的景点 |" + (" 模型和规则找到的 | 重开 |" if closures else ""),
+        "|---|---|---|---|" + ("---|---|" if closures else ""),
     ]
     for alert in sorted(new, key=lambda a: (a["park"], a["title"])):
         rules = alerts.rules_extract(alert)
         hit = "、".join(names.get(i, i) for i in rules.closed) or ("部分关闭" if rules.type == "partial" else "—")
         title = alert["title"].replace("|", "/")
         link = f"[{title}]({alert['url']})" if alert.get("url") else title
-        lines.append(f"| {alert['park']} | {alert.get('category', '')} | {link} | {hit} |")
+        row = f"| {alert['park']} | {alert.get('category', '')} | {link} | {hit} |"
+        if closures:
+            c = found.get(alert["id"])
+            row += f" {'、'.join(names.get(i, i) for i in c['attractions'])}（{'+'.join(c.get('found_by') or [])}） | {c.get('reopen') or '—'} |" if c else " — | — |"
+        lines.append(row)
     lines += ["", *(f"<!-- alert:{a['id']} -->" for a in new)]
     return new, "\n".join(lines) + "\n"
 
@@ -61,12 +67,14 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("snapshot", type=Path)
     parser.add_argument("--known", type=Path, help="以前报过的 issue 正文（gh issue list 的输出），从里面读 alert id")
+    parser.add_argument("--closures", type=Path, help="模型读出来的关闭清单（closures-latest.json），有就一起列出来")
     parser.add_argument("--out", type=Path, default=Path("alerts-report.md"))
     args = parser.parse_args()
     sys.stdout.reconfigure(encoding="utf-8")
     snapshot = json.loads(args.snapshot.read_text(encoding="utf-8"))
     known = labelled() | (set(MARK.findall(args.known.read_text(encoding="utf-8"))) if args.known and args.known.exists() else set())
-    new, text = report(snapshot, known)
+    closures = json.loads(args.closures.read_text(encoding="utf-8")) if args.closures and args.closures.exists() else None
+    new, text = report(snapshot, known, closures)
     if new:
         args.out.write_text(text, encoding="utf-8")
     print(f"NEW={len(new)}")

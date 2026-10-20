@@ -4,7 +4,7 @@
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import * as OpenCC from "opencc-js";
 import { airports } from "../src/data/airports.ts";
-import { parks } from "../src/data/parks.ts";
+import { npsCodeOf, parks } from "../src/data/parks.ts";
 import { attractions } from "../src/data/attractions/index.ts";
 import { knowledge } from "./build-copilot-knowledge.mjs";
 import { localize } from "../src/i18n/convert.ts";
@@ -25,6 +25,8 @@ export function catalog() {
       nameEn: park.nameEn,
       kind: park.kind === "site" ? "site" : "park",
       country: park.country ?? "US",
+      // 查 NPS 公告用的代码（加拿大的公园、大多数园外名胜没有：null）；Copilot 聊天时现抓公告用
+      nps: npsCodeOf(park) ?? null,
       timeZone: park.timeZone,
       airports: park.airports,
       // 常用机场开到公园定位点要几分钟（Copilot 提醒“从这个机场过去太远、这几个近”时用）
