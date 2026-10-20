@@ -1,0 +1,35 @@
+# 每周对照一次 Recreation.gov 的国家公园营地和 src/data/campgrounds.ts。
+# 只有名单真的变了才开 issue。已知、故意没收的营地在 scripts/campground-watch-ignore.json。
+name: Campgrounds (weekly)
+
+on:
+  schedule:
+    - cron: "0 15 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: campgrounds-weekly
+  cancel-in-progress: false
+
+jobs:
+  diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Compare the campground list
+        id: report
+        run: node scripts/check-campgrounds.mjs | tee report.log && grep -m1 '^NEW=' report.log >> "$GITHUB_OUTPUT"
+      - name: Open an issue
+        if: steps.report.outputs.NEW != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create campgrounds --color 3f6b4e --description "Recreation.gov 营地名单和文件不一致" 2>/dev/null || true
+          gh issue create --label campgrounds --title "营地名单有变化（$(date +%F)）/ Campground list changed" --body-file report.md
