@@ -293,3 +293,7 @@
 
 - 仓库主人拿到一把 OpenRouter 的 key（有免费模型），要一起比。加了 `OpenRouterProvider`（和 OpenAI 一样的接口，免费模型每天的次数用完直接报错）。评测脚本加了“前 3 次都出错就停”、`--sample`（读公告只抽一部分，给每天只有 50 次的免费额度用）、模型名里的 `/` 不再当成文件夹。
 - 第二轮对照：GPT-4.1 mini 跑完全部六组（267 次，约 $0.11），没见过的 holdout 38/40、真实对话 v3 15/15，都比本机 4B 好；Gemini 3.5 Flash Lite 多轮对话三组跑完，真实对话 15/15，单句下次跑；MiniMax 读 26 条公告 F1 0.50，真实对话出错没跑完。详见 RESULTS.md。
+
+### 10-19：补 9 座公园“要提前订的”（分支 `data/bookings-gaps`）
+
+- 两个调研助手按官方页面（NPS、Recreation.gov、BLM、特许经营商官网，打不开的用 2026 年的 Wayback 存档）查了雷尼尔山、火山口湖、拉森、兰格尔–圣伊莱亚斯、约书亚树、死亡谷、圆顶礁、尖峰石阵、波浪谷，记录在 [archive/audit/2026-10-19/](archive/audit/2026-10-19/)。新增 26 条、改 2 条（约书亚树的 Belle、Hidden Valley、White Tank 是先到先得；尖峰石阵所有预订至少提前 48 小时），营地用 Huiling 的营地 id 当 `targets`，行程里住这些营地也会提醒哪天开订；中英文都写了。没写的：Stovepipe Wells Village、Panamint Springs 的开订窗口（官网没写、有机器人验证）。查到的季节信息里 Ohanapecosh 2026 年整年关闭、Lost Creek 2025 年起关闭，留给 Huiling 的营地季节任务。
