@@ -1,6 +1,24 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { changedDays, cumulative, drawMs, easeInOut, fade, flyMs, km, overallProgress, sliceTo, stopDistances } from "../src/components/map/route-tour";
+import {
+  bearingOf,
+  changedDays,
+  cumulative,
+  distanceAtCost,
+  drawMs,
+  easeInOut,
+  fade,
+  flyMs,
+  followMs,
+  followZoom,
+  km,
+  overallProgress,
+  paceCost,
+  sliceTo,
+  slowness,
+  stopDistances,
+  turnToward,
+} from "../src/components/map/route-tour";
 
 // 一条往东、再往北的折线：大约 0.1 度经度 + 0.1 度纬度
 const path: [number, number][] = [
@@ -53,4 +71,32 @@ test("改了行程只播变了的那几天；天数变了全部播", () => {
   assert.deepEqual(changedDays(["a|x", "b|y", "c|z"], ["a|x", "b,d|y", "c|w"]), [1, 2]);
   assert.deepEqual(changedDays(["a|x", "b|y"], ["a|x", "b|y"]), []);
   assert.deepEqual(changedDays(["a|x"], ["a|x", "b|y"]), [0, 1]);
+});
+
+test("跟车：进站前慢、长途时快，镜头进站时凑近、长途时拉远", () => {
+  // 一条 100 公里的直路，40 公里处有一站
+  const cum = Array.from({ length: 101 }, (_, i) => i);
+  const stops = [40];
+  assert.ok(slowness(40, stops, 100) > 1.1);
+  assert.ok(slowness(70, stops, 100) < 0.25);
+  const cost = paceCost(cum, stops);
+  // 匀速播放：前 10% 的时间走到的路程，比后面长途那段同样 10% 的时间走得少
+  const total = cost[cost.length - 1];
+  const nearStart = distanceAtCost(cum, cost, total * 0.1);
+  const middle = distanceAtCost(cum, cost, total * 0.6) - distanceAtCost(cum, cost, total * 0.5);
+  assert.ok(nearStart < middle, `${nearStart} < ${middle}`);
+  assert.equal(distanceAtCost(cum, cost, 0), 0);
+  assert.equal(distanceAtCost(cum, cost, total * 2), 100);
+  assert.ok(followZoom(slowness(40, stops, 100)) > followZoom(slowness(70, stops, 100)) + 2);
+  assert.equal(followMs(1, 3), 9000);
+  assert.equal(followMs(10000, 3), 18000);
+  assert.equal(followMs(10000, 9), 12000);
+});
+
+test("跟车：方向和转向走最近的那边", () => {
+  assert.ok(Math.abs(bearingOf([-119.6, 37.7], [-119.6, 37.8]) - 0) < 0.5);
+  assert.ok(Math.abs(bearingOf([-119.6, 37.7], [-119.5, 37.7]) - 90) < 0.5);
+  assert.ok(Math.abs(turnToward(350, 10, 0.5) - 0) < 1e-9);
+  assert.ok(Math.abs(turnToward(10, 350, 0.5) - 0) < 1e-9);
+  assert.equal(turnToward(90, 180, 1), 180);
 });

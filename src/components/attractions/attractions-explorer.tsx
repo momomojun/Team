@@ -57,6 +57,11 @@ export function AttractionsExplorer({
   text: AttractionText;
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  // 鼠标停在哪张卡片上（地图拉近过去）；触屏没有悬停，不记
+  const [hoverId, setHoverId] = useState<string | null>(null);
+  const hover = (id: string | null) => {
+    if (id === null || window.matchMedia("(hover: hover) and (pointer: fine)").matches) setHoverId(id);
+  };
   const [filter, setFilter] = useState<Filter>("all");
   const [sort, setSort] = useState<Sort>("rank");
   const mapRef = useRef<HTMLDivElement>(null);
@@ -136,8 +141,9 @@ export function AttractionsExplorer({
             imagery={imagery}
             points={points}
             trails={trails}
-            highlightTrailId={selectedId}
+            highlightTrailId={hoverId ?? selectedId}
             selectedId={selectedId}
+            hoverId={hoverId}
             onSelect={selectFromMap}
             text={text.map}
             className="h-[26rem] lg:h-[calc(100vh-8rem)]"
@@ -250,15 +256,16 @@ export function AttractionsExplorer({
               {group.name && <h3 className="eyebrow mb-6 border-b border-line pb-3 text-mute">{group.name}</h3>}
               <div className="space-y-12">
                 {group.items.map((attraction) => (
-                  <AttractionCard
-                    key={attraction.id}
-                    attraction={attraction}
-                    parkNameEn={parkNameEn}
-                    text={text}
-                    selected={attraction.id === selectedId}
-                    onShowOnMap={() => selectFromList(attraction.id)}
-                    routesHref={routesHref}
-                  />
+                  <div key={attraction.id} onMouseEnter={() => hover(attraction.id)} onMouseLeave={() => hover(null)}>
+                    <AttractionCard
+                      attraction={attraction}
+                      parkNameEn={parkNameEn}
+                      text={text}
+                      selected={attraction.id === selectedId}
+                      onShowOnMap={() => selectFromList(attraction.id)}
+                      routesHref={routesHref}
+                    />
+                  </div>
                 ))}
               </div>
             </section>
