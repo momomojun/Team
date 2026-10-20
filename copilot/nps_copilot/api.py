@@ -3,7 +3,8 @@
 POST /sessions                   → {"session": "...", "greeting": "..."}
 POST /sessions/{id}/messages     {"text": "..."} → 这一轮的回复（status、text、question、request、result）
 GET  /health                     → 版本、构建的 commit、提示词版本和 hash、模型、行程引擎能不能用
-GET  /stats?days=7               → 运行日志的统计（和 python -m nps_copilot stats 一样）：按版本的成功率、耗时，按模型的调用、token、花费
+GET  /stats?days=7               → 运行日志的统计（和 python -m nps_copilot stats 一样）：按版本的成功率、耗时，按模型的调用、token、花费，
+                                   按天的数字、最近 30 轮、读公告的关闭清单状态（网站的后台 /admin 读这个）
 """
 from __future__ import annotations
 
@@ -14,7 +15,7 @@ import shutil
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-from . import __version__, monitor
+from . import __version__, alerts_live, monitor
 from .pipeline import VERSION, Session, prompt_hashes
 from .providers import ProviderError, chat_provider
 
@@ -39,6 +40,8 @@ def health() -> dict:
         "build": os.environ.get("COPILOT_BUILD_SHA"),
         "provider": provider.name,
         "model": getattr(provider, "model", None),
+        # 按顺序试的几个模型（前一个出错换下一个）
+        "chain": [getattr(p, "model", p.name) for p in getattr(provider, "providers", [provider])],
         "prompts": prompt_hashes(),
         "plan_tool": "http" if os.environ.get("COPILOT_PLAN_URL") else ("cli" if shutil.which("node") else "missing"),
     }
@@ -46,8 +49,10 @@ def health() -> dict:
 
 @app.get("/stats")
 def stats(days: int = 7) -> dict:
+    days = max(1, min(days, 90))
     rows = monitor.load(days)
-    return {"days": days, "versions": monitor.summarize(rows), "usage": monitor.usage(rows)}
+    return {"days": days, "versions": monitor.summarize(rows), "usage": monitor.usage(rows), "daily": monitor.daily(rows),
+            "recent": monitor.recent(rows), "alerts": alerts_live.status()}
 
 
 @app.post("/sessions")

@@ -89,5 +89,20 @@ def test_monitor_adds_up_tokens_and_cost_by_the_model_that_answered(tmp_path):
     assert "gpt-4.1-mini：1 次（其中前面的模型出错、轮到它的 1 次）" in text and "不知道（没有价格）" in text
 
 
+def test_monitor_daily_and_recent_for_the_admin_page(tmp_path):
+    today = dt.date.today().isoformat()
+    calls = [{"task": "dispatch", "model": "gpt-4.1-mini", "prompt_tokens": 100, "output_tokens": 10, "fallback_from": ["gemini-3.5-flash-lite"]},
+             {"task": "intake", "model": "gemini-3.5-flash-lite", "error": "429"}]
+    rows = [row("a", "planned", calls=calls, message="去优胜美地" * 40), row("a", "needs_input", latency_ms=3000)]
+    (tmp_path / f"{today}.jsonl").write_text("\n".join(json.dumps(r) for r in rows) + "\n", encoding="utf-8")
+    loaded = monitor.load(7, tmp_path)
+    [day] = monitor.daily(loaded)
+    assert (day["day"], day["turns"], day["planned"], day["needs_input"]) == (today, 2, 1, 1)
+    assert (day["calls"], day["call_errors"], day["fallbacks"], day["tokens"]) == (1, 1, 1, 110)
+    newest, oldest = monitor.recent(loaded)
+    assert newest["status"] == "needs_input" and oldest["fallback"] and oldest["models"] == ["gpt-4.1-mini"]
+    assert len(oldest["message"]) == 120
+
+
 def test_monitor_without_logs(tmp_path):
     assert "没有运行日志" in monitor.report(7, tmp_path)

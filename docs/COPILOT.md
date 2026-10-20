@@ -163,7 +163,7 @@ flowchart LR
 | token（输入 / 输出 / 思考） | 商业 API 返回的 usage；本机 Ollama 的是 prompt_eval_count、eval_count | 每轮 token 变多：提示词变长了，或者模型想得更多 |
 | 花费、每天花费 | 按 `monitor.PRICES`（每百万 token 的美元，10-19 按第三方汇总的价格，没有官网核实；免费档、本机按 0）；没写价格的模型记“不知道”，不当成 0 | 突然变贵：退到付费模型的多了 |
 
-聊天时为了两周内出发的行程现读公告（`alerts_live.refresh_for`）用的 token 不在这里，只记读了几条。HTTP 服务另有 `GET /stats?days=7`，返回同样的统计（JSON）。
+聊天时为了两周内出发的行程现读公告（`alerts_live.refresh_for`）用的 token 不在这里，只记读了几条。HTTP 服务另有 `GET /stats?days=7`，返回同样的统计（JSON），外加按天的数字、最近 30 轮和读公告的关闭清单状态；网站的后台 `/zh-Hans/admin` 读的就是它（加上 GitHub 上每晚读公告的结果），画成图表。
 
 什么时候该回滚、怎么回滚见 [GUIDE.md](GUIDE.md#回滚)。
 

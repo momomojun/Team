@@ -344,6 +344,8 @@ docker compose -f copilot/docker-compose.yml exec -T copilot python -m nps_copil
 
 最后一段“模型用量”按模型列出调用次数、出错、token 和花费：Gemini 出错多、轮到 GPT-4.1 mini 的变多，说明免费额度不够了，花费会跟着涨。
 
+同样的数字也可以在网站的后台看：开着 Copilot 服务和网站时打开 http://localhost:3000/zh-Hans/admin （有每天的图、每个模型的花费、最近几轮对话、每晚读公告的结果，每 30 秒刷新）。
+
 ## 8. 和 AI 助手（Claude Code 等）一起改
 
 - 仓库根目录的 `CLAUDE.md` 会被 Claude Code 自动读到，里面带着 README、本文件和 DEVELOPMENT.md。

@@ -137,6 +137,49 @@ def summarize(rows: list[dict]) -> dict[str, dict]:
     return summary
 
 
+def daily(rows: list[dict]) -> list[dict]:
+    """按天：多少轮、排出行程 / 追问 / 出错各多少、耗时中位数、模型调用和出错、退到备用模型的次数、花费（后台画图用）"""
+    by_day: dict[str, list[dict]] = defaultdict(list)
+    for row in rows:
+        by_day[row.get("day") or "?"].append(row)
+    out = []
+    for day, items in sorted(by_day.items()):
+        statuses = [item.get("status") for item in items]
+        latencies = [item["latency_ms"] for item in items if isinstance(item.get("latency_ms"), (int, float))]
+        calls = [call for item in items for call in item.get("calls") or []]
+        costs = [call_cost(call) for call in calls if not call.get("error")]
+        out.append({
+            "day": day, "turns": len(items), "sessions": len({item.get("session") for item in items}),
+            "planned": statuses.count("planned"), "needs_input": statuses.count("needs_input"), "error": statuses.count("error"),
+            "median_latency_ms": statistics.median(latencies) if latencies else None,
+            "calls": sum(1 for call in calls if not call.get("error")), "call_errors": sum(1 for call in calls if call.get("error")),
+            "fallbacks": sum(1 for call in calls if call.get("fallback_from")),
+            "tokens": sum((call.get("prompt_tokens") or 0) + (call.get("output_tokens") or 0) + (call.get("thinking_tokens") or 0) for call in calls),
+            "cost": sum(cost for cost in costs if cost is not None), "unpriced": sum(1 for cost in costs if cost is None),
+        })
+    return out
+
+
+def recent(rows: list[dict], limit: int = 30) -> list[dict]:
+    """最近几轮：说了什么（截短）、结果、耗时、用了哪些模型、有没有退到备用的、调度员和 Writer 出没出问题"""
+    out = []
+    for row in rows[-limit:][::-1]:
+        calls = row.get("calls") or []
+        out.append({
+            "day": row.get("day"), "at": row.get("at"), "session": row.get("session"), "turn": row.get("turn"),
+            "logged": "calls" in row,  # 10-19 以前的日志没记模型调用
+            "message": (row.get("message") or "")[:120], "status": row.get("status"), "latency_ms": row.get("latency_ms"),
+            "route": row.get("route") or ("dispatch" if row.get("dispatch") else None),
+            "models": sorted({call.get("model") for call in calls if not call.get("error") and call.get("model")}),
+            "calls": sum(1 for call in calls if not call.get("error")), "call_errors": sum(1 for call in calls if call.get("error")),
+            "fallback": any(call.get("fallback_from") for call in calls),
+            "tokens": sum((call.get("prompt_tokens") or 0) + (call.get("output_tokens") or 0) + (call.get("thinking_tokens") or 0) for call in calls),
+            "dropped": len((row.get("intake") or {}).get("dropped_spans", [])) + len((row.get("dispatch") or {}).get("dropped", [])),
+            "writer_fallback": bool((row.get("writer") or {}).get("fallback")),
+        })
+    return out
+
+
 def report(days: int = 7, runs: Path = RUNS) -> str:
     rows = load(days, runs)
     if not rows:
