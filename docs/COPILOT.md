@@ -91,7 +91,7 @@ flowchart LR
 | `copilot/scripts/alerts_report.py`、`.github/workflows/alerts-nightly.yml` | 每晚抓公告、新的关闭公告开 issue |
 | `copilot/nps_copilot/dispatcher.py` | 调度员：给模型看的上下文、输出格式、丢掉编造的名字 |
 | `copilot/nps_copilot/knowledge.py`、`qa.py` | QA：在 `knowledge.jsonl` 里检索（名字命中 + BM25）、让模型只按查到的资料回答、检查回答里的数字，对不上就摘原文 |
-| `copilot/nps_copilot/providers.py` | 模型提供方：本机 Ollama（默认）、回放录好的输出（CI 用，没录到的请求直接报错）、录音、测试用的脚本、Gemini 和 OpenAI 的 API（10-19，对照实验用，要明确设 `COPILOT_PROVIDER` 才用；按免费档的每分钟次数放慢，服务忙会重试，当天额度用完直接报错；模型不认的思考、推理设置自动换下一档）、退回本机（`FallbackProvider`） |
+| `copilot/nps_copilot/providers.py` | 模型提供方：本机 Ollama（默认）、回放录好的输出（CI 用，没录到的请求直接报错）、录音、测试用的脚本、Gemini、OpenAI、OpenRouter、Groq 的 API（10-19；聊天按 `chat_provider()` 的顺序用 Gemini → OpenAI → 本机，`ProviderChain`，OpenRouter、Groq 要明确设 `COPILOT_PROVIDER` 才用；按免费档的每分钟次数放慢，服务忙会重试，当天额度用完直接报错；模型不认的思考、推理设置自动换下一档）、退回本机（`FallbackProvider`） |
 | `copilot/nps_copilot/prompts.py`、`prompts/` | 提示词版本，见下一节 |
 | `copilot/nps_copilot/pipeline.py` | 把上面串起来；每轮写一条 JSONL 日志到 `copilot/runs/<日期>.jsonl`（Docker 里是 `/data/runs`） |
 | `copilot/nps_copilot/monitor.py` | `python -m nps_copilot stats`：按版本统计运行日志 |
@@ -161,10 +161,10 @@ flowchart LR
 
 | 变量 | 默认 | 作用 |
 |---|---|---|
-| `COPILOT_PROVIDER` | 聊天、读公告：Gemini 3.5 Flash Lite → OpenAI GPT-4.1 mini → `ollama`，前一个出错换下一个、没配 key 的跳过（`ProviderChain`）；评测：`ollama` | `ollama` / `gemini` / `openai` / `openrouter` / `replay`，设了就按设的（10-19 仓库主人定了聊天先用 Gemini）。评测脚本（`eval/run.py`、`conversation.py`、`alerts.py`）也认，`--record` 录到 `recordings/<模型>…jsonl` |
+| `COPILOT_PROVIDER` | 聊天、读公告：Gemini 3.5 Flash Lite → OpenAI GPT-4.1 mini → `ollama`，前一个出错换下一个、没配 key 的跳过（`ProviderChain`）；评测：`ollama` | `ollama` / `gemini` / `openai` / `openrouter` / `groq` / `replay`，设了就按设的（10-19 仓库主人定了聊天先用 Gemini）。评测脚本（`eval/run.py`、`conversation.py`、`alerts.py`）也认，`--record` 录到 `recordings/<模型>…jsonl` |
 | `COPILOT_MODEL` | Ollama：`qwen3.5:4b-q4_K_M`；Gemini：`gemini-3.5-flash-lite`；OpenAI：`gpt-5-nano` | 模型名（Gemini 免费档能用的有 `gemma-4-31b-it`、`gemini-3.8-flash` 等，见 AI Studio 的“速率限制”页） |
-| `GEMINI_API_KEY`、`OPENAI_API_KEY`、`OPENROUTER_API_KEY` | — | 商业 API 的 key，写在仓库根目录的 `.env.local`（不提交）或设成环境变量；只放在请求头里，不写日志、不进录音 |
-| `COPILOT_REASONING` | `low` | OpenRouter 推理模型的推理档位：`minimal` / `low` / `medium` / `high` / `none`（不传） |
+| `GEMINI_API_KEY`、`OPENAI_API_KEY`、`OPENROUTER_API_KEY`、`GROQ_API_KEY` | — | 商业 API 的 key，写在仓库根目录的 `.env.local`（不提交）或设成环境变量；只放在请求头里，不写日志、不进录音 |
+| `COPILOT_REASONING` | `low` | OpenRouter、Groq 推理模型的推理档位：`minimal` / `low` / `medium` / `high` / `none`（不传；Groq 只认 `low` / `medium` / `high`） |
 | `COPILOT_FALLBACK` | — | 设成 `ollama`：商业 API 出错（额度用完、一直忙）时这一次改用本机模型。Copilot 服务用，评测别开 |
 | `OLLAMA_HOST_URL` | `http://127.0.0.1:11435` | Ollama 地址（momomojun 电脑上的便携版用 11435；自己装的默认 11434；Docker 里是 `http://ollama:11434` 或 `http://host.docker.internal:11435`） |
 | `COPILOT_REPLAY` | — | 回放用的录音文件 |

@@ -301,3 +301,8 @@
 ### 10-19：Copilot 聊天先用 Gemini（分支 `feature/default-gemini`）
 
 - 看了第二轮对照，仓库主人定了先用 Gemini、之后再说，出了问题依次换 OpenAI、本机：`chat_provider()`——没设 `COPILOT_PROVIDER` 时按 Gemini 3.5 Flash Lite → GPT-4.1 mini → 本机 4B 的顺序（`ProviderChain`），前一个出错（额度用完、服务忙）这一句就换下一个，没配 key 的跳过，组员什么 key 都没有就照旧用本机；聊天不按免费档排队、服务忙只重试一次，免得一句话等很久。读公告没指定模型时也是这个顺序（每晚 GitHub 上只配了 Gemini，出错按规则算）。评测、CI 不变（`from_env` 默认本机，回放录音）。OpenRouter 的推理档位可以用 `COPILOT_REASONING` 换（仓库主人问能不能开高：免费额度按次数算、不按推理多少，开高主要是慢，下次用同样 26 条比 low 和 high）。
+
+### 10-19：接 Groq，比两个免费开源模型（分支 `feature/groq-provider`）
+
+- 仓库主人拿到一把 Groq 的 key（免费档，不用绑卡）。加了 `GroqProvider`（和 OpenAI 一样的接口；模型不认 JSON Schema 就退成普通 JSON 模式，不认推理设置就去掉；一天的 token 用完直接报错），`COPILOT_PROVIDER=groq` 才用，聊天的顺序不变。所有请求加了程序标识（User-Agent）：Groq 前面的 Cloudflare 会拦 Python 默认的标识（403，error code 1010）。
+- 第三轮对照（190 次，$0）：Qwen3.8 27B 没见过的单句 38/40（和 GPT-4.1 mini 一样），读公告景点 F1 0.44；gpt-oss-120b 不按格式填，单句 35/40、公告 0.27。两个都快（每次半秒多），但免费档每分钟 8000 token，只能当备用。详见 [RESULTS.md](../copilot/eval/RESULTS.md)。
