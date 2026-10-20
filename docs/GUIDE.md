@@ -10,7 +10,8 @@
 |---|---|
 | [README](../README.md) | 网站介绍（给访客看） |
 | **本文件** | 怎么做事：安装、运行、改代码、开 PR、部署、发版、回滚 |
-| [PROJECT.md](PROJECT.md) | 项目现状：做到哪、下一步、待决定的事、做过的决定、按时间的记录 |
+| [PROJECT.md](PROJECT.md) | 项目现状：做到哪、下一步、待决定的事、做过的决定 |
+| [timeline/](timeline/) | 按时间的记录：每次改动（一个 PR）一个文件 |
 | [GOALS.md](GOALS.md) | 目标清单：仓库主人提过的所有要求、计划书和课程的承诺，每条做到哪了；还没完成的列在最前面 |
 | [DEVELOPMENT.md](DEVELOPMENT.md) | 网站的技术参考：代码结构、数据脚本、数据源和注意事项 |
 | [COPILOT.md](COPILOT.md) | Copilot 的技术参考：设计、契约、文件、提示词版本、评测方法、环境变量 |
@@ -19,7 +20,7 @@
 | [archive/](archive/) | 存档，写完不再改：按官方资料核对事实的记录、交给 AI 助手的任务说明、早期模型实验的讨论记录 |
 | [experiments/](../experiments/README.md) | 早期本地模型实验的脚本和结果（冻结，不改） |
 
-**维护规则**：一件事只写在一个文档里，别处要用就放链接。改了东西，更新对应那一块的文档，再在 [PROJECT.md](PROJECT.md) 的“现状”和“时间线”里各记一笔；完成了 [GOALS.md](GOALS.md) 里的某一条，把它的状态改掉、打勾；仓库主人提了新要求，也加进 GOALS.md。
+**维护规则**：一件事只写在一个文档里，别处要用就放链接。改了东西，更新对应那一块的文档，在 [timeline/](timeline/) 里**新建一个文件**记一笔（写法见 [timeline/README.md](timeline/README.md)；不要往 PROJECT.md 末尾或者别人的文件里加，两个 PR 写同一个地方合并时一定冲突），[PROJECT.md](PROJECT.md) 的“现状”有变化才改；完成了 [GOALS.md](GOALS.md) 里的某一条，把它的状态改掉、打勾；仓库主人提了新要求，也加进 GOALS.md。
 
 ## 1. 这个项目是什么
 
@@ -354,6 +355,7 @@ docker compose -f copilot/docker-compose.yml exec -T copilot python -m nps_copil
 - 开发服务器用预览工具启动（`.claude/launch.json` 里的 `nps-guide`），不要用后台命令行起。
 - 给人看的命令要能在任何目录下运行，比如用 `git -C`、`npm --prefix`、绝对路径。
 - 推送、打 tag、发版、改仓库设置、删除东西之前先问仓库主人。
+- PR 按主题合在一起，别拆得太细（10-19 仓库主人说“现在分的太细了”）；尽量别在没合并的 PR 上面再开 PR。交给仓库主人合并之前，把所有开着的 PR 都查一遍（`gh pr list`、`gh pr view <号> --json mergeable`），和 main、和彼此的冲突自己先修好，让仓库主人一次合完。
 - 数据整理、核对事实的任务说明在 [archive/agent-briefs/](archive/agent-briefs/)，可以照着再派（组员接手的修复任务也写在这里，比如 `10-campground-seasons.md`，让自己的 AI 助手先读它）；派出去的调研任务要求“每做完一项马上写记录”，中途停下也不丢东西。
 - 网页搜索额度：Claude Code 每个会话有上限（主对话和所有子助手共用，momomojun 的设置是 500 次，`CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION`）。同时开的调研助手控制在 2–3 个；快用完时（约 400 次，或者第一次碰到额度报错）不再开新的调研，先把交接写进 [PROJECT.md](PROJECT.md)。
 
