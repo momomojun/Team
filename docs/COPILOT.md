@@ -171,7 +171,7 @@ flowchart LR
 
 | 变量 | 默认 | 作用 |
 |---|---|---|
-| `COPILOT_PROVIDER` | 聊天、读公告：Gemini 3.5 Flash Lite → OpenAI GPT-4.1 mini → `ollama`，前一个出错换下一个、没配 key 的跳过（`ProviderChain`）；评测：`ollama` | `ollama` / `gemini` / `openai` / `openrouter` / `groq` / `replay`，设了就按设的（10-19 仓库主人定了聊天先用 Gemini）。评测脚本（`eval/run.py`、`conversation.py`、`alerts.py`）也认，`--record` 录到 `recordings/<模型>…jsonl` |
+| `COPILOT_PROVIDER` | 聊天：Gemini 3.5 Flash Lite → Groq Qwen3.8 27B → OpenAI GPT-4.1 mini → `ollama`（`cloud_chain`）；读公告：MiniMax M3.1 Flash（OpenRouter，推理开 high）→ GPT-4.1 mini → Gemini → `ollama`（`alerts_chain`）；前一个出错换下一个、没配 key 的跳过（`ProviderChain`）；评测：`ollama` | `ollama` / `gemini` / `openai` / `openrouter` / `groq` / `replay`，设了就按设的。顺序是 10-20 仓库主人定的“哪个稳哪个准用哪个，免费的能用就先用免费的”，按第四轮对照（RESULTS.md）。评测脚本（`eval/run.py`、`conversation.py`、`alerts.py`）也认，`--record` 录到 `recordings/<模型>…jsonl` |
 | `COPILOT_MODEL` | Ollama：`qwen3.5:4b-q4_K_M`；Gemini：`gemini-3.5-flash-lite`；OpenAI：`gpt-5-nano` | 模型名（Gemini 免费档能用的有 `gemma-4-31b-it`、`gemini-3.8-flash` 等，见 AI Studio 的“速率限制”页） |
 | `GEMINI_API_KEY`、`OPENAI_API_KEY`、`OPENROUTER_API_KEY`、`GROQ_API_KEY` | — | 商业 API 的 key，写在仓库根目录的 `.env.local`（不提交）或设成环境变量；只放在请求头里，不写日志、不进录音 |
 | `COPILOT_STEP_MODELS` | — | 某几步单独换模型（GOALS P12，10-20）：`intake=gemini,qa=openai:gpt-4.1-mini`，写成 `步骤=提供方[:型号]`，步骤是 `dispatch`（调度员）/ `intake`（摘条件）/ `qa`（回答问题）/ `writer`（写说明），提供方是 `gemini` / `openai` / `openrouter` / `groq` / `ollama`；单独指定的出错退回平常的顺序，写错了直接报错。后台和 `/health` 的 `steps` 显示换了哪几步。读公告另用 `COPILOT_ALERTS_PROVIDER` |
@@ -183,7 +183,7 @@ flowchart LR
 | `COPILOT_PLAN_URL` | — | 设了就用 HTTP 调 plan_trip，不跑 Node 命令行 |
 | `COPILOT_LIVE_CLOSURES` | `copilot/data/alerts/closures-latest.json` | NPS 公告关闭清单（`python -m nps_copilot alerts` 写的），文件在就交给行程引擎 |
 | `COPILOT_LIVE` | `1` | 设成 `0` 不用公告关闭清单，也不在聊天时现读公告（评测、测试里默认关掉） |
-| `COPILOT_ALERTS_PROVIDER`、`COPILOT_ALERTS_MODEL` | 有 Gemini key 用 `gemini`，没有用 `ollama` | 读公告用哪个模型（`gemini` / `openai` / `ollama` / `rules`），和聊天用的模型分开设 |
+| `COPILOT_ALERTS_PROVIDER`、`COPILOT_ALERTS_MODEL` | `alerts_chain` 的顺序（见上面 `COPILOT_PROVIDER`） | 读公告只用这一个模型（`gemini` / `openai` / `openrouter` / `groq` / `ollama` / `rules`），和聊天用的模型分开设；每晚 GitHub 上那次传进 OpenRouter、OpenAI、Gemini 三把 secret，一把都没有就用 `rules` |
 | `LIVE_CLOSURES` | — | 行程引擎（`npm run copilot:plan`、网站的 `/api/copilot/plan`）读的关闭清单路径；`plan_client` 会自动设 |
 | `COPILOT_RUNS` | `copilot/runs` | 运行日志目录 |
 | `COPILOT_PROMPT_INTAKE`、`COPILOT_PROMPT_WRITER`、`COPILOT_PROMPT_QA`、`COPILOT_PROMPT_DISPATCH` | `defaults.json` 里的 | 临时换提示词版本，比如 `v1` |

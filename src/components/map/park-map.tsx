@@ -3,7 +3,25 @@
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { ExpressionSpecification, GeoJSONSource, Map as MapLibreMap, Marker } from "maplibre-gl";
 import { useEffect, useEffectEvent, useRef, useState, type ReactNode } from "react";
-import { bounds, cumulative, drawMs, easeInOut, fade, flyMs, overallProgress, sliceTo, stopDistances, type TourDay } from "./route-tour";
+import {
+  bearingOf,
+  bounds,
+  cumulative,
+  distanceAtCost,
+  drawMs,
+  easeInOut,
+  fade,
+  flyMs,
+  followMs,
+  followZoom,
+  overallProgress,
+  paceCost,
+  sliceTo,
+  slowness,
+  stopDistances,
+  turnToward,
+  type TourDay,
+} from "./route-tour";
 import { EOX_ATTRIBUTION, EOX_IMAGERY_TILES, IMAGERY_TILES, STYLE_URL, TERRAIN_TILES, type Imagery } from "./sources";
 
 export interface MapPoint {
@@ -65,11 +83,17 @@ export interface TourRequest {
   days: number[];
 }
 
-// 动画的节奏：每天先出开场卡片、把镜头移过去，再沿路线画（到站停一下），画完停一下；最后拉远看全程
-const HOLD_MS = 700;
-const ARRIVE_MS = 300;
-const FINALE_MS = 1800;
-// 播放时镜头微微倾斜，像航拍（北还是朝上，不转，免得看不出方向）；系统设了“减少动画”就不倾斜
+// 动画的节奏：每天先出章节字幕、镜头飞到起点，再跟着车沿路线开（进站减速、到站停一下），
+// 一天开完镜头拉回来看这一天的全程，最后拉远看整趟
+const HOLD_MS = 1600;
+const ARRIVE_MS = 900;
+const FINALE_MS = 2200;
+const FOLLOW_FLY_MS = 2200;
+// 跟车的镜头：倾斜着从车后上方看，车在画面中下部，转向车开的方向（像追车的航拍）
+const FOLLOW_PITCH = 50;
+// 跟车时设过的焦点偏移，停下来要清掉（MapLibre 会一直记着，之后缩放、拉近都会偏）
+const NO_PADDING = { top: 0, bottom: 0, left: 0, right: 0 };
+// 系统设了“减少动画”就不跟车、不倾斜，整天一个固定的视角，线照样画
 const TOUR_PITCH = 38;
 // 播放时其他天的景点淡下去，突出这一天
 const DIM = 0.18;
@@ -85,6 +109,10 @@ interface TourState {
   last: number;
   arriveUntil: number;
   calm: boolean;
+  /** 跟车：每个路线点的累计播放量、这一天播多久、镜头现在的位置、缩放和方向 */
+  cost: number[];
+  dayMs: number;
+  camera: { center: [number, number]; zoom: number; bearing: number } | null;
   pausedAt: number | null;
   raf: number;
   cum: number[];
@@ -243,6 +271,7 @@ export function ParkMap({
   tour,
   tourRequest = null,
   tourSummary,
+  hoverId = null,
   text,
   className = "",
   children,
@@ -272,6 +301,8 @@ export function ParkMap({
   tourRequest?: TourRequest | null;
   /** 动画最后拉远看全程时的一句总结，比如“4 天，14 个景点，开车约 9 小时 40 分” */
   tourSummary?: string;
+  /** 鼠标停在列表里的哪个景点上：地图拉近到它，移开以后回到原来的范围 */
+  hoverId?: string | null;
   text: MapText;
   className?: string;
   /** 叠在地图上的内容，比如选中景点的卡片 */
@@ -305,6 +336,9 @@ export function ParkMap({
   } | null>(null);
   // 底下那条细细的进度条：每帧直接改宽度，不经过 React
   const progressRef = useRef<HTMLDivElement>(null);
+  // 悬停拉近以前的视角，移开以后回到这里
+  const beforeHover = useRef<{ center: [number, number]; zoom: number; bearing: number; pitch: number } | null>(null);
+  const selectedRef = useRef(selectedId);
   // 地图在不在屏幕上：自动播放要等看得见了再播
   const [visible, setVisible] = useState(false);
   const playedKey = useRef("");
@@ -468,6 +502,18 @@ export function ParkMap({
             "circle-color": "rgba(0,0,0,0)",
             "circle-stroke-width": 3,
             "circle-stroke-color": "#1c1b18",
+          },
+        });
+        instance.addLayer({
+          id: "points-hover",
+          type: "circle",
+          source: "points",
+          filter: ["==", ["get", "id"], ""],
+          paint: {
+            "circle-radius": 17,
+            "circle-color": "rgba(184,95,60,0.14)",
+            "circle-stroke-width": 2.5,
+            "circle-stroke-color": TRAIL_COLOR,
           },
         });
         instance.addLayer({
@@ -679,6 +725,7 @@ export function ParkMap({
     focusOn(null);
     setTourUi(null);
     if (progressRef.current) progressRef.current.style.width = "0%";
+    map.setPadding(NO_PADDING);
     map.easeTo({ pitch: terrainRef.current ? 60 : 0, bearing: 0, duration: 600 });
     fitToPoints(map, pointsRef.current, true);
   };
@@ -688,6 +735,7 @@ export function ParkMap({
     const map = mapRef.current;
     if (!map) return;
     clearMarkers(state);
+    map.setPadding(NO_PADDING);
     state.phase = "finale";
     state.phaseStart = now;
     focusOn(null);
@@ -704,6 +752,26 @@ export function ParkMap({
       );
     }
     setTourUi((ui) => (ui ? { ...ui, card: false, finale: true, dusk: false } : ui));
+  };
+
+  /** 跟车时看车前方多远的路定方向（公里）：拉得越远看得越前 */
+  const lookAhead = (zoom: number) => 0.25 * 2 ** (13 - zoom);
+  /** 跟车时把焦点往下挪：车停在画面偏下三分之一，前面的路留在上面 */
+  const followPadding = (map: MapLibreMap) => ({ top: Math.round(map.getContainer().clientHeight * 0.12), bottom: 0, left: 0, right: 0 });
+
+  /** 一天开完：镜头拉回来看这一天的全程 */
+  const reviewDay = (state: TourState) => {
+    const map = mapRef.current;
+    if (!map || state.calm) return;
+    map.setPadding(NO_PADDING);
+    const height = map.getContainer().clientHeight;
+    map.fitBounds(bounds(state.days[state.index]), {
+      padding: { top: Math.round(height * 0.12), bottom: Math.round(height * 0.2), left: 56, right: 56 },
+      maxZoom: 12.5,
+      duration: 1200,
+      pitch: TOUR_PITCH,
+      bearing: 0,
+    });
   };
 
   const beginDay = (state: TourState, index: number, now: number) => {
@@ -724,15 +792,26 @@ export function ParkMap({
     focusOn(day.stops.map((stop) => stop.id));
     // 线从尾巴的淡到车头的浓
     map.setPaintProperty("tour-line", "line-gradient", ["interpolate", ["linear"], ["line-progress"], 0, fade(day.color, 0.35), 1, day.color]);
-    // 左下有章节字幕：底部多留一点，路线不被盖住
-    const height = map.getContainer().clientHeight;
-    map.fitBounds(bounds(day), {
-      padding: { top: Math.round(height * 0.14), bottom: Math.round(height * 0.34), left: 56, right: 56 },
-      maxZoom: 12.5,
-      duration: flyMs(state.days.length),
-      pitch: state.calm ? 0 : TOUR_PITCH,
-      bearing: 0,
-    });
+    state.cost = paceCost(state.cum, state.stopKm);
+    state.dayMs = state.calm ? drawMs(state.days.length) : followMs(state.cost[state.cost.length - 1] ?? 0, state.days.length);
+    state.camera = null;
+    if (state.calm) {
+      // 左下有章节字幕：底部多留一点，路线不被盖住
+      const height = map.getContainer().clientHeight;
+      map.fitBounds(bounds(day), {
+        padding: { top: Math.round(height * 0.14), bottom: Math.round(height * 0.34), left: 56, right: 56 },
+        maxZoom: 12.5,
+        duration: flyMs(state.days.length),
+        pitch: 0,
+        bearing: 0,
+      });
+    } else {
+      // 跟车：飞到起点，从车后上方朝车要开的方向看
+      const zoom = followZoom(slowness(0, state.stopKm, state.total));
+      const from = sliceTo(day.path, state.cum, 0).head;
+      const to = sliceTo(day.path, state.cum, Math.max(0.8, lookAhead(zoom) * 3)).head;
+      map.flyTo({ center: from, zoom, pitch: FOLLOW_PITCH, bearing: bearingOf(from, to), padding: followPadding(map), duration: FOLLOW_FLY_MS });
+    }
     setTourUi({
       index,
       days: state.days.map(({ day: n, color }) => ({ day: n, color })),
@@ -765,7 +844,7 @@ export function ParkMap({
     const elapsed = now - state.phaseStart;
     if (state.phase === "fly") {
       // 卡片显示到镜头快到位，再收起来开始画
-      const fly = flyMs(state.days.length);
+      const fly = state.calm ? flyMs(state.days.length) : FOLLOW_FLY_MS;
       if (elapsed >= fly * 0.85) setTourUi((ui) => (ui && ui.card ? { ...ui, card: false } : ui));
       if (elapsed >= fly) {
         state.phase = "draw";
@@ -775,10 +854,27 @@ export function ParkMap({
       return;
     }
     if (state.phase === "draw") {
-      const progress = Math.min(1, elapsed / drawMs(state.days.length));
-      const eased = easeInOut(progress);
-      const distance = eased * state.total;
+      const progress = Math.min(1, elapsed / state.dayMs);
+      // 不跟车：整天慢慢起步、慢慢停下；跟车：按播放量匀速走，进站前自然减速、长途时加速
+      const eased = state.calm ? easeInOut(progress) : progress;
+      const distance = state.calm
+        ? eased * state.total
+        : distanceAtCost(state.cum, state.cost, progress * (state.cost[state.cost.length - 1] ?? 0));
       const { line, head } = sliceTo(day.path, state.cum, distance);
+      if (!state.calm) {
+        // 镜头跟着车：位置、缩放、方向都慢慢跟过去（按这一帧过了多久算，帧率不同也一样快）
+        const prev = state.camera ?? { center: map.getCenter().toArray() as [number, number], zoom: map.getZoom(), bearing: map.getBearing() };
+        const zoom = prev.zoom + (followZoom(slowness(distance, state.stopKm, state.total)) - prev.zoom) * (1 - Math.exp(-delta / 700));
+        const ahead = lookAhead(zoom);
+        const k = 1 - Math.exp(-delta / 140);
+        const center: [number, number] = [prev.center[0] + (head[0] - prev.center[0]) * k, prev.center[1] + (head[1] - prev.center[1]) * k];
+        // 方向看车前面一段路，免得山路上来回打转；开到终点、前面没有路了就不再转
+        const further = sliceTo(day.path, state.cum, distance + Math.max(0.8, ahead * 3)).head;
+        const moving = further[0] !== head[0] || further[1] !== head[1];
+        const bearing = moving ? turnToward(prev.bearing, bearingOf(head, further), 1 - Math.exp(-delta / 900)) : prev.bearing;
+        state.camera = { center, zoom, bearing };
+        map.jumpTo({ center, zoom, bearing, pitch: FOLLOW_PITCH, padding: followPadding(map) });
+      }
       setLine("tour-line", line.length > 1 ? [lineFeature(line, day.color)] : []);
       setLine("tour-head", [{ type: "Feature", geometry: { type: "Point", coordinates: head }, properties: { color: day.color } }]);
       if (progressRef.current) progressRef.current.style.width = `${overallProgress(state.index, state.days.length, eased) * 100}%`;
@@ -806,6 +902,7 @@ export function ParkMap({
       if (progress >= 1) {
         state.phase = "hold";
         state.phaseStart = now;
+        reviewDay(state);
       }
       return;
     }
@@ -841,6 +938,9 @@ export function ParkMap({
       last: performance.now(),
       arriveUntil: 0,
       calm: reducedMotion(),
+      cost: [],
+      dayMs: 0,
+      camera: null,
       pausedAt: null,
       raf: 0,
       cum: [],
@@ -922,7 +1022,36 @@ export function ParkMap({
     (map.getSource("extras") as GeoJSONSource).setData(pointsToGeoJSON(extras ?? []));
   }, [ready, extras]);
 
+  // 鼠标停在列表里的某个景点上：停够 250 毫秒才拉近（鼠标扫过一串景点时地图不乱跳），离开 450 毫秒后回到原来的视角；
+  // 移开之前点过某个景点（选中了）就停在选中的那个，不回去；播动画的时候不动
   useEffect(() => {
+    const map = mapRef.current;
+    if (!ready || !map) return;
+    const timer = setTimeout(
+      () => {
+        if (tourRef.current) return;
+        const point = hoverId ? pointsRef.current.find((p) => p.id === hoverId) : undefined;
+        map.setFilter("points-hover", ["==", ["get", "id"], point?.id ?? ""]);
+        if (point) {
+          beforeHover.current ??= {
+            center: map.getCenter().toArray() as [number, number],
+            zoom: map.getZoom(),
+            bearing: map.getBearing(),
+            pitch: map.getPitch(),
+          };
+          map.flyTo({ center: [point.lon, point.lat], zoom: Math.max(14, map.getZoom()), duration: 900, essential: true });
+        } else if (beforeHover.current) {
+          if (!selectedRef.current) map.easeTo({ ...beforeHover.current, duration: 800 });
+          beforeHover.current = null;
+        }
+      },
+      hoverId ? 250 : 450,
+    );
+    return () => clearTimeout(timer);
+  }, [ready, hoverId]);
+
+  useEffect(() => {
+    selectedRef.current = selectedId;
     const map = mapRef.current;
     if (!ready || !map) return;
     map.setFilter("points-selected", ["==", ["get", "id"], selectedId ?? ""]);

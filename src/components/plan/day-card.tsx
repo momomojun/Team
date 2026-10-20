@@ -91,6 +91,7 @@ export function DayCard({
   openId,
   details,
   onSelect,
+  onHover,
   onEdit,
   mapsUrl,
   drag,
@@ -121,6 +122,8 @@ export function DayCard({
   details: (stop: AttractionWithPhoto) => ReactNode;
   /** 点景点：展开 / 收起详情，并在地图上选中 */
   onSelect: (id: string) => void;
+  /** 鼠标停在某一站上（地图拉近过去）；离开时是 null */
+  onHover?: (id: string | null) => void;
   onEdit: (change: (trip: Trip) => Trip) => void;
   /** 景点在 Google Maps 上的搜索链接 */
   mapsUrl: (stop: AttractionWithPhoto) => string;
@@ -523,6 +526,8 @@ export function DayCard({
                     className={`flex items-start gap-3 px-1.5 py-2.5 transition-colors ${
                       stop.id === selectedId ? "bg-paper-deep" : "hover:bg-paper-deep/60"
                     }`}
+                    onMouseEnter={() => onHover?.(stop.id)}
+                    onMouseLeave={() => onHover?.(null)}
                   >
                     <span
                       aria-hidden

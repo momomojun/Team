@@ -548,14 +548,13 @@ class ProviderChain:
         raise ProviderError("没有可用的模型")
 
 
-def cloud_chain(batch: bool = False) -> list:
-    """有 key 的商业 API，按仓库主人 10-19 定的顺序：Gemini 3.5 Flash Lite → OpenAI GPT-4.1 mini（第二轮对照里最准）。
-    聊天（batch=False）不按免费档的每分钟次数排队、服务忙只重试一次，免得一句话等很久，超了就换下一个；
-    一次读一批公告（batch=True）照常按免费档放慢、多重试几次"""
+def _available(specs: list, batch: bool) -> list:
+    """按顺序造出有 key 的那几个；聊天（batch=False）不按免费档的每分钟次数排队、服务忙只重试一次，免得一句话等很久，
+    超了就换下一个；一次读一批公告（batch=True）照常按免费档放慢、多重试几次"""
     chain: list = []
-    for cls, model in ((GeminiProvider, "gemini-3.5-flash-lite"), (OpenAIProvider, "gpt-4.1-mini")):
+    for cls, kwargs in specs:
         try:
-            provider = cls(model=model)
+            provider = cls(**kwargs)
         except ProviderError:
             continue
         if not batch:
@@ -563,6 +562,28 @@ def cloud_chain(batch: bool = False) -> list:
             provider.pace.waits = (2,)
         chain.append(provider)
     return chain
+
+
+def cloud_chain(batch: bool = False) -> list:
+    """聊天用的商业 API。10-20 仓库主人定的“哪个稳哪个准用哪个，免费的能用就先用免费的”，按第四轮对照：
+    Gemini 3.5 Flash Lite（免费；单句三组最好，真实对话 15/15）→ Groq 上的 Qwen3.8 27B（免费、很快；没见过的单句 38/40，
+    但每分钟只有 8000 token）→ OpenAI GPT-4.1 mini（付费，最稳，前两个都出错才用）。没配 key 的跳过"""
+    return _available([
+        (GeminiProvider, {"model": "gemini-3.5-flash-lite"}),
+        (GroqProvider, {"model": "qwen/qwen3.8-27b"}),
+        (OpenAIProvider, {"model": "gpt-4.1-mini"}),
+    ], batch)
+
+
+def alerts_chain(batch: bool = True) -> list:
+    """读公告用的商业 API（10-20，同样的规矩）：OpenRouter 上的 MiniMax M3.1 Flash 推理开 high（免费；26 条抽样上景点 F1 0.67，
+    和 GPT-4.1 mini 一样；每天约 50 次，每晚只读新的、改过的几条够用）→ GPT-4.1 mini（全部 151 条上最准，付费，MiniMax
+    额度用完或出错才用）→ Gemini。没配 key 的跳过"""
+    return _available([
+        (OpenRouterProvider, {"model": "minimax/minimax-m3.1-flash:free", "reasoning": {"effort": "high"}}),
+        (OpenAIProvider, {"model": "gpt-4.1-mini"}),
+        (GeminiProvider, {"model": "gemini-3.5-flash-lite"}),
+    ], batch)
 
 
 CHAT_STEPS = ("dispatch", "intake", "qa", "writer")
@@ -615,7 +636,7 @@ def step_models(default: Provider) -> Provider:
 
 
 def chat_provider() -> Provider:
-    """Copilot 聊天（serve、chat）用的模型。10-19 仓库主人定的顺序：Gemini → OpenAI → 本机模型，没配 key 的那一家跳过
+    """Copilot 聊天（serve、chat）用的模型：cloud_chain 的顺序（Gemini → Groq Qwen3.8 → GPT-4.1 mini）再加本机模型，没配 key 的那一家跳过
     （组员什么 key 都没配就跟以前一样只用本机）。设了 COPILOT_PROVIDER 就按设的、不再按顺序退。
     COPILOT_STEP_MODELS 可以给某几步单独换模型（step_models）。
     评测脚本不走这里（用 from_env，默认本机，录音才对得上）"""

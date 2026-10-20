@@ -17,8 +17,12 @@ def http_error(code: int, body: str) -> urllib.error.HTTPError:
 
 
 @pytest.fixture
-def fake_api(monkeypatch):
-    """把 _post 换成按顺序返回写好的回复（或抛写好的错误），记下每次发了什么；不真的等待"""
+def fake_api(monkeypatch, tmp_path):
+    """把 _post 换成按顺序返回写好的回复（或抛写好的错误），记下每次发了什么；不真的等待。
+    不读本机仓库的 .env.local（里面可能有真的 key），只有 Gemini、OpenAI 两把假 key"""
+    monkeypatch.setattr(providers, "ROOT", tmp_path)
+    for name in ("GROQ_API_KEY", "OPENROUTER_API_KEY"):
+        monkeypatch.delenv(name, raising=False)
     monkeypatch.setenv("GEMINI_API_KEY", "test-gemini-key")
     monkeypatch.setenv("OPENAI_API_KEY", "test-openai-key")
     monkeypatch.setattr(providers.time, "sleep", lambda seconds: None)
@@ -249,3 +253,19 @@ def test_step_models_send_some_steps_to_their_own_model(monkeypatch, fake_api):
         monkeypatch.setenv("COPILOT_STEP_MODELS", wrong)
         with pytest.raises(ProviderError):
             chat_provider()
+
+
+def test_free_models_come_first_in_chat_and_alerts(fake_api, monkeypatch):
+    from nps_copilot.providers import alerts_chain, cloud_chain
+
+    monkeypatch.setenv("GROQ_API_KEY", "test-groq-key")
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-openrouter-key")
+    assert [p.model for p in cloud_chain()] == ["gemini-3.5-flash-lite", "qwen/qwen3.8-27b", "gpt-4.1-mini"]
+    chain = alerts_chain()
+    assert [p.model for p in chain] == ["minimax/minimax-m3.1-flash:free", "gpt-4.1-mini", "gemini-3.5-flash-lite"]
+    assert chain[0].reasoning == {"effort": "high"}
+    # 只有 Gemini 一把 key：两条链都只剩 Gemini
+    for name in ("GROQ_API_KEY", "OPENROUTER_API_KEY", "OPENAI_API_KEY"):
+        monkeypatch.delenv(name)
+    assert [p.model for p in cloud_chain()] == ["gemini-3.5-flash-lite"]
+    assert [p.model for p in alerts_chain()] == ["gemini-3.5-flash-lite"]

@@ -137,6 +137,11 @@ export function Planner({
   const [campMap, setCampMap] = useState(false);
   const [campPick, setCampPick] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  // 鼠标停在哪一站上（地图拉近过去）；触屏没有悬停，不记
+  const [hoverId, setHoverId] = useState<string | null>(null);
+  const hoverStop = (id: string | null) => {
+    if (id === null || window.matchMedia("(hover: hover) and (pointer: fine)").matches) setHoverId(id);
+  };
   // 行程里展开详情的景点；“添加景点”列表里展开的另算
   const [openId, setOpenId] = useState<string | null>(null);
   const [browseId, setBrowseId] = useState<string | null>(null);
@@ -1490,6 +1495,7 @@ export function Planner({
                 openId={openId}
                 details={(stop) => detailsFor(stop, view.date ? monthOf(view.date) : tripMonth, () => setOpenId(null))}
                 onSelect={(id) => selectInList(view.day, id)}
+                onHover={hoverStop}
                 onEdit={updateTrip}
                 mapsUrl={(stop) => googleMapsUrl(stop, parkNameEn(stop.park))}
                 drag={drag}
@@ -1711,7 +1717,8 @@ export function Planner({
               imagery={stopParks.some((code) => parks.find((park) => park.code === code)?.country === "CA") ? "eox" : "usgs"}
               points={mapPoints}
               trails={mapTrails}
-              highlightTrailId={selectedId}
+              highlightTrailId={hoverId ?? selectedId}
+              hoverId={hoverId}
               legs={mapLegs}
               legend={mapLegend}
               tour={campMap ? undefined : tourDays}
