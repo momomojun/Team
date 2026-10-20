@@ -68,5 +68,26 @@ def test_monitor_groups_by_prompt_version(tmp_path):
     assert "intake/v2" in monitor.report(7, tmp_path)
 
 
+def test_monitor_adds_up_tokens_and_cost_by_the_model_that_answered(tmp_path):
+    today = dt.date.today().isoformat()
+    calls = [
+        {"task": "dispatch", "model": "gemini-3.5-flash-lite", "error": "API 出错（429）"},
+        {"task": "dispatch", "model": "gpt-4.1-mini", "prompt_tokens": 1_000_000, "output_tokens": 500_000, "fallback_from": ["gemini-3.5-flash-lite"]},
+        {"task": "intake", "model": "gemini-3.5-flash-lite", "prompt_tokens": 800, "output_tokens": 40, "thinking_tokens": 12},
+        {"task": "intake", "model": "mystery-model", "prompt_tokens": 10, "output_tokens": 5},
+    ]
+    rows = [row("a", "planned", calls=calls, plan={"alerts": {"read": 3}}), row("b", "planned")]  # 旧日志没有 calls
+    (tmp_path / f"{today}.jsonl").write_text("\n".join(json.dumps(r) for r in rows) + "\n", encoding="utf-8")
+    used = monitor.usage(monitor.load(7, tmp_path))
+    assert used["turns"] == 1 and used["alerts_read"] == 3
+    gpt, gemini = used["models"]["gpt-4.1-mini"], used["models"]["gemini-3.5-flash-lite"]
+    assert gpt["calls"] == 1 and gpt["fallback_to"] == 1 and abs(gpt["cost"] - 1.2) < 1e-9  # 0.40 + 0.5 × 1.60
+    assert gemini["calls"] == 1 and gemini["errors"] == 1 and gemini["thinking_tokens"] == 12 and gemini["cost"] == 0
+    assert used["models"]["mystery-model"]["unpriced"] == 1  # 没有价格的不当成 0
+    assert abs(used["days"][today] - 1.2) < 1e-9
+    text = monitor.report(7, tmp_path)
+    assert "gpt-4.1-mini：1 次（其中前面的模型出错、轮到它的 1 次）" in text and "不知道（没有价格）" in text
+
+
 def test_monitor_without_logs(tmp_path):
     assert "没有运行日志" in monitor.report(7, tmp_path)

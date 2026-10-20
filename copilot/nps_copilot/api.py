@@ -3,6 +3,7 @@
 POST /sessions                   → {"session": "...", "greeting": "..."}
 POST /sessions/{id}/messages     {"text": "..."} → 这一轮的回复（status、text、question、request、result）
 GET  /health                     → 版本、构建的 commit、提示词版本和 hash、模型、行程引擎能不能用
+GET  /stats?days=7               → 运行日志的统计（和 python -m nps_copilot stats 一样）：按版本的成功率、耗时，按模型的调用、token、花费
 """
 from __future__ import annotations
 
@@ -13,7 +14,7 @@ import shutil
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-from . import __version__
+from . import __version__, monitor
 from .pipeline import VERSION, Session, prompt_hashes
 from .providers import ProviderError, chat_provider
 
@@ -41,6 +42,12 @@ def health() -> dict:
         "prompts": prompt_hashes(),
         "plan_tool": "http" if os.environ.get("COPILOT_PLAN_URL") else ("cli" if shutil.which("node") else "missing"),
     }
+
+
+@app.get("/stats")
+def stats(days: int = 7) -> dict:
+    rows = monitor.load(days)
+    return {"days": days, "versions": monitor.summarize(rows), "usage": monitor.usage(rows)}
 
 
 @app.post("/sessions")

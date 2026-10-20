@@ -8,7 +8,8 @@
    设 COPILOT_DISPATCH=0 可以整个关掉调度员（对照实验、回滚用）。
 
 每轮对话写一条日志（JSONL，默认 copilot/runs/，已在 .gitignore 里）：提示词版本、模型、各步耗时、
-模型输出、调度员做了什么、丢掉的片段、Critic 的发现、Writer 有没有被换成模板。评测和监控都读这份日志。
+模型输出、调度员做了什么、丢掉的片段、Critic 的发现、Writer 有没有被换成模板，每次模型调用用了哪个模型、
+多少 token（calls）。评测和监控都读这份日志。
 """
 from __future__ import annotations
 
@@ -27,7 +28,7 @@ from . import writer as writer_module
 from .critic import critique
 from .intake import Field, Intake
 from .plan_client import PlanError, plan_trip
-from .providers import Provider
+from .providers import Metered, Provider
 from .text import contains
 
 VERSION = f"copilot/{__version__}"
@@ -63,6 +64,9 @@ class Session:
     id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
 
     def __post_init__(self) -> None:
+        # 记下每次模型调用（哪个模型、多少 token），写进每轮日志，monitor 按模型算花费
+        if not isinstance(self.provider, Metered):
+            self.provider = Metered(self.provider)
         self.turn = 0
         self.history: list[tuple[str, str]] = []
         self._reset()
@@ -87,6 +91,7 @@ class Session:
     def send(self, message: str) -> Reply:
         self.turn += 1
         start = time.perf_counter()
+        self.provider.take()  # 上一轮半路出错没写进日志的调用不算到这一轮
         trace = {"session": self.id, "turn": self.turn, "version": VERSION, "prompts": prompt_hashes(),
                  "reference_date": self.reference_date, "message": message}
         if self.intake.language is None:
@@ -335,6 +340,7 @@ class Session:
     def _done(self, reply: Reply, start: float) -> Reply:
         reply.trace["status"] = reply.status
         reply.trace["latency_ms"] = round((time.perf_counter() - start) * 1000)
+        reply.trace["calls"] = self.provider.take()
         if self.log:
             RUNS.mkdir(parents=True, exist_ok=True)
             path = RUNS / f"{dt.date.today().isoformat()}.jsonl"

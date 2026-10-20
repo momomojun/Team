@@ -94,7 +94,7 @@ flowchart LR
 | `copilot/nps_copilot/providers.py` | 模型提供方：本机 Ollama（默认）、回放录好的输出（CI 用，没录到的请求直接报错）、录音、测试用的脚本、Gemini、OpenAI、OpenRouter、Groq 的 API（10-19；聊天按 `chat_provider()` 的顺序用 Gemini → OpenAI → 本机，`ProviderChain`，OpenRouter、Groq 要明确设 `COPILOT_PROVIDER` 才用；按免费档的每分钟次数放慢，服务忙会重试，当天额度用完直接报错；模型不认的思考、推理设置自动换下一档）、退回本机（`FallbackProvider`） |
 | `copilot/nps_copilot/prompts.py`、`prompts/` | 提示词版本，见下一节 |
 | `copilot/nps_copilot/pipeline.py` | 把上面串起来；每轮写一条 JSONL 日志到 `copilot/runs/<日期>.jsonl`（Docker 里是 `/data/runs`） |
-| `copilot/nps_copilot/monitor.py` | `python -m nps_copilot stats`：按版本统计运行日志 |
+| `copilot/nps_copilot/monitor.py` | `python -m nps_copilot stats`、`GET /stats`：按版本统计运行日志，按模型算调用、token 和花费（价格表 `PRICES`） |
 | `src/components/plan/copilot-chat.tsx`、`src/app/api/copilot/chat/route.ts` | 网站行程页的对话框和中转接口 |
 | `copilot/nps_copilot/api.py`、`__main__.py` | HTTP 服务（FastAPI：`GET /health`、`POST /sessions`、`POST /sessions/{id}/messages`）和命令行（`chat`、`serve`、`stats`、`version`） |
 | `copilot/nps_copilot/data/regional_names.json` | 各地中文叫法（三藩市、卡加利、愛民頓、洛磯山、班芙、宰恩、傑克森……），`copilot/scripts/regional_names.py` 从维基数据和中文维基各地区的标题、重定向生成；人工补的（`MANUAL`）和排除的（`EXCLUDE`：太泛的巨杉、冰河，和网站用词冲突的红杉）写在脚本里，附原因。只用来认名字，回答用户时用网站自己的中文名 |
@@ -154,6 +154,16 @@ flowchart LR
 | writer_fallback | 模型改写的说明没通过忠实度检查、退回模板 | Writer 编造 |
 | dispatched / legacy / dispatch_dropped / dispatch_errors | 调度员定了做什么的轮数 / 走原来按规则流程的轮数 / 调度员编了对话里没有的地方被丢掉的动作 / 调度员调用失败 | legacy、dropped 变多：调度员变差（提示词或模型）；errors 变多：模型服务有问题 |
 | questions / qa_model / qa_not_found / qa_fallback | 排好以后的提问；用了模型的回答 / 资料里没有、说了不知道 / 回答里有资料里没有的数字，改成摘原文 | qa_fallback 变多：QA 在编造；qa_not_found 变多：资料不够或检索变差 |
+
+后面另有一段“模型用量”（10-19 加的；每轮日志里的 `calls` 记着这一轮每次模型调用是哪个模型回答的、多少 token、多久、前面哪几个模型出了错，`providers.Metered` 记的）：
+
+| 指标 | 意思 | 变差说明 |
+|---|---|---|
+| 每个模型的调用次数、出错次数 | 按真正回答的那个模型算；Gemini 出错、换 GPT-4.1 mini 回答的，算 GPT-4.1 mini 一次（“轮到它的”），Gemini 记一次出错 | 主模型出错变多、备用模型轮到的变多：免费额度不够了，或者服务不稳 |
+| token（输入 / 输出 / 思考） | 商业 API 返回的 usage；本机 Ollama 的是 prompt_eval_count、eval_count | 每轮 token 变多：提示词变长了，或者模型想得更多 |
+| 花费、每天花费 | 按 `monitor.PRICES`（每百万 token 的美元，10-19 按第三方汇总的价格，没有官网核实；免费档、本机按 0）；没写价格的模型记“不知道”，不当成 0 | 突然变贵：退到付费模型的多了 |
+
+聊天时为了两周内出发的行程现读公告（`alerts_live.refresh_for`）用的 token 不在这里，只记读了几条。HTTP 服务另有 `GET /stats?days=7`，返回同样的统计（JSON）。
 
 什么时候该回滚、怎么回滚见 [GUIDE.md](GUIDE.md#回滚)。
 

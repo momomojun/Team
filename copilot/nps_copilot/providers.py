@@ -8,6 +8,7 @@
   .env.local 读（GEMINI_API_KEY、OPENAI_API_KEY、OPENROUTER_API_KEY、GROQ_API_KEY），只放在请求头里，不写日志；
   聊天按 chat_provider() 的顺序用，评测要明确设 COPILOT_PROVIDER
 - FallbackProvider：主模型出错（额度用完、服务忙）时退回本机模型，给 Copilot 服务用；评测不用它（要量的是主模型本身）
+- Metered：包一个模型，记下每次调用是哪个模型回答的、用了多少 token、多久、有没有退到备用的（每轮日志里的 calls，监控算花费用）
 """
 from __future__ import annotations
 
@@ -103,7 +104,8 @@ class ReplayProvider:
         record = self.records.get(key)
         if record is None:
             raise ProviderError(f"回放记录里没有这次调用（{task}：{user[:40]}），提示词或样例改了要重新录")
-        return Completion(data=record["output"], model=record["model"], latency_ms=record.get("latency_ms", 0), raw=record.get("raw", ""))
+        return Completion(data=record["output"], model=record["model"], latency_ms=record.get("latency_ms", 0), raw=record.get("raw", ""),
+                          meta=record.get("meta") or {})
 
 
 @dataclass
@@ -458,6 +460,47 @@ class FallbackProvider:
             completion.meta = {**completion.meta, "fallback_from": getattr(self.primary, "model", self.primary.name),
                                "fallback_reason": str(error)[:120]}
             return completion
+
+
+@dataclass
+class Metered:
+    """记下每次调用（不改调用本身）：哪个模型回答的、多少 token、多久、前面哪几个出了错；出错的也记一条。
+    Session 每轮开始清空、结束时 take() 写进日志"""
+    inner: Provider
+    log: list = field(default_factory=list)
+
+    @property
+    def name(self) -> str:
+        return self.inner.name
+
+    @property
+    def model(self) -> str:
+        return getattr(self.inner, "model", self.inner.name)
+
+    def complete_json(self, task: str, system: str, user: str, schema: dict) -> Completion:
+        start = time.perf_counter()
+        try:
+            completion = self.inner.complete_json(task, system, user, schema)
+        except ProviderError as error:
+            self.log.append({"task": task, "model": self.model, "ms": round((time.perf_counter() - start) * 1000),
+                             "error": str(error)[:120]})
+            raise
+        meta = completion.meta or {}
+        row = {"task": task, "model": completion.model, "ms": completion.latency_ms or round((time.perf_counter() - start) * 1000),
+               # 商业 API 的 usage；本机 Ollama 的是 prompt_eval_count、eval_count
+               "prompt_tokens": meta.get("prompt_tokens", meta.get("prompt_eval_count")),
+               "output_tokens": meta.get("output_tokens", meta.get("eval_count")),
+               "thinking_tokens": meta.get("thinking_tokens")}
+        row = {key: value for key, value in row.items() if value is not None}
+        failed = meta.get("fallback_from")
+        if failed:  # ProviderChain 记的是 [{model, reason}]，FallbackProvider 记的是一个模型名
+            row["fallback_from"] = [item["model"] for item in failed] if isinstance(failed, list) else [failed]
+        self.log.append(row)
+        return completion
+
+    def take(self) -> list:
+        calls, self.log = self.log, []
+        return calls
 
 
 @dataclass

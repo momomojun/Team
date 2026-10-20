@@ -10,6 +10,9 @@ Writer 退回模板的比例、耗时有没有变差。指标的意思：
   dispatch_dropped：调度员编了对话里没有的地方、被代码丢掉的动作数；dispatch_errors：调度员调用失败
 - questions：排出行程以后的提问；qa_model 用了模型的回答，qa_not_found 资料里没有、说了不知道，
   qa_fallback 模型的回答里有资料里没有的数字（或者出错），改成摘资料原文
+
+模型用量（usage）：按真正回答的那个模型汇总调用次数、出错、退到它的次数（前面的模型出错才轮到它）、token 和花费，
+另外按天算花费。价格在 PRICES（每百万 token 的美元），没写价格的模型花费记“不知道”，不当成 0。
 """
 from __future__ import annotations
 
@@ -21,6 +24,67 @@ from pathlib import Path
 
 from .pipeline import RUNS
 
+# 每百万 token 的价格（输入, 输出），美元。10-19 按第三方汇总的价格（没有官网核实）；免费档、本机按 0 算，
+# Gemini 换成付费档、或者 OpenAI 调价了要改这里。eval/compare_alerts.py 也用这张表
+PRICES = {
+    "gpt-4.1-mini": (0.40, 1.60),
+    "gpt-5-nano": (0.05, 0.40),
+    "gpt-6-luna": (0.10, 0.50),
+    "gemini-3.5-flash-lite": (0.0, 0.0),
+    "gemma-4-31b-it": (0.0, 0.0),
+    "openai/gpt-oss-120b": (0.0, 0.0),
+    "qwen/qwen3.8-27b": (0.0, 0.0),
+    "qwen3.5:4b-q4_K_M": (0.0, 0.0),
+}
+
+
+def price(model: str) -> tuple[float, float] | None:
+    if model in PRICES:
+        return PRICES[model]
+    if model.endswith(":free"):  # OpenRouter 的免费模型
+        return (0.0, 0.0)
+    return None
+
+
+def call_cost(call: dict) -> float | None:
+    """一次调用花了多少美元。OpenAI 的输出 token 已经含推理；Gemini 的思考 token 另算、按输出价收"""
+    rate = price(call.get("model", ""))
+    if rate is None:
+        return None
+    output = (call.get("output_tokens") or 0) + (call.get("thinking_tokens") or 0 if call.get("model", "").startswith("gemini") else 0)
+    return ((call.get("prompt_tokens") or 0) * rate[0] + output * rate[1]) / 1e6
+
+
+def usage(rows: list[dict]) -> dict:
+    """按模型、按天汇总模型调用。没有 calls 的旧日志不算"""
+    models: dict[str, dict] = defaultdict(lambda: {"calls": 0, "errors": 0, "fallback_to": 0, "prompt_tokens": 0,
+                                                   "output_tokens": 0, "thinking_tokens": 0, "cost": 0.0, "unpriced": 0})
+    days: dict[str, float] = defaultdict(float)
+    turns = alerts_read = 0
+    for row in rows:
+        calls = row.get("calls")
+        if calls is None:
+            continue
+        turns += 1
+        alerts_read += ((row.get("plan") or {}).get("alerts") or {}).get("read") or 0
+        day = row.get("day") or "?"
+        for call in calls:
+            item = models[call.get("model", "?")]
+            if call.get("error"):
+                item["errors"] += 1
+                continue
+            item["calls"] += 1
+            item["fallback_to"] += 1 if call.get("fallback_from") else 0
+            for key in ("prompt_tokens", "output_tokens", "thinking_tokens"):
+                item[key] += call.get(key) or 0
+            cost = call_cost(call)
+            if cost is None:
+                item["unpriced"] += 1
+            else:
+                item["cost"] += cost
+                days[day] += cost
+    return {"turns": turns, "alerts_read": alerts_read, "models": dict(models), "days": dict(sorted(days.items()))}
+
 
 def load(days: int, runs: Path = RUNS) -> list[dict]:
     since = dt.date.today() - dt.timedelta(days=days - 1)
@@ -31,7 +95,7 @@ def load(days: int, runs: Path = RUNS) -> list[dict]:
                 continue
         except ValueError:
             continue
-        rows.extend(json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip())
+        rows.extend({**json.loads(line), "day": path.stem} for line in path.read_text(encoding="utf-8").splitlines() if line.strip())
     return rows
 
 
@@ -88,4 +152,13 @@ def report(days: int = 7, runs: Path = RUNS) -> str:
         if item["questions"]:
             lines.append(f"  提问 {item['questions']} 次：模型回答 {item['qa_model']}，资料里没有 {item['qa_not_found']}，"
                          f"回答对不上资料、改成摘原文 {item['qa_fallback']}")
+    used = usage(rows)
+    if used["turns"]:
+        lines.append(f"\n模型用量（记了调用的 {used['turns']} 轮；聊天时现读公告 {used['alerts_read']} 条，那部分的 token 不在下面）")
+        for model, item in sorted(used["models"].items(), key=lambda pair: -pair[1]["calls"]):
+            cost = "不知道（没有价格）" if item["unpriced"] else f"${item['cost']:.4f}"
+            lines.append(f"  {model}：{item['calls']} 次（其中前面的模型出错、轮到它的 {item['fallback_to']} 次），出错 {item['errors']} 次；"
+                         f"token 输入 {item['prompt_tokens']}、输出 {item['output_tokens']}、思考 {item['thinking_tokens']}；花费 {cost}")
+        if used["days"]:
+            lines.append("  每天花费：" + "，".join(f"{day} ${cost:.4f}" for day, cost in used["days"].items()))
     return "\n".join(lines)
