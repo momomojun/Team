@@ -350,7 +350,7 @@ docker compose -f copilot/docker-compose.yml exec -T copilot python -m nps_copil
 - 开发服务器用预览工具启动（`.claude/launch.json` 里的 `nps-guide`），不要用后台命令行起。
 - 给人看的命令要能在任何目录下运行，比如用 `git -C`、`npm --prefix`、绝对路径。
 - 推送、打 tag、发版、改仓库设置、删除东西之前先问仓库主人。
-- 数据整理、核对事实的任务说明在 [archive/agent-briefs/](archive/agent-briefs/)，可以照着再派；派出去的调研任务要求“每做完一项马上写记录”，中途停下也不丢东西。
+- 数据整理、核对事实的任务说明在 [archive/agent-briefs/](archive/agent-briefs/)，可以照着再派（组员接手的修复任务也写在这里，比如 `10-campground-seasons.md`，让自己的 AI 助手先读它）；派出去的调研任务要求“每做完一项马上写记录”，中途停下也不丢东西。
 - 网页搜索额度：Claude Code 每个会话有上限（主对话和所有子助手共用，momomojun 的设置是 500 次，`CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION`）。同时开的调研助手控制在 2–3 个；快用完时（约 400 次，或者第一次碰到额度报错）不再开新的调研，先把交接写进 [PROJECT.md](PROJECT.md)。
 
 ## 9. 常见问题
