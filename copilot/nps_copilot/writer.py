@@ -199,6 +199,31 @@ def lodging_changes(before: dict, after: dict, zh: bool) -> list[str]:
     return changes
 
 
+def day_changes(before: dict, after: dict, zh: bool) -> list[str]:
+    """只改了条件（比如住宿换成民宿）、每天去哪也跟着变了的：说一句，别让人以为只换了住处。
+    10-21 仓库主人说“把住宿换成airbnb”，民宿区在别的地方，整趟顺序都变了，回复里只说了“住宿改成民宿”"""
+    table = catalog.parks()
+
+    def parks_of(day: dict) -> list[str]:
+        codes = [stop["id"].split("-")[0] for stop in day.get("stops", []) if stop.get("id")]
+        return list(dict.fromkeys(code for code in codes if code in table))
+
+    moved = []
+    for old, new in zip(before.get("days", []), after.get("days", [])):
+        a, b = parks_of(old), parks_of(new)
+        if a and b and a != b:
+            name = (lambda codes: "、".join(table[c].name_zh for c in codes)) if zh else (lambda codes: ", ".join(table[c].name_en for c in codes))
+            moved.append(f"第 {new['day']} 天 {name(a)} → {name(b)}" if zh else f"day {new['day']}: {name(a)} → {name(b)}")
+    if not moved:
+        same = sum(1 for old, new in zip(before.get("days", []), after.get("days", []))
+                   if [s.get("id") for s in old.get("stops", [])] == [s.get("id") for s in new.get("stops", [])])
+        if same == len(after.get("days", [])):
+            return []
+        return ["住处换了地方，每天的景点也按新的住处重新排了一遍。" if zh else "The stops were re-planned around the new places to stay."]
+    return [("住处换了地方，开车最顺的走法也变了：" + "；".join(moved) + "。") if zh else
+            ("The new places to stay changed the best driving order: " + "; ".join(moved) + ".")]
+
+
 def duration(minutes: int, zh: bool) -> str:
     """“约 6 小时”“约 2 小时 30 分”“约 40 分钟”：按 10 分钟取整，别给人精确到分钟的错觉"""
     minutes = int(round(minutes / 10) * 10) if minutes >= 60 else int(round(minutes / 5) * 5)

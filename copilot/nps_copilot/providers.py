@@ -198,6 +198,7 @@ class _Paced:
     last: float = -1e9
     # 最后一次成功的请求本身花了多久（不算为了免费档限速等的时间、重试前等的时间）
     last_ms: int = 0
+    retry_timeouts: bool = True
 
     def run(self, send):
         gap = 60.0 / self.rpm if self.rpm > 0 else 0.0
@@ -219,7 +220,9 @@ class _Paced:
                     raise ProviderError(f"API 出错（{error.code}）：{detail[:200]}") from error
                 wait(self.waits[attempt])
             except OSError as error:
-                if attempt == len(self.waits):
+                # 聊天时超时了不再等一遍同一家，直接换下一家（retry_timeouts 是 False）
+                timed_out = isinstance(error, TimeoutError) or "timed out" in str(error)
+                if attempt == len(self.waits) or (timed_out and not self.retry_timeouts):
                     raise ProviderError(f"连不上 API：{error}") from error
                 wait(self.waits[attempt])
         raise ProviderError("API 重试次数用完")
@@ -577,6 +580,10 @@ class ProviderChain:
         raise ProviderError("没有可用的模型")
 
 
+# 聊天时每家模型最多等几秒（一次读一批公告不限，照常 120 秒）
+CHAT_TIMEOUT = float(os.environ.get("COPILOT_CHAT_TIMEOUT", "20"))
+
+
 def _available(specs: list, batch: bool) -> list:
     """按顺序造出有 key 的那几个；聊天（batch=False）不按免费档的每分钟次数排队、服务忙只重试一次，免得一句话等很久，
     超了就换下一个；一次读一批公告（batch=True）照常按免费档放慢、多重试几次"""
@@ -589,6 +596,9 @@ def _available(specs: list, batch: bool) -> list:
         if not batch:
             provider.pace.rpm = 0
             provider.pace.waits = (2,)
+            # 聊天时一家 20 秒还没回就换下一家：10-21 仓库主人试用，第一句话 Gemini 卡了 71 秒才回
+            provider.timeout = CHAT_TIMEOUT
+            provider.pace.retry_timeouts = False
         chain.append(provider)
     return chain
 

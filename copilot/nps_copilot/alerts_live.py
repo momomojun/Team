@@ -15,6 +15,7 @@ import os
 import time
 import urllib.error
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor, wait
 from pathlib import Path
 
 from . import prompts
@@ -30,15 +31,17 @@ LIVE_DAYS = 14  # 和 src/lib/alert-match.ts 的 LIVE_ALERT_DAYS 一样
 # 聊天时要去的公园距上次读公告超过这么久就现读一遍（10-20 漂移测试发现：以前按“今天读过没有”，
 # 每晚读过以后白天新发的关闭公告要等到第二天夜里才进清单）
 REFRESH_HOURS = 6
+# 聊天时现读公告最多等几秒，没读完的按规则算
+CHAT_READ_SECONDS = float(os.environ.get("COPILOT_ALERTS_BUDGET", "12"))
 USER_AGENT = "NPS-Guide-Copilot (+https://github.com/momomojun/Team)"
 
 
-def alerts_provider() -> Provider | None:
-    """读公告用的模型；None 表示只用规则"""
+def alerts_provider(chat: bool = False) -> Provider | None:
+    """读公告用的模型；None 表示只用规则。chat=True 是聊天时现读：不按免费档排队、一家超时就换下一家"""
     kind = os.environ.get("COPILOT_ALERTS_PROVIDER")
     if not kind:
         # 没指定：MiniMax（推理开 high）→ GPT-4.1 mini → Gemini → 本机，没配 key 的跳过；一次读一批，按免费档放慢
-        chain = alerts_chain()
+        chain = alerts_chain(batch=not chat)
         return ProviderChain([*chain, OllamaProvider()]) if chain else OllamaProvider()
     model = os.environ.get("COPILOT_ALERTS_MODEL")
     if kind == "rules":
@@ -79,10 +82,26 @@ def _cache_key(alert: dict) -> str:
     return f"{alert['id']}|{alert.get('updated') or ''}|{prompts.current().get('alerts', '')}"
 
 
-def read_alerts(alerts: list[dict], provider: Provider | None, reference: dt.date, cache: dict) -> tuple[list[dict], dict]:
-    """一批公告 → 关闭清单里的条目；缓存里有的直接用。返回（条目, 统计：新读了几条、用了缓存几条、按规则算的几条）"""
+def read_alerts(alerts: list[dict], provider: Provider | None, reference: dt.date, cache: dict,
+                budget: float | None = None) -> tuple[list[dict], dict]:
+    """一批公告 → 关闭清单里的条目；缓存里有的直接用。返回（条目, 统计：新读了几条、用了缓存几条、按规则算的几条）。
+    budget：聊天时最多等几秒——没读过的几条同时交给模型读，到点还没读完的按规则算、不进缓存（下次再读）；
+    不填就一条一条读完（每晚、命令行）"""
     stats = {"read": 0, "cached": 0, "rules_only": 0}
     closures = []
+    models: dict[str, object] = {}
+    todo = [alert for alert in alerts if cache.get(_cache_key(alert)) is None]
+    if budget is not None and provider is not None and todo:
+        pool = ThreadPoolExecutor(max_workers=min(8, len(todo)))
+        futures = {pool.submit(extract, alert, provider, reference): alert["id"] for alert in todo}
+        done, late = wait(futures, timeout=budget)
+        for future in done:
+            try:
+                models[futures[future]] = future.result()
+            except Exception:  # noqa: BLE001 —— 一条读坏了按规则算
+                pass
+        stats["late"] = len(late)
+        pool.shutdown(wait=False, cancel_futures=True)
     for alert in alerts:
         key = _cache_key(alert)
         entry = cache.get(key)
@@ -90,7 +109,10 @@ def read_alerts(alerts: list[dict], provider: Provider | None, reference: dt.dat
             stats["cached"] += 1
         else:
             rules = rules_extract(alert)
-            model = extract(alert, provider, reference) if provider is not None else None
+            if budget is not None:
+                model = models.get(alert["id"])
+            else:
+                model = extract(alert, provider, reference) if provider is not None else None
             if model is None or "error" in model.trace:
                 # 没有模型，或者这次模型出错：按规则算，不进缓存，下次再让模型读
                 stats["rules_only"] += 1
@@ -209,7 +231,8 @@ def refresh_for(request: dict, reference_date: str, path: Path = CLOSURES, cache
     try:
         alerts = fetch_alerts(stale)
         cache = load_json(cache_path, {})
-        closures, stats = read_alerts(alerts, alerts_provider(), today, cache)
+        # 聊天时：同时读、最多等 CHAT_READ_SECONDS 秒（10-21 仓库主人试用，一条条读 8 条公告等了 48 秒）
+        closures, stats = read_alerts(alerts, alerts_provider(chat=True), today, cache, budget=CHAT_READ_SECONDS)
     except ProviderError as error:
         return {"refreshed": False, "why": "error", "error": str(error)[:200]}
     save_json(cache_path, cache)

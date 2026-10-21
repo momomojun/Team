@@ -80,3 +80,23 @@ def test_questions_about_the_whole_trip_get_each_stop_briefly():
 
 def test_introduce_counts_as_a_question():
     assert qa.is_question("你介绍一下华盛顿州的国家公园") and qa.is_question("推荐一个看日落的地方")
+
+
+def test_questions_about_left_out_places_get_the_full_list():
+    # 回复里只写了前 6 个“等 26 处”；问“没排进去的都是哪个公园的”时，完整的清单（按公园分）交给模型
+    from nps_copilot import qa
+    from nps_copilot.providers import ScriptedProvider
+
+    skipped = [
+        {"id": "lavo-bumpass-hell", "park": "lavo", "nameZh": "邦帕斯地狱", "nameEn": "Bumpass Hell", "reason": "closed", "openMonths": [7, 8, 9, 10]},
+        {"id": "crla-cleetwood-cove", "park": "crla", "nameZh": "克利特伍德湾", "nameEn": "Cleetwood Cove", "reason": "closed"},
+    ]
+    provider = ScriptedProvider([{"found": True, "answer": "邦帕斯地狱在拉森火山，克利特伍德湾在火山口湖。", "sources": [0]}])
+    text, trace = qa.answer("这些没排进去的地方都是哪个国家公园？", ["lavo", "crla"], "第 1 天……", provider, True, skipped=skipped)
+    user = provider.calls[0][1]
+    assert "没排进去的景点" in user and "- 拉森火山：邦帕斯地狱（只在 7–10 月开放）" in user and "- 火山口湖：克利特伍德湾" in user
+    assert trace["skipped_lines"] == 2 and "拉森火山" in text
+    # 别的问题不附这份清单
+    provider = ScriptedProvider([{"found": False, "answer": "没写", "sources": []}])
+    qa.answer("冰川点几点日落？", ["lavo"], "第 1 天……", provider, True, skipped=skipped)
+    assert "没排进去的景点" not in provider.calls[0][1]

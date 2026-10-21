@@ -16,7 +16,7 @@
 
 ### Copilot（LLMOps）
 - [x] **让模型当“调度员”**（10-18 做了，PR 见 [timeline/2026-10-11-to-10-19.md](timeline/2026-10-11-to-10-19.md)）：看整段对话，决定调用排行程、查资料、改某一天、换住处、追问还是回答（工具调用），代码照旧核对事实；这样“多智能体”才名副其实（O58、P14、P38、A2）
-- [ ] 单独的查询工具：某天开没开、两点车程、搜景点（P15）
+- [x] 单独的查询工具：某天开没开、两点车程、搜景点（P15；10-21 做了，回答问题时调用，见 [timeline/2026-10-21-copilot-tools.md](timeline/2026-10-21-copilot-tools.md)）
 - [x] 一句话里又改条件又提问（O55，调度员改造后做到；“紧凑要几天”资料里没有，不编）
 - [x] 多轮对话评测集，先提交期望再跑，当门禁（O57：conversation-v1、v2）
 - [ ] 评测集扩到约 150 条（中英、约 30% 刁钻样例），下一批 holdout-v2 没见过的（P18）
@@ -209,7 +209,7 @@
 | P12 | 10-13 | 每个 agent 可以用不同的模型 | §4 | 部分完成 | 10-20：`COPILOT_STEP_MODELS` 让调度员、摘条件、回答问题、写说明各自换模型（出错退回平常的顺序），后台显示换了哪几步；读公告本来就单独设（`COPILOT_ALERTS_PROVIDER`）。默认分配还没定 | |
 | P13 | 10-13 | 提示词进仓库、有版本，每次评测记下提示词版本 | §4 | 已完成 | `prompts/intake_v1.txt`、`intake_v2.txt`、`writer_v1.txt`、`qa_v1.txt`，`defaults.json`，环境变量切换；日志和 Release 记 hash | 计划书写 YAML，实际是 txt |
 | P14 | 10-13 | LangGraph 编排 5 个 agent（Intake、Retriever、Planner、Critic、Writer） | §4、§5 | 部分完成 | 自己写的固定流水线（`pipeline.py`），没有 LangGraph；Planner 是确定性引擎，不是 agent；Retriever 只在 QA 里；10-18 加了调度员（`dispatcher.py`）：模型决定改条件、提问、加减景点、指定住处、重新开始，代码执行和核对；仍然没有 LangGraph | 仓库主人 10-18 嫌“不智能”，助手建议改成模型调度工具（O60） |
-| P15 | 10-13 | Planner 能调用 search_attractions、is_open、drive_time 和行程引擎 | §4 | 部分完成 | 只有 `plan_trip`（+ QA 的资料检索）；单独的查询工具没做 | PROJECT.md 阶段 1 备注 |
+| P15 | 10-13 | Planner 能调用 search_attractions、is_open、drive_time 和行程引擎 | §4 | 已完成 | 10-21：`is_open`、`drive_time`、`search` 三个查询工具（`src/lib/copilot/lookup-tool.ts`），回答问题时由代码认出要查什么再调用；排行程还是 `plan_trip` | PROJECT.md 阶段 1 备注 |
 | P16 | 10-13 | Critic 把问题退回 Planner，最多 3 轮 | §4 | 部分完成 | `critic.py` 只用代码检查，最多改一次（节奏改轻松再排） | 有意的设计，COPILOT.md 写了 |
 | P17 | 10-13 | 每条事实都附来源 / 回答带引用 | §3、§4 | 部分完成 | QA 的回答注明用了哪几条资料；行程说明（Writer）没有逐句来源 | PROJECT.md 阶段 2 备注 |
 | P18 | 10-13 | 约 150 条中英文评测集，约 30% 对抗样例 | §7 | 部分完成 | 82 条：`intake-v1` 25、`holdout-v1` 40、`regional-v1` 17；提示注入只有少数几条；holdout-v1 看过失败后已不算“没见过” | 下一批 holdout-v2 没写 |
@@ -267,7 +267,7 @@
 | O27 | 10-16 | 额度快用完前把工作交接好、写好文档 | 仓库主人 | 已完成 | `docs/GUIDE.md` 第 8 节、自动记忆 `handoff-before-search-quota.md` | |
 | O28 | 10-16 | 开始加 LLM / LLMOps 的内容；评价另一个模型做的、要改什么、下一步做什么，全部记录 | 仓库主人（排队消息） | 已完成 | PROJECT.md“早期本地模型实验的评估”“LLMOps 分阶段计划” | |
 | O29 | 10-16 | 模型是否还需要换 | 仓库主人 | 已完成 | 后来比了 3 个模型，定 Qwen3.5 4B（见 O33） | |
-| O30 | 10-17 | 第 1 步：契约和 `plan_trip` 工具 | 仓库主人 | 已完成 | PR #4；`copilot/contracts/`、`src/lib/copilot/` | 单独的查询工具没做（P15） |
+| O30 | 10-17 | 第 1 步：契约和 `plan_trip` 工具 | 仓库主人 | 已完成 | PR #4；`copilot/contracts/`、`src/lib/copilot/` | 查询工具 10-21 做了（P15） |
 | O31 | 10-17 | 第 2 步：Python Copilot、CI | 仓库主人 | 已完成 | PR #5；`copilot/nps_copilot/`、`ci.yml` | |
 | O32 | 10-17 | 再下载个更好的模型试试；测试多种复杂情况 | 仓库主人 | 已完成 | Qwen3.5 9B 对比；`holdout-v1` 40 组（27/40 → 修后 37/40），RESULTS.md | |
 | O33 | 10-17 | 告诉我哪个模型更好，之后就用它 | 仓库主人 | 已完成 | 默认 `qwen3.5:4b-q4_K_M`（PROJECT.md“模型”） | |

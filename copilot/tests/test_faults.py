@@ -128,7 +128,7 @@ def test_alerts_read_this_morning_are_read_again_in_the_afternoon(tmp_path, monk
                                 "closures": []}), encoding="utf-8")
     fetched = []
     monkeypatch.setattr(alerts_live, "fetch_alerts", lambda parks: fetched.append(parks) or [])
-    monkeypatch.setattr(alerts_live, "alerts_provider", lambda: ScriptedProvider([]))
+    monkeypatch.setattr(alerts_live, "alerts_provider", lambda chat=False: ScriptedProvider([]))
     request = {"parks": ["yose"], "startDate": "2026-10-22", "days": 2}
     soon = night + dt.timedelta(hours=alerts_live.REFRESH_HOURS - 1)
     assert alerts_live.refresh_for(request, "2026-10-20", path, cache, now=soon)["why"] == "fresh" and fetched == []
