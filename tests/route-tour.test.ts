@@ -18,6 +18,16 @@ import {
   slowness,
   stopDistances,
   turnToward,
+  chapterStep,
+  clockText,
+  distanceAt,
+  planDay,
+  progressAt,
+  seekTarget,
+  segmentOf,
+  segmentStarts,
+  tourTimeline,
+  type TourDay,
 } from "../src/components/map/route-tour";
 
 // 一条往东、再往北的折线：大约 0.1 度经度 + 0.1 度纬度
@@ -99,4 +109,91 @@ test("跟车：方向和转向走最近的那边", () => {
   assert.ok(Math.abs(turnToward(350, 10, 0.5) - 0) < 1e-9);
   assert.ok(Math.abs(turnToward(10, 350, 0.5) - 0) < 1e-9);
   assert.equal(turnToward(90, 180, 1), 180);
+});
+
+// 讲解版的进度条：一天三站（起点住处、中间一站、当晚住处），中间那站和住处有讲解词
+const tourDay: TourDay = {
+  day: 0,
+  color: "#a04c2e",
+  title: "第 1 天",
+  path,
+  narration: ["第 1 天，今天去一个地方。"],
+  stops: [
+    { id: "start", lon: -119.6, lat: 37.7, label: "起点", caption: "" },
+    { id: "mid", lon: -119.5, lat: 37.7, label: "中间", caption: "", narration: { title: "第 1 站 · 中间", lines: [], speech: ["看点。", "怎么玩。"] } },
+    { id: "end", lon: -119.5, lat: 37.8, label: "住处", caption: "", lodging: true, narration: { title: "住处", lines: [], speech: ["今晚住这里。"] } },
+  ],
+};
+const timing = {
+  narrated: true,
+  calm: false,
+  fly: 2200,
+  hold: 1600,
+  arrive: 900,
+  finale: 2200,
+  speech: (lines: string[]) => lines.length * 1000,
+  intro: ["开头。"],
+  outro: ["结尾。"],
+};
+
+test("进度条的各段：开头、开场、开车、讲解、开车、住处、一天的结尾、结尾；开车的两段加起来就是这一天画线的时间", () => {
+  const plan = planDay(tourDay, 1, false);
+  const timeline = tourTimeline([tourDay], [plan], timing);
+  assert.deepEqual(
+    timeline.map((segment) => segment.kind),
+    ["intro", "day", "drive", "stop", "drive", "stop", "end", "outro"],
+    "起点那一站不停、没有讲解词，不单独成段",
+  );
+  const drives = timeline.filter((segment) => segment.kind === "drive");
+  assert.ok(Math.abs(drives.reduce((sum, segment) => sum + segment.ms, 0) - plan.dayMs) <= 2);
+  assert.equal(timeline[3].ms, 2600, "讲两句加停 0.6 秒");
+  const starts = segmentStarts(timeline);
+  assert.equal(starts.length, timeline.length + 1);
+  assert.equal(starts.at(-1), timeline.reduce((sum, segment) => sum + segment.ms, 0));
+  // 不是讲解版：没有开头，到站只停一下
+  const plain = tourTimeline([tourDay], [plan], { ...timing, narrated: false });
+  assert.equal(plain[0].kind, "day");
+  assert.equal(plain.find((segment) => segment.kind === "stop")?.ms, 900);
+});
+
+test("开到第几公里和画到百分之几互相换算得回来（跟车和不跟车都是）", () => {
+  for (const calm of [false, true]) {
+    const plan = planDay(tourDay, 1, calm);
+    for (const progress of [0.1, 0.37, 0.8]) {
+      const distance = distanceAt(plan, progress, calm);
+      assert.ok(Math.abs(progressAt(plan, distance, calm) - progress) < 1e-3);
+    }
+    assert.equal(progressAt(plan, 0, calm), 0);
+    assert.equal(progressAt(plan, plan.total + 1, calm), 1);
+  }
+});
+
+test("动画现在在第几段；点进度条跳到哪；上一段、下一段只停在开场、各站、结尾", () => {
+  const plan = planDay(tourDay, 1, false);
+  const timeline = tourTimeline([tourDay], [plan], timing);
+  const starts = segmentStarts(timeline);
+  assert.equal(segmentOf(timeline, { kind: "intro" }), 0);
+  assert.equal(segmentOf(timeline, { kind: "day", day: 0 }), 1);
+  assert.equal(segmentOf(timeline, { kind: "drive", day: 0, distance: 0.5 }), 2);
+  assert.equal(segmentOf(timeline, { kind: "stop", day: 0, stop: 1 }), 3);
+  assert.equal(segmentOf(timeline, { kind: "drive", day: 0, distance: plan.stopKm[1] + 0.5 }), 4);
+  assert.equal(segmentOf(timeline, { kind: "drive", day: 0, distance: plan.total + 1 }), 6, "开过了最后一站算这一天的结尾");
+  assert.equal(segmentOf(timeline, { kind: "stop", day: 0, stop: 0 }), -1, "起点那一站没有自己的一段");
+  assert.equal(segmentOf(timeline, { kind: "outro" }), 7);
+  // 点在开车那段的正中间：跳到那段的一半；点在讲解那段的中间：从这一站开头讲
+  const drive = seekTarget(timeline, starts, starts[2] + timeline[2].ms / 2);
+  assert.equal(drive.segment, 2);
+  assert.ok(Math.abs(drive.fraction - 0.5) < 1e-9);
+  assert.deepEqual(seekTarget(timeline, starts, starts[3] + 100), { segment: 3, fraction: 0 });
+  assert.equal(seekTarget(timeline, starts, starts.at(-1)! + 1000).segment, 7, "拖到最后是结尾");
+  assert.equal(chapterStep(timeline, starts, starts[2] + 10, 1), 3, "开车途中按“下一段”到下一站");
+  assert.equal(chapterStep(timeline, starts, starts[3] + 2500, -1), 3, "这一站讲了两秒以上，“上一段”先回到这一站开头");
+  assert.equal(chapterStep(timeline, starts, starts[3] + 500, -1), 1, "刚开始讲，“上一段”回到这一天的开场");
+  assert.equal(chapterStep(timeline, starts, starts.at(-1)!, 1), 7, "已经到结尾了就停在结尾");
+});
+
+test("进度条旁边的时间按倍速换算", () => {
+  assert.equal(clockText(65_000, 1), "1:05");
+  assert.equal(clockText(65_000, 2), "0:33");
+  assert.equal(clockText(0, 1.5), "0:00");
 });

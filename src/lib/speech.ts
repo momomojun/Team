@@ -6,10 +6,28 @@ import { readingMs, sentences } from "./narration";
 
 export const canSpeak = () => typeof window !== "undefined" && "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
 
-/** 按语言挑一个声音：完全对上的（zh-CN）优先，其次同一种语言的（zh）。浏览器要过一会儿才把声音列表准备好（Chrome 第一次是空的） */
+/** 先要一次声音列表：浏览器要过一会儿才准备好（Chrome 第一次是空的），打开讲解版之前先叫它准备 */
+export function warmVoices() {
+  if (canSpeak()) window.speechSynthesis.getVoices();
+}
+
+// 听起来自然的声音：Edge 的“Natural”、Chrome 的 Google 在线声音、苹果的增强版
+const NATURAL = /natural|neural|online|google|premium|enhanced/i;
+
+/**
+ * 按语言挑一个声音：完全对上的（zh-CN）优先，其次同一种语言的（zh）；同一档里自然的声音优先，
+ * 都没有就用系统默认的那个（Windows 自带的“Huihui”这种比较机械）
+ */
+export function pickVoice(voices: Pick<SpeechSynthesisVoice, "lang" | "name" | "default">[], lang: string) {
+  const base = lang.split("-")[0];
+  const rank = (voice: (typeof voices)[number]) =>
+    (voice.lang.replace("_", "-") === lang ? 0 : voice.lang.startsWith(base) ? 2 : 9) + (NATURAL.test(voice.name) ? 0 : 1);
+  const best = voices.filter((voice) => rank(voice) < 9).sort((a, b) => rank(a) - rank(b) || Number(b.default) - Number(a.default))[0];
+  return best;
+}
+
 function voiceFor(lang: string): SpeechSynthesisVoice | undefined {
-  const voices = window.speechSynthesis.getVoices();
-  return voices.find((voice) => voice.lang === lang) ?? voices.find((voice) => voice.lang.startsWith(lang.split("-")[0]));
+  return pickVoice(window.speechSynthesis.getVoices(), lang) as SpeechSynthesisVoice | undefined;
 }
 
 export class Narrator {
@@ -19,13 +37,19 @@ export class Narrator {
   private resolve: (() => void) | null = null;
   private token = 0;
   paused = false;
+  /** 倍速：念的快慢（Web Speech 的 rate），没有声音时按阅读时间也一样快；改了从下一句起生效 */
+  rate = 1;
 
-  constructor(
-    private lang: string,
-    /** 换到第几句（-1 是念完了），给字幕用 */
-    private onSentence: (sentence: string | null) => void,
-    public muted = false,
-  ) {}
+  private lang: string;
+  /** 换到哪一句（null 是念完了），给字幕用 */
+  private onSentence: (sentence: string | null) => void;
+  muted: boolean;
+
+  constructor(lang: string, onSentence: (sentence: string | null) => void, muted = false) {
+    this.lang = lang;
+    this.onSentence = onSentence;
+    this.muted = muted;
+  }
 
   /** 念这几句，念完（或者被 stop）时 resolve */
   play(lines: string[]): Promise<void> {
@@ -38,6 +62,11 @@ export class Narrator {
       this.resolve = resolve;
       this.next();
     });
+  }
+
+  /** 这一段念到百分之几（进度条用） */
+  get progress(): number {
+    return this.queue.length ? Math.min(1, this.index / this.queue.length) : 0;
   }
 
   private next() {
@@ -57,7 +86,7 @@ export class Narrator {
       this.index += 1;
       this.next();
     };
-    const budget = readingMs(sentence);
+    const budget = readingMs(sentence) / this.rate;
     // 这台设备没有这种语言的声音（有的浏览器一个都没有）：只出字幕、按阅读时间走，不干等
     if (this.muted || !canSpeak() || !voiceFor(this.lang)) {
       this.timer = setTimeout(advance, budget);
@@ -67,7 +96,7 @@ export class Narrator {
     utterance.lang = this.lang;
     const voice = voiceFor(this.lang);
     if (voice) utterance.voice = voice;
-    utterance.rate = 1;
+    utterance.rate = this.rate;
     utterance.onend = advance;
     utterance.onerror = advance;
     window.speechSynthesis.speak(utterance);

@@ -3,6 +3,8 @@
 // 不让模型现编，所以不会编造、不花额度。这里是不碰页面的拼字，地图上怎么播见 components/map/park-map.tsx
 
 import type { Hazard, TimeOfDay } from "../data/attractions/types";
+// 和界面文案同一个 fill：汉字紧挨着英文地名时补空格（“去Wawona” → “去 Wawona”）
+import { fill } from "../i18n/format";
 
 export interface NarrationText {
   /** 每一站四行的小标题：看点、怎么玩、什么时候、注意 */
@@ -65,9 +67,6 @@ export interface StopFacts {
   /** 下一段要开很久（一小时以上）：念完这一站顺便说一句 */
   next?: { drive: string; name: string };
 }
-
-const fill = (template: string, values: Record<string, string | number>) =>
-  template.replace(/\{(\w+)\}/g, (match, key: string) => (key in values ? String(values[key]) : match));
 
 /** 去掉结尾的句号，好接在别的句子里 */
 const bare = (text: string) => text.trim().replace(/[。.!！；;，,]+$/u, "");
