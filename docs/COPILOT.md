@@ -141,6 +141,11 @@ flowchart LR
 - `copilot/eval/conversation.py`：多轮对话评测，每一轮可以查状态、回复里有没有（`say` / `say_any` / `not_say`）、条件、行程里有没有某个景点、某晚住哪、是不是清掉重来了；`--replay`、`--record`、`--gate`、`--cases` 和 `run.py` 一样。录音在 `recordings/<模型>-conversation-v<n>.jsonl`。
 - **新样例先写期望、提交，再第一次跑**；看过失败再修代码的那一批就不再是没见过的数据，当回归门禁用，下一批要另写。
 
+- **故障测试**（`copilot/tests/test_faults.py`，10-20）：模型超时、额度用完、服务忙、返回乱码，NPS 公告接口挂了，行程引擎拒绝请求，Copilot 要换下一个模型、退回规则或者给一句清楚的话，不让整轮报错。所有模型都出错时摘条件只靠规则读（`intake.py` 接住 `ProviderError`）。
+- **混沌测试**（`python eval/conversation.py --replay <录音> --chaos 0.3 [--chaos-backup]`）：回放时按固定种子让一部分模型调用失败（`providers.FaultyProvider`），看整套还剩几成；加 `--chaos-backup` 时失败的那次换备用模型（同一份录音）。
+- **漂移测试量时间**（`python copilot/scripts/drift_timing.py`）：新发一条关闭公告，量多久以后行程里不再有那个景点。
+- **模型打分**（`python eval/judge.py --copilot <Copilot 模型> --judge <提供方:型号> --record | --replay | --dry-run`，10-20）：回放三组多轮对话，截下每次回答问题的资料和回答交给裁判（`prompts/judge_v1.txt`），资料里没有依据的照抄出来、打 1–5 分；8 条校准题（真回答后面加一句资料里没有的话）检查裁判可不可信；裁判最好和被打分的不是同一个模型。录音在 `recordings/judge-<裁判>-<Copilot>.jsonl`。
+
 ## 监控指标
 
 `python -m nps_copilot stats [--days 7]` 读运行日志，按“Copilot 版本 · 提示词版本”分组：
@@ -175,6 +180,7 @@ flowchart LR
 | `COPILOT_MODEL` | Ollama：`qwen3.5:4b-q4_K_M`；Gemini：`gemini-3.5-flash-lite`；OpenAI：`gpt-5-nano` | 模型名（Gemini 免费档能用的有 `gemma-4-31b-it`、`gemini-3.8-flash` 等，见 AI Studio 的“速率限制”页） |
 | `GEMINI_API_KEY`、`OPENAI_API_KEY`、`OPENROUTER_API_KEY`、`GROQ_API_KEY` | — | 商业 API 的 key，写在仓库根目录的 `.env.local`（不提交）或设成环境变量；只放在请求头里，不写日志、不进录音 |
 | `COPILOT_STEP_MODELS` | — | 某几步单独换模型（GOALS P12，10-20）：`intake=gemini,qa=openai:gpt-4.1-mini`，写成 `步骤=提供方[:型号]`，步骤是 `dispatch`（调度员）/ `intake`（摘条件）/ `qa`（回答问题）/ `writer`（写说明），提供方是 `gemini` / `openai` / `openrouter` / `groq` / `ollama`；单独指定的出错退回平常的顺序，写错了直接报错。后台和 `/health` 的 `steps` 显示换了哪几步。读公告另用 `COPILOT_ALERTS_PROVIDER` |
+| `COPILOT_PROMPT_JUDGE` | `v1` | 模型打分（`eval/judge.py`）的裁判提示词版本 |
 | `COPILOT_REASONING` | `low` | OpenRouter、Groq 推理模型的推理档位：`minimal` / `low` / `medium` / `high` / `none`（不传；Groq 只认 `low` / `medium` / `high`） |
 | `COPILOT_FALLBACK` | — | 设成 `ollama`：商业 API 出错（额度用完、一直忙）时这一次改用本机模型。Copilot 服务用，评测别开 |
 | `OLLAMA_HOST_URL` | `http://127.0.0.1:11435` | Ollama 地址（momomojun 电脑上的便携版用 11435；自己装的默认 11434；Docker 里是 `http://ollama:11434` 或 `http://host.docker.internal:11435`） |

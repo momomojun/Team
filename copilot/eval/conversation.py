@@ -30,7 +30,7 @@ os.environ.setdefault("COPILOT_LIVE", "0")
 
 from nps_copilot.pipeline import Session, prompt_hashes  # noqa: E402
 from guard import StopEarly, safe_name  # noqa: E402
-from nps_copilot.providers import ProviderError, RecordingProvider, ReplayProvider, from_env  # noqa: E402
+from nps_copilot.providers import FaultyProvider, ProviderChain, ProviderError, RecordingProvider, ReplayProvider, from_env  # noqa: E402
 from run import subset  # noqa: E402
 
 REFERENCE = "2026-10-18"
@@ -103,13 +103,23 @@ def main() -> int:
     parser.add_argument("--record", action="store_true")
     parser.add_argument("--gate", type=Path)
     parser.add_argument("--only", help="只跑这几个（逗号分隔的 id 前缀）")
+    # 混沌测试（GOALS P37）：回放时让这么大比例的模型调用随机失败（超时、额度用完、服务忙、乱码轮着来，固定种子），
+    # 看整套系统还剩几成；加 --chaos-backup 时失败的那次换一个“备用模型”（同一份录音），看换模型能不能补回来
+    parser.add_argument("--chaos", type=float, default=0.0, help="让多大比例的模型调用失败（0–1，要 --replay）")
+    parser.add_argument("--chaos-backup", action="store_true", help="失败的调用换备用模型（同一份录音）")
+    parser.add_argument("--chaos-seed", type=int, default=7)
     args = parser.parse_args()
     sys.stdout.reconfigure(encoding="utf-8")
     cases = [json.loads(line) for line in args.cases.read_text(encoding="utf-8").splitlines() if line.strip()]
     if args.only:
         cases = [case for case in cases if any(case["id"].startswith(prefix) for prefix in args.only.split(","))]
+    faulty = None
     if args.replay:
         provider, label = ReplayProvider(args.replay), f"replay:{args.replay.stem}"
+        if args.chaos > 0:
+            faulty = FaultyProvider(provider, args.chaos, args.chaos_seed)
+            provider = ProviderChain([faulty, provider]) if args.chaos_backup else faulty
+            label += f"+chaos{args.chaos:g}" + ("+backup" if args.chaos_backup else "")
     else:
         provider = StopEarly(from_env())  # 默认本机 Ollama；COPILOT_PROVIDER=gemini / openai / openrouter 换商业 API（对照实验）
         label = provider.model
@@ -130,6 +140,9 @@ def main() -> int:
                 if not t["ok"]:
                     print(f"  ✗ {r['id']} 第 {i} 轮「{t['user'][:30]}」：{'；'.join(t['problems'])}")
     print(f"{label}  {passed}/{len(results)} 组对话全对，{turn_ok}/{len(turns)} 轮符合预期，每轮中位 {statistics.median(latencies) if latencies else 0} ms")
+    if faulty is not None:
+        crashed = sum(1 for t in turns if any("模型调用失败" in p for p in t.get("problems", [])))
+        print(f"  混沌测试：注入故障 {len(faulty.failures)} 次（{', '.join(f'{k} {faulty.failures.count(k)}' for k in sorted(set(faulty.failures)))}），整轮报错 {crashed} 轮")
     reports = HERE / "reports"
     reports.mkdir(exist_ok=True)
     stamp = dt.datetime.now().strftime("%Y%m%dT%H%M%S")

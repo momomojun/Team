@@ -481,6 +481,35 @@ class FallbackProvider:
 
 
 @dataclass
+class FaultyProvider:
+    """故障测试、混沌测试用：按固定的随机种子让一部分调用失败（超时、额度用完、服务忙、返回的不是 JSON 轮着来），
+    其余的照常交给 inner。eval/conversation.py --chaos 用它量“模型时好时坏”时整套系统还剩几成"""
+    inner: Provider
+    rate: float
+    seed: int = 7
+    name: str = "faulty"
+    failures: list = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        import random
+
+        self._random = random.Random(self.seed)
+
+    @property
+    def model(self) -> str:
+        return getattr(self.inner, "model", self.inner.name)
+
+    KINDS = ("连不上 API：timed out", "今天的免费额度用完了（429）", "API 出错（503）：overloaded", "模型没有返回 JSON：<html>")
+
+    def complete_json(self, task: str, system: str, user: str, schema: dict) -> Completion:
+        if self._random.random() < self.rate:
+            kind = self.KINDS[len(self.failures) % len(self.KINDS)]
+            self.failures.append(task)
+            raise (QuotaError if "额度" in kind else ProviderError)(f"[故障注入] {kind}")
+        return self.inner.complete_json(task, system, user, schema)
+
+
+@dataclass
 class Metered:
     """记下每次调用（不改调用本身）：哪个模型回答的、多少 token、多久、前面哪几个出了错；出错的也记一条。
     Session 每轮开始清空、结束时 take() 写进日志"""

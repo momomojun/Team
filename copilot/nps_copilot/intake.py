@@ -22,7 +22,7 @@ from typing import Any
 from . import catalog, prompts
 from .dates import EN_NUMBERS, ZH_NUMBER, zh_number, DAYS_RE, DAYS_RI, WEEK_RE, DateParts, date_range_days, merge, next_occurrence, parse_date_spans, parse_days, relative_date, relative_month
 from .knowledge import group_mention, group_parks, inside_place_name
-from .providers import Provider
+from .providers import Provider, ProviderError
 from .text import contains, normalize
 
 LIST_FIELDS = ("parks", "dates", "party", "preferences")
@@ -164,9 +164,15 @@ class Intake:
         trace["route"] = handled or "extraction"
         trace["absorbed"] = handled not in (None, "partial")
         if handled in (None, "partial"):
-            completion = self.provider.complete_json("intake", prompt(), message, EXTRACTION_SCHEMA)
-            trace.update(model_called=True, model=completion.model, latency_ms=completion.latency_ms, model_output=completion.data)
-            kept, dropped = self._grounded(completion.data, message)
+            try:
+                completion = self.provider.complete_json("intake", prompt(), message, EXTRACTION_SCHEMA)
+                trace.update(model_called=True, model=completion.model, latency_ms=completion.latency_ms, model_output=completion.data)
+                kept, dropped = self._grounded(completion.data, message)
+            except ProviderError as error:
+                # 所有模型都出错（额度用完、没网、本机模型也没开）：这句话只靠规则读（天数、日期、公园名），缺的照样追问，
+                # 不让整轮对话报错（10-20 故障测试发现的）
+                trace.update(model_called=True, model_error=str(error)[:200])
+                kept, dropped = self._grounded({}, message)[0], []
             trace["dropped_spans"] = dropped
             had_days = self.days.value
             self._absorb(kept, message)

@@ -3,5 +3,6 @@
   "writer": "v1",
   "qa": "v2",
   "dispatch": "v1",
-  "alerts": "v1"
+  "alerts": "v1",
+  "judge": "v1"
 }
