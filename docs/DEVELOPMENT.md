@@ -43,7 +43,7 @@
 | `src/lib/geocode.ts`、`src/lib/osrm-client.ts` | 自定义住处：Photon 搜酒店 / 地址，OSRM 在浏览器里算到各景点的车程。OSRM 公共服务开高速偏慢 25–40%（拉斯维加斯到锡安平均才 45 英里/时），平均车速快的（主要走高速的）按比例缩短，山路、园区里的路不改 |
 | `src/lib/nps.ts`、`src/lib/nlr.ts` | NPS 公告和门票、NLR 充电桩 |
 | `src/app/api/` | 接口：`alerts`（行程里几个公园的 NPS 公告，带中文翻译）、`weather`（Open-Meteo 16 天预报 + NWS 预警）、`prices/flights`（机票价格）、`prices/gas`（各州油价）、`services/[park]` 和 `gallery/[park]`（构建时生成的静态 JSON） |
-| `src/lib/alert-match.ts`、`src/lib/weather.ts` | 公告按景点英文名 / 片区对到行程景点（关闭类只看标题）；公告说的是现在的情况，只对到今天起 30 天内的日子，更远的行程只在实时公告里列出来；天气预报和预警 |
+| `src/lib/alert-match.ts`、`src/lib/alerts-live.ts`、`src/lib/weather.ts` | 公告按景点英文名 / 片区对到行程景点（关闭类只看标题）；两周内出发的自动生成攻略再按每晚模型读公告的关闭清单（`data/alerts-live` 分支，见 [COPILOT.md](COPILOT.md)）去掉起止日期碰不到的、补上模型和规则都认的；公告说的是现在的情况，只对到今天起 30 天内的日子，更远的行程只在实时公告里列出来；天气预报和预警 |
 | `src/lib/prices/` | 价格数据源一层：`serpapi.ts`（配了 key 用）、`google-flights.ts`（自用低频抓取，缓存 6 小时）、`google-tfs.ts`（Google Flights 链接参数）、`links.ts`（Kayak / Expedia 比价链接）、`car-rates.ts`（Kayak 租车参考价快照）、`fuel.ts`（AAA 各州油价快照，加拿大两省用 finder.com 的省均价换算）、`gas.ts`（AAA 实时油价，12 小时读一次，读不到用快照） |
 | `src/lib/translate.ts`、`src/lib/alert-translate.ts` | NPS 公告翻成中文：DeepL（配了 key）→ MyMemory（免费）→ Google 网页翻译（仅自用），译文统一整理空格（`tidyChinese`：汉字和英文、数字之间补空格，去掉括号里、全角标点旁边多出来的空格）；页面上中文和原文一起显示，注明是机器翻译 |
 | `src/lib/self-use.ts` | 自用阶段的抓取开关（Google Flights 机票、AAA 油价、Google 网页翻译）：开发模式默认开，部署后设 `SELF_USE_SCRAPE=1` 才开 |

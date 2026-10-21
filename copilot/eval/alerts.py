@@ -3,6 +3,7 @@
   python eval/alerts.py                                     # 本机 Ollama，同时报规则的成绩
   python eval/alerts.py --record                            # 同上，并录到 recordings/<模型>-alerts-<快照日期>.jsonl
   python eval/alerts.py --replay recordings/x.jsonl --gate eval/baseline-alerts.json   # CI
+  python eval/alerts.py --chain --sample 26 --gate eval/baseline-alerts-canary.json      # 每晚抽查：线上读公告用的那串模型
 
 指标：
 - 类型（full / partial / none）准确率；“是不是整段关闭”的精确率、召回率
@@ -75,6 +76,8 @@ def main() -> int:
     parser.add_argument("--gate", type=Path)
     parser.add_argument("--rules-only", action="store_true")
     parser.add_argument("--sample", type=int, help="只抽这么多条（固定种子；给每天只有几十次的免费额度用），录音另存一份")
+    parser.add_argument("--chain", action="store_true",
+                        help="用线上读公告的那串模型（alerts_live.alerts_provider：MiniMax → GPT-4.1 mini → Gemini），每晚抽查用")
     args = parser.parse_args()
     sys.stdout.reconfigure(encoding="utf-8")
     snapshot = json.loads(args.snapshot.read_text(encoding="utf-8"))
@@ -104,11 +107,19 @@ def main() -> int:
         if args.replay:
             provider, label = ReplayProvider(args.replay), f"replay:{args.replay.stem}"
         else:
-            provider = from_env()  # 默认本机 Ollama；COPILOT_PROVIDER=gemini / openai 换商业 API（对照实验）
-            label = provider.model
+            if args.chain:
+                from nps_copilot.alerts_live import alerts_provider
+
+                provider = alerts_provider()
+                if provider is None:
+                    print("COPILOT_ALERTS_PROVIDER=rules，没有模型可以抽查")
+                    return 2
+            else:
+                provider = from_env()  # 默认本机 Ollama；COPILOT_PROVIDER=gemini / openai 换商业 API（对照实验）
+            label = getattr(provider, "model", provider.name)
             if args.record:
                 sample = f"-sample{args.sample}" if args.sample else ""
-                path = HERE / "recordings" / f"{safe_name(provider.model)}-alerts-{snapshot['fetched']}{sample}.jsonl"
+                path = HERE / "recordings" / f"{safe_name(label)}-alerts-{snapshot['fetched']}{sample}.jsonl"
                 path.unlink(missing_ok=True)
                 provider = RecordingProvider(provider, path)
         predictions = {}
@@ -150,6 +161,10 @@ def main() -> int:
     out = reports / f"{stamp}-alerts-{(label or 'rules').replace(':', '_').replace('/', '_')}.json"
     out.write_text(json.dumps({"label": label, "prompts": prompt_hashes(), **results}, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"报告：{out}")
+    if args.chain and "model" in results:
+        # 每晚抽查写给工作流开 issue 用：各家模型各读了几条（MiniMax 额度用完会换到 GPT-4.1 mini）
+        summary = {key: results["model"][key] for key in ("alerts", "type_accuracy", "attraction_f1", "dates", "misses", "speed")}
+        (reports / "canary-latest.json").write_text(json.dumps({"label": label, **summary}, ensure_ascii=False, indent=1), encoding="utf-8")
     if args.gate and "model" in results:
         baseline = json.loads(args.gate.read_text(encoding="utf-8"))
         model = results["model"]

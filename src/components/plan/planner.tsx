@@ -23,6 +23,7 @@ import { crowdOf } from "@/lib/crowd";
 import { addDays, monthOf, nominalDate } from "@/lib/dates";
 import { airbnbUrl } from "@/lib/airbnb";
 import { alertsForStop, closedByAlerts, LIVE_ALERT_DAYS, type AlertsResponse, type ParkAlert } from "@/lib/alert-match";
+import { withExtracted } from "@/lib/copilot/live";
 import type { BookingRule } from "@/data/bookings";
 import { bookingsForTrip } from "@/lib/booking";
 import { flightKey, useFlightStore } from "@/lib/flight-store";
@@ -252,7 +253,10 @@ export function Planner({
     const closureDates = tripDates.length > 0 ? tripDates : [addDays(nominalDate(input.month), 0)];
     const stops = attractions.filter((a) => input.parks.includes(a.park));
     const until = liveWindow(input.startDate);
-    const liveByStop = until && wizardAlerts ? closedByAlerts(stops, wizardAlerts.alerts) : new Map<string, ParkAlert>();
+    const liveByStop =
+      until && wizardAlerts && todayDate
+        ? withExtracted(closedByAlerts(stops, wizardAlerts.alerts), wizardAlerts.extracted, input.startDate, input.days, todayDate, input.parks)
+        : new Map<string, ParkAlert>();
     const live = until ? { ids: new Set(liveByStop.keys()), until } : undefined;
     return stops
       .flatMap((a) => {
@@ -487,13 +491,14 @@ export function Planner({
     });
   const hasEmptyNight = trip.nights.slice(1).some((night) => night === null) && plannedCount > 0;
 
-  const liveClosuresFor = async (input: { parks: string[]; startDate: string }, stops: AttractionWithPhoto[]) => {
+  const liveClosuresFor = async (input: { parks: string[]; startDate: string; days: number }, stops: AttractionWithPhoto[]) => {
     const until = liveWindow(input.startDate);
     if (!until) return undefined;
     try {
       const url = alertsUrlFor(input.parks)!;
       const data = url === wizardAlertsUrl && wizardAlerts ? wizardAlerts : ((await (await fetch(url)).json()) as AlertsResponse);
-      return { byStop: closedByAlerts(stops, data.alerts), until };
+      // 公告标题对到的关闭，再按每晚模型读出的起止日期去掉这趟碰不到的、补上模型和规则都认的
+      return { byStop: withExtracted(closedByAlerts(stops, data.alerts), data.extracted, input.startDate, input.days, todayDate!, input.parks), until };
     } catch {
       // 公告读不到就按临时关闭的数据排，行程页照样会显示读到的公告
       return undefined;

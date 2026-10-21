@@ -1,5 +1,7 @@
 // NPS 实时公告（/api/alerts）按名字对到行程里的景点：公告是英文，按景点英文名和片区名找
 
+import type { ExtractedClosures } from "./copilot/live";
+
 export interface ParkAlert {
   id: string;
   park: string;
@@ -20,6 +22,8 @@ export interface AlertsResponse {
   alerts: ParkAlert[];
   /** 没查到的公园 */
   failed: string[];
+  /** 每晚模型读公告提取的关闭（只有这几座公园的；读不到就没有），见 lib/copilot/live.ts 的 withExtracted */
+  extracted?: ExtractedClosures;
 }
 
 /** 景点名里常见的通用词，单独出现不算提到了这个景点 */

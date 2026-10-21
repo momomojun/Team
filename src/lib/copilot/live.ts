@@ -1,4 +1,4 @@
-import { LIVE_ALERT_DAYS } from "../alert-match";
+import { LIVE_ALERT_DAYS, type ParkAlert } from "../alert-match";
 import { addDays } from "../dates";
 import type { LiveClosures } from "../generate-trip";
 
@@ -76,4 +76,42 @@ export function liveFromClosures(
   }
   for (const id of byStop.keys()) maybe.delete(id);
   return { status: "used", live: { ids: new Set(byStop.keys()), until }, byStop, maybe };
+}
+
+/**
+ * 行程页（不经过 Copilot 的“自动生成攻略”）也用上每晚模型读公告的结果（/api/alerts 的 extracted，来自 data/alerts-live 分支）：
+ * byStop 是按公告标题对到的关闭（closedByAlerts）。模型读出了起止日期、这趟一天都碰不到的（11 月 20 日重开、11 月 25 日才出发）
+ * 从里面去掉；模型和规则都认、标题匹配漏掉的加上。只有模型找到的不动（照排），和 Copilot 一样。快照旧了、没读到就原样返回
+ */
+export function withExtracted(
+  byStop: Map<string, ParkAlert>,
+  extracted: ExtractedClosures | undefined,
+  startDate: string,
+  days: number,
+  referenceDate: string,
+  parks: string[],
+): Map<string, ParkAlert> {
+  if (!extracted) return byStop;
+  const from = liveFromClosures(extracted, startDate, days, referenceDate, parks);
+  if (from.status !== "used") return byStop;
+  const result = new Map(byStop);
+  const last = addDays(startDate, days - 1);
+  for (const closure of extracted.closures) {
+    const outside = (closure.reopen && closure.reopen <= startDate) || (closure.from && closure.from > last);
+    if (!outside) continue;
+    for (const [id, alert] of result) if (alert.id === closure.alert) result.delete(id);
+  }
+  for (const [id, closure] of from.byStop) {
+    if (result.has(id)) continue;
+    result.set(id, {
+      id: closure.alert,
+      park: closure.park,
+      title: closure.title,
+      category: "Park Closure",
+      url: closure.url ?? "",
+      description: closure.evidence ?? "",
+      updated: extracted.fetched,
+    });
+  }
+  return result;
 }
