@@ -45864,15 +45864,6 @@ export const gallery: Record<string, Photo[]> = {
   ],
   "jeff-old-courthouse": [
     {
-      "url": "https://upload.wikimedia.org/wikipedia/commons/6/67/Old_Courthouse_%282012%29.jpg",
-      "large": "https://upload.wikimedia.org/wikipedia/commons/6/67/Old_Courthouse_%282012%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-      "width": 960,
-      "height": 1362,
-      "page": "https://commons.wikimedia.org/wiki/File:Old_Courthouse_(2012).jpg",
-      "author": "United States District Court for the Eastern District of Missouri",
-      "license": "Public domain"
-    },
-    {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cc/Old_St._Louis_County_Courthouse%2C_Gateway_Arch_National_Park%2C_St._Louis%2C_MO_-_53057879019.jpg/960px-Old_St._Louis_County_Courthouse%2C_Gateway_Arch_National_Park%2C_St._Louis%2C_MO_-_53057879019.jpg",
       "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cc/Old_St._Louis_County_Courthouse%2C_Gateway_Arch_National_Park%2C_St._Louis%2C_MO_-_53057879019.jpg/1920px-Old_St._Louis_County_Courthouse%2C_Gateway_Arch_National_Park%2C_St._Louis%2C_MO_-_53057879019.jpg",
       "width": 960,
@@ -45882,11 +45873,11 @@ export const gallery: Record<string, Photo[]> = {
       "license": "CC BY-SA 2.0"
     },
     {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/48/Old_St._Louis_County_Courthouse%2C_Gateway_Arch_National_Park%2C_St._Louis%2C_MO_-_53057868854.jpg/960px-Old_St._Louis_County_Courthouse%2C_Gateway_Arch_National_Park%2C_St._Louis%2C_MO_-_53057868854.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/48/Old_St._Louis_County_Courthouse%2C_Gateway_Arch_National_Park%2C_St._Louis%2C_MO_-_53057868854.jpg/1920px-Old_St._Louis_County_Courthouse%2C_Gateway_Arch_National_Park%2C_St._Louis%2C_MO_-_53057868854.jpg",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/54/Old_St._Louis_County_Courthouse%2C_Gateway_Arch_National_Park%2C_St._Louis%2C_MO_-_53058079705.jpg/960px-Old_St._Louis_County_Courthouse%2C_Gateway_Arch_National_Park%2C_St._Louis%2C_MO_-_53058079705.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/54/Old_St._Louis_County_Courthouse%2C_Gateway_Arch_National_Park%2C_St._Louis%2C_MO_-_53058079705.jpg/1920px-Old_St._Louis_County_Courthouse%2C_Gateway_Arch_National_Park%2C_St._Louis%2C_MO_-_53058079705.jpg",
       "width": 960,
       "height": 720,
-      "page": "https://commons.wikimedia.org/wiki/File:Old_St._Louis_County_Courthouse,_Gateway_Arch_National_Park,_St._Louis,_MO_-_53057868854.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Old_St._Louis_County_Courthouse,_Gateway_Arch_National_Park,_St._Louis,_MO_-_53058079705.jpg",
       "author": "w_lemay",
       "license": "CC BY-SA 2.0"
     },
@@ -45916,6 +45907,15 @@ export const gallery: Record<string, Photo[]> = {
       "page": "https://commons.wikimedia.org/wiki/File:Detail_on_the_fence_around_the_Old_Courthouse_(5411691140).jpg",
       "author": "Jefferson National Expansion Memorial, NPS from St. Louis, MO, USA",
       "license": "CC BY 2.0"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ad/St._Louis_Missouri%2C_View_E_from_the_Old_Courthouse%2C_the_Gateway_Arch%2CJefferson_Expansion_Memorial_-_panoramio.jpg/960px-St._Louis_Missouri%2C_View_E_from_the_Old_Courthouse%2C_the_Gateway_Arch%2CJefferson_Expansion_Memorial_-_panoramio.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ad/St._Louis_Missouri%2C_View_E_from_the_Old_Courthouse%2C_the_Gateway_Arch%2CJefferson_Expansion_Memorial_-_panoramio.jpg/1920px-St._Louis_Missouri%2C_View_E_from_the_Old_Courthouse%2C_the_Gateway_Arch%2CJefferson_Expansion_Memorial_-_panoramio.jpg",
+      "width": 960,
+      "height": 638,
+      "page": "https://commons.wikimedia.org/wiki/File:St._Louis_Missouri,_View_E_from_the_Old_Courthouse,_the_Gateway_Arch,Jefferson_Expansion_Memorial_-_panoramio.jpg",
+      "author": "Chris English",
+      "license": "CC BY-SA 3.0"
     }
   ],
   "jeff-riverboat": [
