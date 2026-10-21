@@ -5,7 +5,8 @@ import { seriousNote, unsuitableNote } from "@/components/attractions/family-fit
 import { KIND_COLORS } from "@/components/attractions/kinds";
 import { IconBed, IconClose, IconGrip } from "@/components/icons";
 import { ParkMap, type MapLeg, type MapPoint, type MapTrail, type TourRequest } from "@/components/map/park-map";
-import { changedDays, type TourDay } from "@/components/map/route-tour";
+import { changedDays, type TourDay, type TourNarration } from "@/components/map/route-tour";
+import { stopNarration } from "@/lib/narration";
 import { SectionNav, type SectionLink } from "@/components/site/section-nav";
 import { AddToTripButton } from "@/components/trip/add-to-trip-button";
 import { buttonPrimary, buttonSecondary } from "@/components/ui";
@@ -845,32 +846,77 @@ export function Planner({
     : undefined;
   // 路线动画的每一天：沿当天的开车路线，经过的每一站弹出“几点到、停多久”，最后停在当晚住处
   const clockOf = (minutes: number | undefined) => (minutes === undefined ? "" : formatClock(minutes, text.units.clock));
+  // 讲解版（全屏、逐站讲解、朗读）：讲解词全按网站的数据拼（lib/narration.ts），不让模型现编
+  const english = locale === "en";
+  const say = t.tour.narration;
+  const sentence = (text: string) => text.trim().replace(/[。.；;，,]+$/u, "") + say.period;
+  // 要开一个小时以上的一段：念完上一站（或者这一天开头）顺便说一句
+  const longLeg = (minutes: number | undefined, name: string) =>
+    minutes !== undefined && minutes >= 60 ? { drive: duration(minutes), name } : undefined;
   const tourDays: TourDay[] = allRoutes.flatMap((route, k) => {
     const view = dayViews[route.day];
     if (!view) return [];
     const road = roadRoutes[routeKeys[k]];
-    const stops = view.rows.map(({ stop }, i) => {
+    const stops: TourDay["stops"] = view.rows.map(({ stop }, i) => {
       const entry = view.timeline.entries[i];
       const at = stop.start ?? stop;
+      const nextRow = view.rows[i + 1];
+      const next = nextRow
+        ? longLeg(view.timeline.entries[i + 1]?.driveMin, nextRow.stop.nameZh)
+        : view.to
+          ? longLeg(view.timeline.returnDriveMin, view.to.name)
+          : undefined;
+      const photo = photosOf(stop)?.[0];
       return {
         id: stop.id,
         lon: at.lon,
         lat: at.lat,
         label: stop.nameZh,
         caption: entry ? fill(t.tour.stop, { time: clockOf(entry.start), stay: duration(entry.end - entry.start) }) : "",
+        narration: stopNarration(
+          {
+            index: i + 1,
+            name: stop.nameZh,
+            summary: stop.summary,
+            tips: stop.tips,
+            stayMin: entry ? entry.end - entry.start : stop.durationMin,
+            hike: stop.hike,
+            bestTime: stop.bestTime,
+            permit: stop.permit,
+            hazards: stop.family?.hazards,
+            hazardText: text.attraction.family.hazards,
+            arrive: entry ? clockOf(entry.start + (entry.zoneShift ?? 0)) : undefined,
+            stay: duration(entry ? entry.end - entry.start : stop.durationMin),
+            parkingFull: entry?.warnings.includes("parkingFull"),
+            tempClosed: entry?.warnings.includes("tempClosed"),
+            next,
+          },
+          say,
+          english,
+        ),
+        ...(photo ? { photo: { url: photo.url, credit: `${photo.author} · ${photo.license}` } } : {}),
       };
     });
     if (view.to) {
       const endpoint = view.to.endpoint === "destination" || view.to.endpoint === "origin";
+      const words = fill(endpoint ? say.end : say.lodging, { name: view.to.name });
       stops.push({
         id: `lodging-${view.to.id}`,
         lon: view.to.lon,
         lat: view.to.lat,
         label: view.to.name,
         caption: fill(endpoint ? t.tour.end : t.tour.night, { time: clockOf(view.timeline.returnAt) }),
+        narration: { title: view.to.name, lines: [{ label: t.tour.title.replace("{n}", String(route.day + 1)), text: words }], speech: [sentence(words)] },
         ...(endpoint ? {} : { lodging: true }),
       });
     }
+    const firstLeg = view.rows[0] ? longLeg(view.timeline.entries[0]?.driveMin, view.rows[0].stop.nameZh) : undefined;
+    const dayWords = fill(say.day, {
+      n: route.day + 1,
+      date: view.date ? (english ? `, ${formatDate(view.date)}` : `，${formatDate(view.date)}`) : "",
+      k: view.rows.length,
+      drive: duration(view.timeline.driveMin),
+    });
     const last = view.timeline.entries.at(-1);
     return [
       {
@@ -884,6 +930,10 @@ export function Planner({
         straight: !road,
         stops,
         dusk: last?.slot === "sunset" || last?.slot === "night",
+        narration: [
+          ...dayWords.split(/(?<=[。.])\s*/u).filter(Boolean).map(sentence),
+          ...(firstLeg ? [sentence(fill(say.next, firstLeg))] : []),
+        ],
       },
     ];
   });
@@ -931,6 +981,36 @@ export function Planner({
 
   // 行程里的公园，按第一次去的顺序
   const stopParks = [...new Set(dayViews.flatMap((view) => view.rows.map((row) => row.stop.park)))];
+  // 讲解版的开头（怎么看这张地图）和结尾（总结、要提前订的）
+  const narrationParks = stopParks.map(parkName).join(text.units.listSep);
+  const origin = dayViews[0]?.from?.name;
+  const needBooking = [...new Set(dayViews.flatMap((view) => view.rows.filter((row) => row.stop.permit).map((row) => row.stop.nameZh)))];
+  const tripDrive = duration(dayViews.reduce((sum, view) => sum + view.timeline.driveMin, 0));
+  const tripStops = dayViews.reduce((sum, view) => sum + view.rows.length, 0);
+  const tourNarration: TourNarration & { onStart: () => void } = {
+    lang: locale === "en" ? "en-US" : locale === "zh-Hant" ? "zh-TW" : "zh-CN",
+    intro: {
+      title: say.introTitle,
+      lines: [
+        { label: "", text: fill(origin ? say.intro : say.introNoOrigin, { days: dayViews.length, parks: narrationParks, origin: origin ?? "" }) },
+        ...Object.values(say.introLines).map((line) => ({ label: "", text: line })),
+      ],
+      speech: [
+        sentence(fill(origin ? say.intro : say.introNoOrigin, { days: dayViews.length, parks: narrationParks, origin: origin ?? "" })),
+        sentence(say.introSpeech),
+      ],
+    },
+    outro: {
+      lines: needBooking.length ? [{ label: say.bookingsLabel, text: needBooking.join(text.units.listSep) }] : [],
+      speech: [
+        sentence(fill(say.outro, { days: dayViews.length, n: tripStops, drive: tripDrive })),
+        ...(needBooking.length ? [sentence(fill(say.bookings, { names: needBooking.join(text.units.listSep) }))] : []),
+        sentence(say.bye),
+      ],
+    },
+    // 卡片上要照片：讲解开始时把这几座公园的图集都取回来
+    onStart: () => stopParks.forEach(loadGallery),
+  };
   const lastStop = dayViews.flatMap((view) => view.rows).at(-1)?.stop;
 
   // NPS 实时公告：按景点英文名、片区名对到行程里的景点
@@ -1722,6 +1802,7 @@ export function Planner({
               legs={mapLegs}
               legend={mapLegend}
               tour={campMap ? undefined : tourDays}
+              narration={campMap || tourDays.length === 0 ? undefined : tourNarration}
               tourSummary={fill(t.tour.summary, {
                 days: dayViews.length,
                 n: dayViews.reduce((sum, view) => sum + view.rows.length, 0),

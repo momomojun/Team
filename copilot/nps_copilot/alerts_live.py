@@ -27,6 +27,9 @@ CLOSURES = DATA / "closures-latest.json"
 CACHE = DATA / "extracted.json"
 CONTRACTS = Path(__file__).resolve().parents[1] / "contracts"
 LIVE_DAYS = 14  # 和 src/lib/alert-match.ts 的 LIVE_ALERT_DAYS 一样
+# 聊天时要去的公园距上次读公告超过这么久就现读一遍（10-20 漂移测试发现：以前按“今天读过没有”，
+# 每晚读过以后白天新发的关闭公告要等到第二天夜里才进清单）
+REFRESH_HOURS = 6
 USER_AGENT = "NPS-Guide-Copilot (+https://github.com/momomojun/Team)"
 
 
@@ -128,8 +131,9 @@ def closures_file(snapshot: dict, provider: Provider | None, cache_path: Path = 
     live = {_cache_key(alert) for alert in snapshot["alerts"]}
     save_json(cache_path, {key: value for key, value in cache.items() if key in live})
     covered = sorted({alert["park"] for alert in snapshot["alerts"]} | set(nps_codes()) - set(snapshot.get("failed") or []))
+    stamp = dt.datetime.now().astimezone().isoformat(timespec="seconds")
     out = {"fetched": snapshot["fetched"], "prompts": prompts.current(), "parks": {code: snapshot["fetched"] for code in covered},
-           "closures": closures}
+           "readAt": {code: stamp for code in covered}, "closures": closures}
     return out, stats
 
 
@@ -173,9 +177,11 @@ def fetch_alerts(parks: list[str], timeout: float = 20.0) -> list[dict]:
     return alerts
 
 
-def refresh_for(request: dict, reference_date: str, path: Path = CLOSURES, cache_path: Path = CACHE) -> dict:
-    """聊天时：两周内出发、要去的公园今天还没读过公告，就当场抓这几座公园的公告读一遍，合进关闭清单。
-    出错（没网、接口限流、模型出错）就用原来的清单，不影响排行程。返回发生了什么（写进 trace）"""
+def refresh_for(request: dict, reference_date: str, path: Path = CLOSURES, cache_path: Path = CACHE,
+                now: dt.datetime | None = None) -> dict:
+    """聊天时：两周内出发、要去的公园距上次读公告超过 REFRESH_HOURS 小时（或者没记读的时间、不是今天读的），
+    就当场抓这几座公园的公告读一遍，合进关闭清单。每座公园读的时间记在 readAt（精确到秒），parks 照旧只记日期
+    （网站的 live.ts 按日期比新旧）。出错（没网、接口限流、模型出错）就用原来的清单，不影响排行程。返回发生了什么（写进 trace）"""
     start = request.get("startDate")
     if not start:
         return {"refreshed": False, "why": "month-only"}
@@ -183,7 +189,21 @@ def refresh_for(request: dict, reference_date: str, path: Path = CLOSURES, cache
     if dt.date.fromisoformat(start) > today + dt.timedelta(days=LIVE_DAYS):
         return {"refreshed": False, "why": "too-far"}
     current = load_json(path, {"fetched": reference_date, "parks": {}, "closures": []})
-    stale = [code for code in request.get("parks", []) if code in nps_codes() and (current.get("parks") or {}).get(code) != reference_date]
+    now = now or dt.datetime.now().astimezone()
+    read_at = current.get("readAt") or {}
+
+    def fresh(code: str) -> bool:
+        if (current.get("parks") or {}).get(code) != reference_date:
+            return False
+        stamp = read_at.get(code)
+        if not stamp:
+            return False
+        try:
+            return now - dt.datetime.fromisoformat(stamp) < dt.timedelta(hours=REFRESH_HOURS)
+        except (TypeError, ValueError):
+            return False
+
+    stale = [code for code in request.get("parks", []) if code in nps_codes() and not fresh(code)]
     if not stale:
         return {"refreshed": False, "why": "fresh"}
     try:
@@ -199,6 +219,8 @@ def refresh_for(request: dict, reference_date: str, path: Path = CLOSURES, cache
         # 旧格式（只有一个 fetched）：清单里原来的公园都按那天算
         parks.update({code: current.get("fetched") for code in nps_codes()})
     parks.update({code: reference_date for code in stale})
+    stamp = now.isoformat(timespec="seconds")
     save_json(path, {"fetched": max(current.get("fetched") or reference_date, reference_date) if current.get("closures") else reference_date,
-                     "prompts": prompts.current(), "parks": parks, "closures": kept + closures})
+                     "prompts": prompts.current(), "parks": parks, "readAt": {**read_at, **{code: stamp for code in stale}},
+                     "closures": kept + closures})
     return {"refreshed": True, "parks": stale, "alerts": len(alerts), **stats}

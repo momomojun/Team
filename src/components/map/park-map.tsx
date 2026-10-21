@@ -21,7 +21,11 @@ import {
   stopDistances,
   turnToward,
   type TourDay,
+  type TourNarration,
+  type TourStop,
 } from "./route-tour";
+import { CommonsImage } from "@/components/commons-image";
+import { Narrator } from "@/lib/speech";
 import { EOX_ATTRIBUTION, EOX_IMAGERY_TILES, IMAGERY_TILES, STYLE_URL, TERRAIN_TILES, type Imagery } from "./sources";
 
 export interface MapPoint {
@@ -75,6 +79,10 @@ export interface MapText {
   tourDay: string;
   /** 最后拉远看全程时控制条上的字 */
   tourAll: string;
+  /** 讲解版（全屏、逐站讲解、朗读） */
+  tourNarrate: string;
+  tourMute: string;
+  tourUnmute: string;
 }
 
 /** 请地图自动播一次路线动画：key 变了才播；days 是要播的那几天（改了行程只播变了的） */
@@ -103,12 +111,17 @@ const ROUTE_WAIT_MS = 6000;
 interface TourState {
   days: TourDay[];
   index: number;
-  phase: "fly" | "draw" | "hold" | "finale";
+  phase: "intro" | "fly" | "draw" | "hold" | "finale";
   phaseStart: number;
   /** 上一帧的时间：到站停一下时把这段时间从画线的进度里扣掉 */
   last: number;
   arriveUntil: number;
   calm: boolean;
+  /** 讲解版：到站停下来念完才走；念的时候 speaking 是 true */
+  narrated: boolean;
+  speaking: boolean;
+  /** 这一站的卡片还开着（开出这一站就收起来） */
+  carded: boolean;
   /** 跟车：每个路线点的累计播放量、这一天播多久、镜头现在的位置、缩放和方向 */
   cost: number[];
   dayMs: number;
@@ -256,6 +269,20 @@ function fitToPoints(map: MapLibreMap, points: MapPoint[], animate: boolean) {
   );
 }
 
+/** 讲解卡片里的几行：小标题（看点、怎么玩……）+ 一句大白话 */
+function NarrationLines({ lines }: { lines: { label: string; text: string }[] }) {
+  return (
+    <dl className="mt-4 space-y-3">
+      {lines.map((line) => (
+        <div key={line.label + line.text}>
+          {line.label && <dt className="text-[11px] tracking-[0.08em] text-mute">{line.label}</dt>}
+          <dd className="mt-0.5 text-[14px] leading-6 text-ink lining-nums">{line.text}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
 export function ParkMap({
   points,
   selectedId = null,
@@ -272,6 +299,7 @@ export function ParkMap({
   tourRequest = null,
   tourSummary,
   hoverId = null,
+  narration,
   text,
   className = "",
   children,
@@ -303,6 +331,8 @@ export function ParkMap({
   tourSummary?: string;
   /** 鼠标停在列表里的哪个景点上：地图拉近到它，移开以后回到原来的范围 */
   hoverId?: string | null;
+  /** 有就显示“讲解版”：全屏、逐站讲解、朗读（开头和结尾的话在这里，每一天、每一站的在 tour 里） */
+  narration?: TourNarration & { onStart?: () => void };
   text: MapText;
   className?: string;
   /** 叠在地图上的内容，比如选中景点的卡片 */
@@ -336,6 +366,18 @@ export function ParkMap({
   } | null>(null);
   // 底下那条细细的进度条：每帧直接改宽度，不经过 React
   const progressRef = useRef<HTMLDivElement>(null);
+  // 讲解版：铺满全屏、旁边的卡片（开头、某一天、某一站、结尾）、底部字幕、朗读
+  const rootRef = useRef<HTMLDivElement>(null);
+  const narratorRef = useRef<Narrator | null>(null);
+  const [immersive, setImmersive] = useState(false);
+  // 帧循环里要知道左边（电脑）、下面（手机）有没有讲解卡片（闭包里的 state 是开始那一刻的，用 ref）
+  const sidePanel = useRef(0);
+  const bottomPanel = useRef(0);
+  const [beat, setBeat] = useState<
+    { kind: "intro" } | { kind: "day"; day: TourDay } | { kind: "stop"; stop: TourStop; index: number; color: string } | { kind: "outro" } | null
+  >(null);
+  const [caption, setCaption] = useState<string | null>(null);
+  const [muted, setMuted] = useState(false);
   // 悬停拉近以前的视角，移开以后回到这里
   const beforeHover = useRef<{ center: [number, number]; zoom: number; bearing: number; pitch: number } | null>(null);
   const selectedRef = useRef(selectedId);
@@ -724,6 +766,15 @@ export function ParkMap({
     map.setLayoutProperty("legs-straight", "visibility", "visible");
     focusOn(null);
     setTourUi(null);
+    narratorRef.current?.stop();
+    setBeat(null);
+    setCaption(null);
+    if (state.narrated) {
+      setImmersive(false);
+      sidePanel.current = 0;
+      bottomPanel.current = 0;
+      if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    }
     if (progressRef.current) progressRef.current.style.width = "0%";
     map.setPadding(NO_PADDING);
     map.easeTo({ pitch: terrainRef.current ? 60 : 0, bearing: 0, duration: 600 });
@@ -748,16 +799,38 @@ export function ParkMap({
           [Math.min(...lons), Math.min(...lats)],
           [Math.max(...lons), Math.max(...lats)],
         ],
-        { padding: 64, maxZoom: 12, duration: 1100, pitch: 0, bearing: 0 },
+        { padding: { top: 64, bottom: 64, left: 64 + sidePanel.current, right: 64 }, maxZoom: 12, duration: 1100, pitch: 0, bearing: 0 },
       );
     }
     setTourUi((ui) => (ui ? { ...ui, card: false, finale: true, dusk: false } : ui));
+    if (state.narrated) setBeat({ kind: "outro" });
+    speak(state, narration?.outro.speech);
+  };
+
+  /** 讲解版念一段话：念完（或被打断）时 speaking 放下，then 里的事接着做 */
+  const speak = (state: TourState, lines: string[] | undefined, then?: () => void) => {
+    if (!state.narrated || !lines?.length) {
+      then?.();
+      return;
+    }
+    narratorRef.current ??= new Narrator(narration?.lang ?? "zh-CN", setCaption, muted);
+    state.speaking = true;
+    narratorRef.current.play(lines).then(() => {
+      if (tourRef.current !== state) return;
+      state.speaking = false;
+      then?.();
+    });
   };
 
   /** 跟车时看车前方多远的路定方向（公里）：拉得越远看得越前 */
   const lookAhead = (zoom: number) => 0.25 * 2 ** (13 - zoom);
   /** 跟车时把焦点往下挪：车停在画面偏下三分之一，前面的路留在上面 */
-  const followPadding = (map: MapLibreMap) => ({ top: Math.round(map.getContainer().clientHeight * 0.12), bottom: 0, left: 0, right: 0 });
+  const followPadding = (map: MapLibreMap) => ({
+    top: Math.round(map.getContainer().clientHeight * 0.12),
+    bottom: Math.round(map.getContainer().clientHeight * bottomPanel.current),
+    left: sidePanel.current,
+    right: 0,
+  });
 
   /** 一天开完：镜头拉回来看这一天的全程 */
   const reviewDay = (state: TourState) => {
@@ -766,7 +839,7 @@ export function ParkMap({
     map.setPadding(NO_PADDING);
     const height = map.getContainer().clientHeight;
     map.fitBounds(bounds(state.days[state.index]), {
-      padding: { top: Math.round(height * 0.12), bottom: Math.round(height * 0.2), left: 56, right: 56 },
+      padding: { top: Math.round(height * 0.12), bottom: Math.round(height * Math.max(0.2, bottomPanel.current)), left: 56 + sidePanel.current, right: 56 },
       maxZoom: 12.5,
       duration: 1200,
       pitch: TOUR_PITCH,
@@ -812,6 +885,9 @@ export function ParkMap({
       const to = sliceTo(day.path, state.cum, Math.max(0.8, lookAhead(zoom) * 3)).head;
       map.flyTo({ center: from, zoom, pitch: FOLLOW_PITCH, bearing: bearingOf(from, to), padding: followPadding(map), duration: FOLLOW_FLY_MS });
     }
+    state.carded = false;
+    if (state.narrated) setBeat({ kind: "day", day });
+    speak(state, day.narration);
     setTourUi({
       index,
       days: state.days.map(({ day: n, color }) => ({ day: n, color })),
@@ -837,16 +913,30 @@ export function ParkMap({
     if (state.pausedAt !== null) return;
     const day = state.days[state.index];
     if (state.phase === "draw" && now < state.arriveUntil) {
-      // 到站停一下：这段时间不算进画线的进度
+      // 到站停一下（讲解版念完才走）：这段时间不算进画线的进度
       state.phaseStart += delta;
       return;
     }
+    if (state.carded) {
+      state.carded = false;
+      setBeat(null);
+    }
     const elapsed = now - state.phaseStart;
+    if (state.phase === "intro") {
+      // 讲解版开头：讲完怎么看这张地图再开始第一天
+      if (elapsed >= 1500 && !state.speaking) {
+        map.setLayoutProperty("legs", "visibility", "none");
+        map.setLayoutProperty("legs-straight", "visibility", "none");
+        beginDay(state, state.index, now);
+      }
+      return;
+    }
     if (state.phase === "fly") {
-      // 卡片显示到镜头快到位，再收起来开始画
+      // 卡片显示到镜头快到位，再收起来开始画；讲解版要等这一天开头的话念完
       const fly = state.calm ? flyMs(state.days.length) : FOLLOW_FLY_MS;
-      if (elapsed >= fly * 0.85) setTourUi((ui) => (ui && ui.card ? { ...ui, card: false } : ui));
-      if (elapsed >= fly) {
+      if (elapsed >= fly * 0.85 && !state.speaking) setTourUi((ui) => (ui && ui.card ? { ...ui, card: false } : ui));
+      if (elapsed >= fly && !state.speaking) {
+        if (state.narrated) setBeat(null);
         state.phase = "draw";
         state.phaseStart = now;
       }
@@ -897,6 +987,15 @@ export function ParkMap({
         state.shown += 1;
         // 起点那一站（前一晚的住处）不停
         if (state.stopKm[state.shown - 1] > 0.05) state.arriveUntil = now + ARRIVE_MS;
+        // 讲解版：停下来，旁边出这一站的卡片，念完再停 0.6 秒才走
+        if (state.narrated && stop.narration) {
+          state.arriveUntil = Infinity;
+          state.carded = true;
+          setBeat({ kind: "stop", stop, index: state.shown, color: day.color });
+          speak(state, stop.narration.speech, () => {
+            state.arriveUntil = performance.now() + 600;
+          });
+        }
       }
       if (day.dusk && progress > 0.75) setTourUi((ui) => (ui && !ui.dusk ? { ...ui, dusk: true } : ui));
       if (progress >= 1) {
@@ -907,7 +1006,7 @@ export function ParkMap({
       return;
     }
     if (state.phase === "hold") {
-      if (elapsed >= HOLD_MS) {
+      if (elapsed >= HOLD_MS && !state.speaking) {
         state.done.push(lineFeature(day.path, day.color));
         setLine("tour-done", state.done);
         setLine("tour-line", []);
@@ -918,18 +1017,31 @@ export function ParkMap({
       return;
     }
     if (progressRef.current) progressRef.current.style.width = "100%";
-    if (elapsed >= FINALE_MS) finishTour();
+    if (elapsed >= FINALE_MS && !state.speaking) finishTour();
   };
 
-  const startTour = (days: TourDay[], from = 0) => {
+  const startTour = (days: TourDay[], from = 0, narrated = false) => {
     const map = mapRef.current;
     if (!map || days.length === 0) return;
     if (tourRef.current) {
       cancelAnimationFrame(tourRef.current.raf);
       clearMarkers(tourRef.current);
     }
-    map.setLayoutProperty("legs", "visibility", "none");
-    map.setLayoutProperty("legs-straight", "visibility", "none");
+    narratorRef.current?.stop();
+    // 讲解版在电脑上（宽 640 以上）左边有一张 24rem 宽的卡片，镜头给它让出位置
+    sidePanel.current = narrated && window.innerWidth >= 640 ? 400 : 0;
+    // 手机上卡片在下面，大约占半屏：镜头焦点放到上面那一半
+    bottomPanel.current = narrated && window.innerWidth < 640 ? 0.5 : 0;
+    if (narrated && !immersive) {
+      // 铺满全屏：浏览器支持的用真的全屏（要在点击里调用），iPhone 这种不支持的就盖满整个窗口
+      setImmersive(true);
+      rootRef.current?.requestFullscreen?.().catch(() => {});
+      narration?.onStart?.();
+    }
+    // 平常的彩色路线先藏起来，跟着车一段段画出来；讲解版开头讲“彩色的线是每天的路线”时先留着，进到第一天再藏
+    const keepLegs = narrated && from === 0 && Boolean(narration?.intro.speech.length);
+    map.setLayoutProperty("legs", "visibility", keepLegs ? "visible" : "none");
+    map.setLayoutProperty("legs-straight", "visibility", keepLegs ? "visible" : "none");
     const state: TourState = {
       days,
       index: from,
@@ -938,6 +1050,9 @@ export function ParkMap({
       last: performance.now(),
       arriveUntil: 0,
       calm: reducedMotion(),
+      narrated,
+      speaking: false,
+      carded: false,
       cost: [],
       dayMs: 0,
       camera: null,
@@ -952,17 +1067,55 @@ export function ParkMap({
     };
     tourRef.current = state;
     setLine("tour-done", state.done);
-    beginDay(state, from, performance.now());
+    if (narrated && from === 0 && narration?.intro.speech.length) {
+      // 开头：先看整趟的全貌，讲怎么看这张地图
+      state.phase = "intro";
+      state.phaseStart = performance.now();
+      setBeat({ kind: "intro" });
+      setTourUi({
+        index: from,
+        days: days.map(({ day: n, color }) => ({ day: n, color })),
+        title: narration.intro.title,
+        color: "#1c1b18",
+        card: false,
+        finale: false,
+        paused: false,
+        dusk: false,
+      });
+      // 先看整趟的全貌（给左边的卡片让出位置；全屏铺开要一点时间，等地图量好新尺寸）
+      setTimeout(() => {
+        const all = days.flatMap((day) => [...day.path, ...day.stops.map((stop) => [stop.lon, stop.lat] as [number, number])]);
+        if (all.length < 2) return;
+        map.resize();
+        map.fitBounds(
+          [
+            [Math.min(...all.map((p) => p[0])), Math.min(...all.map((p) => p[1]))],
+            [Math.max(...all.map((p) => p[0])), Math.max(...all.map((p) => p[1]))],
+          ],
+          {
+            padding: { top: 64, bottom: Math.max(96, Math.round(map.getContainer().clientHeight * bottomPanel.current)), left: 64 + sidePanel.current, right: 64 },
+            maxZoom: 12,
+            duration: 900,
+            pitch: 0,
+            bearing: 0,
+          },
+        );
+      }, 120);
+      speak(state, narration.intro.speech);
+    } else beginDay(state, from, performance.now());
     state.raf = requestAnimationFrame(frame);
   };
 
   const togglePause = () => {
     const state = tourRef.current;
     if (!state) return;
-    if (state.pausedAt === null) state.pausedAt = performance.now();
-    else {
+    if (state.pausedAt === null) {
+      state.pausedAt = performance.now();
+      narratorRef.current?.pause();
+    } else {
       state.phaseStart += performance.now() - state.pausedAt;
       state.pausedAt = null;
+      narratorRef.current?.resume();
     }
     setTourUi((ui) => (ui ? { ...ui, paused: state.pausedAt !== null } : ui));
   };
@@ -1022,6 +1175,19 @@ export function ParkMap({
     (map.getSource("extras") as GeoJSONSource).setData(pointsToGeoJSON(extras ?? []));
   }, [ready, extras]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => mapRef.current?.resize(), 60);
+    return () => clearTimeout(timer);
+  }, [immersive]);
+  const leftFullscreen = useEffectEvent(() => {
+    if (!document.fullscreenElement && immersive && tourRef.current?.narrated && rootRef.current?.requestFullscreen) finishTour();
+  });
+  useEffect(() => {
+    const onChange = () => leftFullscreen();
+    document.addEventListener("fullscreenchange", onChange);
+    return () => document.removeEventListener("fullscreenchange", onChange);
+  }, []);
+
   // 鼠标停在列表里的某个景点上：停够 250 毫秒才拉近（鼠标扫过一串景点时地图不乱跳），离开 450 毫秒后回到原来的视角；
   // 移开之前点过某个景点（选中了）就停在选中的那个，不回去；播动画的时候不动
   useEffect(() => {
@@ -1079,6 +1245,9 @@ export function ParkMap({
     map.easeTo({ pitch: terrain ? 60 : 0, duration: 800 });
   }, [ready, terrain]);
 
+  // 讲解卡片上的照片：车出发时图集可能还没取回来，按最新的 tour 找这一站
+  const beatPhoto =
+    beat?.kind === "stop" ? (tourDays.flatMap((day) => day.stops).find((stop) => stop.id === beat.stop.id)?.photo ?? beat.stop.photo) : undefined;
   const toggle = (active: boolean) =>
     `px-3 py-1.5 transition-colors ${active ? "bg-ink text-paper" : "text-ink hover:bg-paper-deep"}`;
   const hasTrails = (trails?.length ?? 0) > 0;
@@ -1088,7 +1257,10 @@ export function ParkMap({
   const legendItems = legend ?? (hasRoad ? [{ color: legs?.find((leg) => !leg.straight)?.color ?? ROAD_COLOR, label: text.roadLegend }] : []);
 
   return (
-    <div className={`relative overflow-hidden bg-paper-deep ${className}`}>
+    <div
+      ref={rootRef}
+      className={`overflow-hidden bg-paper-deep ${immersive ? "fixed inset-0 z-[80] h-[100dvh] w-screen" : `relative ${className}`}`}
+    >
       {/* maplibre 的 CSS 会把容器设成 position: relative，所以用 h-full 而不是 inset-0 撑满 */}
       <div ref={containerRef} className={`h-full w-full transition-opacity duration-500 ${ready ? "opacity-100" : "opacity-0"}`} />
       {!ready && (
@@ -1096,7 +1268,7 @@ export function ParkMap({
           {text.loading}
         </div>
       )}
-      <div className="absolute top-3 left-3 space-y-2">
+      <div className={`absolute top-3 left-3 space-y-2 ${immersive ? "hidden" : ""}`}>
         <div className="flex bg-paper/95 text-[11px] tracking-[0.12em] shadow-sm">
           <button type="button" className={toggle(!satellite)} onClick={() => setSatellite(false)}>
             {text.map}
@@ -1152,8 +1324,56 @@ export function ParkMap({
           tourUi?.dusk ? "opacity-100" : "opacity-0"
         }`}
       />
-      {/* 章节字幕：每天开头在左下出一行大字（像纪录片换章），最后一天画完换成全程的总结；不挡地图中间 */}
-      {tourUi && (
+      {/* 讲解版：旁边的卡片（电脑上在左边，手机上在下面）。一次只讲一件事：开头讲怎么看地图，每天开头讲这一天，每一站讲看点、怎么玩、什么时候、注意 */}
+      {immersive && beat && (
+        <aside
+          key={beat.kind === "stop" ? beat.stop.id : beat.kind === "day" ? `day-${beat.day.day}` : beat.kind}
+          className="tour-pop absolute inset-x-3 bottom-24 z-20 max-h-[50%] overflow-y-auto bg-paper shadow-lg sm:inset-x-auto sm:top-4 sm:bottom-auto sm:left-4 sm:max-h-[calc(100%-8rem)] sm:w-[24rem]"
+        >
+          {beat.kind === "stop" && beatPhoto && (
+            <figure className="relative hidden aspect-[3/2] w-full bg-paper-deep sm:block">
+              <CommonsImage src={beatPhoto.url} alt="" fill sizes="384px" className="object-cover" />
+              <figcaption className="absolute right-0 bottom-0 bg-ink/60 px-2 py-0.5 text-[10px] text-paper/90">{beatPhoto.credit}</figcaption>
+            </figure>
+          )}
+          <div className="border-l-[3px] px-5 py-4 sm:py-5" style={{ borderColor: beat.kind === "stop" ? beat.color : beat.kind === "day" ? beat.day.color : "#1c1b18" }}>
+            {beat.kind === "intro" && narration && (
+              <>
+                <p className="font-serif text-2xl leading-tight">{narration.intro.title}</p>
+                <NarrationLines lines={narration.intro.lines} />
+              </>
+            )}
+            {beat.kind === "day" && (
+              <>
+                <p className="font-serif text-[2rem] leading-none lining-nums">{beat.day.heading ?? beat.day.title}</p>
+                {beat.day.date && <p className="mt-2 text-[13px] text-ink lining-nums">{beat.day.date}</p>}
+                {beat.day.subtitle && <p className="mt-1 text-[13px] text-ink-soft lining-nums">{beat.day.subtitle}</p>}
+              </>
+            )}
+            {beat.kind === "stop" && beat.stop.narration && (
+              <>
+                <p className="font-serif text-2xl leading-tight lining-nums">{beat.stop.narration.title}</p>
+                <NarrationLines lines={beat.stop.narration.lines} />
+              </>
+            )}
+            {beat.kind === "outro" && narration && (
+              <>
+                <p className="font-serif text-[2rem] leading-none">{text.tourAll}</p>
+                {tourSummary && <p className="mt-2 text-[13px] text-ink-soft lining-nums">{tourSummary}</p>}
+                <NarrationLines lines={narration.outro.lines} />
+              </>
+            )}
+          </div>
+        </aside>
+      )}
+      {/* 字幕：念到哪句出哪句；手机上卡片在下面，字幕放到上面 */}
+      {immersive && caption && (
+        <div className="pointer-events-none absolute inset-x-0 top-3 z-30 flex justify-center pr-14 pl-4 sm:top-auto sm:bottom-[5.25rem] sm:pr-4 sm:pl-[26rem]">
+          <p className="max-w-2xl bg-ink/85 px-4 py-2 text-center text-[15px] leading-7 text-paper lining-nums">{caption}</p>
+        </div>
+      )}
+      {/* 章节字幕：每天开头在左下出一行大字（像纪录片换章），最后一天画完换成全程的总结；不挡地图中间（讲解版用旁边的卡片） */}
+      {tourUi && !immersive && (
         <div
           className={`pointer-events-none absolute inset-x-0 bottom-0 z-10 pt-16 pb-24 pl-5 pr-6 transition-opacity duration-500 sm:pl-8 ${
             tourUi.card || tourUi.finale ? "opacity-100" : "opacity-0"
@@ -1201,6 +1421,19 @@ export function ParkMap({
               <button type="button" className="link-line" onClick={finishTour}>
                 {text.tourSkip}
               </button>
+              {immersive && (
+                <button
+                  type="button"
+                  className="link-line"
+                  aria-pressed={muted}
+                  onClick={() => {
+                    setMuted(!muted);
+                    narratorRef.current?.setMuted(!muted);
+                  }}
+                >
+                  {muted ? text.tourUnmute : text.tourMute}
+                </button>
+              )}
               <span className="flex gap-1" role="group" aria-label={text.tourPlay}>
                 {tourUi.days.map((day, k) => (
                   <button
@@ -1209,8 +1442,8 @@ export function ParkMap({
                     aria-label={text.tourDay.replace("{n}", String(day.day + 1))}
                     aria-current={k === tourUi.index}
                     onClick={() => {
-                      const days = tourRef.current?.days;
-                      if (days) startTour(days, k);
+                      const current = tourRef.current;
+                      if (current) startTour(current.days, k, current.narrated);
                     }}
                     className="flex size-6 items-center justify-center"
                   >
@@ -1223,9 +1456,16 @@ export function ParkMap({
               </span>
             </>
           ) : (
-            <button type="button" className="link-line" onClick={() => startTour(tourDays)}>
-              ▶ {text.tourPlay}
-            </button>
+            <>
+              <button type="button" className="link-line" onClick={() => startTour(tourDays)}>
+                ▶ {text.tourPlay}
+              </button>
+              {narration && (
+                <button type="button" className="link-line" onClick={() => startTour(tourDays, 0, true)}>
+                  {text.tourNarrate}
+                </button>
+              )}
+            </>
           )}
         </div>
       )}

@@ -1,6 +1,16 @@
 // 行程地图的路线动画（10-18 仓库主人定的：第一次排出行程、改了行程时自动播一段，之后看行程还是静态地图）。
 // 这里是不碰地图的几何计算：一天的路线画到百分之几时线画到哪、车头在哪、各站在路线上的位置。地图上怎么播见 park-map.tsx
 
+import type { NarrationLine, StopNarration } from "../../lib/narration";
+
+/** 讲解版的开头和结尾：开头讲怎么看这张地图，结尾总结、提醒要提前订的 */
+export interface TourNarration {
+  /** 朗读用的语言（zh-CN / zh-TW / en-US） */
+  lang: string;
+  intro: { title: string; lines: NarrationLine[]; speech: string[] };
+  outro: { lines: NarrationLine[]; speech: string[] };
+}
+
 /** 动画里的一天：前一晚住处 → 各站 → 当晚住处 */
 export interface TourDay {
   day: number;
@@ -18,6 +28,8 @@ export interface TourDay {
   stops: TourStop[];
   /** 这天最后看日落、星空：画到最后天色暗下来 */
   dusk?: boolean;
+  /** 讲解版：这一天开头念的句子（“第 2 天，今天去 6 个地方，开车大约 5 小时”） */
+  narration?: string[];
 }
 
 export interface TourStop {
@@ -28,6 +40,10 @@ export interface TourStop {
   caption: string;
   /** 当晚住处：牌子换一种样式 */
   lodging?: boolean;
+  /** 讲解版：到这一站时旁边的卡片（看点、怎么玩、什么时候、注意）和要念的句子 */
+  narration?: StopNarration;
+  /** 讲解卡片上的照片（Commons）和署名 */
+  photo?: { url: string; credit: string };
 }
 
 const RAD = Math.PI / 180;
