@@ -8,76 +8,60 @@ export interface MontagePhoto {
   credit: string;
 }
 
-/** 每张照片放多久（一倍速，毫秒）：按这一站要念多久平分，太快看不清、太慢就闷 */
+/** 每张照片放多久（一倍速，毫秒）：按这一段要念多久平分，太快看不清、太慢就闷 */
 const SLIDE_MIN = 4200;
 const SLIDE_MAX = 7000;
 /** 下一张淡入用多久 */
 const FADE = 1400;
-/** 从地图上这一站的位置圆形展开、收回去 */
-const OPEN = 950;
-const CLOSE = 750;
-const EASE = "cubic-bezier(0.7, 0, 0.2, 1)";
+/** 照片窗要的缩略图宽度：卡片最宽约 34rem，按两倍屏取 Commons 的标准宽度 */
+const PHOTO_WIDTH = 1280;
 
 /** 每张照片怎么动：从哪个缩放、位置慢慢推到哪（推近、拉远、左右上下平移轮着来，不会连着两张一样） */
 const MOVES = [
-  { s: [1.04, 1.18], x: [-1.5, 1.5], y: [1, -1] },
-  { s: [1.18, 1.05], x: [1.5, -1], y: [-0.5, 0.8] },
-  { s: [1.06, 1.16], x: [1.2, -1.6], y: [-1, 0.6] },
-  { s: [1.16, 1.04], x: [-1.2, 0.8], y: [1.2, -0.4] },
+  { s: [1.04, 1.16], x: [-1.5, 1.5], y: [1, -1] },
+  { s: [1.16, 1.05], x: [1.5, -1], y: [-0.5, 0.8] },
+  { s: [1.06, 1.15], x: [1.2, -1.6], y: [-1, 0.6] },
+  { s: [1.15, 1.04], x: [-1.2, 0.8], y: [1.2, -0.4] },
 ];
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const ease = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
 
-/** 全屏要的照片宽度（取 Commons 的标准缩略图宽度，最大 1920） */
-function screenWidth() {
-  if (typeof window === "undefined") return 1280;
-  return Math.min(1920, Math.round(window.innerWidth * Math.min(2, window.devicePixelRatio || 1)));
-}
-
-/** 提前下载：到站时照片已经在缓存里，展开的时候不会是一片空白 */
+/** 提前下载：卡片出来时照片已经在缓存里，不会先空一下 */
 export function preloadPhotos(photos: MontagePhoto[] | undefined, count = photos?.length ?? 0) {
   if (typeof window === "undefined" || !photos) return;
-  const width = screenWidth();
   for (const photo of photos.slice(0, count)) {
     const image = new Image();
     image.decoding = "async";
-    image.src = commonsSrc(photo.url, width);
+    image.src = commonsSrc(photo.url, PHOTO_WIDTH);
   }
 }
 
 /**
- * 讲解版到站的画面：照片从地图上这一站的位置圆形展开、铺满全屏，几张轮流放，每张慢慢推近或平移（Ken Burns），交叉淡入；
- * 上面一排细条是第几张，右上是第几站和站名（手机上站名在下面的卡片里，这里不重复）。讲完 leaving 变成 true，
- * 收回到地图上车所在的那一点，车接着开。暂停、倍速跟着讲解走；系统设了“减少动画”的只淡入淡出、不推镜头、不展开。
+ * 讲解卡片顶上的照片窗：几张照片轮流放，每张慢慢推近或平移（Ken Burns），交叉淡入；上面一排细条是第几张，
+ * 左下压着这一站（这一天）的片名：一行小字（第几站、几点到、停多久）和大号站名。地图留在卡片外面，路线一直看得见。
+ * 暂停、倍速跟着讲解走；系统设了“减少动画”的只淡入淡出、不推镜头。
  */
-export function StopMontage({
+export function PhotoReel({
   photos,
-  origin,
-  number,
+  eyebrow,
   title,
-  caption,
   color,
   durationMs,
   paused,
   speed,
-  leaving,
 }: {
   photos: MontagePhoto[];
-  /** 这一站在地图上的位置（相对地图容器的像素） */
-  origin?: { x: number; y: number };
-  /** 大号数字：第几站、第几天；片头不写 */
-  number?: number;
+  /** 片名上面那行小字 */
+  eyebrow?: string;
   title: string;
-  caption?: string;
   color: string;
-  /** 这一站大概要念多久（一倍速） */
+  /** 这一段大概要念多久（一倍速） */
   durationMs: number;
   paused: boolean;
   speed: number;
-  leaving: boolean;
 }) {
-  const rootRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLElement>(null);
   const slideRefs = useRef<(HTMLImageElement | null)[]>([]);
   const barRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const creditRef = useRef<HTMLSpanElement>(null);
@@ -94,42 +78,20 @@ export function StopMontage({
   }, [photos]);
   const slideMs = Math.min(SLIDE_MAX, Math.max(SLIDE_MIN, durationMs / Math.max(1, count)));
 
-  // 展开、收回：clip-path 的圆从这一站的位置长大到盖住整个屏幕
+  // 第一张解码好了再淡出来，不会先闪一下空的灰框；网慢的最多等 1.2 秒
   useEffect(() => {
     const root = rootRef.current;
+    const first = slideRefs.current[0];
     if (!root) return;
-    const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const { width, height } = root.getBoundingClientRect();
-    const x = origin?.x ?? width / 2;
-    const y = origin?.y ?? height / 2;
-    const far = Math.hypot(Math.max(x, width - x), Math.max(y, height - y));
-    const shut = `circle(0px at ${x}px ${y}px)`;
-    const open = `circle(${Math.ceil(far)}px at ${x}px ${y}px)`;
-    const frames = calm ? [{ opacity: 0 }, { opacity: 1 }] : [{ clipPath: shut }, { clipPath: open }];
-    let animation: Animation | null = null;
     let cancelled = false;
-    const run = () => {
-      if (cancelled) return;
-      animation = root.animate(leaving ? [...frames].reverse() : frames, {
-        duration: (leaving ? CLOSE : OPEN) / live.current.speed,
-        easing: EASE,
-        fill: "both",
-      });
-    };
-    if (leaving) run();
-    else {
-      // 第一张照片解码好了再展开，不然展开的是一片黑；网慢的最多等 1.5 秒
-      root.style.clipPath = calm ? "none" : shut;
-      if (calm) root.style.opacity = "0";
-      const first = slideRefs.current[0];
-      const ready = first ? first.decode().catch(() => undefined) : Promise.resolve();
-      Promise.race([ready, new Promise((resolve) => setTimeout(resolve, 1500))]).then(run);
-    }
+    const ready = first ? first.decode().catch(() => undefined) : Promise.resolve();
+    Promise.race([ready, new Promise((resolve) => setTimeout(resolve, 1200))]).then(() => {
+      if (!cancelled) root.dataset.ready = "";
+    });
     return () => {
       cancelled = true;
-      animation?.cancel();
     };
-  }, [leaving, origin?.x, origin?.y]);
+  }, [photoKey]);
 
   // 换照片、推镜头、上面的细条：每帧按自己的钟算（暂停时钟不走，倍速时走得快），直接改样式、不经过 React
   useEffect(() => {
@@ -179,16 +141,8 @@ export function StopMontage({
     return () => cancelAnimationFrame(raf);
   }, [count, photoKey, slideMs]);
 
-  const width = screenWidth();
   return (
-    <div
-      ref={rootRef}
-      data-montage=""
-      className="pointer-events-none absolute inset-0 z-[15] overflow-hidden bg-ink"
-      // 一开始收着，第一张照片好了再展开（见上面的 effect）
-      style={{ clipPath: "circle(0px at 50% 50%)" }}
-      aria-hidden="true"
-    >
+    <figure ref={rootRef} data-reel="" className="tour-reel relative aspect-[2/1] w-full overflow-hidden bg-ink sm:aspect-[16/10]">
       {photos.map((photo, index) => (
         // 不用 next/image：要按帧改 transform、提前下载同一张，自己挑好缩略图宽度更直接
         // eslint-disable-next-line @next/next/no-img-element
@@ -197,20 +151,19 @@ export function StopMontage({
           ref={(element) => {
             slideRefs.current[index] = element;
           }}
-          src={commonsSrc(photo.url, width)}
+          src={commonsSrc(photo.url, PHOTO_WIDTH)}
           alt=""
           decoding="async"
           className="absolute inset-0 h-full w-full object-cover will-change-transform"
           style={{ opacity: index === 0 ? 1 : 0 }}
         />
       ))}
-      {/* 上面压一点暗，字和细条才看得清；下面给字幕和控制条留一点暗 */}
-      <div className="absolute inset-x-0 top-0 z-[3] h-1/3 bg-gradient-to-b from-ink/60 to-transparent" />
-      <div className="absolute inset-x-0 bottom-0 z-[3] h-1/3 bg-gradient-to-t from-ink/55 to-transparent" />
+      {/* 下面压暗一点，片名才看得清；上面一点点，给细条 */}
+      <div className="absolute inset-0 z-[3] bg-[linear-gradient(to_top,rgb(28_27_24/0.78)_0%,rgb(28_27_24/0.25)_42%,transparent_62%,transparent_86%,rgb(28_27_24/0.3)_100%)]" />
       {count > 1 && (
-        <div className="absolute top-3 right-4 left-4 z-[4] flex gap-1.5 sm:left-[26rem]">
+        <div className="absolute top-2.5 right-3 left-3 z-[4] flex gap-1">
           {photos.map((photo, index) => (
-            <span key={photo.url} className="h-[2px] flex-1 overflow-hidden bg-paper/30">
+            <span key={photo.url} className="h-[2px] flex-1 overflow-hidden bg-paper/35">
               <span
                 ref={(element) => {
                   barRefs.current[index] = element;
@@ -222,22 +175,16 @@ export function StopMontage({
           ))}
         </div>
       )}
-      <div className="absolute top-8 right-6 z-[4] hidden max-w-[34rem] text-right text-paper sm:block">
-        {number !== undefined && (
-          <p className="font-serif text-[5.5rem] leading-[0.8] tracking-tight lining-nums opacity-90" style={{ textShadow: "0 2px 24px rgb(0 0 0 / 0.35)" }}>
-            {String(number).padStart(2, "0")}
+      <figcaption className="absolute right-4 bottom-3.5 left-5 z-[4] text-paper">
+        {eyebrow && (
+          <p className="tour-reel-line flex items-center gap-2 text-[11px] tracking-[0.16em] text-paper/85 lining-nums">
+            <span className="inline-block h-px w-6 shrink-0" style={{ backgroundColor: color }} />
+            {eyebrow}
           </p>
         )}
-        <p className="mt-3 font-serif text-[2.6rem] leading-[1.05]" style={{ textShadow: "0 2px 18px rgb(0 0 0 / 0.45)" }}>
-          {title}
-        </p>
-        {caption && (
-          <p className="mt-3 inline-block border-r-[3px] pr-3 text-[13px] tracking-[0.12em] text-paper/90 lining-nums" style={{ borderColor: color }}>
-            {caption}
-          </p>
-        )}
-      </div>
-      <span ref={creditRef} className="absolute right-4 bottom-[7.5rem] z-[4] max-w-[60%] truncate text-[10px] text-paper/75 sm:bottom-24" />
-    </div>
+        <p className="tour-reel-title mt-1.5 max-w-[85%] font-serif text-[1.6rem] leading-[1.08] lining-nums sm:text-[2.1rem]">{title}</p>
+      </figcaption>
+      <span ref={creditRef} className="absolute top-5 right-3 z-[4] max-w-[55%] truncate text-right text-[9px] text-paper/70" />
+    </figure>
   );
 }

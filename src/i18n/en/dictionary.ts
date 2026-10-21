@@ -448,6 +448,7 @@ export const en: Dictionary = {
     tourSkip: "Skip",
     tourDay: "Day {n}",
     tourAll: "The whole trip",
+    tourStopNo: "Stop {n}",
     tourNarrate: "Guided tour (full screen)",
     tourMute: "Mute",
     tourUnmute: "Sound on",

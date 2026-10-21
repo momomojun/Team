@@ -431,6 +431,7 @@ const zhHans = {
     tourSkip: "跳过",
     tourDay: "第 {n} 天",
     tourAll: "全程",
+    tourStopNo: "第 {n} 站",
     tourNarrate: "讲解版（全屏）",
     tourMute: "关掉声音",
     tourUnmute: "打开声音",
