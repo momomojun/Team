@@ -1285,7 +1285,7 @@ export const parks: Park[] = [
     region: "greatlakes",
     tagline: "苏必利尔湖上的狼、驼鹿和荒野岛",
     stateEn: "Michigan",
-    hero: "isro-rock-harbor-day-trip",
+    hero: "isro-lookout-louise",
     intro:
       "苏必利尔湖西北部的一座长约 72 公里的荒岛和周围 400 多个小岛，离加拿大比离密歇根本土还近。岛上不通车、没有公路，只有约 265 公里步道和 36 处只能走路、划船到的营地，是全美游客最少的国家公园之一，也是少有的游客平均停留好几天的公园：很多人从西头的 Windigo 背包走到东头的 Rock Harbor。岛上的狼和驼鹿从 1958 年起一直有人在研究，是世界上持续最久的捕食者和猎物研究。只能坐渡轮、水上飞机或自己的船来，每年只开 4 月 16 日到 10 月 31 日。",
     bestMonths: [7, 8, 9],
@@ -1314,7 +1314,7 @@ export const parks: Park[] = [
     region: "greatlakes",
     tagline: "明尼苏达北部的湖、岛和北极光",
     stateEn: "Minnesota",
-    hero: "voya-kettle-falls",
+    hero: "voya-grand-tour",
     intro:
       "明尼苏达北部和加拿大安大略交界处的一片湖区：Rainy、Kabetogama、Namakan、Sand Point 四个大湖和 500 多个岛，水面约占公园四成，中间的 Kabetogama 半岛不通公路。名字来自 18 世纪划着桦皮大独木舟在这条水路上运皮毛的法裔加拿大船夫（voyageurs）。岸边是 20 多亿年前的古老岩石和北方针叶林，湖里有白头海雕、潜鸟，林子里有狼和黑熊。夏天坐护林员游船去湖中间 1913 年建成的 Kettle Falls 酒店，或者租船屋在湖上住几天；冬天湖面冻实，可以开车上冰上公路。2020 年被评为国际暗夜公园，常能看到北极光。",
     bestMonths: [6, 7, 8, 9],

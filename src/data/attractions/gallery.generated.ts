@@ -46106,15 +46106,6 @@ export const gallery: Record<string, Photo[]> = {
       "license": "CC BY 2.0"
     },
     {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/35/Rock_Harbor_Mailbox_-_Isle_Royale_National_Park_-_Michigan_%2849044245213%29.jpg/960px-Rock_Harbor_Mailbox_-_Isle_Royale_National_Park_-_Michigan_%2849044245213%29.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/35/Rock_Harbor_Mailbox_-_Isle_Royale_National_Park_-_Michigan_%2849044245213%29.jpg/1920px-Rock_Harbor_Mailbox_-_Isle_Royale_National_Park_-_Michigan_%2849044245213%29.jpg",
-      "width": 960,
-      "height": 640,
-      "page": "https://commons.wikimedia.org/wiki/File:Rock_Harbor_Mailbox_-_Isle_Royale_National_Park_-_Michigan_(49044245213).jpg",
-      "author": "Tony Webster from Minneapolis, Minnesota, United States",
-      "license": "CC BY 2.0"
-    },
-    {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/68/Tobin_Harbor_Floatplane_Dock_-_Isle_Royale_National_Park_%2849051775691%29.jpg/960px-Tobin_Harbor_Floatplane_Dock_-_Isle_Royale_National_Park_%2849051775691%29.jpg",
       "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/68/Tobin_Harbor_Floatplane_Dock_-_Isle_Royale_National_Park_%2849051775691%29.jpg/1920px-Tobin_Harbor_Floatplane_Dock_-_Isle_Royale_National_Park_%2849051775691%29.jpg",
       "width": 960,
@@ -46124,13 +46115,13 @@ export const gallery: Record<string, Photo[]> = {
       "license": "CC BY-SA 2.0"
     },
     {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a0/Firefighter_help_control_and_contain_the_Horne_Fire_at_Isle_Royale._%2869a0e5f1-196f-48b1-b7a7-363a70056478%29.jpg/960px-Firefighter_help_control_and_contain_the_Horne_Fire_at_Isle_Royale._%2869a0e5f1-196f-48b1-b7a7-363a70056478%29.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a0/Firefighter_help_control_and_contain_the_Horne_Fire_at_Isle_Royale._%2869a0e5f1-196f-48b1-b7a7-363a70056478%29.jpg/1920px-Firefighter_help_control_and_contain_the_Horne_Fire_at_Isle_Royale._%2869a0e5f1-196f-48b1-b7a7-363a70056478%29.jpg",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f3/Isle_Royale_National_Park_hiking_trail_-_Winding_through_the_woods_%2849051196438%29.jpg/960px-Isle_Royale_National_Park_hiking_trail_-_Winding_through_the_woods_%2849051196438%29.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f3/Isle_Royale_National_Park_hiking_trail_-_Winding_through_the_woods_%2849051196438%29.jpg/1920px-Isle_Royale_National_Park_hiking_trail_-_Winding_through_the_woods_%2849051196438%29.jpg",
       "width": 960,
-      "height": 720,
-      "page": "https://commons.wikimedia.org/wiki/File:Firefighter_help_control_and_contain_the_Horne_Fire_at_Isle_Royale._(69a0e5f1-196f-48b1-b7a7-363a70056478).jpg",
-      "author": "NPS Photo",
-      "license": "Public domain"
+      "height": 640,
+      "page": "https://commons.wikimedia.org/wiki/File:Isle_Royale_National_Park_hiking_trail_-_Winding_through_the_woods_(49051196438).jpg",
+      "author": "Tony Webster from Minneapolis, Minnesota, United States",
+      "license": "CC BY-SA 2.0"
     },
     {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f6/The_View_from_the_Cabin_%282738944019%29.jpg/960px-The_View_from_the_Cabin_%282738944019%29.jpg",
@@ -46140,6 +46131,15 @@ export const gallery: Record<string, Photo[]> = {
       "page": "https://commons.wikimedia.org/wiki/File:The_View_from_the_Cabin_(2738944019).jpg",
       "author": "Ben+Sam",
       "license": "CC BY-SA 2.0"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e6/National_Park_%2844384354501%29.jpg/960px-National_Park_%2844384354501%29.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e6/National_Park_%2844384354501%29.jpg/1920px-National_Park_%2844384354501%29.jpg",
+      "width": 960,
+      "height": 720,
+      "page": "https://commons.wikimedia.org/wiki/File:National_Park_(44384354501).jpg",
+      "author": "NPS Natural Resources",
+      "license": "Public domain"
     }
   ],
   "isro-windigo-day-trip": [
@@ -46191,24 +46191,6 @@ export const gallery: Record<string, Photo[]> = {
       "page": "https://commons.wikimedia.org/wiki/File:View_from_Lookout_Louise_(2741313124).jpg",
       "author": "Ben+Sam",
       "license": "CC BY-SA 2.0"
-    },
-    {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cc/Firefighters_stand_in_a_clearing_in_the_forest_as_fire_burns_in_the_background._%2849f6b4f2-1bfe-457a-983c-4fbbc0db6cb7%29.jpg/960px-Firefighters_stand_in_a_clearing_in_the_forest_as_fire_burns_in_the_background._%2849f6b4f2-1bfe-457a-983c-4fbbc0db6cb7%29.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cc/Firefighters_stand_in_a_clearing_in_the_forest_as_fire_burns_in_the_background._%2849f6b4f2-1bfe-457a-983c-4fbbc0db6cb7%29.jpg/1920px-Firefighters_stand_in_a_clearing_in_the_forest_as_fire_burns_in_the_background._%2849f6b4f2-1bfe-457a-983c-4fbbc0db6cb7%29.jpg",
-      "width": 960,
-      "height": 720,
-      "page": "https://commons.wikimedia.org/wiki/File:Firefighters_stand_in_a_clearing_in_the_forest_as_fire_burns_in_the_background._(49f6b4f2-1bfe-457a-983c-4fbbc0db6cb7).jpg",
-      "author": "NPS Photo",
-      "license": "Public domain"
-    },
-    {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d4/Suppression_efforts_from_the_2021_Horne_Fire._%2858f031d8-93c1-438a-97d5-7347db8e1b85%29.jpg/960px-Suppression_efforts_from_the_2021_Horne_Fire._%2858f031d8-93c1-438a-97d5-7347db8e1b85%29.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d4/Suppression_efforts_from_the_2021_Horne_Fire._%2858f031d8-93c1-438a-97d5-7347db8e1b85%29.jpg/1920px-Suppression_efforts_from_the_2021_Horne_Fire._%2858f031d8-93c1-438a-97d5-7347db8e1b85%29.jpg",
-      "width": 960,
-      "height": 720,
-      "page": "https://commons.wikimedia.org/wiki/File:Suppression_efforts_from_the_2021_Horne_Fire._(58f031d8-93c1-438a-97d5-7347db8e1b85).jpg",
-      "author": "NPS Photo",
-      "license": "Public domain"
     }
   ],
   "isro-edisen-fishery": [
@@ -46231,30 +46213,12 @@ export const gallery: Record<string, Photo[]> = {
       "license": "CC BY-SA 2.0"
     },
     {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/Garmin_GPS_Boat_Navigation_%2849051925286%29.jpg/960px-Garmin_GPS_Boat_Navigation_%2849051925286%29.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/Garmin_GPS_Boat_Navigation_%2849051925286%29.jpg/1920px-Garmin_GPS_Boat_Navigation_%2849051925286%29.jpg",
-      "width": 960,
-      "height": 640,
-      "page": "https://commons.wikimedia.org/wiki/File:Garmin_GPS_Boat_Navigation_(49051925286).jpg",
-      "author": "Tony Webster from Minneapolis, Minnesota, United States",
-      "license": "CC BY 2.0"
-    },
-    {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/80/Hiking_Trail_from_Three_Mile_to_Daisy_Farm_-_Isle_Royale_National_Park_%2849052105682%29.jpg/960px-Hiking_Trail_from_Three_Mile_to_Daisy_Farm_-_Isle_Royale_National_Park_%2849052105682%29.jpg",
       "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/80/Hiking_Trail_from_Three_Mile_to_Daisy_Farm_-_Isle_Royale_National_Park_%2849052105682%29.jpg/1920px-Hiking_Trail_from_Three_Mile_to_Daisy_Farm_-_Isle_Royale_National_Park_%2849052105682%29.jpg",
       "width": 960,
       "height": 640,
       "page": "https://commons.wikimedia.org/wiki/File:Hiking_Trail_from_Three_Mile_to_Daisy_Farm_-_Isle_Royale_National_Park_(49052105682).jpg",
       "author": "Tony Webster from Minneapolis, Minnesota, United States",
-      "license": "CC BY 2.0"
-    },
-    {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b6/Isle_Royale_Backpacking_Food_Cooking_Pot_%2850924054988%29.jpg/960px-Isle_Royale_Backpacking_Food_Cooking_Pot_%2850924054988%29.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b6/Isle_Royale_Backpacking_Food_Cooking_Pot_%2850924054988%29.jpg/1920px-Isle_Royale_Backpacking_Food_Cooking_Pot_%2850924054988%29.jpg",
-      "width": 960,
-      "height": 720,
-      "page": "https://commons.wikimedia.org/wiki/File:Isle_Royale_Backpacking_Food_Cooking_Pot_(50924054988).jpg",
-      "author": "Tony Webster",
       "license": "CC BY 2.0"
     }
   ],
@@ -46316,20 +46280,20 @@ export const gallery: Record<string, Photo[]> = {
       "license": "CC BY-SA 3.0"
     },
     {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/69/Houghton%2C_United_States_%28Unsplash%29.jpg/960px-Houghton%2C_United_States_%28Unsplash%29.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/69/Houghton%2C_United_States_%28Unsplash%29.jpg/1920px-Houghton%2C_United_States_%28Unsplash%29.jpg",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c7/Houghton_Masonic_Temple_Building_Michigan_2020-9767.jpg/960px-Houghton_Masonic_Temple_Building_Michigan_2020-9767.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c7/Houghton_Masonic_Temple_Building_Michigan_2020-9767.jpg/1920px-Houghton_Masonic_Temple_Building_Michigan_2020-9767.jpg",
       "width": 960,
       "height": 640,
-      "page": "https://commons.wikimedia.org/wiki/File:Houghton,_United_States_(Unsplash).jpg",
-      "author": "Alan Labisch labisch",
-      "license": "CC0"
+      "page": "https://commons.wikimedia.org/wiki/File:Houghton_Masonic_Temple_Building_Michigan_2020-9767.jpg",
+      "author": "Paul R. Burley",
+      "license": "CC BY-SA 4.0"
     },
     {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/93/RIP_Lil_Peep_Graffiti_Houghton_Michigan_2020-9814.jpg/960px-RIP_Lil_Peep_Graffiti_Houghton_Michigan_2020-9814.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/93/RIP_Lil_Peep_Graffiti_Houghton_Michigan_2020-9814.jpg/1920px-RIP_Lil_Peep_Graffiti_Houghton_Michigan_2020-9814.jpg",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6d/Douglass_House_Houghton_Michigan_Portal_2020-4635.jpg/960px-Douglass_House_Houghton_Michigan_Portal_2020-4635.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6d/Douglass_House_Houghton_Michigan_Portal_2020-4635.jpg/1920px-Douglass_House_Houghton_Michigan_Portal_2020-4635.jpg",
       "width": 960,
       "height": 640,
-      "page": "https://commons.wikimedia.org/wiki/File:RIP_Lil_Peep_Graffiti_Houghton_Michigan_2020-9814.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Douglass_House_Houghton_Michigan_Portal_2020-4635.jpg",
       "author": "Paul R. Burley",
       "license": "CC BY-SA 4.0"
     }
@@ -46381,13 +46345,13 @@ export const gallery: Record<string, Photo[]> = {
       "license": "CC BY-SA 4.0"
     },
     {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1c/Ripples_through_the_water%2C_sandy%2C_Keweenaw_Bay_UP_Michigan_%2830597231370%29.jpg/960px-Ripples_through_the_water%2C_sandy%2C_Keweenaw_Bay_UP_Michigan_%2830597231370%29.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1c/Ripples_through_the_water%2C_sandy%2C_Keweenaw_Bay_UP_Michigan_%2830597231370%29.jpg/1920px-Ripples_through_the_water%2C_sandy%2C_Keweenaw_Bay_UP_Michigan_%2830597231370%29.jpg",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3d/Keweenaw_Waterway_Lower_Entrance_Light.jpg/960px-Keweenaw_Waterway_Lower_Entrance_Light.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3d/Keweenaw_Waterway_Lower_Entrance_Light.jpg/1920px-Keweenaw_Waterway_Lower_Entrance_Light.jpg",
       "width": 960,
-      "height": 640,
-      "page": "https://commons.wikimedia.org/wiki/File:Ripples_through_the_water,_sandy,_Keweenaw_Bay_UP_Michigan_(30597231370).jpg",
-      "author": "Tony Webster from Minneapolis, Minnesota, United States",
-      "license": "CC BY-SA 2.0"
+      "height": 1280,
+      "page": "https://commons.wikimedia.org/wiki/File:Keweenaw_Waterway_Lower_Entrance_Light.jpg",
+      "author": "Fondycardinals",
+      "license": "CC BY-SA 4.0"
     }
   ],
   "isro-brockway-mountain": [
@@ -46515,36 +46479,9 @@ export const gallery: Record<string, Photo[]> = {
       "page": "https://commons.wikimedia.org/wiki/File:Voyageurs_National_Park.jpg",
       "author": "Unknown",
       "license": "Public domain"
-    },
-    {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d4/R45_-_Skipper_Rock_Island_view_of_site_access_from_water_%288d2734f6-c43e-46a5-9617-d9995d2d3172%29.jpg/960px-R45_-_Skipper_Rock_Island_view_of_site_access_from_water_%288d2734f6-c43e-46a5-9617-d9995d2d3172%29.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d4/R45_-_Skipper_Rock_Island_view_of_site_access_from_water_%288d2734f6-c43e-46a5-9617-d9995d2d3172%29.jpg/1920px-R45_-_Skipper_Rock_Island_view_of_site_access_from_water_%288d2734f6-c43e-46a5-9617-d9995d2d3172%29.jpg",
-      "width": 960,
-      "height": 540,
-      "page": "https://commons.wikimedia.org/wiki/File:R45_-_Skipper_Rock_Island_view_of_site_access_from_water_(8d2734f6-c43e-46a5-9617-d9995d2d3172).jpg",
-      "author": "NPS",
-      "license": "Public domain"
-    },
-    {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b9/R45_-_Skipper_Rock_Island_view_looking_into_site_core_%289e1240ee-8910-4d7a-bfb7-50f68662e322%29.jpg/960px-R45_-_Skipper_Rock_Island_view_looking_into_site_core_%289e1240ee-8910-4d7a-bfb7-50f68662e322%29.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b9/R45_-_Skipper_Rock_Island_view_looking_into_site_core_%289e1240ee-8910-4d7a-bfb7-50f68662e322%29.jpg/1920px-R45_-_Skipper_Rock_Island_view_looking_into_site_core_%289e1240ee-8910-4d7a-bfb7-50f68662e322%29.jpg",
-      "width": 960,
-      "height": 540,
-      "page": "https://commons.wikimedia.org/wiki/File:R45_-_Skipper_Rock_Island_view_looking_into_site_core_(9e1240ee-8910-4d7a-bfb7-50f68662e322).jpg",
-      "author": "NPS",
-      "license": "Public domain"
     }
   ],
   "voya-life-on-the-lake": [
-    {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bf/Lyle_Mine.jpg/960px-Lyle_Mine.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bf/Lyle_Mine.jpg/1920px-Lyle_Mine.jpg",
-      "width": 960,
-      "height": 720,
-      "page": "https://commons.wikimedia.org/wiki/File:Lyle_Mine.jpg",
-      "author": "National Park Service",
-      "license": "Public domain"
-    },
     {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/72/Black_Bay_Fire_Tower.jpg/960px-Black_Bay_Fire_Tower.jpg",
       "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/72/Black_Bay_Fire_Tower.jpg/1920px-Black_Bay_Fire_Tower.jpg",
@@ -46577,15 +46514,6 @@ export const gallery: Record<string, Photo[]> = {
       "page": "https://commons.wikimedia.org/wiki/File:Kabetogama_Lake_(54789122586).jpg",
       "author": "U.S. Fish and Wildlife Service - Midwest Region",
       "license": "Public domain"
-    },
-    {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/af/Happy_100th_birthday%2C_National_Park_Service%21_%2829160364063%29.jpg/960px-Happy_100th_birthday%2C_National_Park_Service%21_%2829160364063%29.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/af/Happy_100th_birthday%2C_National_Park_Service%21_%2829160364063%29.jpg/1920px-Happy_100th_birthday%2C_National_Park_Service%21_%2829160364063%29.jpg",
-      "width": 960,
-      "height": 640,
-      "page": "https://commons.wikimedia.org/wiki/File:Happy_100th_birthday,_National_Park_Service!_(29160364063).jpg",
-      "author": "daveynin from United States",
-      "license": "CC BY 2.0"
     }
   ],
   "voya-blind-ash-bay": [],

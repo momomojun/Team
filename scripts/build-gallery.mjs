@@ -617,6 +617,15 @@ const EXCLUDE = {
   "thro-buck-hill": ["Juniperus horizontalis"],
   // 一个小孩站在前面看河，做首图不合适
   "thro-wind-canyon": ["Overlooking the Little Missouri River (52708623085)"],
+  // 皇家岛、航海家：信箱、救火、GPS 屏幕、饭盒、船外机、涂鸦、沙纹、废弃营地、生日蛋糕这些和景点无关的（10-21 仓库主人看大图时一起清的）
+  "isro-seaplane": ["Rock Harbor Mailbox", "Firefighter"],
+  "isro-lookout-louise": ["Firefighter", "Suppression efforts from the 2021 Horne Fire"],
+  "isro-edisen-fishery": ["Garmin GPS Boat Navigation", "Isle Royale Backpacking Food", "Honda Boat Engine"],
+  "isro-houghton-vc": ["Houghton, United States (Unsplash)", "RIP Lil Peep"],
+  "isro-keweenaw-cruise": ["Ripples through the water"],
+  "voya-grand-tour": ["R45 - Skipper Rock Island"],
+  "voya-life-on-the-lake": ["Lyle Mine"],
+  "voya-kabetogama-overlook": ["Happy 100th birthday"],
 };
 
 /**
