@@ -2,17 +2,24 @@ import { npsCodeOf, parks } from "@/data/parks";
 import { hasLocale } from "@/i18n/config";
 import type { AlertsResponse, ParkAlert } from "@/lib/alert-match";
 import { translateAlerts } from "@/lib/alert-translate";
+import { getExtractedClosures } from "@/lib/alerts-live";
 import { getAlerts } from "@/lib/nps";
 
 /** 公园代码 → 查 NPS 公告用的代码；加拿大公园、大多数园外名胜没有 */
 const npsCodes = new Map(parks.map((park) => [park.code, npsCodeOf(park)]));
 
-/** 行程里几个公园的 NPS 实时公告，带中文翻译：GET ?parks=yell,grte&locale=zh-Hans（公告每个公园缓存 30 分钟，翻译按原文缓存） */
+/**
+ * 行程里几个公园的 NPS 实时公告，带中文翻译：GET ?parks=yell,grte&locale=zh-Hans（公告每个公园缓存 30 分钟，翻译按原文缓存）。
+ * 另外带上每晚模型读公告提取的这几座公园的关闭（extracted，读不到就没有）
+ */
 export async function GET(request: Request) {
   const params = new URL(request.url).searchParams;
   const locale = params.get("locale") ?? "zh-Hans";
   const codes = [...new Set((params.get("parks") ?? "").split(",").filter((code) => npsCodes.get(code)))].slice(0, 8);
-  const results = await Promise.allSettled(codes.map((code) => getAlerts(npsCodes.get(code)!)));
+  const [results, extracted] = await Promise.all([
+    Promise.allSettled(codes.map((code) => getAlerts(npsCodes.get(code)!))),
+    getExtractedClosures(codes),
+  ]);
   const alerts: ParkAlert[] = [];
   for (const [i, result] of results.entries()) {
     if (result.status !== "fulfilled") continue;
@@ -32,6 +39,10 @@ export async function GET(request: Request) {
       }),
     );
   }
-  const body: AlertsResponse = { alerts, failed: codes.filter((_, i) => results[i].status === "rejected") };
+  const body: AlertsResponse = {
+    alerts,
+    failed: codes.filter((_, i) => results[i].status === "rejected"),
+    ...(extracted ? { extracted } : {}),
+  };
   return Response.json(body);
 }

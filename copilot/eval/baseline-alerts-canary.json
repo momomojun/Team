@@ -1,0 +1,5 @@
+{
+  "type_accuracy": 0.8,
+  "attraction_f1": 0.5,
+  "note": "每晚抽查（eval/alerts.py --chain --sample 26）：和 10-20 对照同一批 26 条，MiniMax 推理开 high 是类型 92%、景点 F1 0.67，GPT-4.1 mini 85%、0.67。26 条里关了网站景点的只有 6 个，差一两个分数就跳一截，所以门槛比成绩低一档：低于这里说明真的变差了（模型换了、NPS 改了写法），开 issue"
+}

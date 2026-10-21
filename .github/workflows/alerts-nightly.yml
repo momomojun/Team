@@ -2,6 +2,12 @@
 # 仓库设置里有模型的 secret（OPENROUTER_API_KEY、OPENAI_API_KEY、GEMINI_API_KEY）时，用模型读公告提取关闭，只读新出现、
 # 改过的几条（读过的记在 actions/cache 里）；一把都没有就只用规则。关闭清单（closures-latest.json）和快照一起存成 artifact。
 # 新的关闭公告是模型没见过的数据，可以标好答案做下一版提示词的评测。
+# 10-20 补上闭环（仓库主人定的“模型提议、人来批”）：
+#   1. 抽查：读完再让同一串模型读 26 条标好答案的旧公告，分数掉到门槛以下就开 alerts-quality issue（模型换了、NPS 改了写法都能发现）；
+#      每晚多约 26 次调用，仓库变量 ALERTS_CANARY 设成 0 就不抽查
+#   2. 提议：模型和规则都认、closures.ts 里还没有的关闭写进 closures.ts，推到 bot/closures-<日期> 分支，issue 里给开 PR 的链接；
+#      GitHub 不让工作流自己开 PR（仓库设置里没开），而且机器人开的 PR 不会跑 CI，所以由人点链接开 PR
+#   3. 发布：当晚的关闭清单推到 data/alerts-live 分支，网站行程页按它排两周内出发的行程（src/lib/alerts-live.ts）
 # 仓库设置里加了 secret DATA_GOV_API_KEY 就用它（DEMO_KEY 按 IP 限次数，GitHub 的机器是很多仓库共用的，常常 429）。
 name: NPS alerts (nightly)
 
@@ -14,7 +20,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write  # 推 bot/closures-* 和 data/alerts-live 分支
   issues: write
   actions: read  # when 要查今天是不是已经跑过
 
@@ -88,6 +94,35 @@ jobs:
         run: |
           if [ -z "$OPENROUTER_API_KEY$OPENAI_API_KEY$GEMINI_API_KEY" ]; then export COPILOT_ALERTS_PROVIDER=rules; fi
           cd copilot && python -m nps_copilot alerts --snapshot data/alerts/latest.json | tee ../extract.log
+      - name: Check the model on 26 labelled alerts (canary)
+        id: canary
+        if: steps.extract.outcome == 'success' && vars.ALERTS_CANARY != '0'
+        continue-on-error: true
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          if [ -z "$OPENROUTER_API_KEY$OPENAI_API_KEY$GEMINI_API_KEY" ]; then echo "没有模型的 key，不抽查"; exit 0; fi
+          cd copilot && python eval/alerts.py --chain --sample 26 --gate eval/baseline-alerts-canary.json 2>&1 | tee ../canary.log
+          exit "${PIPESTATUS[0]}"
+      - name: Report a quality drop
+        if: steps.canary.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create alerts-quality --color 6b4f3a --description "每晚抽查读公告的模型，分数掉到门槛以下" 2>/dev/null || true
+          {
+            echo "每晚抽查读公告的模型（\`eval/alerts.py --chain --sample 26\`，门槛 \`copilot/eval/baseline-alerts-canary.json\`）没过。"
+            echo "可能是模型换了（MiniMax 额度用完换到下一家）、NPS 改了公告写法，或者提示词要改。先看下面的分数和读错的几条。"
+            echo
+            echo '```'
+            tail -n 25 canary.log
+            echo '```'
+          } > canary.md
+          open=$(gh issue list --label alerts-quality --state open --json number --jq '.[0].number')
+          if [ -n "$open" ]; then gh issue comment "$open" --body-file canary.md
+          else gh issue create --label alerts-quality --title "读公告的模型分数掉了（$(date +%F)）/ Alert extraction quality dropped" --body-file canary.md; fi
       - uses: actions/upload-artifact@v4
         with:
           name: nps-alerts-snapshot
@@ -105,8 +140,55 @@ jobs:
           gh issue list --label nps-alerts --state all --limit 500 --json body --jq '.[].body' > known.txt
           python copilot/scripts/alerts_report.py copilot/data/alerts/latest.json --known known.txt --closures copilot/data/alerts/closures-latest.json --out report.md | tee report.log
           grep -m1 '^NEW=' report.log >> "$GITHUB_OUTPUT"
+      - name: Propose changes to closures.ts
+        id: propose
+        if: hashFiles('copilot/data/alerts/closures-latest.json') != ''
+        env:
+          DATA_GOV_API_KEY: ${{ secrets.DATA_GOV_API_KEY }}
+        run: |
+          npm run --silent check:closures > check.json || true
+          node -e "JSON.parse(require('fs').readFileSync('check.json','utf8'))" 2>/dev/null || echo '{}' > check.json
+          npm run --silent alerts:propose -- copilot/data/alerts/closures-latest.json --known known.txt --check check.json --out proposal.md | tee propose.log
+          grep -m1 '^CHANGES=' propose.log >> "$GITHUB_OUTPUT"
+      - name: Push the proposal to a branch
+        id: branch
+        if: steps.propose.outputs.CHANGES != '' && steps.propose.outputs.CHANGES != '0'
+        run: |
+          branch="bot/closures-$(date +%F)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add src/data/closures.ts src/i18n/en/content/conditions.ts
+          git commit -m "每晚读公告提议的临时关闭（$(date +%F)）/ Closures proposed from tonight's NPS alerts"
+          git push origin "$branch"
+          echo "url=https://github.com/${{ github.repository }}/compare/main...${branch}?expand=1" >> "$GITHUB_OUTPUT"
       - name: Open an issue
-        if: steps.report.outputs.NEW != '0'
+        if: steps.report.outputs.NEW != '0' || steps.branch.outputs.url != ''
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh issue create --label nps-alerts --title "NPS 公告：${{ steps.report.outputs.NEW }} 条新的关闭（$(date +%F)）/ New NPS closure alerts" --body-file report.md
+        run: |
+          if [ -n "${{ steps.branch.outputs.url }}" ]; then
+            { echo; cat proposal.md; echo; echo "**看过、改好说明以后点这里开 PR 合并：${{ steps.branch.outputs.url }}**"; } >> report.md
+          fi
+          gh issue create --label nps-alerts --title "NPS 公告：${{ steps.report.outputs.NEW }} 条新的关闭（$(date +%F)）/ New NPS closure alerts" --body-file report.md
+      - name: Publish tonight's closures for the website
+        if: hashFiles('copilot/data/alerts/closures-latest.json') != ''
+        run: |
+          cp copilot/data/alerts/closures-latest.json "$RUNNER_TEMP/closures-latest.json"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git fetch --depth 1 origin data/alerts-live:refs/remotes/origin/data/alerts-live 2>/dev/null; then
+            git worktree add --detach "$RUNNER_TEMP/live" origin/data/alerts-live
+            cd "$RUNNER_TEMP/live"
+          else
+            git worktree add --detach "$RUNNER_TEMP/live"
+            cd "$RUNNER_TEMP/live"
+            git checkout --orphan data-live
+            git rm -rf -q .
+            echo "每晚模型读 NPS 公告提取的关闭清单（.github/workflows/alerts-nightly.yml 写的，不要手改）。网站行程页按它排两周内出发的行程。" > README.md
+          fi
+          cp "$RUNNER_TEMP/closures-latest.json" closures-latest.json
+          git add -A
+          if git diff --cached --quiet; then echo "和昨晚一样，不用推"; exit 0; fi
+          git commit -q -m "关闭清单 $(date +%F) / Closures from NPS alerts"
+          git push origin HEAD:refs/heads/data/alerts-live
