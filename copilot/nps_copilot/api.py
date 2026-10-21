@@ -3,6 +3,7 @@
 POST /sessions                   → {"session": "...", "greeting": "..."}
 POST /sessions/{id}/messages     {"text": "..."} → 这一轮的回复（status、text、question、request、result）
 GET  /health                     → 版本、构建的 commit、提示词版本和 hash、模型、行程引擎能不能用
+GET  /tts?text=…&lang=zh-CN       → 这一句的配音（MP3，本机 Kokoro，见 tts.py）；没装模型时 503
 GET  /stats?days=7               → 运行日志的统计（和 python -m nps_copilot stats 一样）：按版本的成功率、耗时，按模型的调用、token、花费，
                                    按天的数字、最近 30 轮、读公告的关闭清单状态（网站的后台 /admin 读这个）
 """
@@ -12,10 +13,10 @@ import datetime as dt
 import os
 import shutil
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response
 from pydantic import BaseModel
 
-from . import __version__, alerts_live, monitor
+from . import __version__, alerts_live, monitor, tts
 from .pipeline import VERSION, Session, prompt_hashes
 from .providers import ProviderError, chat_provider
 
@@ -51,7 +52,24 @@ def health() -> dict:
         "steps": {step: names(item) for step, item in getattr(provider, "steps", {}).items()},
         "prompts": prompt_hashes(),
         "plan_tool": "http" if os.environ.get("COPILOT_PLAN_URL") else ("cli" if shutil.which("node") else "missing"),
+        # 讲解版的配音：本机 Kokoro 能不能用
+        "tts": "kokoro" if tts.available() else None,
     }
+
+
+@app.get("/tts")
+def speak(text: str, lang: str = "zh-CN", voice: str | None = None) -> Response:
+    text = text.strip()
+    if not text:
+        raise HTTPException(400, "empty")
+    if not tts.available():
+        raise HTTPException(503, "tts_unavailable")
+    try:
+        audio = tts.synthesize(text, lang, voice)
+    except Exception as error:  # 模型出错（声音名字写错之类）：网站退回浏览器的声音
+        raise HTTPException(500, f"tts_failed: {error}") from error
+    # 同一句话的配音不会变：浏览器可以一直缓存
+    return Response(audio, media_type="audio/mpeg", headers={"Cache-Control": "public, max-age=31536000, immutable"})
 
 
 @app.get("/stats")

@@ -31,6 +31,7 @@ import {
 } from "./route-tour";
 import { fill } from "@/i18n/format";
 import { readingMs, sentences } from "@/lib/narration";
+import { Score } from "@/lib/score";
 import { Narrator, warmVoices } from "@/lib/speech";
 import { PhotoReel, preloadPhotos } from "./stop-montage";
 import { EOX_ATTRIBUTION, EOX_IMAGERY_TILES, IMAGERY_TILES, STYLE_URL, TERRAIN_TILES, type Imagery } from "./sources";
@@ -91,6 +92,9 @@ export interface MapText {
   /** 讲解版（全屏、逐站讲解、朗读） */
   tourNarrate: string;
   tourMute: string;
+  /** 讲解版的配乐 */
+  tourMusicOff: string;
+  tourMusicOn: string;
   tourUnmute: string;
   /** 讲解版的进度条和按钮 */
   tourSeek: string;
@@ -116,6 +120,17 @@ const FINALE_MS = 2200;
 const FOLLOW_FLY_MS = 2200;
 // 跟车的镜头：倾斜着从车后上方看，车在画面中下部，转向车开的方向（像追车的航拍）
 const FOLLOW_PITCH = 50;
+// 讲解版：打开 3D 地形，跟车压得更低一点；到站、每天开头讲话时镜头绕着这个地方慢慢转（航拍的环绕镜头）
+const NARRATED_PITCH = 58;
+const ORBIT_PITCH = 66;
+/** 环绕的速度：每毫秒转多少度（每秒 3.5 度，一站讲 30 秒转大约 100 度） */
+const ORBIT_DEG_PER_MS = 0.0035;
+/** 环绕时比跟车拉近多少级，最近到 15 级 */
+const ORBIT_ZOOM_IN = 0.9;
+const ORBIT_MAX_ZOOM = 15;
+const TERRAIN_EXAGGERATION = 1.45;
+// 配乐开不开记在这台设备上
+const MUSIC_KEY = "nps-tour-music";
 // 跟车时设过的焦点偏移，停下来要清掉（MapLibre 会一直记着，之后缩放、拉近都会偏）
 const NO_PADDING = { top: 0, bottom: 0, left: 0, right: 0 };
 // 系统设了“减少动画”就不跟车、不倾斜，整天一个固定的视角，线照样画
@@ -155,7 +170,9 @@ interface TourState {
   /** 跟车：每个路线点的累计播放量、这一天播多久、镜头现在的位置、缩放和方向 */
   cost: number[];
   dayMs: number;
-  camera: { center: [number, number]; zoom: number; bearing: number } | null;
+  camera: { center: [number, number]; zoom: number; bearing: number; pitch?: number } | null;
+  /** 讲解版自己打开的 3D 地形：结束时关回去 */
+  terrainAdded: boolean;
   pausedAt: number | null;
   raf: number;
   cum: number[];
@@ -419,6 +436,16 @@ export function ParkMap({
   >(null);
   const [caption, setCaption] = useState<string | null>(null);
   const [muted, setMuted] = useState(false);
+  // 配乐（src/lib/score.ts，浏览器里现场合成）：开不开记在这台设备上，默认开
+  const scoreRef = useRef<Score | null>(null);
+  // 只在讲解版的控制条（点了才有）上用到，服务端渲染时不出现，直接读本机设置不会对不上
+  const [music, setMusic] = useState(() => {
+    try {
+      return typeof window === "undefined" || localStorage.getItem(MUSIC_KEY) !== "off";
+    } catch {
+      return true;
+    }
+  });
   // 讲解版的进度条：分成哪几段（开头、每天开场、开车、各站、结尾），拖动时手指 / 鼠标在哪；倍速
   const [track, setTrack] = useState<{ days: TourDay[]; timeline: TourSegment[]; starts: number[] } | null>(null);
   const [scrub, setScrub] = useState<number | null>(null);
@@ -841,6 +868,10 @@ export function ParkMap({
       setImmersive(false);
       sidePanel.current = 0;
       bottomPanel.current = 0;
+      scoreRef.current?.stop();
+      scoreRef.current = null;
+      if (state.terrainAdded && !terrainRef.current) map.setTerrain(null);
+      map.setSky({ "atmosphere-blend": 0, "sky-horizon-blend": 0, "horizon-fog-blend": 0, "fog-ground-blend": 0 });
       if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
     }
     if (progressRef.current) progressRef.current.style.width = "0%";
@@ -889,6 +920,8 @@ export function ParkMap({
     }
     narratorRef.current ??= new Narrator(narration?.lang ?? "zh-CN", setCaption, muted);
     narratorRef.current.rate = speedRef.current;
+    // 开口时配乐压低，停下抬回来
+    narratorRef.current.onVoice = (speaking) => scoreRef.current?.duck(speaking);
     state.speaking = true;
     const voice = ++state.voice;
     narratorRef.current.play(lines).then(() => {
@@ -997,10 +1030,18 @@ export function ParkMap({
       const zoom = followZoom(slowness(0, state.stopKm, state.total));
       const from = sliceTo(day.path, state.cum, 0).head;
       const to = sliceTo(day.path, state.cum, Math.max(0.8, lookAhead(zoom) * 3)).head;
-      map.flyTo({ center: from, zoom, pitch: FOLLOW_PITCH, bearing: bearingOf(from, to), padding: followPadding(map), duration: FOLLOW_FLY_MS / speedRef.current });
+      map.flyTo({
+        center: from,
+        zoom,
+        pitch: state.narrated ? NARRATED_PITCH : FOLLOW_PITCH,
+        bearing: bearingOf(from, to),
+        padding: followPadding(map),
+        duration: FOLLOW_FLY_MS / speedRef.current,
+      });
     }
     if (state.narrated) {
       setBeat({ kind: "day", day });
+      scoreRef.current?.swell();
       // 这一天每一站的头两张先下载，到站时卡片上的照片不会先空一下
       for (const stop of day.stops) preloadPhotos(stop.photos, 2);
     }
@@ -1052,12 +1093,25 @@ export function ParkMap({
     if (clockRef.current) clockRef.current.textContent = `${clockText(state.position, speedRef.current)} / ${clockText(total, speedRef.current)}`;
   };
 
+  /** 环绕镜头的一帧：绕着镜头现在对着的地方（这一站）慢慢转，拉近、压低 */
+  const orbit = (state: TourState, map: MapLibreMap, delta: number) => {
+    const prev = state.camera!;
+    const zoom = prev.zoom + (Math.min(ORBIT_MAX_ZOOM, followZoom(1.2) + ORBIT_ZOOM_IN) - prev.zoom) * (1 - Math.exp(-delta / 2400));
+    const prevPitch = prev.pitch ?? map.getPitch();
+    const pitch = prevPitch + (ORBIT_PITCH - prevPitch) * (1 - Math.exp(-delta / 1600));
+    const bearing = prev.bearing + delta * ORBIT_DEG_PER_MS;
+    state.camera = { center: prev.center, zoom, bearing, pitch };
+    map.jumpTo({ center: prev.center, zoom, bearing, pitch, padding: followPadding(map) });
+  };
+
   /** 动画往前走一帧：now 是动画自己的钟（倍速就是这个钟走得快慢），delta 是这一帧钟走了多久 */
   const advance = (state: TourState, map: MapLibreMap, now: number, delta: number) => {
     const day = state.days[state.index];
     if (state.phase === "draw" && now < state.arriveUntil) {
       // 到站停一下（讲解版念完才走）：这段时间不算进画线的进度
       state.phaseStart += delta;
+      // 讲解版停在一站讲话时：镜头拉近、压低，绕着这一站慢慢转（航拍的环绕镜头）；讲完接着跟车，方向慢慢转回车开的方向
+      if (state.narrated && !state.calm && state.camera && state.arriveUntil === Infinity) orbit(state, map, delta);
       return;
     }
     if (state.carded) {
@@ -1078,6 +1132,14 @@ export function ParkMap({
       // 卡片显示到镜头快到位，再收起来开始画；讲解版要等这一天开头的话念完
       const fly = state.calm ? flyMs(state.days.length) : FOLLOW_FLY_MS;
       if (elapsed >= fly * 0.85 && !state.speaking) setTourUi((ui) => (ui && ui.card ? { ...ui, card: false } : ui));
+      // 讲解版：飞到起点以后这一天开头的话还没念完，镜头就绕着起点慢慢转、压低一点（像片头的航拍）；开车时从这里接着跟
+      if (state.narrated && !state.calm && elapsed >= fly && state.speaking) {
+        const prevPitch = map.getPitch();
+        const pitch = prevPitch + (ORBIT_PITCH - prevPitch) * (1 - Math.exp(-delta / 1600));
+        const bearing = map.getBearing() + delta * ORBIT_DEG_PER_MS;
+        map.jumpTo({ bearing, pitch });
+        state.camera = { center: map.getCenter().toArray() as [number, number], zoom: map.getZoom(), bearing, pitch };
+      }
       if (elapsed >= fly && !state.speaking) {
         if (state.narrated) setBeat(null);
         state.phase = "draw";
@@ -1103,8 +1165,12 @@ export function ParkMap({
         const further = sliceTo(day.path, state.cum, distance + Math.max(0.8, ahead * 3)).head;
         const moving = further[0] !== head[0] || further[1] !== head[1];
         const bearing = moving ? turnToward(prev.bearing, bearingOf(head, further), 1 - Math.exp(-delta / 900)) : prev.bearing;
-        state.camera = { center, zoom, bearing };
-        map.jumpTo({ center, zoom, bearing, pitch: FOLLOW_PITCH, padding: followPadding(map) });
+        // 从环绕镜头出来时慢慢抬回跟车的角度
+        const pitchTarget = state.narrated ? NARRATED_PITCH : FOLLOW_PITCH;
+        const prevPitch = prev.pitch ?? map.getPitch();
+        const pitch = prevPitch + (pitchTarget - prevPitch) * (1 - Math.exp(-delta / 1600));
+        state.camera = { center, zoom, bearing, pitch };
+        map.jumpTo({ center, zoom, bearing, pitch, padding: followPadding(map) });
       }
       setLine("tour-line", line.length > 1 ? [lineFeature(line, day.color)] : []);
       setLine("tour-head", [{ type: "Feature", geometry: { type: "Point", coordinates: head }, properties: { color: day.color } }]);
@@ -1242,10 +1308,8 @@ export function ParkMap({
     }
     speedRef.current = rate;
     setSpeed(rate);
-    // 讲解版在电脑上（宽 640 以上）左边有一张 24rem 宽的卡片，镜头给它让出位置
     // 左边讲解卡片占的宽度（26rem，1024 以上 34rem，再加边距）：镜头往右让出这么多，车和这一站留在看得见的地方
     sidePanel.current = narrated && window.innerWidth >= 640 ? (window.innerWidth >= 1024 ? 576 : 448) : 0;
-    // 手机上卡片在下面，大约占半屏：镜头焦点放到上面那一半
     // 手机上卡片在下面（最高 44%，再加控制条）：镜头往上让，这一站停在卡片上面
     bottomPanel.current = narrated && window.innerWidth < 640 ? 0.58 : 0;
     if (narrated && !immersive) {
@@ -1253,6 +1317,12 @@ export function ParkMap({
       setImmersive(true);
       rootRef.current?.requestFullscreen?.().catch(() => {});
       narration?.onStart?.();
+      // 配乐也要在点击里开始（浏览器只允许这时候出声）
+      if (!scoreRef.current) {
+        scoreRef.current = new Score();
+        scoreRef.current.muted = !music;
+        scoreRef.current.start();
+      }
     }
     // 底图压下去（卫星图上蒙得淡一点，免得照片发灰）
     map.setPaintProperty("tour-veil", "fill-opacity", satelliteRef.current ? 0.22 : 0.45);
@@ -1303,8 +1373,25 @@ export function ParkMap({
       shown: 0,
       done: days.slice(0, from).map((day) => lineFeature(day.path, day.color)),
       markers: [],
+      terrainAdded: false,
     };
     tourRef.current = state;
+    // 讲解版：打开 3D 地形和天空（远处的山带一点雾），镜头压低时像航拍；平常已经开着地形的不动它
+    if (narrated && !reducedMotion()) {
+      if (!map.getTerrain()) {
+        map.setTerrain({ source: "terrain-dem", exaggeration: TERRAIN_EXAGGERATION });
+        state.terrainAdded = true;
+      }
+      map.setSky({
+        "sky-color": "#b9cad6",
+        "horizon-color": "#efe6d8",
+        "fog-color": "#efe6d8",
+        "sky-horizon-blend": 0.55,
+        "horizon-fog-blend": 0.75,
+        "fog-ground-blend": 0.55,
+        "atmosphere-blend": 0.6,
+      });
+    }
     setTrack(narrated ? { days, timeline, starts } : null);
     setLine("tour-done", state.done);
     if (narrated && from === 0 && narration?.intro.speech.length) {
@@ -1353,9 +1440,11 @@ export function ParkMap({
     if (state.pausedAt === null) {
       state.pausedAt = performance.now();
       narratorRef.current?.pause();
+      scoreRef.current?.pause();
     } else {
       state.pausedAt = null;
       narratorRef.current?.resume();
+      scoreRef.current?.resume();
     }
     setTourUi((ui) => (ui ? { ...ui, paused: state.pausedAt !== null } : ui));
   };
@@ -1910,6 +1999,20 @@ export function ParkMap({
               }}
             >
               {muted ? text.tourUnmute : text.tourMute}
+            </button>
+            <button
+              type="button"
+              className="link-line"
+              aria-pressed={!music}
+              onClick={() => {
+                setMusic(!music);
+                scoreRef.current?.setMuted(music);
+                try {
+                  localStorage.setItem(MUSIC_KEY, music ? "off" : "on");
+                } catch {}
+              }}
+            >
+              {music ? text.tourMusicOff : text.tourMusicOn}
             </button>
             <button type="button" className="link-line" onClick={finishTour}>
               {text.tourExit}

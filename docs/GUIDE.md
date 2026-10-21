@@ -153,6 +153,13 @@ cd copilot && python -m nps_copilot chat --reference 2026-10-16
 cd copilot && python -m nps_copilot serve --port 8765
 ```
 
+- **讲解版的配音（可选）**：行程页的“讲解版”默认用浏览器自带的声音，比较机械。想要像真人的配音，在开 Copilot 服务的那台电脑上装本机模型 Kokoro（免费、不联网），装好重启 `serve`，讲解版就自动换成它：
+
+```bash
+python -m pip install kokoro-onnx onnxruntime soundfile "misaki[zh]==0.9.4" --ignore-requires-python
+```
+
+  再到 https://github.com/thewh1teagle/kokoro-onnx/releases/tag/model-files-v1.1 下载 `kokoro-v1.1-zh.fp16.onnx`、`voices-v1.1-zh.bin`、`kokoro-v1.0.fp16.onnx`、`voices-v1.0.bin`（一共约 390 MB），放进 `copilot/models/kokoro/`。`--ignore-requires-python`：misaki 写着要 Python 3.12 以下，实际 3.13 上能用。
   8765 被占了（momomojun 的电脑上 ski-deals 用它）就换成 `--port 8766`，并在 `.env.local` 里写 `COPILOT_URL=http://127.0.0.1:8766`，再重启 `npm run dev`。用 Docker 起的 Copilot（B）也一样，网站默认连 8765。
 - Ollama 地址默认 `http://127.0.0.1:11435`（momomojun 电脑上实验目录里的便携版，用 `powershell -File experiments/local-model-validation/start-local.ps1` 启动）。自己装的 Ollama 默认端口是 11434，先设 `OLLAMA_HOST_URL=http://127.0.0.1:11434`。其他环境变量见 [COPILOT.md](COPILOT.md#环境变量)。
 

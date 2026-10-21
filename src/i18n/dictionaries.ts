@@ -434,6 +434,8 @@ const zhHans = {
     tourStopNo: "第 {n} 站",
     tourNarrate: "讲解版（全屏）",
     tourMute: "关掉声音",
+    tourMusicOff: "关掉配乐",
+    tourMusicOn: "打开配乐",
     tourUnmute: "打开声音",
     tourSeek: "讲解进度（空格暂停，← → 上一段、下一段）",
     tourPrev: "上一段",

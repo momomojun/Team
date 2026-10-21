@@ -451,6 +451,8 @@ export const en: Dictionary = {
     tourStopNo: "Stop {n}",
     tourNarrate: "Guided tour (full screen)",
     tourMute: "Mute",
+    tourMusicOff: "Music off",
+    tourMusicOn: "Music on",
     tourUnmute: "Sound on",
     tourSeek: "Tour progress (Space to pause, ← → for the previous or next stop)",
     tourPrev: "Back",

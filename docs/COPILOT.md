@@ -101,6 +101,7 @@ flowchart LR
 | `copilot/scripts/alerts_report.py`、`.github/workflows/alerts-nightly.yml` | 每晚抓公告、新的关闭公告开 issue；抽查模型（`eval/baseline-alerts-canary.json`）、提议改 `closures.ts`（`scripts/propose-closures.mjs`）、把关闭清单推到 `data/alerts-live` 分支给网站用（`src/lib/alerts-live.ts`） |
 | `copilot/nps_copilot/dispatcher.py` | 调度员：给模型看的上下文、输出格式、丢掉编造的名字 |
 | `copilot/nps_copilot/knowledge.py`、`qa.py` | QA：在 `knowledge.jsonl` 里检索（名字命中 + BM25）、让模型只按查到的资料回答、检查回答里的数字，对不上就摘原文 |
+| `copilot/nps_copilot/tts.py`、`src/app/api/copilot/tts/route.ts` | 讲解版的配音（10-21）：本机跑 Kokoro（开源 TTS，ONNX 版，CPU 上一句一秒左右），中文用 v1.1-zh（读音按 misaki 的 v1.1 规则转成注音，“11:04”先改成“11点04分”、间隔号去掉），英文用 v1.0；`GET /tts?text=&lang=` 返回 MP3，按“文字 + 声音 + 模型”存在 `copilot/data/tts/`，同一句只生成一次；没装模型时 503，网站退回浏览器自带的声音。`/health` 的 `tts` 写着能不能用 |
 | `copilot/nps_copilot/tools.py`、`src/lib/copilot/lookup-tool.ts`、`scripts/lookup.mjs` | 查询工具（is_open、drive_time、search）：Python 认问题、地方和日期，调 Node 命令行 `npm run copilot:lookup`（读 JSON 请求，一个或一组），结果写成给 QA 模型看的几行 |
 | `copilot/nps_copilot/providers.py` | 模型提供方：本机 Ollama（默认）、回放录好的输出（CI 用，没录到的请求直接报错）、录音、测试用的脚本、Gemini、OpenAI、OpenRouter、Groq 的 API（10-19；聊天按 `chat_provider()` 的顺序用 Gemini → OpenAI → 本机，`ProviderChain`，OpenRouter、Groq 要明确设 `COPILOT_PROVIDER` 才用；按免费档的每分钟次数放慢，服务忙会重试，当天额度用完直接报错；模型不认的思考、推理设置自动换下一档）、退回本机（`FallbackProvider`） |
 | `copilot/nps_copilot/prompts.py`、`prompts/` | 提示词版本，见下一节 |
@@ -204,6 +205,8 @@ flowchart LR
 | `LIVE_CLOSURES` | — | 行程引擎（`npm run copilot:plan`、网站的 `/api/copilot/plan`）读的关闭清单路径；`plan_client` 会自动设 |
 | `COPILOT_RUNS` | `copilot/runs` | 运行日志目录 |
 | `COPILOT_PROMPT_INTAKE`、`COPILOT_PROMPT_WRITER`、`COPILOT_PROMPT_QA`、`COPILOT_PROMPT_DISPATCH` | `defaults.json` 里的 | 临时换提示词版本，比如 `v1` |
+| `COPILOT_TTS_MODELS`、`COPILOT_TTS_CACHE` | `copilot/models/kokoro`、`copilot/data/tts` | 配音模型放在哪、生成过的语音存在哪（都不提交） |
+| `COPILOT_TTS_VOICE_ZH`、`COPILOT_TTS_VOICE_EN` | `zf_001`、`af_heart` | 配音用哪个声音（中文 v1.1-zh 有 100 多个：`zf_` 女声、`zm_` 男声；英文 `af_` `am_` 美式、`bf_` `bm_` 英式） |
 | `COPILOT_TOOLS` | `1` | 设成 `0`：回答问题时不调查询工具，只按资料回答（对照实验、出问题时回滚） |
 | `COPILOT_CHAT_TIMEOUT` | `20` | 聊天时每次调商业模型最多等几秒，超时不重试、直接换顺序里的下一个（10-21：Gemini 偶尔 70 多秒才回，第一句话要等一分多钟）；评测、每晚读公告不受影响 |
 | `COPILOT_ALERTS_BUDGET` | `12` | 聊天时现读公告最多等几秒：没读过的几条同时交给模型，到时间还没读完的按规则算、不进缓存（10-21：一次排行程读公告用了 49 秒） |
