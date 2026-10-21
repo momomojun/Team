@@ -13,7 +13,10 @@ import { suitability as cany } from "./cany";
 import { suitability as care } from "./care";
 import { suitability as cave } from "./cave";
 import { suitability as chis } from "./chis";
+import { suitability as chir } from "./chir";
+import { suitability as cong } from "./cong";
 import { suitability as crla } from "./crla";
+import { suitability as cuva } from "./cuva";
 import { suitability as dena } from "./dena";
 import { suitability as deva } from "./deva";
 import { suitability as drto } from "./drto";
@@ -29,19 +32,25 @@ import { suitability as grte } from "./grte";
 import { suitability as gumo } from "./gumo";
 import { suitability as hale } from "./hale";
 import { suitability as havo } from "./havo";
+import { suitability as hosp } from "./hosp";
 import { suitability as hsbd } from "./hsbd";
+import { suitability as indu } from "./indu";
+import { suitability as isro } from "./isro";
 import { suitability as jasp } from "./jasp";
+import { suitability as jeff } from "./jeff";
 import { suitability as jotr } from "./jotr";
 import { suitability as katm } from "./katm";
 import { suitability as kefj } from "./kefj";
 import { suitability as kova } from "./kova";
 import { suitability as lacl } from "./lacl";
 import { suitability as lavo } from "./lavo";
+import { suitability as maca } from "./maca";
 import { suitability as meve } from "./meve";
 import { suitability as mora } from "./mora";
 import { suitability as mova } from "./mova";
 import { suitability as neri } from "./neri";
 import { suitability as noca } from "./noca";
+import { suitability as npsa } from "./npsa";
 import { suitability as olym } from "./olym";
 import { suitability as pefo } from "./pefo";
 import { suitability as pinn } from "./pinn";
@@ -51,6 +60,8 @@ import { suitability as sagu } from "./sagu";
 import { suitability as seki } from "./seki";
 import { suitability as shen } from "./shen";
 import { suitability as thro } from "./thro";
+import { suitability as viis } from "./viis";
+import { suitability as voya } from "./voya";
 import { suitability as wave } from "./wave";
 import { suitability as whsa } from "./whsa";
 import { suitability as wica } from "./wica";
@@ -73,8 +84,11 @@ export const suitability: Record<string, Suitability> = {
   ...cany,
   ...care,
   ...cave,
+  ...chir,
   ...chis,
+  ...cong,
   ...crla,
+  ...cuva,
   ...dena,
   ...deva,
   ...drto,
@@ -90,19 +104,25 @@ export const suitability: Record<string, Suitability> = {
   ...gumo,
   ...hale,
   ...havo,
+  ...hosp,
   ...hsbd,
+  ...indu,
+  ...isro,
   ...jasp,
+  ...jeff,
   ...jotr,
   ...katm,
   ...kefj,
   ...kova,
   ...lacl,
   ...lavo,
+  ...maca,
   ...meve,
   ...mora,
   ...mova,
   ...neri,
   ...noca,
+  ...npsa,
   ...olym,
   ...pefo,
   ...pinn,
@@ -112,6 +132,8 @@ export const suitability: Record<string, Suitability> = {
   ...seki,
   ...shen,
   ...thro,
+  ...viis,
+  ...voya,
   ...wave,
   ...whsa,
   ...wica,

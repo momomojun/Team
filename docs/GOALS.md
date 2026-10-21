@@ -31,14 +31,14 @@
 - [ ] 不同的步骤可以用不同的模型（P12；10-20 做了机制 `COPILOT_STEP_MODELS`，默认还是每一步都按 Gemini → OpenAI → 本机；按对照成绩怎么分配等仓库主人定）
 - [ ] Writer 的行程说明逐句附来源（P17）；Critic 最多退回 3 轮（P16，现在有意只改一次）；数据快照用 Pydantic 校验（P6）
 - [ ] 路线动画导出成短视频（第一版动画 10-19 做了）；Copilot 的线上部署（O53、A1）。网站行程页的对话框 10-19 做了（O61）
-- [ ] 明星同款：中国大陆明星、更多公园（O22）
+- [ ] 明星同款：中国大陆明星、更多公园（O22；10-20 查了不登录的办法：微博单条帖子要登录、中文娱乐新闻搜不到，大陆明星一条也没找到，先加了港台的 3 条：蔡明思的马蹄湾和羚羊峡谷、阎奕格的冰川点；调研记录在 archive/audit/2026-10-20/）
 
 ### 网站
 - [ ] 国家公园可能遇到的危险：棕熊、野牛、美洲狮等野生动物伤人，以及其他常见的危险和怎么防（Tianyue Chen / JadenChen10 提议，10-19 仓库主人转述，之后做）（O63）
 - [ ] 营地开放季节：冬天选“露营”别排进关门的营地（10-19 审 #26 发现，交给 Huiling，任务说明 [archive/agent-briefs/10-campground-seasons.md](archive/agent-briefs/10-campground-seasons.md)）
-- [ ] 22 座公园新景点的 Google 评分（W72）
-- [ ] 每天核对临时封路的定时任务改成查 Team（现在查的是旧目录的旧数据）（W68）
-- [ ] 剩下 9 座国家公园：猛犸洞、康加里、温泉、罗亚尔岛、航海家、印第安纳沙丘、凯霍加谷、维尔京群岛、美属萨摩亚；奇里卡瓦签字后加（W69）
+- [x] 22 座公园新景点的 Google 评分（W72；10-21 用 Chrome 逐个打开 Google 地图补了 254 个，新加的 11 座公园 80 个；对不上的导览团、观光飞行没收）
+- [x] 每天核对临时封路的定时任务改成查 Team（W68；10-20 改了，先把本机 main 更新到最新再核对）
+- [x] 剩下的国家公园（W69；10-21 加了 11 座：原来列的 9 座，加上漏掉的圣路易斯拱门和 10-20 签字升格的奇里卡瓦，美国 64 座全有了）
 - [ ] 机票：日期灵活时哪天、玩几天最便宜（W1，10-19 已做抽查：窗口里的周二周三、最多 6 个往返组合；不是整月每一天的价格网格）
 - [ ] 租车：平台对比、口碑、取还车难易、含保险的总价（W2，10-19 加了平台差别、几个机场的取还车说明、碰撞险和责任险的区间估算；没有各平台实时总价，也没有投诉数据）
 - [ ] 充电桩打卡（能用、坏了、找不到）、手机信号、山火烟雾（W8，10-19 打卡存在这台设备上；空气用 Open-Meteo / CAMS 的 PM2.5；信号只摘景点说明里写过的句子，没有覆盖地图）
@@ -46,7 +46,7 @@
 - [ ] 日文、韩文版（W10）
 - [ ] X 等平台的热门路线（W46，X 要登录，按规则不登录，卡住）；AllTrails 步道榜（W65，搁置：AllTrails 禁止抓取）
 - [ ] 按英文官方资料核对事实时留下的待办：[archive/audit/2026-10-16/_followups.md](archive/audit/2026-10-16/_followups.md)
-- [ ] 旧仓库 `momomojun/NPS-guide` 和 nps-guide.vercel.app 停在 10-16，怎么处理（下线、跳转或保留）待定
+- [x] 旧仓库 `momomojun/NPS-guide` 和 nps-guide.vercel.app：10-20 仓库主人定放着不动，以后只做 Team
 
 ### 文档
 - [x] [PROJECT.md](PROJECT.md) 有几处没跟上（10-18 改了）：“现状（2026-10-17）”的日期、阶段表里“完成，没发过版”（其实发了 0.2.0、0.2.1）、“第 10 节对应学习目标”（应为第 8 节）（R8）
@@ -144,11 +144,11 @@
 | W65 | 10-05 | 把 AllTrails 的数据做成榜单：每个景点哪条步道走的人多、认可度高 | 没做 | 仓库里没有 AllTrails 数据或榜单 | 助手不抓（robots.txt 点名禁止 AI、403），提出“你手动复制、我解析”和先做 Google 版步道榜；主人只追问了原来的步道数据怎么来的，之后没再要求，算是搁置 |
 | W66 | 10-14 | 有没有实时抓道路开放数据；做攻略时标出什么时候景点不能去（冰川点路、红杉/国王峡谷的封路） | 部分完成 | 季节性山路按往年、`closures.ts` 按日期、NPS 实时公告对到景点；10-16 起两周内出发的攻略读实时公告（`closedByAlerts`，`src/lib/alert-match.ts`） | 助手提的第 3 件“接 NPS 道路事件接口（WZDx）”没做（仓库里搜不到）；国王峡谷 180 号公路仍按月份算 |
 | W67 | 10-14 | 把所有临时封路过一遍；12 月去红杉想去 Zumwalt Meadow，要提示去不了，或在行程里直接显示热门地方去不了 | 已完成 | `src/data/closures.ts`、`src/lib/closures.ts`；出发前表单先列“这个月去不了的景点”，攻略不排并写原因 | |
-| W68 | 10-15 / 10-16 | 核对能不能实时更新（“两个都做，先做实时核对”） | 部分完成 | `scripts/check-closures.mjs`（`npm run check:closures`）、生成攻略读实时公告、每天 9 点的定时任务 | 定时任务 `C:\Users\ZJ\.claude\scheduled-tasks\nps-guide-closure-check\SKILL.md` 还在跑旧目录 `D:\WebWorkplace\NPS-guide`；那里的 `closures.ts` 比 Team 的旧（Team 多了 mora-silver-falls、bibe-balanced-rock、brca-peekaboo-loop 等），报告会和现在的数据对不上 |
-| W69 | 10-15 / 10-16 | 还有哪些国家公园没做 → 也要做 | 部分完成 | 加了东部 7 座：大烟山、仙纳度、新河峡谷、阿卡迪亚、大沼泽地、比斯坎、干龟；首页加美国东部图 | 还差 9 座：猛犸洞、康加里、温泉、皇家岛、航海家、印第安纳沙丘、凯霍加谷、维尔京群岛、美属萨摩亚；奇里卡瓦等总统签字（`pendingPark`） |
+| W68 | 10-15 / 10-16 | 核对能不能实时更新（“两个都做，先做实时核对”） | 已完成 | `scripts/check-closures.mjs`（`npm run check:closures`）、生成攻略读实时公告、每天 9 点的定时任务；10-20 定时任务改成查 D:/LLM/Team | 定时任务 `C:\Users\ZJ\.claude\scheduled-tasks\nps-guide-closure-check\SKILL.md` 还在跑旧目录 `D:\WebWorkplace\NPS-guide`；那里的 `closures.ts` 比 Team 的旧（Team 多了 mora-silver-falls、bibe-balanced-rock、brca-peekaboo-loop 等），报告会和现在的数据对不上 |
+| W69 | 10-15 / 10-16 | 还有哪些国家公园没做 → 也要做 | 已完成 | 加了东部 7 座：大烟山、仙纳度、新河峡谷、阿卡迪亚、大沼泽地、比斯坎、干龟；首页加美国东部图；10-21 加了 11 座（含圣路易斯拱门、奇里卡瓦），美国 64 座国家公园全有了 | 还差 9 座：猛犸洞、康加里、温泉、皇家岛、航海家、印第安纳沙丘、凯霍加谷、维尔京群岛、美属萨摩亚；奇里卡瓦等总统签字（`pendingPark`） |
 | W70 | 10-16 | 羚羊峡谷可以从鲍威尔湖划船进去，要注意这类情况 | 已完成 | 5 个水上玩法（Antelope Point 皮划艇、游船、马蹄湾 backhaul 等），DEVELOPMENT.md 有说明；`alternativeTo` 二选一 | 上岸那段要不要纳瓦霍许可没有定论，写成“到折返点就回头” |
 | W71 | 10-16 | 明星同款：标出明星来过的地方（如 BLACKPINK 在鲍威尔湖）、同款拍照姿势、链接 ins/X 原帖 | 已完成 | `src/data/celebrities.ts`（19 条，Lisa 的鲍威尔湖标中等把握）、`celebrity-shots.tsx`；后来又加了电影同款 51 处 | 中国大陆明星一条没有（微博要登录）；黄石、锡安、拱门、夏威夷、阿拉斯加、东部公园还没有 |
-| W72 | 10-16 | “提交并推送，然后把没做的给做了”：大烟山停车证算进预算、东部和新机场的租车参考价、新景点的 Google 评分 | 部分完成 | 当前仓库：`budget.ts` 不算停车证；`car-rates.ts` 没有 TYS、MIA、BOS 等；`google.ts` 没有 22 座公园的条目（havo、hale、glba、katm、lacl、gaar、kova、pinn、grba、sagu、gumo、bibe、badl、wica、thro、grsm、shen、neri、acad、ever、bisc、drto） | 停车证和 28 个机场的租车价其实已经写了，但只留在旧目录 `D:\WebWorkplace\NPS-guide` 里没提交（`git status`：M budget.ts、trip-budget.tsx、fees-manual.ts、dictionaries.ts、car-rates.ts，?? tests/fees.test.ts），Team 是从提交 4590c45 复制的，没带上。Google 评分那次会话在查的途中结束，没有存下结果。**10-18 更新**：停车证和 28 个机场的租车价搬进了 Team（PR #16），Google 评分还没做 |
+| W72 | 10-16 | “提交并推送，然后把没做的给做了”：大烟山停车证算进预算、东部和新机场的租车参考价、新景点的 Google 评分 | 已完成 | 当前仓库：`budget.ts` 不算停车证；`car-rates.ts` 没有 TYS、MIA、BOS 等；`google.ts` 没有 22 座公园的条目（havo、hale、glba、katm、lacl、gaar、kova、pinn、grba、sagu、gumo、bibe、badl、wica、thro、grsm、shen、neri、acad、ever、bisc、drto）；10-21 补了 254 + 80 个景点的 Google 评分 | 停车证和 28 个机场的租车价其实已经写了，但只留在旧目录 `D:\WebWorkplace\NPS-guide` 里没提交（`git status`：M budget.ts、trip-budget.tsx、fees-manual.ts、dictionaries.ts、car-rates.ts，?? tests/fees.test.ts），Team 是从提交 4590c45 复制的，没带上。Google 评分那次会话在查的途中结束，没有存下结果。**10-18 更新**：停车证和 28 个机场的租车价搬进了 Team（PR #16），Google 评分还没做 |
 
 ### 六、和 NPS 相关的其他会话（不属于网站本身）
 

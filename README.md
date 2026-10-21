@@ -19,10 +19,10 @@ A Chinese-language trip planner for U.S. national parks and the Canadian Rockies
 ![MapLibre GL](https://img.shields.io/badge/MapLibre_GL-6-1c1b18)
 ![PWA](https://img.shields.io/badge/PWA-offline-1c1b18?logo=pwa&logoColor=white)
 <br>
-![55 national parks](https://img.shields.io/badge/national_parks-55-a04c2e)
+![66 national parks](https://img.shields.io/badge/national_parks-66-a04c2e)
 ![4 scenic sites](https://img.shields.io/badge/scenic_sites-4-a04c2e)
-![871 attractions](https://img.shields.io/badge/attractions-871-a04c2e)
-![334 trails](https://img.shields.io/badge/trails-334-a04c2e)
+![987 attractions](https://img.shields.io/badge/attractions-987-a04c2e)
+![364 trails](https://img.shields.io/badge/trails-364-a04c2e)
 ![72 creator routes](https://img.shields.io/badge/creator_routes-72-a04c2e)
 
 </div>
@@ -39,7 +39,7 @@ NPS Guide 把这些按日期串起来：选好公园和日子，它告诉你那�
 
 ## 功能
 
-- **景点地图**：52 座美国国家公园（西部、阿拉斯加和夏威夷的都齐了，东部有大烟山、仙纳度、新河峡谷、阿卡迪亚和佛罗里达的三座）、加拿大落基山 3 座国家公园和 4 处园外名胜，共 871 个景点，地图和列表联动；334 条徒步路线按 OpenStreetMap 真实步道画出；只能坐小飞机、坐船进去的体验（卡特迈看熊、干龟渡轮、从鲍威尔湖划皮划艇进羚羊峡谷）按“出发地 + 往返”算时间；每个景点最多 6 张照片、Google 评分和园内热度排名；普通地图、卫星图和 3D 地形随时切换。
+- **景点地图**：美国全部 64 座国家公园（红杉和国王峡谷合在一页，一共 63 页；2026 年 10 月 20 日刚升格的第 64 座奇里卡瓦也在），加上美属维尔京群岛、美属萨摩亚两处海外领地，加拿大落基山 3 座国家公园和 4 处园外名胜，共 987 个景点，地图和列表联动；364 条徒步路线按 OpenStreetMap 真实步道画出；只能坐小飞机、坐船进去的体验（卡特迈看熊、干龟渡轮、从鲍威尔湖划皮划艇进羚羊峡谷）按“出发地 + 往返”算时间；每个景点最多 6 张照片、Google 评分和园内热度排名；普通地图、卫星图和 3D 地形随时切换。
 - **一键生成攻略**：选公园（可以几座顺路的一起，比如盐湖城进出、先大提顿再黄石）、月份或日期、天数、从哪个机场或城市出发，自动挑景点、排出每天几点到哪、定好每晚住处（园内酒店、门户小镇或民宿区，附 Airbnb 链接）。
 - **带小孩、老人、轮椅**：每个景点写明建议几岁以上的孩子、官方年龄限制、婴儿车能不能推、轮椅能不能到、老人适不适合，有悬崖没护栏、铁链梯子、地热、山洪、高温、高海拔这些危险的标出来，并写带孩子老人怎么玩更稳妥（附 NPS 无障碍页面等官方来源）；生成攻略时选好同行的人，不适合的不排、写明原因，要注意的照排、在行程里提醒；公园页可以只看带小小孩能去、老人轻松、轮椅能到的景点。
 - **按日期提醒**：同一天跨时区（佩吉按亚利桑那时间、纪念碑谷按纳瓦霍时间，西奥多·罗斯福的南北两区）按当地时间换算，提醒哪些项目按什么时间计时、手机可能自己跳时区；按当天日出日落安排日出 / 日落观景点；季节性关闭、许可证和预约写明原因和替代方案；Tioga Road、向阳大道这些冬天封闭的山路按近 20 年的开通、关闭日期算出“往年这一天通没通车”；16 天天气预报和 NWS 预警；NPS 实时公告附中文翻译，对到具体哪天哪个景点；旺季早上就停满的热门步道口（精致拱门、洛根山口……）排在一早，晚了会提醒；看星空的晚上月亮碍不碍事，暗夜公园哪几晚最暗；赶上一年里人最多的时候也会说。
@@ -48,9 +48,9 @@ NPS Guide 把这些按日期串起来：选好公园和日子，它告诉你那�
 - **出发后也能改**：拖拽排序、换到别的天、标记完成或跳过，按实际进度重排剩下的行程；出发后打开是“今天”：下一站、按现在的时间几点能到、离日落还有多久、一键导航；到了、走了各点一下，按你实际停留和开车的时间学配速（徒步、其他景点和开车分开算），后面的时间跟着调整。
 - **补给和预算**：每晚住处附近的超市、加油站、快充和亚洲超市，进园前的最后补给点，落地后离机场最近的亚洲超市；门票（含 2026 年非居民附加费、买年卡划不划算）、住宿、吃饭、油费、租车、机票，合计和人均。
 - **什么时候去**：选一个出发日期，所有公园分成“最适合 / 可以去 / 不太合适”，每座写明原因（开放情况、季节性山路往年这几天通没通车、往年同期的天气、特别活动、这时候人多不多）。
-- **榜单**：美国 63 座国家公园按 NPS 官方统计的游客人次（或面积）排名，网站上有的一眼能看出来；现有国家公园按设立时间累计的时间线，从 1872 年的黄石到 2020 年的新河峡谷；Lonely Planet、国家地理、TIME 近几年选中的公园（写明谁选的、为什么，附原文链接），U.S. News 的最佳国家公园，世界遗产和国际暗夜公园。每座公园页上有“档案”（哪年设立、美国第几座、面积、人次排名、荣誉和推荐）和“人多不多”：每个月平均每天多少人、1979 年以来每年的人次。
+- **榜单**：美国 64 座国家公园按 NPS 官方统计的游客人次（或面积）排名，网站上有的一眼能看出来；现有国家公园按设立时间累计的时间线，从 1872 年的黄石到 2026 年的奇里卡瓦；Lonely Planet、国家地理、TIME 近几年选中的公园（写明谁选的、为什么，附原文链接），U.S. News 的最佳国家公园，世界遗产和国际暗夜公园。每座公园页上有“档案”（哪年设立、美国第几座、面积、人次排名、荣誉和推荐）和“人多不多”：每个月平均每天多少人、1979 年以来每年的人次。
 - **博主同款路线**：72 条中文、英语、日语、韩语和欧洲博主的 YouTube / B 站路线（B 站也收了博主写的图文攻略），按公园和语言筛选；博主对景点的评价显示在景点卡片上，一键照着排行程。
-- **明星同款**：19 条明星在公园里公开发过的照片（BLACKPINK Lisa 的鲍威尔湖、金妍儿和贾斯汀·比伯的路易斯湖、肯达尔·詹娜的优胜美地……），中文常用名、英文名和一句“是谁”一起显示，写明在哪拍的、怎么拍同款，点一下就在页面上显示 Instagram 原帖（官方嵌入，网站不存照片），附报道；站在崖边、船头这种危险拍法附安全的拍法。
+- **明星同款**：22 条明星在公园里公开发过的照片（BLACKPINK Lisa 的鲍威尔湖、金妍儿和贾斯汀·比伯的路易斯湖、肯达尔·詹娜的优胜美地、蔡明思的马蹄湾、阎奕格的冰川点……），中文常用名、英文名和一句“是谁”一起显示，写明在哪拍的、怎么拍同款，点一下就在页面上显示 Instagram 原帖或本人频道的 YouTube 视频（官方嵌入，网站不存照片），附报道；站在崖边、船头这种危险拍法附安全的拍法。
 - **电影、游戏、动画同款**：51 处电影、电视剧在公园里的取景地和 18 处游戏、动画照着公园做的场景（《恐龙当家》的提顿山、《辐射 76》的新河峡谷大桥、《微软模拟飞行》的精致拱门……）（阿甘正传公路、《星球大战》的死亡谷、《闪灵》开场的野鹅岛、《无依之地》的恶地、纪念碑谷的西部片……），每处配一张取景地实景照片（Wikimedia Commons，按授权署名），写明拍的是哪场戏、站在哪、几点去光线最像，附 NPS、电影委员会等来源；54 条能点开片方、开发商官方频道在 YouTube 上的这场戏或预告片；和博主路线、明星同款放在同一页。
 - **机票、租车、油价**：比较公园附近几个机场的机票，各机场租车参考价，公园所在各州的实时油价和油费计算。
 - **手机和离线**：手机上一样好用；可以装到主屏（PWA），看过的页面、行程和地图在没信号的园区里也能打开；出发前可以按行程范围下载离线地图和照片；电脑上排好的行程用链接或二维码发到手机；行程可以打印或存成 PDF。
@@ -103,8 +103,8 @@ NPS Guide 把这些按日期串起来：选好公园和日子，它告诉你那�
   </tr>
   <tr>
     <td width="50%" valign="top">
-      <img src="docs/screenshots/rankings.jpg" alt="榜单：美国 63 座国家公园按 2025 年游客人次排名，网站上有的公园用红色标出">
-      <p><b>榜单</b>：63 座国家公园的官方游客人次、设立时间、媒体推荐、世界遗产和暗夜公园</p>
+      <img src="docs/screenshots/rankings.jpg" alt="榜单：美国国家公园按 2025 年游客人次排名，网站上有的公园用红色标出">
+      <p><b>榜单</b>：64 座国家公园的官方游客人次、设立时间、媒体推荐、世界遗产和暗夜公园</p>
     </td>
     <td width="50%" valign="top">
       <img src="docs/screenshots/crowds.jpg" alt="锡安公园页的人多不多：每个月平均每天的人次和 1979 年以来每年的人次">
@@ -115,7 +115,7 @@ NPS Guide 把这些按日期串起来：选好公园和日子，它告诉你那�
 
 ## 覆盖的公园
 
-**美国国家公园**（52 座）
+**美国国家公园**（64 座，63 页：红杉和国王峡谷在一页）
 
 | 片区 | 公园 | 代码 | 2026 年非居民附加费 |
 |---|---|---|---|
@@ -149,11 +149,17 @@ NPS Guide 把这些按日期串起来：选好公园和日子，它告诉你那�
 | 亚利桑那 · 新墨西哥 · 得州 | 白沙 White Sands | `whsa` | — |
 | 亚利桑那 · 新墨西哥 · 得州 | 卡尔斯巴德洞窟 Carlsbad Caverns | `cave` | — |
 | 亚利桑那 · 新墨西哥 · 得州 | 巨人柱 Saguaro | `sagu` | — |
+| 亚利桑那 · 新墨西哥 · 得州 | 奇里卡瓦 Chiricahua（2026-10-20 升格） | `chir` | — |
 | 亚利桑那 · 新墨西哥 · 得州 | 瓜达卢佩山 Guadalupe Mountains | `gumo` | — |
 | 亚利桑那 · 新墨西哥 · 得州 | 大弯 Big Bend | `bibe` | — |
 | 大平原 · 南北达科他 | 恶地 Badlands | `badl` | — |
 | 大平原 · 南北达科他 | 风洞 Wind Cave | `wica` | — |
 | 大平原 · 南北达科他 | 西奥多·罗斯福 Theodore Roosevelt | `thro` | — |
+| 五大湖 · 中西部 | 凯霍加谷 Cuyahoga Valley | `cuva` | — |
+| 五大湖 · 中西部 | 印第安纳沙丘 Indiana Dunes | `indu` | — |
+| 五大湖 · 中西部 | 圣路易斯拱门 Gateway Arch | `jeff` | — |
+| 五大湖 · 中西部 | 皇家岛 Isle Royale | `isro` | — |
+| 五大湖 · 中西部 | 航海家 Voyageurs | `voya` | — |
 | 阿拉斯加 | 德纳里 Denali | `dena` | — |
 | 阿拉斯加 | 基奈峡湾 Kenai Fjords | `kefj` | — |
 | 阿拉斯加 | 兰格尔–圣伊莱亚斯 Wrangell–St. Elias | `wrst` | — |
@@ -164,13 +170,18 @@ NPS Guide 把这些按日期串起来：选好公园和日子，它告诉你那�
 | 阿拉斯加 | 科伯克谷 Kobuk Valley | `kova` | — |
 | 夏威夷 | 夏威夷火山 Hawaiʻi Volcanoes | `havo` | — |
 | 夏威夷 | 哈莱阿卡拉 Haleakalā | `hale` | — |
+| 美属萨摩亚 | 美属萨摩亚 National Park of American Samoa | `npsa` | — |
 | 阿巴拉契亚山 | 大烟山 Great Smoky Mountains | `grsm` | — |
 | 阿巴拉契亚山 | 仙纳度 Shenandoah | `shen` | — |
 | 阿巴拉契亚山 | 新河峡谷 New River Gorge | `neri` | — |
+| 美国南部 | 猛犸洞 Mammoth Cave | `maca` | — |
+| 美国南部 | 康加里 Congaree | `cong` | — |
+| 美国南部 | 温泉 Hot Springs | `hosp` | — |
 | 新英格兰 · 缅因 | 阿卡迪亚 Acadia | `acad` | $100 / 人 |
 | 南佛罗里达 | 大沼泽地 Everglades | `ever` | $100 / 人 |
 | 南佛罗里达 | 比斯坎 Biscayne | `bisc` | — |
 | 南佛罗里达 | 干龟 Dry Tortugas | `drto` | — |
+| 美属维尔京群岛 | 维尔京群岛 Virgin Islands | `viis` | — |
 
 附加费从 2026 年起对 16 岁以上的非美国居民收取；同车有人持有效年卡（美国居民年卡、非居民年卡或这座公园的年卡）整车免收，网站的预算里已经算进去了。
 
@@ -253,16 +264,16 @@ npm run dev                  # 打开 http://localhost:3000
 
 ## English
 
-**NPS Guide** is an unofficial, Chinese-language (Simplified & Traditional) trip planner for 52 U.S. national parks in the West, Texas, the Dakotas, Alaska, Hawaiʻi and the East: Yosemite, Sequoia & Kings Canyon, Channel Islands, Joshua Tree, Redwood, Lassen Volcanic, Crater Lake, Mount Rainier, Olympic, North Cascades, Yellowstone, Grand Teton, Glacier, Rocky Mountain, Mesa Verde, Great Sand Dunes, Black Canyon of the Gunnison, Death Valley, Zion, Bryce Canyon, Grand Canyon, Arches, Canyonlands, Capitol Reef, Petrified Forest, White Sands, Carlsbad Caverns, Denali, Kenai Fjords, Wrangell–St. Elias, Glacier Bay, Katmai, Lake Clark, Gates of the Arctic, Kobuk Valley, Hawaiʻi Volcanoes, Haleakalā, Pinnacles, Great Basin, Saguaro, Guadalupe Mountains, Big Bend, Badlands, Wind Cave, Theodore Roosevelt, Great Smoky Mountains, Shenandoah, New River Gorge, Acadia, Everglades, Biscayne and Dry Tortugas. It also covers Banff, Jasper and Yoho in the Canadian Rockies, and four famous non-park sites listed separately: Antelope Canyon, Horseshoe Bend, Monument Valley and The Wave.
+**NPS Guide** is an unofficial, Chinese-language (Simplified & Traditional) trip planner covering all 64 U.S. national parks (Sequoia and Kings Canyon share one page), from Yosemite, Yellowstone and the Grand Canyon to Alaska, Hawaiʻi, the U.S. Virgin Islands and American Samoa, including Chiricahua, which became the 64th national park on October 20, 2026. It also covers Banff, Jasper and Yoho in the Canadian Rockies, and four famous non-park sites listed separately: Antelope Canyon, Horseshoe Bend, Monument Valley and The Wave.
 
-- **Attraction maps**: 871 curated sights, 334 hiking trails traced on real OpenStreetMap paths, photo galleries, satellite and 3D terrain views.
+- **Attraction maps**: 987 curated sights, 364 hiking trails traced on real OpenStreetMap paths, photo galleries, satellite and 3D terrain views.
 - **Auto-generated itineraries**: pick parks, dates and an arrival airport, and get a day-by-day plan with times, drive durations, sunrise and sunset stops, and nightly lodging.
 - **Date-aware alerts**: seasonal closures, permits and reservations, the odds that a mountain road (Tioga Road, Going-to-the-Sun Road…) is open on your date based on 20 years of opening and closing dates, a 16-day forecast, NWS warnings, and live NPS alerts translated into Chinese.
 - **Booking timeline**: when each lodge, campground, permit lottery, timed entry or boat ticket on your trip opens for booking, with calendar (.ics) reminders; mandatory shuttles (Zion, Grand Canyon, Mariposa Grove, Moraine Lake, Kennecott) are built into the timings.
 - **On the road**: a “today” view with the next stop and live arrival times, check-ins that learn how long you actually spend at stops and on the road and adjust the rest of the trip, trip sharing to your phone by link or QR code, and offline map downloads.
 - **Budget and logistics**: park fees (including the 2026 nonresident surcharge), lodging and meals, fuel or EV charging, car rental, flights, and supplies near each night's stay.
 - **Creator routes**: 72 routes from Chinese, English, Japanese, Korean and European YouTube and Bilibili creators, including Bilibili written guides; plus celebrity photo spots (where a star's public post was taken and how to shoot the same view safely), linked to the original posts.
-- **Rankings**: all 63 U.S. national parks ranked by official NPS visitation (or area), a timeline of when each became a national park, recent Lonely Planet, National Geographic and TIME picks, World Heritage sites and International Dark Sky Parks; every park page shows its monthly crowd levels and visitors per year since 1979.
+- **Rankings**: all 64 U.S. national parks ranked by official NPS visitation (or area), a timeline of when each became a national park, recent Lonely Planet, National Geographic and TIME picks, World Heritage sites and International Dark Sky Parks; every park page shows its monthly crowd levels and visitors per year since 1979.
 - **Offline**: a PWA that keeps your trip and viewed maps available without cell signal.
 
 Built with Next.js 16, React 19, TypeScript, Tailwind CSS 4 and MapLibre GL, mostly on open data (NPS API, OpenStreetMap, Open-Meteo, Wikimedia Commons). No keys are required to run it locally: `npm install && npm run dev`.

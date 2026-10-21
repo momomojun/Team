@@ -362,6 +362,15 @@ export const parkingRules: Record<string, ParkingRule> = Object.fromEntries([
       "停满了在大门外排队，出一辆进一辆，最忙的周末和节假日要等一个多小时；可以先去东边 Tamiami Trail 上坐风扇船，下午 3 点以后再回来。这里没有公共交通，坐网约车来的回程常叫不到车。",
     source: "https://www.nps.gov/ever/planyourvisit/svdirections.htm",
   }),
+  // 凯霍加谷：Brandywine 瀑布只有约 90 个车位，官方说天气好的时候和整个夏天 10:00–16:00 一般是满的（停车页：天气好和周末一般 10 点前满）
+  ...lot(["cuva-brandywine-falls"], {
+    lot: "Brandywine 瀑布停车场",
+    fullBy: "10:00",
+    freeAfter: "16:00",
+    months: [6, 7, 8],
+    noteZh: "只有约 90 个车位、没有备用停车场：满了就早上 10 点前或下午 4 点后再来，或者停 Boston 一带的 Stanford 步道口，走 Stanford Trail 过来（约 2.4 公里单程，山路）。春秋天气好的周末也一样早满。",
+    source: "https://www.nps.gov/cuva/learn/historyculture/brandywine-falls.htm",
+  }),
 ]);
 
 /** 整理的日期 */

@@ -58,6 +58,17 @@ import { everglades } from "../src/data/attractions/ever.ts";
 import { biscayne } from "../src/data/attractions/bisc.ts";
 import { dryTortugas } from "../src/data/attractions/drto.ts";
 import { greatSmokyMountains } from "../src/data/attractions/grsm.ts";
+import { mammothCave } from "../src/data/attractions/maca.ts";
+import { congaree } from "../src/data/attractions/cong.ts";
+import { hotSprings } from "../src/data/attractions/hosp.ts";
+import { cuyahogaValley } from "../src/data/attractions/cuva.ts";
+import { indianaDunes } from "../src/data/attractions/indu.ts";
+import { gatewayArch } from "../src/data/attractions/jeff.ts";
+import { isleRoyale } from "../src/data/attractions/isro.ts";
+import { voyageurs } from "../src/data/attractions/voya.ts";
+import { virginIslands } from "../src/data/attractions/viis.ts";
+import { americanSamoa } from "../src/data/attractions/npsa.ts";
+import { chiricahua } from "../src/data/attractions/chir.ts";
 import { lodgingOptions } from "../src/data/lodging.ts";
 import { parks } from "../src/data/parks.ts";
 
@@ -123,6 +134,17 @@ export const attractions = [
   ...biscayne,
   ...dryTortugas,
   ...greatSmokyMountains,
+  ...mammothCave,
+  ...congaree,
+  ...hotSprings,
+  ...cuyahogaValley,
+  ...indianaDunes,
+  ...gatewayArch,
+  ...isleRoyale,
+  ...voyageurs,
+  ...virginIslands,
+  ...americanSamoa,
+  ...chiricahua,
 ];
 
 /** 补给点的查询范围在外包框四边各放宽这么多度，门户小镇都在里面 */

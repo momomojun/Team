@@ -10,7 +10,7 @@ import { IconArrowRight } from "@/components/icons";
 import { Reveal } from "@/components/site/reveal";
 import { buttonLarge } from "@/components/ui";
 import { attractions } from "@/data/attractions";
-import { alaskaMap, eastMap, hawaiiMap, westMap } from "@/data/map.generated";
+import { alaskaMap, caribbeanMap, eastMap, hawaiiMap, samoaMap, westMap } from "@/data/map.generated";
 import { isSite, parks } from "@/data/parks";
 import { hasLocale } from "@/i18n/config";
 import { localizePark } from "@/i18n/content";
@@ -87,8 +87,10 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
     { value: attractions.filter((a) => localParks.some((park) => park.code === a.park)).length, label: t.stats.attractions },
     { value: attractions.filter((a) => a.trailLine).length, label: t.stats.trails },
   ];
+  // 首页地图小图的标题：中文版“英文名 · 中文名”，英文版只写一次
+  const insetLabel = (en: string, local: string) => (locale === "en" ? en : `${en} · ${local}`);
   const cityNames = Object.fromEntries(
-    [...westMap.cities, ...eastMap.cities, ...alaskaMap.cities, ...hawaiiMap.cities].map((city) => [city.id, localize(city.nameZh, locale)]),
+    [...westMap.cities, ...eastMap.cities, ...alaskaMap.cities, ...hawaiiMap.cities, ...caribbeanMap.cities, ...samoaMap.cities].map((city) => [city.id, localize(city.nameZh, locale)]),
   );
   const finalPhoto = photoOf(FINAL_PHOTO);
 
@@ -295,9 +297,11 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
                   weight: popularity(park.code),
                 }))}
               cityNames={cityNames}
-              eastLabel={`Eastern US · ${t.mapEast}`}
-              alaskaLabel={`Alaska · ${dict.regions.alaska}`}
-              hawaiiLabel={`Hawaiʻi · ${dict.regions.hawaii}`}
+              eastLabel={insetLabel("Eastern US", t.mapEast)}
+              alaskaLabel={insetLabel("Alaska", dict.regions.alaska)}
+              hawaiiLabel={insetLabel("Hawaiʻi", dict.regions.hawaii)}
+              caribbeanLabel={insetLabel("U.S. Virgin Islands", dict.regions.caribbean)}
+              samoaLabel={insetLabel("American Samoa", dict.regions.samoa)}
             />
           </Reveal>
         </div>

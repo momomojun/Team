@@ -65,8 +65,8 @@ const mentioned = new Set(
   attractions.filter((stop) => alertsForStop(stop, alerts.filter(closingText)).length > 0).map((stop) => stop.id),
 );
 const stale = active
-  // 每周固定几天关的（Cades Cove 周三禁车）公告里一般不提，也不看
-  .filter((closure) => !closure.longTerm && !closure.weekdays && codes.has(closure.attractions[0].split("-")[0]))
+  // 每周固定几天关的（Cades Cove 周三禁车）公告里一般不提，也不看；还没开始的（红木每月第一个周六禁车）也不看
+  .filter((closure) => !closure.longTerm && !closure.weekdays && closure.from <= today && codes.has(closure.attractions[0].split("-")[0]))
   .filter((closure) => !closure.attractions.some((id) => byStop.has(id) || mentioned.has(id)))
   .map((closure) => ({ attractions: closure.attractions, from: closure.from, reopen: closure.reopen, checked: closure.checked, source: closure.source }));
 

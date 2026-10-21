@@ -61,6 +61,17 @@ import { everglades } from "./ever";
 import { biscayne } from "./bisc";
 import { dryTortugas } from "./drto";
 import { greatSmokyMountains } from "./grsm";
+import { mammothCave } from "./maca";
+import { congaree } from "./cong";
+import { hotSprings } from "./hosp";
+import { cuyahogaValley } from "./cuva";
+import { indianaDunes } from "./indu";
+import { gatewayArch } from "./jeff";
+import { isleRoyale } from "./isro";
+import { voyageurs } from "./voya";
+import { virginIslands } from "./viis";
+import { americanSamoa } from "./npsa";
+import { chiricahua } from "./chir";
 import { trails, type TrailPath } from "./trails.generated";
 import type { Attraction, GooglePlace, ParkingRule, Photo, Suitability } from "./types";
 import { yellowstone } from "./yell";
@@ -177,6 +188,17 @@ const withData: AttractionWithPhoto[] = [
   ...biscayne,
   ...dryTortugas,
   ...greatSmokyMountains,
+  ...mammothCave,
+  ...congaree,
+  ...hotSprings,
+  ...cuyahogaValley,
+  ...indianaDunes,
+  ...gatewayArch,
+  ...isleRoyale,
+  ...voyageurs,
+  ...virginIslands,
+  ...americanSamoa,
+  ...chiricahua,
 ].map((attraction) => ({
   ...attraction,
   photo: gallery[attraction.id]?.[0],

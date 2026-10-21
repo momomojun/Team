@@ -52,7 +52,7 @@ export const northCascades: Attraction[] = [
     summary:
       "20 号公路最高处旁的观景台，花岗岩尖峰 Liberty Bell 和 Early Winters Spires 就在眼前，脚下是公路绕山的大发夹弯。",
     tips: [
-      "从公路拐进约 400 米的支路到停车场，再走几分钟铺装小路到观景平台；春天公路开通后，支路常要到 5–6 月雪化了才开",
+      "从公路拐进约 400 米的支路到停车场，再走几分钟铺装小路到观景平台；春天公路开通后，支路常要到 6 月甚至 7 月初雪化了才开",
       "上午阳光照在 Liberty Bell 东侧岩壁上，比下午逆光好拍",
       "在国家森林里，不属于国家公园；从 Mazama 过来约 25 分钟，Winthrop 约 40 分钟",
     ],
@@ -209,12 +209,12 @@ export const northCascades: Attraction[] = [
     start: { lat: 48.69173, lon: -121.10151, nameZh: "Colonial Creek 营地入口步道口" },
     durationMin: 150,
     trail: {},
-    hike: { distanceMi: 3.8, gainFt: 680, difficulty: "easy" },
+    hike: { distanceMi: 3.8, gainFt: 680, difficulty: "moderate" },
     openMonths: [5, 6, 7, 8, 9, 10],
     closedNote:
       "步道开头跨 Colonial Creek 的季节性木桥秋天拆除、春天装回，大约 11 月到次年 4 月没有桥，不好过河（以 NPS 步道状况为准）；这段时间可以去旁边的迪亚布洛湖观景台，或走 Newhalem 一带的雪松步道、梯溪瀑布。",
     summary:
-      "迪亚布洛湖边一座林木覆盖的小山，坡度平缓，山顶有长椅俯瞰碧绿的湖水，西边是 Davis Peak，南边是 Colonial 和 Pyramid 峰。",
+      "迪亚布洛湖边一座林木覆盖的小山，坡度不大，山顶有长椅俯瞰碧绿的湖水，西边是 Davis Peak，南边是 Colonial 和 Pyramid 峰。",
     tips: [
       "步道口在 20 号公路 MP 130、Colonial Creek 营地入口的公路北侧",
       "开头跨 Colonial Creek 的木桥是季节性的，秋天拆、春天装回，没装时不好过河，以 NPS 步道状况为准",
@@ -238,7 +238,7 @@ export const northCascades: Attraction[] = [
       "沿迪亚布洛湖北岸起伏的森林步道，途中多次从岩石平台俯瞰碧绿的湖面，终点是 Ross 大坝下方横跨湖湾的吊桥。",
     tips: [
       "从 20 号公路转进 Diablo Dam Road，开过大坝顶，在北瀑布环境学习中心旁的步道口停车",
-      "可以单程走到终点，再坐西雅图城市电力的迪亚布洛湖渡轮回来（夏秋运营、要付费），班次以当年时刻表为准",
+      "这是往返步道，走到 Ross 大坝下的吊桥后原路返回；湖上的 Diablo 渡轮只载 Ross Lake Resort 的住客，一日徒步坐不了",
       "夏天人多；冬季也可能积雪，路况以 NPS 公告为准",
     ],
   },

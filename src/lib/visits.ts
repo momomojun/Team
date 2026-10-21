@@ -21,11 +21,11 @@ export interface RankedPark extends NationalPark {
   visits: number;
   /** 前一年的人次（算涨跌） */
   previous: number | null;
-  /** 63 座里按人次排第几 */
+  /** 64 座里按人次排第几 */
   rank: number;
 }
 
-/** 63 座国家公园按某一年的人次从多到少排 */
+/** 64 座国家公园按某一年的人次从多到少排 */
 export function visitRanking(year = visitsLastYear): RankedPark[] {
   return nationalParks
     .map((park) => ({ ...park, visits: visitsIn(park.code, year) ?? 0, previous: visitsIn(park.code, year - 1) }))
@@ -44,7 +44,7 @@ export interface ParkVisits {
   latest: number;
   /** 拆开说的部分：红杉、国王峡谷各多少、排第几 */
   parts: { nameZh: string; visits: number; rank: number }[];
-  /** 美国 63 座里排第几（一个公园页对应一座国家公园时） */
+  /** 美国 64 座里排第几（一个公园页对应一座国家公园时） */
   rank?: number;
   /** 哪一年升为国家公园（图上标出来；比统计开始得早的不标） */
   establishedYear?: number;

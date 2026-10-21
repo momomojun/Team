@@ -1,4 +1,4 @@
-// 美国的 63 座国家公园（名字就叫 National Park 的；NPS 一共管 400 多处，其余是国家纪念地、休闲区、历史公园等）
+// 美国的 64 座国家公园（名字就叫 National Park 的；NPS 一共管 400 多处，其余是国家纪念地、休闲区、历史公园等）
 // 和加拿大落基山的 3 座：榜单页的游客人次、设立时间线和公园页的“档案”用。
 // 设立日期是成为国家公园的日期（按 NPS 的 National Park System Areas Listed in Chronological Order 整理的
 // Wikipedia「List of national parks of the United States」，面积是 NPS 2023 年的面积报告），2026-10-02 整理。
@@ -38,7 +38,7 @@ const rows: Row[] = [
   ["acad", "阿卡迪亚", "Acadia", "缅因", "1919-02-26", 199, "acad"],
   ["grca", "大峡谷", "Grand Canyon", "亚利桑那", "1919-02-26", 4863, "grca"],
   ["zion", "锡安", "Zion", "犹他", "1919-11-19", 596, "zion"],
-  ["hosp", "温泉", "Hot Springs", "阿肯色", "1921-03-04", 22],
+  ["hosp", "温泉", "Hot Springs", "阿肯色", "1921-03-04", 22, "hosp"],
   ["brca", "布莱斯峡谷", "Bryce Canyon", "犹他", "1928-02-25", 145, "brca"],
   ["grte", "大提顿", "Grand Teton", "怀俄明", "1929-02-26", 1255, "grte"],
   ["cave", "卡尔斯巴德洞窟", "Carlsbad Caverns", "新墨西哥", "1930-05-14", 189, "cave"],
@@ -47,10 +47,10 @@ const rows: Row[] = [
   ["shen", "仙纳度", "Shenandoah", "弗吉尼亚", "1935-12-26", 811, "shen"],
   ["olym", "奥林匹克", "Olympic", "华盛顿州", "1938-06-29", 3734, "olym"],
   ["kica", "国王峡谷", "Kings Canyon", "加州", "1940-03-04", 1869, "seki"],
-  ["isro", "皇家岛", "Isle Royale", "密歇根", "1940-04-03", 2314],
-  ["maca", "猛犸洞", "Mammoth Cave", "肯塔基", "1941-07-01", 293],
+  ["isro", "皇家岛", "Isle Royale", "密歇根", "1940-04-03", 2314, "isro"],
+  ["maca", "猛犸洞", "Mammoth Cave", "肯塔基", "1941-07-01", 293, "maca"],
   ["bibe", "大弯", "Big Bend", "得克萨斯", "1944-06-12", 3242, "bibe"],
-  ["viis", "维尔京群岛", "Virgin Islands", "美属维尔京群岛", "1956-08-02", 61],
+  ["viis", "维尔京群岛", "Virgin Islands", "美属维尔京群岛", "1956-08-02", 61, "viis"],
   ["hale", "哈莱阿卡拉", "Haleakalā", "夏威夷", "1961-07-01", 136, "hale"],
   ["pefo", "石化林", "Petrified Forest", "亚利桑那", "1962-12-09", 896, "pefo"],
   ["cany", "峡谷地", "Canyonlands", "犹他", "1964-09-12", 1366, "cany"],
@@ -59,7 +59,7 @@ const rows: Row[] = [
   ["arch", "拱门", "Arches", "犹他", "1971-11-12", 310, "arch"],
   ["care", "圆顶礁", "Capitol Reef", "犹他", "1971-12-18", 979, "care"],
   ["gumo", "瓜达卢佩山", "Guadalupe Mountains", "得克萨斯", "1972-09-30", 350, "gumo"],
-  ["voya", "航海家", "Voyageurs", "明尼苏达", "1975-04-08", 883],
+  ["voya", "航海家", "Voyageurs", "明尼苏达", "1975-04-08", 883, "voya"],
   ["badl", "恶地", "Badlands", "南达科他", "1978-11-10", 982, "badl"],
   ["thro", "西奥多·罗斯福", "Theodore Roosevelt", "北达科他", "1978-11-10", 285, "thro"],
   ["chis", "海峡群岛", "Channel Islands", "加州", "1980-03-05", 1010, "chis"],
@@ -72,20 +72,22 @@ const rows: Row[] = [
   ["lacl", "克拉克湖", "Lake Clark", "阿拉斯加", "1980-12-02", 10602, "lacl"],
   ["wrst", "兰格尔–圣伊莱亚斯", "Wrangell–St. Elias", "阿拉斯加", "1980-12-02", 33683, "wrst"],
   ["grba", "大盆地", "Great Basin", "内华达", "1986-10-27", 312, "grba"],
-  ["npsa", "美属萨摩亚", "American Samoa", "美属萨摩亚", "1988-10-31", 33],
+  ["npsa", "美属萨摩亚", "American Samoa", "美属萨摩亚", "1988-10-31", 33, "npsa"],
   ["drto", "干龟岛", "Dry Tortugas", "佛罗里达", "1992-10-26", 262, "drto"],
   ["sagu", "巨人柱", "Saguaro", "亚利桑那", "1994-10-14", 376, "sagu"],
   ["deva", "死亡谷", "Death Valley", "加州、内华达", "1994-10-31", 13793, "deva"],
   ["jotr", "约书亚树", "Joshua Tree", "加州", "1994-10-31", 3218, "jotr"],
   ["blca", "甘尼森黑峡谷", "Black Canyon of the Gunnison", "科罗拉多", "1999-10-21", 125, "blca"],
-  ["cuva", "凯霍加谷", "Cuyahoga Valley", "俄亥俄", "2000-10-11", 132],
-  ["cong", "康加里", "Congaree", "南卡罗来纳", "2003-11-10", 108],
+  ["cuva", "凯霍加谷", "Cuyahoga Valley", "俄亥俄", "2000-10-11", 132, "cuva"],
+  ["cong", "康加里", "Congaree", "南卡罗来纳", "2003-11-10", 108, "cong"],
   ["grsa", "大沙丘", "Great Sand Dunes", "科罗拉多", "2004-09-24", 434, "grsa"],
   ["pinn", "尖峰石阵", "Pinnacles", "加州", "2013-01-10", 108, "pinn"],
-  ["jeff", "圣路易斯拱门", "Gateway Arch", "密苏里", "2018-02-22", 0.8],
-  ["indu", "印第安纳沙丘", "Indiana Dunes", "印第安纳", "2019-02-15", 62],
+  ["jeff", "圣路易斯拱门", "Gateway Arch", "密苏里", "2018-02-22", 0.8, "jeff"],
+  ["indu", "印第安纳沙丘", "Indiana Dunes", "印第安纳", "2019-02-15", 62, "indu"],
   ["whsa", "白沙", "White Sands", "新墨西哥", "2019-12-20", 592, "whsa"],
   ["neri", "新河峡谷", "New River Gorge", "西弗吉尼亚", "2020-12-27", 28, "neri"],
+  // 面积按法案和报道的 12,025 英亩（约 48.7 平方公里），NPS 面积报告没核对
+  ["chir", "奇里卡瓦", "Chiricahua", "亚利桑那", "2026-10-20", 49, "chir"],
 ];
 
 /** 按设立日期排；同一天设立的（1980 年 12 月 2 日阿拉斯加 7 座）按英文名 */
@@ -108,15 +110,10 @@ export interface PendingPark {
 }
 
 /**
- * 可能的下一座：奇里卡瓦国家纪念地（亚利桑那东南角）升为国家公园的法案 2026 年 10 月 1 日参议院通过、等总统签字。
- * 签了以后把它加进上面的列表（代码 chir），这里改成 undefined
+ * 国会通过、等总统签字的下一座国家公园；没有就是 undefined。
+ * 奇里卡瓦（法案 2026 年 9 月 30 日参议院通过）2026 年 10 月 20 日签字，已经加进上面的列表（代码 chir）
  */
-export const pendingPark: PendingPark | undefined = {
-  nameZh: "奇里卡瓦",
-  nameEn: "Chiricahua",
-  statesZh: "亚利桑那",
-  passed: "2026-10-01",
-};
+export const pendingPark: PendingPark | undefined = undefined;
 
 export interface CanadianPark {
   /** 网站上的公园页代码 */

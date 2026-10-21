@@ -488,4 +488,77 @@ export const celebrityShots: CelebrityShot[] = [
     confidence: "medium",
     noteZh: "帖子没打定位、没有配文；IBTimes 写她这趟去了锡安和 Amangiri，Meaww 写她在鲍威尔湖划船，Meaww 还提到她同期另一条和狗合影的帖子配文是“Beanie takes Powell”。具体是哪条湖湾不清楚。",
   },
+  {
+    id: "jessica-tsoi-horseshoe-bend-2026",
+    nameZh: "蔡明思",
+    nameEn: "Jessica Tsoi",
+    whoZh: "香港歌手、演员，前女子组合 Super Girls 成员",
+    group: "前 Super Girls",
+    countryZh: "中国香港",
+    park: "hsbd",
+    attraction: "hsbd-horseshoe-bend",
+    placeZh: "马蹄湾观景点的崖边岩石（帖子定位在佩吉），同一帖里还有羚羊峡谷",
+    date: "2026-10-16",
+    platform: "instagram",
+    postUrl: "https://www.instagram.com/p/Dekn8Syk2tA/",
+    sources: ["https://hk.on.cc/hk/bkn/cnt/entertainment/20261018/bkn-20261018160113084-1018_00862_001.html"],
+    shotZh:
+      "从拉斯维加斯自驾去佩吉的多图帖，配文“Antelope Canyon + Horseshoe bend”。第一张是蓝天白云下的马蹄湾全景；第二张她穿白色上衣背对镜头，坐在一块伸向河湾的岩石上举起一只手，下面是绕成马蹄形的绿色河水和两侧的红岩。",
+    howToZh:
+      "马蹄湾停车场走约 1.2 公里到观景台。想拍“背对镜头看河湾”的同款，人坐在护栏旁边的岩石上、背对镜头，拍的人站在后面稍高的地方往下拍，把整个马蹄形河湾收在人的前方。上午 10 点到中午河湾里的阴影最少，河水颜色最绿。",
+    tipsZh: [
+      "她坐的岩石外面没有护栏，不要照搬：马蹄湾崖高约 300 米。在护栏处拍，或者离边缘至少两三米坐着拍，靠拍的人站高一点把河湾拍进来。",
+      "她在配文里说拉斯维加斯当天往返佩吉开车太累，建议坐飞机或参加一日团；自驾的话至少在佩吉住一晚。",
+    ],
+    confidence: "high",
+  },
+  {
+    id: "jessica-tsoi-antelope-canyon-2026",
+    nameZh: "蔡明思",
+    nameEn: "Jessica Tsoi",
+    whoZh: "香港歌手、演员，前女子组合 Super Girls 成员",
+    group: "前 Super Girls",
+    countryZh: "中国香港",
+    park: "ante",
+    placeZh: "羚羊峡谷谷底（帖子定位在佩吉，没写是上羚羊还是下羚羊）",
+    date: "2026-10-16",
+    platform: "instagram",
+    postUrl: "https://www.instagram.com/p/Dekn8Syk2tA/",
+    sources: ["https://hk.on.cc/hk/bkn/cnt/entertainment/20261018/bkn-20261018160113084-1018_00862_001.html"],
+    shotZh:
+      "和马蹄湾同一个帖子。几张是往上拍的岩壁纹理和缝里透下来的光；有她穿白色宽松上衣、黑色短裤，站在橙红色的谷底双手比 V 的全身照，还有她戴墨镜坐在谷底斜坡上侧脸望向光的照片，东网说照片拍得像艺术照。",
+    howToZh:
+      "跟纳瓦霍授权的导览团进（上羚羊、下羚羊都只能跟团），旺季提前几周订。拍人像找谷底稍宽、背后岩壁被光照成橙色的地方，人站或坐在下半部分，拍的人蹲低一点；穿白色、浅色的衣服在红色岩壁前最显眼。上午 10 点到下午 1 点光线最好。",
+    tipsZh: [
+      "导游会催着往前走，提前想好动作；峡谷里不能带包，三脚架一般不让用。",
+      "不要攀爬、蹬踩岩壁，也不要用手摸纹路。",
+    ],
+    confidence: "high",
+    noteZh: "帖子和东网的报道都只写了羚羊峡谷，没写是上羚羊还是下羚羊，照片里也认不出是哪一段。",
+  },
+  {
+    id: "janice-yan-glacier-point-2024",
+    nameZh: "閻奕格",
+    nameEn: "Janice Yan",
+    whoZh: "台湾歌手，《超级星光大道》出身",
+    countryZh: "中国台湾",
+    park: "yose",
+    attraction: "yose-glacier-point",
+    placeZh: "冰川点观景台（同一支视频里还有隧道观景点）",
+    date: "2024-11-10",
+    platform: "youtube",
+    postUrl: "https://www.youtube.com/watch?v=syFhJcLyRC0",
+    sources: ["https://www.youtube.com/watch?v=k-Oo2kj_8-o"],
+    shotZh:
+      "她自己 YouTube 频道上的优胜美地 vlog 第一集（标题“Yosemite is insane! 優勝美地 太誇張了！”）。中间在隧道观景点拍了酋长岩和新娘面纱瀑布的山谷全景；最后一段字幕打出“Glacier Point”和下午 5 点多的时间，她拿着手机边走边自拍讲话，身后是半穹顶，结尾是日落时半穹顶被照成橙粉色、观景台上的人站成一排剪影。",
+    howToZh:
+      "冰川点路一般 5 月下旬到 10 月、11 月初通车（冬天封路），从山谷开上去约 1 小时。想拍半穹顶的日落余晖，日落前 1 小时到，停车场傍晚很满；主观景台在停车场旁边走几分钟，有护栏。手机自拍时把半穹顶放在肩膀一侧，日落后十几分钟山顶的颜色最浓，别急着走。",
+    tipsZh: [
+      "观景台在海拔 2,200 米左右，秋天日落后气温很快降到个位数，带外套；天黑后下山的路有弯，慢慢开。",
+      "旺季进优胜美地有时要预约，冰川点路也偶尔因施工、山火临时封闭，出发前看 NPS 官网。",
+    ],
+    confidence: "medium",
+    noteZh:
+      "没找到新闻报道：频道是 YouTube 认证的官方艺人频道，地点按视频里的字幕（“Glacier Point”）和画面；“报道”链接的是她同一趟的第二集 vlog。",
+  },
 ];

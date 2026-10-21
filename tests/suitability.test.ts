@@ -111,7 +111,9 @@ test("要慎重考虑的景点：说明里都写了“请务必慎重考虑”�
   }
   const marked = Object.entries(suitability).filter(([, s]) => s.carrierUnder !== undefined || s.seniorsSerious).map(([id]) => id).sort();
   assert.deepEqual(marked, [
-    "chis-san-miguel-island", "meve-balcony-house", "meve-cliff-palace", "meve-long-house",
-    "shen-old-rag", "yoho-burgess-shale", "yoho-iceline",
+    "chir-heart-of-rocks", "chis-san-miguel-island", "indu-3-dune-challenge", "maca-grand-avenue",
+    "maca-violet-city-lantern", "meve-balcony-house", "meve-cliff-palace", "meve-long-house",
+    "npsa-mount-alava", "npsa-upper-sauma", "shen-old-rag", "viis-reef-bay-trail",
+    "yoho-burgess-shale", "yoho-iceline",
   ]);
 });

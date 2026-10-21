@@ -6,7 +6,7 @@ import { tempClosures } from "@/data/closures";
 import { creatorRoutes, type CreatorRoute } from "@/data/creators";
 import { filmSpots } from "@/data/film-spots";
 import { lodgingOptions } from "@/data/lodging";
-import { getPark, isSite } from "@/data/parks";
+import { fullNameEn, getPark, isSite } from "@/data/parks";
 import type { RoadYear } from "@/data/roads";
 import { shuttleSystems } from "@/data/shuttles";
 import { hasLocale, type Locale } from "@/i18n/config";
@@ -149,7 +149,7 @@ export function loadParkPage(locale: string, code: string) {
       : fill(article ? r.reads : r.views, { n: route.views });
   };
   const localizedName = localize(source.nameZh, locale);
-  const englishTitle = source.kind === "site" ? source.nameEn : `${source.nameEn} National Park`;
+  const englishTitle = fullNameEn(source);
   const title = otherName(localizedName, source.nameEn) ? `${localizedName} ${source.nameEn}` : englishTitle;
 
   return {

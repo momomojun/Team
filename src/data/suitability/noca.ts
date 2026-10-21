@@ -80,7 +80,7 @@ export const suitability: Record<string, Suitability> = {
     stroller: "no",
     wheelchair: "no",
     seniors: "caution",
-    noteZh: "往返约 12 公里、爬升约 400 米，一路上下起伏；可以单程走到 Ross 大坝下的吊桥，再坐渡轮回来，省一半路。带孩子、老人走到第一处俯瞰湖面的岩石平台就回头。",
+    noteZh: "往返约 12 公里、爬升约 400 米，一路上下起伏；到 Ross 大坝下的吊桥后原路返回（渡轮只载度假村住客）。带孩子、老人走到第一处俯瞰湖面的岩石平台就回头。",
   },
   "noca-diablo-lake-cruise": {
     kidsFromAge: 0,

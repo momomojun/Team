@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ViewTransition } from "react";
 import { CommonsImage } from "@/components/commons-image";
+import { fullNameEn } from "@/data/parks";
 import { ParkChrome } from "@/components/park/park-chrome";
 import { SectionNav } from "@/components/site/section-nav";
 import { fill } from "@/i18n/format";
@@ -49,7 +50,7 @@ export default async function ParkLayout({ children, params }: LayoutProps<"/[lo
         </nav>
         <h1 className="mt-7 font-serif text-[clamp(3.2rem,9vw,8rem)] leading-none font-normal tracking-[0.04em]">{park.nameZh}</h1>
         <p className="eyebrow mt-6 text-white/80">
-          {site ? park.nameEn : `${park.nameEn} National Park`} · {park.stateEn}
+          {fullNameEn(park)} · {park.stateEn}
           {canada && " · Canada"}
         </p>
         <p className="mt-6 max-w-xl font-serif text-xl text-white/85 sm:text-2xl">{park.tagline}</p>
