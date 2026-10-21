@@ -213,3 +213,153 @@ export function changedDays(before: string[] | null, after: string[]): number[] 
   if (!before || before.length !== after.length) return after.map((_, day) => day);
   return after.flatMap((signature, day) => (signature !== before[day] ? [day] : []));
 }
+
+// ---------- 讲解版的进度条和倍速（10-20 仓库主人：“讲解版可以拉进度条和调倍速”） ----------
+
+/** 一天怎么播：各点的累计公里、各站在路线上的位置、播放量、这一天画多久（帧循环和进度条用同一份，两边对得上） */
+export interface DayPlan {
+  cum: number[];
+  total: number;
+  stopKm: number[];
+  cost: number[];
+  dayMs: number;
+}
+
+export function planDay(day: TourDay, days: number, calm: boolean): DayPlan {
+  const cum = cumulative(day.path);
+  const total = cum[cum.length - 1] ?? 0;
+  const stopKm = stopDistances(day.path, cum, day.stops);
+  const cost = paceCost(cum, stopKm);
+  return { cum, total, stopKm, cost, dayMs: calm ? drawMs(days) : followMs(cost[cost.length - 1] ?? 0, days) };
+}
+
+/** 画到这一天的百分之几（0–1）时车开到第几公里：不跟车时整天慢慢起步、慢慢停下，跟车时按播放量 */
+export function distanceAt(plan: DayPlan, progress: number, calm: boolean): number {
+  const p = Math.min(1, Math.max(0, progress));
+  return calm ? easeInOut(p) * plan.total : distanceAtCost(plan.cum, plan.cost, p * (plan.cost[plan.cost.length - 1] ?? 0));
+}
+
+/** 反过来：车开到第几公里时这一天画到了百分之几（拖进度条时用）；两个方向都是单调的，二分就行 */
+export function progressAt(plan: DayPlan, distance: number, calm: boolean): number {
+  if (plan.total <= 0 || distance <= 0) return 0;
+  if (distance >= plan.total) return 1;
+  let lo = 0;
+  let hi = 1;
+  for (let i = 0; i < 40; i++) {
+    const mid = (lo + hi) / 2;
+    if (distanceAt(plan, mid, calm) < distance) lo = mid;
+    else hi = mid;
+  }
+  return hi;
+}
+
+/**
+ * 进度条上的一段：开头讲怎么看地图、某天的开场、开车去下一站、在某一站讲解、一天开完拉远看、结尾。
+ * ms 是一倍速下大概多久（念的部分按阅读时间估，实际朗读快慢不一样，进度条只是大致的位置）
+ */
+export type TourSegment =
+  | { kind: "intro"; ms: number }
+  | { kind: "day"; day: number; ms: number }
+  /** 从第 from 公里开到第 to 公里，到的是第 stop 站（stop 等于站数时是开完最后一段） */
+  | { kind: "drive"; day: number; stop: number; from: number; to: number; ms: number }
+  | { kind: "stop"; day: number; stop: number; ms: number }
+  | { kind: "end"; day: number; ms: number }
+  | { kind: "outro"; ms: number };
+
+export interface TimelineTiming {
+  narrated: boolean;
+  calm: boolean;
+  /** 每天开场镜头飞多久、一天开完停多久、到站停多久、结尾停多久 */
+  fly: number;
+  hold: number;
+  arrive: number;
+  finale: number;
+  /** 念这几句大概多久 */
+  speech: (lines: string[]) => number;
+  intro?: string[];
+  outro?: string[];
+}
+
+/** 整段动画分成哪几段：和 park-map.tsx 的帧循环一样，到站停的只有离起点 50 米以上的站和讲解版里有讲解词的站 */
+export function tourTimeline(days: TourDay[], plans: DayPlan[], timing: TimelineTiming): TourSegment[] {
+  const out: TourSegment[] = [];
+  if (timing.narrated && timing.intro?.length) out.push({ kind: "intro", ms: Math.max(1500, timing.speech(timing.intro)) });
+  days.forEach((day, d) => {
+    const plan = plans[d];
+    const drive = (from: number, to: number) => Math.round(plan.dayMs * (progressAt(plan, to, timing.calm) - progressAt(plan, from, timing.calm)));
+    out.push({ kind: "day", day: d, ms: Math.max(timing.fly, timing.narrated ? timing.speech(day.narration ?? []) : 0) });
+    let from = 0;
+    day.stops.forEach((stop, k) => {
+      const at = plan.stopKm[k] ?? 0;
+      const talk = timing.narrated && stop.narration;
+      if (at <= 0.05 && !talk) return;
+      if (at - from > 0.01) out.push({ kind: "drive", day: d, stop: k, from, to: at, ms: drive(from, at) });
+      out.push({ kind: "stop", day: d, stop: k, ms: talk ? timing.speech(stop.narration!.speech) + 600 : timing.arrive });
+      from = Math.max(from, at);
+    });
+    if (plan.total - from > 0.01) out.push({ kind: "drive", day: d, stop: day.stops.length, from, to: plan.total, ms: drive(from, plan.total) });
+    out.push({ kind: "end", day: d, ms: timing.hold });
+  });
+  out.push({ kind: "outro", ms: Math.max(timing.finale, timing.narrated ? timing.speech(timing.outro ?? []) : 0) });
+  return out;
+}
+
+/** 每一段从第几毫秒开始，最后一个是总长 */
+export function segmentStarts(timeline: TourSegment[]): number[] {
+  const starts = [0];
+  for (const segment of timeline) starts.push(starts[starts.length - 1] + segment.ms);
+  return starts;
+}
+
+/** 动画现在在哪：帧循环里的状态换成进度条上的第几段 */
+export type TourWhere =
+  | { kind: "intro" }
+  | { kind: "day"; day: number }
+  | { kind: "stop"; day: number; stop: number }
+  | { kind: "drive"; day: number; distance: number }
+  | { kind: "end"; day: number }
+  | { kind: "outro" };
+
+/** 在第几段，找不到是 -1（比如起点那一站不停，没有它自己的一段） */
+export function segmentOf(timeline: TourSegment[], where: TourWhere): number {
+  return timeline.findIndex((segment) => {
+    if (segment.kind !== where.kind && !(where.kind === "drive" && segment.kind === "end")) return false;
+    if (segment.kind === "intro" || segment.kind === "outro") return true;
+    if (!("day" in where) || segment.day !== where.day) return false;
+    if (segment.kind === "stop") return where.kind === "stop" && segment.stop === where.stop;
+    // 开车：第一段终点还没到的；都过了（开完最后一站以后的零头）就算这一天的结尾
+    if (segment.kind === "drive") return where.kind === "drive" && where.distance < segment.to - 1e-6;
+    return true;
+  });
+}
+
+/** 点进度条的第几毫秒跳到哪：开车的段跳到点的位置，其他的段（讲解、开场）从这一段开头讲起 */
+export function seekTarget(timeline: TourSegment[], starts: number[], ms: number): { segment: number; fraction: number } {
+  const total = starts[starts.length - 1] ?? 0;
+  const at = Math.min(Math.max(0, ms), Math.max(0, total - 1));
+  let segment = 0;
+  while (segment < timeline.length - 1 && starts[segment + 1] <= at) segment += 1;
+  const item = timeline[segment];
+  const fraction = item?.kind === "drive" && item.ms > 0 ? (at - starts[segment]) / item.ms : 0;
+  return { segment, fraction };
+}
+
+/** 上一段、下一段（键盘左右键、按钮）：只停在开场、各站、结尾；当前这段已经讲了两秒以上，“上一段”先回到这段开头 */
+export function chapterStep(timeline: TourSegment[], starts: number[], ms: number, direction: 1 | -1): number {
+  const chapters = timeline.flatMap((segment, index) => (segment.kind === "drive" || segment.kind === "end" ? [] : [index]));
+  if (chapters.length === 0) return 0;
+  const current = [...chapters].reverse().find((index) => starts[index] <= ms) ?? chapters[0];
+  const position = chapters.indexOf(current);
+  if (direction === 1) return chapters[Math.min(chapters.length - 1, position + 1)];
+  if (ms - starts[current] > 2000) return current;
+  return chapters[Math.max(0, position - 1)];
+}
+
+/** 倍速的几档 */
+export const TOUR_SPEEDS = [0.75, 1, 1.25, 1.5, 2];
+
+/** 进度条旁边的时间：一倍速下的毫秒数按倍速换成“3:05” */
+export function clockText(ms: number, speed: number): string {
+  const seconds = Math.max(0, Math.round(ms / 1000 / speed));
+  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+}
