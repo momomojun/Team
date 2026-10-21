@@ -33,6 +33,7 @@ import { CommonsImage } from "@/components/commons-image";
 import { fill } from "@/i18n/format";
 import { readingMs, sentences } from "@/lib/narration";
 import { Narrator, warmVoices } from "@/lib/speech";
+import { preloadPhotos, StopMontage } from "./stop-montage";
 import { EOX_ATTRIBUTION, EOX_IMAGERY_TILES, IMAGERY_TILES, STYLE_URL, TERRAIN_TILES, type Imagery } from "./sources";
 
 export interface MapPoint {
@@ -409,7 +410,12 @@ export function ParkMap({
   const sidePanel = useRef(0);
   const bottomPanel = useRef(0);
   const [beat, setBeat] = useState<
-    { kind: "intro" } | { kind: "day"; day: TourDay } | { kind: "stop"; stop: TourStop; index: number; color: string } | { kind: "outro" } | null
+    | { kind: "intro" }
+    | { kind: "day"; day: TourDay; leaving?: boolean }
+    // origin：到站时这一站在屏幕上的位置（照片从这里展开）；leaving：讲完了，照片收回去、车接着开
+    | { kind: "stop"; stop: TourStop; index: number; color: string; origin?: { x: number; y: number }; leaving?: boolean }
+    | { kind: "outro" }
+    | null
   >(null);
   const [caption, setCaption] = useState<string | null>(null);
   const [muted, setMuted] = useState(false);
@@ -993,8 +999,17 @@ export function ParkMap({
       const to = sliceTo(day.path, state.cum, Math.max(0.8, lookAhead(zoom) * 3)).head;
       map.flyTo({ center: from, zoom, pitch: FOLLOW_PITCH, bearing: bearingOf(from, to), padding: followPadding(map), duration: FOLLOW_FLY_MS / speedRef.current });
     }
-    if (state.narrated) setBeat({ kind: "day", day });
-    speak(state, day.narration);
+    if (state.narrated) {
+      setBeat({ kind: "day", day });
+      // 这一天每一站的头两张先下载，到站展开时不会是空白
+      for (const stop of day.stops) preloadPhotos(stop.photos, 2);
+    }
+    speak(state, day.narration, () => {
+      if (!state.narrated) return;
+      // 这一天开头的照片收回到地图上，收完再开始画路线
+      setBeat((current) => (current?.kind === "day" && current.day.day === day.day ? { ...current, leaving: true } : current));
+      state.arriveUntil = state.clock + 800;
+    });
   };
 
   /** 进度条、时间跟着动画走：帧循环里的状态换成进度条上的第几段、这一段走了百分之几（每帧直接改样式，不经过 React） */
@@ -1068,7 +1083,7 @@ export function ParkMap({
       // 卡片显示到镜头快到位，再收起来开始画；讲解版要等这一天开头的话念完
       const fly = state.calm ? flyMs(state.days.length) : FOLLOW_FLY_MS;
       if (elapsed >= fly * 0.85 && !state.speaking) setTourUi((ui) => (ui && ui.card ? { ...ui, card: false } : ui));
-      if (elapsed >= fly && !state.speaking) {
+      if (elapsed >= fly && !state.speaking && now >= state.arriveUntil) {
         if (state.narrated) setBeat(null);
         state.phase = "draw";
         state.phaseStart = now;
@@ -1108,9 +1123,13 @@ export function ParkMap({
         if (state.narrated && stop.narration) {
           state.arriveUntil = Infinity;
           state.carded = true;
-          setBeat({ kind: "stop", stop, index: state.shown, color: day.color });
+          const at = map.project([stop.lon, stop.lat]);
+          preloadPhotos(stop.photos);
+          setBeat({ kind: "stop", stop, index: state.shown, color: day.color, origin: { x: at.x, y: at.y } });
           speak(state, stop.narration.speech, () => {
-            state.arriveUntil = state.clock + 600;
+            // 照片收回到车所在的位置，收完车再走
+            setBeat((current) => (current?.kind === "stop" && current.stop.id === stop.id ? { ...current, leaving: true } : current));
+            state.arriveUntil = state.clock + 900;
           });
           break;
         }
@@ -1580,8 +1599,13 @@ export function ParkMap({
     track && scrub !== null ? segmentLabel(track.timeline[seekTarget(track.timeline, track.starts, scrub * trackTotal).segment], track.days) : "";
 
   // 讲解卡片上的照片：车出发时图集可能还没取回来，按最新的 tour 找这一站
-  const beatPhoto =
-    beat?.kind === "stop" ? (tourDays.flatMap((day) => day.stops).find((stop) => stop.id === beat.stop.id)?.photo ?? beat.stop.photo) : undefined;
+  const beatStop = beat?.kind === "stop" ? (tourDays.flatMap((day) => day.stops).find((stop) => stop.id === beat.stop.id) ?? beat.stop) : undefined;
+  const beatPhoto = beatStop?.photo ?? (beat?.kind === "stop" ? beat.stop.photo : undefined);
+  // 到站全屏轮流放的照片；有了它卡片上就不再放那张小图
+  const montagePhotos = immersive && beatStop?.photos?.length ? beatStop.photos : [];
+  // 每天开头：这一天各站的第一张轮流放，像片头预告今天会看到什么（住处不算）
+  const beatDay = beat?.kind === "day" ? (tourDays.find((day) => day.day === beat.day.day) ?? beat.day) : undefined;
+  const dayPhotos = immersive && beatDay ? beatDay.stops.flatMap((stop) => (!stop.lodging && stop.photos?.[0] ? [stop.photos[0]] : [])).slice(0, 6) : [];
   const toggle = (active: boolean) =>
     `px-3 py-1.5 transition-colors ${active ? "bg-ink text-paper" : "text-ink hover:bg-paper-deep"}`;
   const hasTrails = (trails?.length ?? 0) > 0;
@@ -1596,7 +1620,8 @@ export function ParkMap({
       className={`overflow-hidden bg-paper-deep ${immersive ? "fixed inset-0 z-[80] h-[100dvh] w-screen" : `relative ${className}`}`}
     >
       {/* maplibre 的 CSS 会把容器设成 position: relative，所以用 h-full 而不是 inset-0 撑满 */}
-      <div ref={containerRef} className={`h-full w-full transition-opacity duration-500 ${ready ? "opacity-100" : "opacity-0"}`} />
+      {/* z-0：地图（连同上面的站牌、到站的波纹）自成一层，讲解版到站的照片能整个盖住它 */}
+      <div ref={containerRef} className={`z-0 h-full w-full transition-opacity duration-500 ${ready ? "opacity-100" : "opacity-0"}`} />
       {!ready && (
         <div className="eyebrow absolute inset-0 flex items-center justify-center text-ink-soft">
           {text.loading}
@@ -1658,13 +1683,45 @@ export function ParkMap({
           tourUi?.dusk ? "opacity-100" : "opacity-0"
         }`}
       />
+      {/* 讲解版到站：这一站的照片从地图上它的位置展开、铺满全屏，几张轮流放、慢慢推镜头，讲完收回去 */}
+      {beat?.kind === "stop" && montagePhotos.length > 0 && (
+        <StopMontage
+          key={beat.stop.id}
+          photos={montagePhotos}
+          origin={beat.origin}
+          number={beat.index}
+          // 卡片上的标题是“第 3 站 · 隧道观景点”，这里大号数字已经写了第几站，只留名字
+          title={beat.stop.narration?.title.split(" · ").slice(1).join(" · ") || beat.stop.label}
+          caption={beat.stop.caption}
+          color={beat.color}
+          durationMs={(beat.stop.narration?.speech ?? []).reduce((sum, line) => sum + readingMs(line), 0)}
+          paused={Boolean(tourUi?.paused)}
+          speed={speed}
+          leaving={Boolean(beat.leaving)}
+        />
+      )}
+      {beat?.kind === "day" && dayPhotos.length > 1 && (
+        <StopMontage
+          key={`day-${beat.day.day}`}
+          photos={dayPhotos}
+          // day 从 0 数起
+          number={beat.day.day + 1}
+          title={beat.day.date ?? beat.day.title}
+          caption={beat.day.subtitle}
+          color={beat.day.color}
+          durationMs={(beat.day.narration ?? []).reduce((sum, line) => sum + readingMs(line), 0)}
+          paused={Boolean(tourUi?.paused)}
+          speed={speed}
+          leaving={Boolean(beat.leaving)}
+        />
+      )}
       {/* 讲解版：旁边的卡片（电脑上在左边，手机上在下面）。一次只讲一件事：开头讲怎么看地图，每天开头讲这一天，每一站讲看点、怎么玩、什么时候、注意 */}
       {immersive && beat && (
         <aside
           key={beat.kind === "stop" ? beat.stop.id : beat.kind === "day" ? `day-${beat.day.day}` : beat.kind}
           className="tour-pop absolute inset-x-3 bottom-36 z-20 max-h-[50%] overflow-y-auto bg-paper shadow-lg sm:inset-x-auto sm:top-4 sm:bottom-auto sm:left-4 sm:max-h-[calc(100%-8rem)] sm:w-[24rem]"
         >
-          {beat.kind === "stop" && beatPhoto && (
+          {beat.kind === "stop" && beatPhoto && montagePhotos.length === 0 && (
             <figure className="relative hidden aspect-[3/2] w-full bg-paper-deep sm:block">
               <CommonsImage src={beatPhoto.url} alt="" fill sizes="384px" className="object-cover" />
               <figcaption className="absolute right-0 bottom-0 bg-ink/60 px-2 py-0.5 text-[10px] text-paper/90">{beatPhoto.credit}</figcaption>

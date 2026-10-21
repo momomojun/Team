@@ -20,6 +20,11 @@ function commonsLoader({ src, width }: ImageLoaderProps): string {
   return src.replace(THUMB, `/${Math.min(wanted, Number(match[1]))}px-${match[2]}`);
 }
 
+/** 不经过 next/image 时（自己写 img、提前下载）要的那张：width 宽的标准缩略图；不是 Commons 的照片原样返回 */
+export function commonsSrc(src: string, width: number): string {
+  return commonsLoader({ src, width, quality: undefined });
+}
+
 /** Wikimedia Commons 照片：按尺寸挑标准缩略图；万一这个宽度的缩略图加载失败，退回传进来的那张 */
 export function CommonsImage({ alt, onError, src, ref, ...props }: ImageProps & { ref?: Ref<HTMLImageElement> }) {
   const [fallback, setFallback] = useState(false);

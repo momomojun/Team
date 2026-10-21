@@ -44,6 +44,8 @@ export interface TourStop {
   narration?: StopNarration;
   /** 讲解卡片上的照片（Commons）和署名 */
   photo?: { url: string; credit: string };
+  /** 讲解版到站时全屏轮流放的照片（Commons 和 NPS 的，最多 8 张） */
+  photos?: { url: string; credit: string }[];
 }
 
 const RAD = Math.PI / 180;

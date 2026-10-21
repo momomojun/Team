@@ -900,6 +900,8 @@ export function Planner({
           english,
         ),
         ...(photo ? { photo: { url: photo.url, credit: `${photo.author} · ${photo.license}` } } : {}),
+        // 讲解版到站时全屏轮流放的几张
+        photos: (photosOf(stop) ?? []).map((item) => ({ url: item.url, credit: `${item.author} · ${item.license}` })),
       };
     });
     if (view.to) {
