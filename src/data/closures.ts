@@ -38,7 +38,7 @@ export const tempClosures: TempClosure[] = [
     reasonZh:
       "Grove of the Patriarchs 停车场 10 月 5 日起关闭，这条线原来的起点停不了车；可以停 Cowlitz Divide 停车场，沿 Eastside Trail 往南走过去，或者从 123 号公路那头的步道口进。",
     source: "https://www.nps.gov/mora/planyourvisit/trails-and-backcountry-camp-conditions.htm",
-    checked: "2026-10-16",
+    checked: "2026-10-20",
   },
   {
     attractions: ["bibe-balanced-rock"],
@@ -216,16 +216,6 @@ export const tempClosures: TempClosure[] = [
     checked: "2026-10-15",
   },
   {
-    attractions: ["grsm-cades-cove", "grsm-abrams-falls"],
-    from: "2026-05-06",
-    reopen: "2026-10-01",
-    weekdays: [3],
-    reasonZh:
-      "Cades Cove 环路 5 月初到 9 月底每个周三全天不让机动车进（Vehicle-free Wednesdays），只能走路或骑车（环路一圈约 18 公里，路口有租车店）；Abrams Falls 的步道口在环路中段，也开不过去。想开车看就换一天。",
-    source: "https://www.nps.gov/grsm/planyourvisit/cades-cove-vehicle-free-days.htm",
-    checked: "2026-10-15",
-  },
-  {
     // 2023 年起每年都有，2027 年的日期还没公布，按往年 5 月第一个到 9 月最后一个周三估
     attractions: ["grsm-cades-cove", "grsm-abrams-falls"],
     from: "2027-05-05",
@@ -235,5 +225,52 @@ export const tempClosures: TempClosure[] = [
       "Cades Cove 环路每年 5 月初到 9 月底的周三全天不让机动车进（2027 年的日期按往年估，还没公布），只能走路或骑车；Abrams Falls 的步道口在环路中段，也开不过去。想开车看就换一天。",
     source: "https://www.nps.gov/grsm/planyourvisit/cades-cove-vehicle-free-days.htm",
     checked: "2026-10-15",
+  },
+  {
+    attractions: ["grte-taggart-lake"],
+    from: "2027-05-01",
+    reopen: null,
+    // 计划 2027 年 11 月完工，公布重开日期后改成那天
+    longTerm: true,
+    reasonZh:
+      "Taggart Lake 步道口改造（扩成约 140 个车位），2027 年 5 月 1 日起步道口和步道全部关闭，徒步、骑马都不行，预计 2027 年 11 月完工；2027 年想去塔格特湖只能从北边沿 Valley Trail 走过去（比如从 Lupine Meadows 步道口），或者改走隐秘瀑布 · 灵感点。",
+    source: "https://www.nps.gov/grte/planyourvisit/park-construction.htm",
+    checked: "2026-10-20",
+  },
+  // 红木：每月第一个周六的 Hike and Bike Day（10 月到次年 5 月），按天写 2026–27 季剩下的几天
+  ...(
+    [
+      ["2026-11-07", "2026-11-08"],
+      ["2026-12-05", "2026-12-06"],
+      ["2027-01-02", "2027-01-03"],
+      ["2027-02-06", "2027-02-07"],
+      ["2027-03-06", "2027-03-07"],
+      ["2027-04-03", "2027-04-04"],
+      ["2027-05-01", "2027-05-02"],
+    ] as const
+  ).map(([from, reopen]) => ({
+    attractions: ["redw-newton-b-drury-parkway"],
+    from,
+    reopen,
+    reasonZh: "10 月到次年 5 月每月第一个周六是 Hike and Bike Day，牛顿·德鲁里风景道这天不让机动车开，只能步行或骑车；开车改走平行的 101 公路。",
+    source: "https://www.nps.gov/redw/planyourvisit/conditions.htm",
+    checked: "2026-10-20",
+  })),
+  {
+    attractions: ["cuva-towpath-bike"],
+    from: "2026-08-24",
+    reopen: "2026-11-21",
+    reasonZh:
+      "Towpath 的 Boston 步道口到 Peninsula（Lock 29 步道口）一段整修、Stumpy Basin 木栈道整个重建，暂定 8 月 24 日到 11 月 20 日关闭（2027 年 3 月 29 日到 4 月 21 日还要再关一次）。可以骑北段（Boston 以北）或南段（Peninsula 以南到 Beaver Marsh），中间这段改坐火车。",
+    source: "https://www.nps.gov/cuva/planyourvisit/conditions.htm",
+    checked: "2026-10-20",
+  },
+  {
+    attractions: ["cuva-towpath-bike"],
+    from: "2027-03-29",
+    reopen: "2027-04-22",
+    reasonZh: "Towpath 的 Boston 到 Peninsula 一段第二期整修，暂定 2027 年 3 月 29 日到 4 月 21 日关闭；可以骑北段或南段。",
+    source: "https://www.nps.gov/cuva/planyourvisit/conditions.htm",
+    checked: "2026-10-20",
   },
 ];

@@ -20,7 +20,7 @@ export interface GuidesResponse {
 
 /** 园外名胜不要加上 National Park，搜出来的会是别的公园 */
 export function guideQuery(nameEn: string, nationalPark: boolean, topic: GuideTopic): string {
-  const place = nationalPark ? `${nameEn} National Park` : nameEn;
+  const place = nationalPark && !/National Park/.test(nameEn) ? `${nameEn} National Park` : nameEn;
   if (topic === "route") return `${place} itinerary`;
   if (topic === "spots") return `${place} photo spots viewpoints`;
   return `${place} restaurants where to eat`;

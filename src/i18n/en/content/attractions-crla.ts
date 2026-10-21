@@ -5,6 +5,7 @@ export const content: Record<string, string> = {
   "全年都能开车到（冬季大雪时偶尔封路几天）；Rim 游客中心和辛诺特观景台只在夏秋开放，观景台要走一段陡石阶下去": "You can drive here year-round (heavy winter snow occasionally closes the road for a few days). The Rim Visitor Center and Sinnott Memorial Overlook are open only in summer and fall, and the overlook is down a steep flight of stone steps.",
   "夏季每天有护林员讲解；环湖观光小巴 Crater Lake Trolley 也从这里出发，约 2 小时，建议提前网上订票": "Rangers give talks daily in summer. The Crater Lake Trolley also leaves from here for a tour around the lake of about 2 hours; book online in advance.",
   "湖面常被云遮住，出发前可以看 NPS 网站上的 Rim Village 实时摄像头": "Clouds often hide the lake. Check the Rim Village webcam on the NPS website before you go.",
+  "园内没有加油站，进园前在 Prospect（62 号公路）、Crater Lake Junction（97 号公路）或 Diamond Lake 加满": "There's no gas station in the park. Fill up before you enter, at Prospect (Highway 62), Crater Lake Junction (Highway 97) or Diamond Lake.",
   "加菲尔德峰步道": "Garfield Peak Trail",
   "火山口湖酒店停车场（步道口在酒店后面）": "Crater Lake Lodge parking (trailhead behind the lodge)",
   "步道沿火山口边缘爬升，积雪常到 6 月底甚至 7 月才化完，10 月底以后又会下雪，雪坡陡滑不建议走（以 NPS 步道状况为准）；这段时间可以在 Rim Village 沿湖边石墙步道看湖，冬季参加护林员雪鞋徒步。": "The trail climbs along the caldera rim. Snow often lasts until late June or even July and returns after late October, and the steep, slick snow slopes make it inadvisable then (check NPS trail conditions). In the meantime, view the lake from the stone-wall walkway at Rim Village, or join a ranger-led snowshoe walk in winter.",
@@ -57,11 +58,11 @@ export const content: Record<string, string> = {
   "去普莱克尼瀑布和火山尖塔的 Pinnacles Road 就在这附近分出": "Pinnacles Road, which leads to Plaikni Falls and the Pinnacles, branches off nearby.",
   "普莱克尼瀑布": "Plaikni Falls Trail",
   "Plaikni Falls 步道口（Pinnacles Road 旁）": "Plaikni Falls trailhead (Pinnacles Road)",
-  "步道口在 Pinnacles Road 上，冬季和东环湖路一起关闭、积雪很深，通常 7 月前后才能去（以 NPS 公告为准），2026 年 9 月时 Pinnacles Road 因施工只能步行或骑车进入；冬春可以去 Rim Village 看湖。": "The trailhead is on Pinnacles Road, which closes in winter along with East Rim Drive and lies under deep snow; it's usually reachable only from around July (check NPS announcements). As of September 2026, Pinnacles Road was open only to walkers and cyclists because of construction. In winter and spring, see the lake from Rim Village.",
+  "步道口在 Pinnacles Road 上，冬季和东环湖路一起关闭、积雪很深，通常 7 月前后才能去（以 NPS 公告为准），2026 年整季 Pinnacles Road 因施工只能步行或骑车进入；冬春可以去 Rim Village 看湖。": "The trailhead is on Pinnacles Road, which closes in winter along with East Rim Drive and lies under deep snow; it's usually reachable only from around July (check NPS announcements). Throughout the 2026 season, Pinnacles Road was open only to walkers and cyclists because of construction. In winter and spring, see the lake from Rim Village.",
   "穿过老龄林的平缓步道，尽头是一道由融雪汇成的瀑布（水不是从火山口湖流出来的），盛夏沿途野花很多。": "A gentle trail through old-growth forest to a waterfall fed by snowmelt (the water doesn't come from Crater Lake). Wildflowers line the way in midsummer.",
   "步道口在 Pinnacles Road 上，离东环湖路约 1.9 公里，停车位不多": "The trailhead is on Pinnacles Road about 1.2 miles from East Rim Drive, with limited parking.",
   "前 3/4 路段全地形轮椅在协助下可以通行，最后一段较陡": "The first three-quarters of the trail is passable in an all-terrain wheelchair with assistance; the last stretch is steeper.",
-  "2026 年 9 月时 Pinnacles Road 因施工只能步行或骑车进入，出发前查 NPS Current Conditions": "As of September 2026, Pinnacles Road was open only to walkers and cyclists because of construction. Check the NPS Current Conditions page before you go.",
+  "2026 年整季 Pinnacles Road 因施工只能步行或骑车进入，出发前查 NPS Current Conditions": "Throughout the 2026 season, Pinnacles Road was open only to walkers and cyclists because of construction. Check the NPS Current Conditions page before you go.",
   "太阳垭口步道": "Sun Notch Trail",
   "Sun Notch 步道口（东环湖路旁）": "Sun Notch trailhead (East Rim Drive)",
   "在东环湖路南段，这段路通常 11 月 1 日或更早关闭，次年 7 月中旬前后清雪通车（以 NPS 公告为准）；冬春可以在 Rim Village 看湖，或参加护林员雪鞋徒步。": "It's on the southern part of East Rim Drive, which usually closes on November 1 or earlier and is plowed and reopened around mid-July (check NPS announcements). In winter and spring, see the lake from Rim Village or join a ranger-led snowshoe walk.",
@@ -90,5 +91,5 @@ export const content: Record<string, string> = {
   "官方说前 3/4 有人协助能走轮椅，最后到瀑布的一小段上坡可能太陡；婴儿车也推到这里为止。": "According to the NPS, the first three-quarters is wheelchair accessible with assistance, but the short final climb to the falls may be too steep. That's also as far as a stroller can go.",
   "是一小段上坡路，官方说体力好的轮椅使用者有人协助能走；终点在火山口边缘，内壁陡峭松散，孩子一定牵着，别越过崖边。": "It's a short uphill walk, and according to the NPS, fit wheelchair users can manage it with assistance. It ends at the caldera rim, where the inner wall is steep and loose; hold children's hands and stay back from the edge.",
   "东环湖路边停车就能看瀑布；旁边的 Vidae Falls 野餐区有无障碍位置、车位和厕所。": "You can see the falls from roadside parking on East Rim Drive. The adjacent Vidae Falls Picnic Area has accessible sites, parking, and restrooms.",
-  "官方说步道平而宽，停车场边就能看到尖塔。2026 年 9 月时 Pinnacles Road 因施工只能步行或骑车进入，出发前查 NPS 路况。": "According to the NPS, the trail is level and wide, and you can see the spires from the edge of the parking area. As of September 2026, Pinnacles Road was open only to walkers and cyclists because of construction; check NPS road conditions before you go."
+  "官方说步道平而宽，停车场边就能看到尖塔。2026 年整季 Pinnacles Road 因施工只能步行或骑车进入，出发前查 NPS 路况。": "According to the NPS, the trail is level and wide, and you can see the spires from the edge of the parking area. Throughout the 2026 season, Pinnacles Road was open only to walkers and cyclists because of construction; check NPS road conditions before you go."
 };

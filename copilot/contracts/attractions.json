@@ -6966,5 +6966,933 @@
     "nameZh": "Craggy Gardens（蓝岭公路）",
     "area": "parkway",
     "areaZh": "园外：蓝岭公路（北卡段）"
+  },
+  {
+    "id": "maca-visitor-center",
+    "park": "maca",
+    "nameEn": "Mammoth Cave Visitor Center & Historic Entrance",
+    "nameZh": "猛犸洞游客中心和历史入口",
+    "area": "visitor-center",
+    "areaZh": "游客中心 · 历史入口"
+  },
+  {
+    "id": "maca-historic-tour",
+    "park": "maca",
+    "nameEn": "Historic Tour",
+    "nameZh": "历史导览（Historic Tour）",
+    "area": "visitor-center",
+    "areaZh": "游客中心 · 历史入口"
+  },
+  {
+    "id": "maca-domes-dripstones",
+    "park": "maca",
+    "nameEn": "Domes and Dripstones Tour",
+    "nameZh": "穹顶与钟乳石导览（Domes & Dripstones）",
+    "area": "frozen-niagara",
+    "areaZh": "Frozen Niagara · New Entrance 一带（坐车去）"
+  },
+  {
+    "id": "maca-frozen-niagara",
+    "park": "maca",
+    "nameEn": "Frozen Niagara Tour",
+    "nameZh": "Frozen Niagara 导览",
+    "area": "frozen-niagara",
+    "areaZh": "Frozen Niagara · New Entrance 一带（坐车去）"
+  },
+  {
+    "id": "maca-mammoth-passage",
+    "park": "maca",
+    "nameEn": "Mammoth Passage Tour",
+    "nameZh": "猛犸通道导览（Mammoth Passage）",
+    "area": "visitor-center",
+    "areaZh": "游客中心 · 历史入口"
+  },
+  {
+    "id": "maca-grand-avenue",
+    "park": "maca",
+    "nameEn": "Grand Avenue Tour",
+    "nameZh": "大道导览（Grand Avenue）",
+    "area": "frozen-niagara",
+    "areaZh": "Frozen Niagara · New Entrance 一带（坐车去）"
+  },
+  {
+    "id": "maca-great-onyx-lantern",
+    "park": "maca",
+    "nameEn": "Great Onyx Lantern Tour",
+    "nameZh": "Great Onyx 洞提灯导览",
+    "area": "flint-ridge",
+    "areaZh": "Flint Ridge · Great Onyx 洞"
+  },
+  {
+    "id": "maca-violet-city-lantern",
+    "park": "maca",
+    "nameEn": "Violet City Lantern Tour",
+    "nameZh": "紫罗兰城提灯导览（Violet City）",
+    "area": "visitor-center",
+    "areaZh": "游客中心 · 历史入口"
+  },
+  {
+    "id": "maca-wild-cave",
+    "park": "maca",
+    "nameEn": "Wild Cave Tour",
+    "nameZh": "野洞探险（Wild Cave Tour）",
+    "area": "frozen-niagara",
+    "areaZh": "Frozen Niagara · New Entrance 一带（坐车去）"
+  },
+  {
+    "id": "maca-river-styx-loop",
+    "park": "maca",
+    "nameEn": "Green River Bluffs & River Styx Spring Trails",
+    "nameZh": "Green 河崖顶和 River Styx 泉步道",
+    "area": "visitor-center",
+    "areaZh": "游客中心 · 历史入口"
+  },
+  {
+    "id": "maca-echo-river-spring",
+    "park": "maca",
+    "nameEn": "Echo River Spring Trail",
+    "nameZh": "Echo River 泉无障碍步道",
+    "area": "visitor-center",
+    "areaZh": "游客中心 · 历史入口"
+  },
+  {
+    "id": "maca-cedar-sink",
+    "park": "maca",
+    "nameEn": "Cedar Sink Trail",
+    "nameZh": "Cedar Sink 大落水洞",
+    "area": "south-side",
+    "areaZh": "南侧：Cedar Sink · Sand Cave · Sloans Crossing"
+  },
+  {
+    "id": "maca-sand-cave",
+    "park": "maca",
+    "nameEn": "Sand Cave Trail",
+    "nameZh": "Sand Cave（弗洛伊德·柯林斯遇难处）",
+    "area": "south-side",
+    "areaZh": "南侧：Cedar Sink · Sand Cave · Sloans Crossing"
+  },
+  {
+    "id": "maca-sloans-crossing",
+    "park": "maca",
+    "nameEn": "Sloans Crossing Pond Walk",
+    "nameZh": "Sloans Crossing 池塘步道",
+    "area": "south-side",
+    "areaZh": "南侧：Cedar Sink · Sand Cave · Sloans Crossing"
+  },
+  {
+    "id": "maca-green-river-paddle",
+    "park": "maca",
+    "nameEn": "Green River canoe and kayak trip",
+    "nameZh": "Green 河独木舟、皮划艇",
+    "area": "river",
+    "areaZh": "Green 河（划船 · 渡口）"
+  },
+  {
+    "id": "cong-visitor-center",
+    "park": "cong",
+    "nameEn": "Harry Hampton Visitor Center",
+    "nameZh": "Harry Hampton 游客中心",
+    "area": "harry-hampton",
+    "areaZh": "Harry Hampton 游客中心 · 木栈道"
+  },
+  {
+    "id": "cong-boardwalk",
+    "park": "cong",
+    "nameEn": "Boardwalk Loop Trail",
+    "nameZh": "木栈道环线",
+    "area": "harry-hampton",
+    "areaZh": "Harry Hampton 游客中心 · 木栈道"
+  },
+  {
+    "id": "cong-weston-lake",
+    "park": "cong",
+    "nameEn": "Weston Lake Loop Trail",
+    "nameZh": "Weston Lake 环线",
+    "area": "harry-hampton",
+    "areaZh": "Harry Hampton 游客中心 · 木栈道"
+  },
+  {
+    "id": "cong-oakridge",
+    "park": "cong",
+    "nameEn": "Oakridge Trail",
+    "nameZh": "Oakridge 步道",
+    "area": "harry-hampton",
+    "areaZh": "Harry Hampton 游客中心 · 木栈道"
+  },
+  {
+    "id": "cong-bluff-trail",
+    "park": "cong",
+    "nameEn": "Bluff Trail",
+    "nameZh": "Bluff 步道（松林）",
+    "area": "harry-hampton",
+    "areaZh": "Harry Hampton 游客中心 · 木栈道"
+  },
+  {
+    "id": "cong-cedar-creek-paddle",
+    "park": "cong",
+    "nameEn": "Cedar Creek paddle",
+    "nameZh": "Cedar Creek 独木舟、皮划艇",
+    "area": "cedar-creek",
+    "areaZh": "Cedar Creek（South Cedar Creek 码头 · 划船）"
+  },
+  {
+    "id": "cong-fireflies",
+    "park": "cong",
+    "nameEn": "Synchronous Firefly Viewing",
+    "nameZh": "同步萤火虫观赏",
+    "area": "harry-hampton",
+    "areaZh": "Harry Hampton 游客中心 · 木栈道"
+  },
+  {
+    "id": "cong-bates-ferry",
+    "park": "cong",
+    "nameEn": "Bates Ferry Trail",
+    "nameZh": "Bates Ferry 步道（Congaree 河边）",
+    "area": "east",
+    "areaZh": "东区：Bates Ferry（US-601）"
+  },
+  {
+    "id": "hosp-fordyce",
+    "park": "hosp",
+    "nameEn": "Fordyce Bathhouse Visitor Center & Museum",
+    "nameZh": "Fordyce 浴场（游客中心和博物馆）",
+    "area": "bathhouse-row",
+    "areaZh": "浴场街（Bathhouse Row · Central Avenue）"
+  },
+  {
+    "id": "hosp-bathhouse-row",
+    "park": "hosp",
+    "nameEn": "Bathhouse Row",
+    "nameZh": "浴场街（Bathhouse Row）",
+    "area": "bathhouse-row",
+    "areaZh": "浴场街（Bathhouse Row · Central Avenue）"
+  },
+  {
+    "id": "hosp-buckstaff",
+    "park": "hosp",
+    "nameEn": "Buckstaff Bathhouse traditional bath",
+    "nameZh": "Buckstaff 浴场传统泡澡",
+    "area": "bathhouse-row",
+    "areaZh": "浴场街（Bathhouse Row · Central Avenue）"
+  },
+  {
+    "id": "hosp-quapaw",
+    "park": "hosp",
+    "nameEn": "Quapaw Baths & Spa",
+    "nameZh": "Quapaw 浴场温泉池",
+    "area": "bathhouse-row",
+    "areaZh": "浴场街（Bathhouse Row · Central Avenue）"
+  },
+  {
+    "id": "hosp-grand-promenade",
+    "park": "hosp",
+    "nameEn": "Grand Promenade, Display Springs & Hot Water Cascade",
+    "nameZh": "Grand Promenade 和温泉出水口",
+    "area": "bathhouse-row",
+    "areaZh": "浴场街（Bathhouse Row · Central Avenue）"
+  },
+  {
+    "id": "hosp-mountain-tower",
+    "park": "hosp",
+    "nameEn": "Hot Springs Mountain Tower",
+    "nameZh": "Hot Springs Mountain 观景塔",
+    "area": "hot-springs-mountain",
+    "areaZh": "Hot Springs Mountain · North Mountain"
+  },
+  {
+    "id": "hosp-hot-springs-mountain-trail",
+    "park": "hosp",
+    "nameEn": "Hot Springs Mountain Trail",
+    "nameZh": "Hot Springs Mountain 山顶环线",
+    "area": "hot-springs-mountain",
+    "areaZh": "Hot Springs Mountain · North Mountain"
+  },
+  {
+    "id": "hosp-goat-rock",
+    "park": "hosp",
+    "nameEn": "Goat Rock Trail & Overlook",
+    "nameZh": "Goat Rock 观景点",
+    "area": "hot-springs-mountain",
+    "areaZh": "Hot Springs Mountain · North Mountain"
+  },
+  {
+    "id": "hosp-west-mountain",
+    "park": "hosp",
+    "nameEn": "West Mountain Drive & Overlooks",
+    "nameZh": "West Mountain 观景路",
+    "area": "west-mountain",
+    "areaZh": "West Mountain · Sugarloaf Mountain"
+  },
+  {
+    "id": "hosp-gulpha-gorge",
+    "park": "hosp",
+    "nameEn": "Gulpha Gorge",
+    "nameZh": "Gulpha Gorge（营地和溪谷）",
+    "area": "hot-springs-mountain",
+    "areaZh": "Hot Springs Mountain · North Mountain"
+  },
+  {
+    "id": "cuva-boston-mill-vc",
+    "park": "cuva",
+    "nameEn": "Boston Mill Visitor Center",
+    "nameZh": "Boston Mill 游客中心",
+    "area": "boston",
+    "areaZh": "Boston · Peninsula（游客中心 · 火车站）"
+  },
+  {
+    "id": "cuva-brandywine-falls",
+    "park": "cuva",
+    "nameEn": "Brandywine Falls",
+    "nameZh": "Brandywine 瀑布",
+    "area": "brandywine",
+    "areaZh": "Brandywine 瀑布一带"
+  },
+  {
+    "id": "cuva-ledges",
+    "park": "cuva",
+    "nameEn": "Ledges Trail & Ledges Overlook",
+    "nameZh": "The Ledges 砂岩崖和观景点",
+    "area": "virginia-kendall",
+    "areaZh": "Virginia Kendall（The Ledges · Kendall Lake）"
+  },
+  {
+    "id": "cuva-beaver-marsh",
+    "park": "cuva",
+    "nameEn": "Beaver Marsh",
+    "nameZh": "Beaver Marsh 河狸沼泽",
+    "area": "south",
+    "areaZh": "南段：Everett · Beaver Marsh（Ira）"
+  },
+  {
+    "id": "cuva-towpath-bike",
+    "park": "cuva",
+    "nameEn": "Ohio & Erie Canal Towpath Trail by bike",
+    "nameZh": "Towpath 运河纤道骑车",
+    "area": "boston",
+    "areaZh": "Boston · Peninsula（游客中心 · 火车站）"
+  },
+  {
+    "id": "cuva-scenic-railroad",
+    "park": "cuva",
+    "nameEn": "Cuyahoga Valley Scenic Railroad",
+    "nameZh": "凯霍加谷观光火车",
+    "area": "north",
+    "areaZh": "北段：Canal Exploration Center · Rockside"
+  },
+  {
+    "id": "cuva-everett-covered-bridge",
+    "park": "cuva",
+    "nameEn": "Everett Covered Bridge",
+    "nameZh": "Everett 廊桥",
+    "area": "south",
+    "areaZh": "南段：Everett · Beaver Marsh（Ira）"
+  },
+  {
+    "id": "cuva-blue-hen-falls",
+    "park": "cuva",
+    "nameEn": "Blue Hen Falls",
+    "nameZh": "Blue Hen 瀑布",
+    "area": "boston",
+    "areaZh": "Boston · Peninsula（游客中心 · 火车站）"
+  },
+  {
+    "id": "cuva-peninsula",
+    "park": "cuva",
+    "nameEn": "Peninsula Village & Lock 29",
+    "nameZh": "Peninsula 小镇和 Lock 29 船闸",
+    "area": "boston",
+    "areaZh": "Boston · Peninsula（游客中心 · 火车站）"
+  },
+  {
+    "id": "indu-visitor-center",
+    "park": "indu",
+    "nameEn": "Indiana Dunes Visitor Center",
+    "nameZh": "印第安纳沙丘游客中心",
+    "area": "central",
+    "areaZh": "中区：游客中心 · Cowles Bog · Chellberg 农场"
+  },
+  {
+    "id": "indu-west-beach",
+    "park": "indu",
+    "nameEn": "West Beach & Dune Succession Trail",
+    "nameZh": "West Beach 和 Dune Succession 步道",
+    "area": "west",
+    "areaZh": "西区：West Beach · Miller Woods · Portage Lakefront"
+  },
+  {
+    "id": "indu-mount-baldy",
+    "park": "indu",
+    "nameEn": "Mount Baldy",
+    "nameZh": "Mount Baldy（会走路的沙丘）",
+    "area": "east",
+    "areaZh": "东区：Beverly Shores · Great Marsh · Mount Baldy"
+  },
+  {
+    "id": "indu-cowles-bog",
+    "park": "indu",
+    "nameEn": "Cowles Bog Trail",
+    "nameZh": "Cowles Bog 步道",
+    "area": "central",
+    "areaZh": "中区：游客中心 · Cowles Bog · Chellberg 农场"
+  },
+  {
+    "id": "indu-miller-woods",
+    "park": "indu",
+    "nameEn": "Paul H. Douglas Trail (Miller Woods)",
+    "nameZh": "Miller Woods（Paul H. Douglas 步道）",
+    "area": "west",
+    "areaZh": "西区：West Beach · Miller Woods · Portage Lakefront"
+  },
+  {
+    "id": "indu-portage-lakefront",
+    "park": "indu",
+    "nameEn": "Portage Lakefront and Riverwalk",
+    "nameZh": "Portage Lakefront 湖滨步道",
+    "area": "west",
+    "areaZh": "西区：West Beach · Miller Woods · Portage Lakefront"
+  },
+  {
+    "id": "indu-great-marsh",
+    "park": "indu",
+    "nameEn": "Great Marsh Trail",
+    "nameZh": "Great Marsh 大沼泽步道",
+    "area": "east",
+    "areaZh": "东区：Beverly Shores · Great Marsh · Mount Baldy"
+  },
+  {
+    "id": "indu-chellberg-farm",
+    "park": "indu",
+    "nameEn": "Chellberg Farm & Bailly Homestead",
+    "nameZh": "Chellberg 农场和 Bailly 老宅",
+    "area": "central",
+    "areaZh": "中区：游客中心 · Cowles Bog · Chellberg 农场"
+  },
+  {
+    "id": "indu-lake-view",
+    "park": "indu",
+    "nameEn": "Lake View Beach & Century of Progress Homes",
+    "nameZh": "Lake View 海滩和“明日之家”老房子",
+    "area": "east",
+    "areaZh": "东区：Beverly Shores · Great Marsh · Mount Baldy"
+  },
+  {
+    "id": "indu-3-dune-challenge",
+    "park": "indu",
+    "nameEn": "3 Dune Challenge (Indiana Dunes State Park)",
+    "nameZh": "三沙丘挑战（州立公园）",
+    "area": "state-park",
+    "areaZh": "印第安纳沙丘州立公园（州里的，另收费）"
+  },
+  {
+    "id": "jeff-tram",
+    "park": "jeff",
+    "nameEn": "Tram Ride to the Top",
+    "nameZh": "坐电车上拱门顶",
+    "area": "arch",
+    "areaZh": "拱门和地下博物馆"
+  },
+  {
+    "id": "jeff-museum",
+    "park": "jeff",
+    "nameEn": "Museum at the Gateway Arch",
+    "nameZh": "拱门下的博物馆",
+    "area": "arch",
+    "areaZh": "拱门和地下博物馆"
+  },
+  {
+    "id": "jeff-arch-grounds",
+    "park": "jeff",
+    "nameEn": "Gateway Arch Grounds",
+    "nameZh": "拱门草地和倒影池",
+    "area": "arch",
+    "areaZh": "拱门和地下博物馆"
+  },
+  {
+    "id": "jeff-old-courthouse",
+    "park": "jeff",
+    "nameEn": "Old Courthouse",
+    "nameZh": "老法院（Old Courthouse）",
+    "area": "downtown",
+    "areaZh": "老法院 · 市中心"
+  },
+  {
+    "id": "jeff-riverboat",
+    "park": "jeff",
+    "nameEn": "Gateway Arch Riverboats sightseeing cruise",
+    "nameZh": "密西西比河游船",
+    "area": "riverfront",
+    "areaZh": "河滨（游船码头 · Eads 大桥）"
+  },
+  {
+    "id": "jeff-riverfront",
+    "park": "jeff",
+    "nameEn": "Riverfront Trail & Eads Bridge",
+    "nameZh": "河滨步道和 Eads 大桥",
+    "area": "riverfront",
+    "areaZh": "河滨（游船码头 · Eads 大桥）"
+  },
+  {
+    "id": "isro-rock-harbor-day-trip",
+    "park": "isro",
+    "nameEn": "Isle Royale Queen IV Day Trip to Rock Harbor",
+    "nameZh": "Queen IV 渡轮一日游（Copper Harbor → Rock Harbor）",
+    "area": "rock-harbor",
+    "areaZh": "东头：Rock Harbor（Copper Harbor、Houghton 坐船）"
+  },
+  {
+    "id": "isro-seaplane",
+    "park": "isro",
+    "nameEn": "Isle Royale Seaplanes Day Trip",
+    "nameZh": "水上飞机一日游（Hubbell 出发）",
+    "area": "rock-harbor",
+    "areaZh": "东头：Rock Harbor（Copper Harbor、Houghton 坐船）"
+  },
+  {
+    "id": "isro-windigo-day-trip",
+    "park": "isro",
+    "nameEn": "Sea Hunter III Day Trip to Windigo",
+    "nameZh": "Sea Hunter III 渡轮一日游（Grand Portage → Windigo）",
+    "area": "windigo",
+    "areaZh": "西头：Windigo（Grand Portage 坐船）"
+  },
+  {
+    "id": "isro-scoville-point",
+    "park": "isro",
+    "nameEn": "Scoville Point Loop",
+    "nameZh": "Scoville Point 环线",
+    "area": "rock-harbor",
+    "areaZh": "东头：Rock Harbor（Copper Harbor、Houghton 坐船）"
+  },
+  {
+    "id": "isro-lookout-louise",
+    "park": "isro",
+    "nameEn": "MV Sandy to Hidden Lake & Lookout Louise",
+    "nameZh": "MV Sandy 游船 · Lookout Louise 观景点",
+    "area": "rock-harbor",
+    "areaZh": "东头：Rock Harbor（Copper Harbor、Houghton 坐船）"
+  },
+  {
+    "id": "isro-edisen-fishery",
+    "park": "isro",
+    "nameEn": "MV Sandy to Edisen Fishery & Rock Harbor Lighthouse",
+    "nameZh": "MV Sandy 游船 · Edisen 渔场和 Rock Harbor 灯塔",
+    "area": "rock-harbor",
+    "areaZh": "东头：Rock Harbor（Copper Harbor、Houghton 坐船）"
+  },
+  {
+    "id": "isro-greenstone-ridge",
+    "park": "isro",
+    "nameEn": "Greenstone Ridge Trail Backpacking",
+    "nameZh": "Greenstone Ridge 背包穿越（Windigo → Rock Harbor）",
+    "area": "interior",
+    "areaZh": "岛中间（背包穿越）"
+  },
+  {
+    "id": "isro-houghton-vc",
+    "park": "isro",
+    "nameEn": "Houghton Visitor Center",
+    "nameZh": "Houghton 游客中心（公园总部）",
+    "area": "keweenaw",
+    "areaZh": "密歇根本土：Houghton · Copper Harbor"
+  },
+  {
+    "id": "isro-keweenaw-cruise",
+    "park": "isro",
+    "nameEn": "Keweenaw Waterway Cruise on Ranger III",
+    "nameZh": "Ranger III 基威诺水道游船",
+    "area": "keweenaw",
+    "areaZh": "密歇根本土：Houghton · Copper Harbor"
+  },
+  {
+    "id": "isro-brockway-mountain",
+    "park": "isro",
+    "nameEn": "Brockway Mountain Drive",
+    "nameZh": "Brockway 山观景路",
+    "area": "keweenaw",
+    "areaZh": "密歇根本土：Houghton · Copper Harbor"
+  },
+  {
+    "id": "isro-grand-portage",
+    "park": "isro",
+    "nameEn": "Grand Portage National Monument",
+    "nameZh": "Grand Portage 国家纪念地",
+    "area": "grand-portage",
+    "areaZh": "明尼苏达本土：Grand Portage"
+  },
+  {
+    "id": "voya-rainy-lake-vc",
+    "park": "voya",
+    "nameEn": "Rainy Lake Visitor Center",
+    "nameZh": "Rainy Lake 游客中心",
+    "area": "rainy",
+    "areaZh": "Rainy Lake（International Falls 一侧）"
+  },
+  {
+    "id": "voya-kettle-falls",
+    "park": "voya",
+    "nameEn": "Kettle Falls Hotel & Dam Cruise",
+    "nameZh": "Kettle Falls 酒店和水坝游船",
+    "area": "kettle-falls",
+    "areaZh": "Kettle Falls（坐船）"
+  },
+  {
+    "id": "voya-grand-tour",
+    "park": "voya",
+    "nameEn": "Grand Tour on Rainy Lake",
+    "nameZh": "Rainy Lake Grand Tour 游船",
+    "area": "rainy",
+    "areaZh": "Rainy Lake（International Falls 一侧）"
+  },
+  {
+    "id": "voya-life-on-the-lake",
+    "park": "voya",
+    "nameEn": "Life on the Lake Tour (Rainy Lake)",
+    "nameZh": "Life on the Lake 游船（Little American 岛金矿和渔营）",
+    "area": "rainy",
+    "areaZh": "Rainy Lake（International Falls 一侧）"
+  },
+  {
+    "id": "voya-ellsworth-rock-gardens",
+    "park": "voya",
+    "nameEn": "Ellsworth Rock Gardens Tour",
+    "nameZh": "Ellsworth 石头花园游船",
+    "area": "kabetogama",
+    "areaZh": "Kabetogama Lake"
+  },
+  {
+    "id": "voya-north-canoe-voyage",
+    "park": "voya",
+    "nameEn": "North Canoe Voyage",
+    "nameZh": "North Canoe Voyage 大独木舟体验",
+    "area": "rainy",
+    "areaZh": "Rainy Lake（International Falls 一侧）"
+  },
+  {
+    "id": "voya-oberholtzer-trail",
+    "park": "voya",
+    "nameEn": "Oberholtzer Trail",
+    "nameZh": "Oberholtzer 步道",
+    "area": "rainy",
+    "areaZh": "Rainy Lake（International Falls 一侧）"
+  },
+  {
+    "id": "voya-echo-bay-trail",
+    "park": "voya",
+    "nameEn": "Echo Bay Trail",
+    "nameZh": "Echo Bay 步道",
+    "area": "kabetogama",
+    "areaZh": "Kabetogama Lake"
+  },
+  {
+    "id": "voya-kabetogama-overlook",
+    "park": "voya",
+    "nameEn": "Kabetogama Lake Overlook",
+    "nameZh": "Kabetogama 湖观景点",
+    "area": "ash-river",
+    "areaZh": "Ash River · Namakan Lake"
+  },
+  {
+    "id": "voya-blind-ash-bay",
+    "park": "voya",
+    "nameEn": "Blind Ash Bay Trail",
+    "nameZh": "Blind Ash Bay 步道",
+    "area": "ash-river",
+    "areaZh": "Ash River · Namakan Lake"
+  },
+  {
+    "id": "voya-ice-road",
+    "park": "voya",
+    "nameEn": "Rainy Lake & Kabetogama Ice Roads",
+    "nameZh": "冰上公路",
+    "area": "rainy",
+    "areaZh": "Rainy Lake（International Falls 一侧）"
+  },
+  {
+    "id": "voya-night-sky",
+    "park": "voya",
+    "nameEn": "Stargazing & Northern Lights",
+    "nameZh": "看星空和北极光（Meadwood Road 日间休息区）",
+    "area": "ash-river",
+    "areaZh": "Ash River · Namakan Lake"
+  },
+  {
+    "id": "viis-cruz-bay-vc",
+    "park": "viis",
+    "nameEn": "Cruz Bay Visitor Center",
+    "nameZh": "Cruz Bay 游客中心",
+    "area": "cruz-bay",
+    "areaZh": "Cruz Bay（码头 · 游客中心）"
+  },
+  {
+    "id": "viis-trunk-bay",
+    "park": "viis",
+    "nameEn": "Trunk Bay & Underwater Snorkel Trail",
+    "nameZh": "Trunk Bay 和水下浮潜步道",
+    "area": "north-shore",
+    "areaZh": "北岸海湾（North Shore Road）"
+  },
+  {
+    "id": "viis-trunk-bay-overlook",
+    "park": "viis",
+    "nameEn": "Trunk Bay Overlook",
+    "nameZh": "Trunk Bay 观景点",
+    "area": "north-shore",
+    "areaZh": "北岸海湾（North Shore Road）"
+  },
+  {
+    "id": "viis-cinnamon-bay",
+    "park": "viis",
+    "nameEn": "Cinnamon Bay Beach & Nature Loop",
+    "nameZh": "Cinnamon Bay 海滩和种植园遗址步道",
+    "area": "north-shore",
+    "areaZh": "北岸海湾（North Shore Road）"
+  },
+  {
+    "id": "viis-maho-bay",
+    "park": "viis",
+    "nameEn": "Maho Bay",
+    "nameZh": "Maho Bay 看海龟",
+    "area": "north-shore",
+    "areaZh": "北岸海湾（North Shore Road）"
+  },
+  {
+    "id": "viis-francis-bay",
+    "park": "viis",
+    "nameEn": "Francis Bay Trail & Boardwalk",
+    "nameZh": "Francis Bay 步道和咸水塘栈道",
+    "area": "north-shore",
+    "areaZh": "北岸海湾（North Shore Road）"
+  },
+  {
+    "id": "viis-annaberg",
+    "park": "viis",
+    "nameEn": "Annaberg Sugar Plantation Ruins",
+    "nameZh": "Annaberg 甘蔗种植园遗址",
+    "area": "annaberg",
+    "areaZh": "Annaberg · Leinster Bay"
+  },
+  {
+    "id": "viis-waterlemon-cay",
+    "park": "viis",
+    "nameEn": "Leinster Bay Trail & Waterlemon Cay",
+    "nameZh": "Leinster Bay 步道和 Waterlemon Cay 浮潜",
+    "area": "annaberg",
+    "areaZh": "Annaberg · Leinster Bay"
+  },
+  {
+    "id": "viis-lind-point",
+    "park": "viis",
+    "nameEn": "Lind Point Trail to Honeymoon & Salomon Beaches",
+    "nameZh": "Lind Point 步道和 Honeymoon 海滩",
+    "area": "cruz-bay",
+    "areaZh": "Cruz Bay（码头 · 游客中心）"
+  },
+  {
+    "id": "viis-reef-bay-trail",
+    "park": "viis",
+    "nameEn": "Reef Bay Trail & Petroglyphs",
+    "nameZh": "Reef Bay 步道（泰诺岩刻）",
+    "area": "reef-bay",
+    "areaZh": "中部山脊 · Reef Bay"
+  },
+  {
+    "id": "viis-ram-head",
+    "park": "viis",
+    "nameEn": "Salt Pond Bay & Ram Head Trail",
+    "nameZh": "Salt Pond 湾和 Ram Head 步道",
+    "area": "coral-bay",
+    "areaZh": "东南：Salt Pond · Ram Head"
+  },
+  {
+    "id": "viis-north-shore-drive",
+    "park": "viis",
+    "nameEn": "North Shore Road",
+    "nameZh": "北岸公路（Route 20）",
+    "area": "north-shore",
+    "areaZh": "北岸海湾（North Shore Road）"
+  },
+  {
+    "id": "viis-magens-bay",
+    "park": "viis",
+    "nameEn": "Magens Bay, St. Thomas",
+    "nameZh": "Magens Bay（圣托马斯岛）",
+    "area": "st-thomas",
+    "areaZh": "圣托马斯岛（园外）"
+  },
+  {
+    "id": "npsa-visitor-center",
+    "park": "npsa",
+    "nameEn": "National Park of American Samoa Visitor Center",
+    "nameZh": "公园游客中心（帕果帕果）",
+    "area": "pago-pago",
+    "areaZh": "帕果帕果和港湾（游客中心）"
+  },
+  {
+    "id": "npsa-vatia-road",
+    "park": "npsa",
+    "nameEn": "Afono Pass Road to Vatia",
+    "nameZh": "翻 Afono Pass 去 Vatia 的山路",
+    "area": "vatia",
+    "areaZh": "Vatia 一带（北岸）"
+  },
+  {
+    "id": "npsa-pola-island",
+    "park": "npsa",
+    "nameEn": "Pola Island Trail",
+    "nameZh": "Pola 岛步道",
+    "area": "vatia",
+    "areaZh": "Vatia 一带（北岸）"
+  },
+  {
+    "id": "npsa-lower-sauma",
+    "park": "npsa",
+    "nameEn": "Lower Sauma Ridge Trail",
+    "nameZh": "Lower Sauma Ridge 步道",
+    "area": "vatia",
+    "areaZh": "Vatia 一带（北岸）"
+  },
+  {
+    "id": "npsa-upper-sauma",
+    "park": "npsa",
+    "nameEn": "Upper Sauma Ridge Trail",
+    "nameZh": "Upper Sauma Ridge 步道",
+    "area": "vatia",
+    "areaZh": "Vatia 一带（北岸）"
+  },
+  {
+    "id": "npsa-tuafanua-trail",
+    "park": "npsa",
+    "nameEn": "Tuafanua Trail",
+    "nameZh": "Tuafanua 步道",
+    "area": "vatia",
+    "areaZh": "Vatia 一带（北岸）"
+  },
+  {
+    "id": "npsa-mount-alava",
+    "park": "npsa",
+    "nameEn": "Mount 'Alava Trail",
+    "nameZh": "Mount 'Alava 步道",
+    "area": "mount-alava",
+    "areaZh": "Mount 'Alava 山脊"
+  },
+  {
+    "id": "npsa-wwii-heritage",
+    "park": "npsa",
+    "nameEn": "World War II Heritage Trail & Blunts Point",
+    "nameZh": "二战遗迹步道和 Blunts Point 炮台",
+    "area": "pago-pago",
+    "areaZh": "帕果帕果和港湾（游客中心）"
+  },
+  {
+    "id": "npsa-aunuu",
+    "park": "npsa",
+    "nameEn": "'Aunu'u Island",
+    "nameZh": "'Aunu'u 岛",
+    "area": "aunuu",
+    "areaZh": "'Aunu'u 岛（园外）"
+  },
+  {
+    "id": "npsa-ofu-beach",
+    "park": "npsa",
+    "nameEn": "Ofu Beach & Lagoon",
+    "nameZh": "Ofu 岛海滩和珊瑚礁潟湖",
+    "area": "ofu",
+    "areaZh": "Ofu 岛（坐小飞机）"
+  },
+  {
+    "id": "npsa-siu-point",
+    "park": "npsa",
+    "nameEn": "Si'u Point Trail (Ta'u)",
+    "nameZh": "Ta'u 岛 Si'u Point 步道",
+    "area": "tau",
+    "areaZh": "Ta'u 岛（坐小飞机）"
+  },
+  {
+    "id": "chir-visitor-center",
+    "park": "chir",
+    "nameEn": "Chiricahua Visitor Center",
+    "nameZh": "奇里卡瓦游客中心",
+    "area": "lower",
+    "areaZh": "谷底 · 游客中心 · Faraway Ranch"
+  },
+  {
+    "id": "chir-faraway-ranch",
+    "park": "chir",
+    "nameEn": "Faraway Ranch Historic District",
+    "nameZh": "Faraway Ranch 历史农庄",
+    "area": "lower",
+    "areaZh": "谷底 · 游客中心 · Faraway Ranch"
+  },
+  {
+    "id": "chir-bonita-creek",
+    "park": "chir",
+    "nameEn": "Bonita Creek Loop Trail",
+    "nameZh": "Bonita Creek 小环线和野餐区",
+    "area": "lower",
+    "areaZh": "谷底 · 游客中心 · Faraway Ranch"
+  },
+  {
+    "id": "chir-bonita-canyon-drive",
+    "park": "chir",
+    "nameEn": "Bonita Canyon Drive",
+    "nameZh": "Bonita Canyon Drive 观景路",
+    "area": "lower",
+    "areaZh": "谷底 · 游客中心 · Faraway Ranch"
+  },
+  {
+    "id": "chir-natural-bridge",
+    "park": "chir",
+    "nameEn": "Natural Bridge Trail",
+    "nameZh": "Natural Bridge 天然桥步道",
+    "area": "lower",
+    "areaZh": "谷底 · 游客中心 · Faraway Ranch"
+  },
+  {
+    "id": "chir-massai-point",
+    "park": "chir",
+    "nameEn": "Massai Point Overlook & Nature Trail",
+    "nameZh": "Massai Point 观景台和自然步道",
+    "area": "massai",
+    "areaZh": "山顶 · Massai Point · Echo Canyon 石林"
+  },
+  {
+    "id": "chir-echo-canyon-loop",
+    "park": "chir",
+    "nameEn": "Echo Canyon Loop (Echo Canyon, Hailstone & Ed Riggs Trails)",
+    "nameZh": "Echo Canyon 环线",
+    "area": "massai",
+    "areaZh": "山顶 · Massai Point · Echo Canyon 石林"
+  },
+  {
+    "id": "chir-heart-of-rocks",
+    "park": "chir",
+    "nameEn": "Heart of Rocks Loop & Big Balanced Rock",
+    "nameZh": "Heart of Rocks 和大平衡石",
+    "area": "massai",
+    "areaZh": "山顶 · Massai Point · Echo Canyon 石林"
+  },
+  {
+    "id": "chir-sugarloaf",
+    "park": "chir",
+    "nameEn": "Sugarloaf Mountain Trail",
+    "nameZh": "Sugarloaf 山顶瞭望台",
+    "area": "massai",
+    "areaZh": "山顶 · Massai Point · Echo Canyon 石林"
+  },
+  {
+    "id": "chir-night-sky",
+    "park": "chir",
+    "nameEn": "Stargazing at Massai Point",
+    "nameZh": "Massai Point 看星空",
+    "area": "massai",
+    "areaZh": "山顶 · Massai Point · Echo Canyon 石林"
+  },
+  {
+    "id": "chir-fort-bowie",
+    "park": "chir",
+    "nameEn": "Fort Bowie National Historic Site",
+    "nameZh": "Fort Bowie 国家历史遗址",
+    "area": "fort-bowie",
+    "areaZh": "Fort Bowie 国家历史遗址（北边约 50 分钟，园外）"
   }
 ]

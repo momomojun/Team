@@ -1,0 +1,267 @@
+import type { Attraction } from "./types";
+
+// 航海家：不收门票、全年开放。开车只能到四个游客中心（Rainy Lake、Kabetogama Lake、Ash River、Crane Lake）和附近几条短步道，
+// 湖上的地方（Kettle Falls 酒店、Ellsworth 石头花园、Little American 岛）按“开到游客中心 + 坐护林员游船来回”算成景点，
+// durationMin 是开船到回来（不含开船前 30 分钟的报到）。游船 6 月中到 9 月底，Recreation.gov 每年 4 月 15 日 9:00（中部时间）开订。
+// 冬天湖面冻实以后有冰上公路（看冰情，大约 1–3 月）。
+// 坐标：游客中心、步道口、Kettle Falls 酒店、Ellsworth 石头花园、Little American 岛按 OpenStreetMap（2026-10-20 查）；
+// Kabetogama 湖观景点的步道口 OSM 上没有，用了相连的 Blind Ash Bay 南边步道口的坐标。
+// 游船班次按 Recreation.gov 2026 年每天的场次整理（tours.ts）。
+const RAINY_VC = { lat: 48.58476, lon: -93.16113, nameZh: "Rainy Lake 游客中心" };
+const KABETOGAMA_VC = { lat: 48.44487, lon: -93.03009, nameZh: "Kabetogama Lake 游客中心" };
+const ASH_RIVER_VC = { lat: 48.43563, lon: -92.85021, nameZh: "Ash River 游客中心（Meadwood Lodge）" };
+const TOUR_SEASON = [6, 7, 8, 9];
+const TOUR_CLOSED = "护林员游船只在 6 月中到 9 月底开（2026 年 Kettle Falls 游船开到 10 月 4 日），其余时间要自己租船或找导游。";
+const TOUR_PERMIT =
+  "在 Recreation.gov 订（Voyageurs National Park Tours），每年 4 月 15 日 9:00（中部时间）放出当年全部场次，常订满；有空位时游客中心卖现场票，开船前 30 分钟停售、只收信用卡。成人 17 岁以上、儿童 3–16 岁，老人卡、残障卡半价；2026 年票价以 Recreation.gov 为准";
+
+export const voyageurs: Attraction[] = [
+  {
+    id: "voya-rainy-lake-vc",
+    park: "voya",
+    nameZh: "Rainy Lake 游客中心",
+    nameEn: "Rainy Lake Visitor Center",
+    kind: "visitor",
+    area: "rainy",
+    lat: RAINY_VC.lat,
+    lon: RAINY_VC.lon,
+    durationMin: 40,
+    openMonths: [5, 6, 7, 8, 9, 10],
+    closedNote: "2026 年 11 月起关闭，冬季开放时间还没公布（往年冬天只在部分日子开、出租雪鞋和滑雪板）。",
+    hours: [
+      { open: "09:00", close: "17:00", months: [5, 6, 7, 8, 9] },
+      { open: "10:00", close: "16:00", months: [10] },
+    ],
+    mustSee: true,
+    summary:
+      "公园西头、唯一全年大部分时间开着的游客中心，在 International Falls 东边约 20 分钟、Rainy Lake 的湖湾边。有展览、介绍片和书店，Grand Tour、Life on the Lake 和 Rainy Lake 出发的 Kettle Falls 游船都在这里报到上船；屋后是 Oberholtzer 步道，冬天这里是冰上公路的起点。",
+    tips: [
+      "2026 年 5 月 23 日到 9 月每天 9:00–17:00，10 月 1–31 日 10:00–16:00",
+      "上层停车场是公园指定的看星空的地方之一",
+    ],
+    photoFile: "VOYA P7130456 Rainy Lake VC.jpg",
+  },
+  {
+    id: "voya-kettle-falls",
+    park: "voya",
+    nameZh: "Kettle Falls 酒店和水坝游船",
+    nameEn: "Kettle Falls Hotel & Dam Cruise",
+    kind: "experience",
+    area: "kettle-falls",
+    lat: 48.50294,
+    lon: -92.63991,
+    start: ASH_RIVER_VC,
+    durationMin: 330,
+    openMonths: TOUR_SEASON,
+    closedNote: TOUR_CLOSED,
+    bestMonths: [7, 8, 9],
+    permit: TOUR_PERMIT,
+    mustSee: true,
+    summary:
+      "公园最经典的一趟船：从 Ash River 坐护林员的游船穿过 Namakan 湖，约 2 小时到 Rainy Lake 和 Namakan Lake 之间的 Kettle Falls。1910–1913 年建的木结构老酒店至今还开着，斜着的木地板、老酒吧都是原样；旁边的水坝控制着两个湖的水位；这里的国界弯来弯去，站在坝边往南看，对岸竟然是加拿大。岸上约 2 小时，可以在酒店吃午饭或自带，回程约 1.5 小时。",
+    tips: [
+      "Ash River 出发的 2026 年在每周四、周五、周日 10:00 开（约 5.5 小时）；Rainy Lake 出发的 6.5 小时版只有夏天的几个周三，至少 21 人才开",
+      "船上没有厕所，开船前在游客中心上好；船上只能喝水，不能吃东西",
+      "2026 年 10 月的团酒店厨房已停，要自带午饭；湖上冷，带外套、驱蚊水和防晒",
+    ],
+    photoFile: "Kettle Falls Hotel NPS.jpg",
+  },
+  {
+    id: "voya-grand-tour",
+    park: "voya",
+    nameZh: "Rainy Lake Grand Tour 游船",
+    nameEn: "Grand Tour on Rainy Lake",
+    kind: "experience",
+    area: "rainy",
+    lat: 48.62,
+    lon: -93.08,
+    start: RAINY_VC,
+    durationMin: 150,
+    openMonths: TOUR_SEASON,
+    closedNote: TOUR_CLOSED,
+    bestMonths: [6, 7, 8, 9],
+    permit: TOUR_PERMIT,
+    summary:
+      "坐 49 座的游船 Voyageur 在 Rainy Lake 上转约 2.5 小时，船长一路找白头海雕的巢、潜鸟和岸上的动物，护林员讲船夫、淘金、伐木和渔民的故事，还会路过一处老的商业渔营。只想坐一次船、时间不多的选这条。",
+    tips: [
+      "2026 年周五到周一开，每天 10:00 和 16:30 两班（周日、周一另有 13:30）；傍晚那班光线最好",
+      "船上有厕所；开船前 30 分钟到游客中心报到",
+    ],
+    photoFile: "Voyageurs National Park.jpg",
+  },
+  {
+    id: "voya-life-on-the-lake",
+    park: "voya",
+    nameZh: "Life on the Lake 游船（Little American 岛金矿和渔营）",
+    nameEn: "Life on the Lake Tour (Rainy Lake)",
+    kind: "experience",
+    area: "rainy",
+    lat: 48.60236,
+    lon: -93.16828,
+    start: RAINY_VC,
+    durationMin: 150,
+    openMonths: TOUR_SEASON,
+    closedNote: TOUR_CLOSED,
+    permit: TOUR_PERMIT,
+    summary:
+      "从 Rainy Lake 游客中心出发，上 Little American 岛：1890 年代这一带短暂的淘金热里这里开过金矿，岛上一条约 400 米的碎石小路经过竖井、矿渣堆和旧机器；再去 Harry Oveson 的老渔营，看湖上的渔民怎么生活。Ash River 出发的同名游船去的是 I.W. Stevens 老度假村和 Hoist Bay 伐木营地。",
+    tips: [
+      "Rainy Lake 这条 2026 年每周五、周六 13:30；Ash River 那条周二、周六 9:30，周四、周五、周日 16:30",
+      "Little American 岛的小路有一段之字形上下坡，其余平缓",
+    ],
+  },
+  {
+    id: "voya-ellsworth-rock-gardens",
+    park: "voya",
+    nameZh: "Ellsworth 石头花园游船",
+    nameEn: "Ellsworth Rock Gardens Tour",
+    kind: "experience",
+    area: "kabetogama",
+    lat: 48.4972,
+    lon: -92.97906,
+    start: KABETOGAMA_VC,
+    durationMin: 150,
+    openMonths: TOUR_SEASON,
+    closedNote: `${TOUR_CLOSED} 自己划船、开船也能去，花园全年开放。`,
+    bestMonths: [7, 8],
+    permit: TOUR_PERMIT,
+    summary:
+      "芝加哥的承包商 Jack Ellsworth 从 1944 年起每年夏天来 Kabetogama 湖北岸度假，用了二十多年把湖边一大片花岗岩坡地垒成了梯田花坛和 200 多个石头雕塑。游船沿 Kabetogama 湖西段开过去，路上找白头海雕的巢，上岸跟护林员走约 400 米看花园。",
+    tips: [
+      "2026 年每周二、周六 13:00 和 16:00；船上没有厕所，花园有旱厕",
+      "花园下半部分平缓，上半部分要爬一块约 18 米高、斜着的花岗岩，下雨后很滑，穿防滑的鞋",
+    ],
+  },
+  {
+    id: "voya-north-canoe-voyage",
+    park: "voya",
+    nameZh: "North Canoe Voyage 大独木舟体验",
+    nameEn: "North Canoe Voyage",
+    kind: "experience",
+    area: "rainy",
+    lat: RAINY_VC.lat,
+    lon: RAINY_VC.lon,
+    durationMin: 90,
+    openMonths: TOUR_SEASON,
+    closedNote: "只在夏季（大约 6 月中到 9 月）开，场次在 Recreation.gov 上公布。",
+    permit: "在 Recreation.gov 的“VNP Special Interpretive Programs”页面订，每年 4 月 15 日 9:00 开放；8 岁以上，成人 17 岁以上、儿童 8–16 岁",
+    summary:
+      "穿着 18 世纪船夫衣服的护林员带着大家坐进一条约 8 米长的复制桦皮大独木舟，先在岸上讲 1 小时船夫的生活，再下水划半小时，学船夫的划桨敬礼、唱他们的船歌。公园的名字就来自这些船夫。Rainy Lake 和 Ash River 两个游客中心都有。",
+    tips: ["要自己划桨，风大时挺累；发救生衣，但最好会游泳", "天气不好会取消"],
+  },
+  {
+    id: "voya-oberholtzer-trail",
+    park: "voya",
+    nameZh: "Oberholtzer 步道",
+    nameEn: "Oberholtzer Trail",
+    kind: "hike",
+    area: "rainy",
+    lat: 48.5839,
+    lon: -93.16717,
+    start: RAINY_VC,
+    durationMin: 60,
+    hike: { distanceMi: 1.7, difficulty: "easy", loop: true },
+    bestTime: ["morning", "sunset"],
+    summary:
+      "从 Rainy Lake 游客中心南侧出发的 1.7 英里环线，穿过落叶林和针叶林，绕着一片长满香蒲的湿地，经过冰川留下的漂砾，有两个能看湿地和湖的观景点。早晚常能看到鸟和鹿；冬天可以借游客中心的雪鞋来走。",
+    tips: ["前 1/4 英里是约 1.2 米宽的平整碎石路，之后是有树根、石头的土路", "公园所有步道都不能带宠物（防止把病传给狼）"],
+    trail: { via: [{ lat: 48.58237, lon: -93.16576 }, { lat: 48.5839, lon: -93.16717 }, { lat: 48.58439, lon: -93.17171 }], loop: true },
+  },
+  {
+    id: "voya-echo-bay-trail",
+    park: "voya",
+    nameZh: "Echo Bay 步道",
+    nameEn: "Echo Bay Trail",
+    kind: "hike",
+    area: "kabetogama",
+    lat: 48.46935,
+    lon: -93.07318,
+    start: { lat: 48.46515, lon: -93.07449, nameZh: "Echo Bay 步道口（County Road 122 旁）" },
+    durationMin: 80,
+    hike: { distanceMi: 2.5, difficulty: "easy", loop: true },
+    bestTime: ["morning"],
+    summary:
+      "Kabetogama 游客中心往西约 5 公里的宽步道，从落叶林走进北方针叶林，经过岩石露头和河狸筑坝形成的湿地，是公园里观鸟最好的步道之一，从林莺到啄木鸟都常见。可以走 1.5 英里的小环线或 2.5 英里的大环线。",
+    tips: ["路宽，但有树根、石头和起伏", "冬天这条是压好雪道的越野滑雪道"],
+    trail: { via: [{ lat: 48.46935, lon: -93.07318 }], loop: true },
+  },
+  {
+    id: "voya-kabetogama-overlook",
+    park: "voya",
+    nameZh: "Kabetogama 湖观景点",
+    nameEn: "Kabetogama Lake Overlook",
+    kind: "viewpoint",
+    area: "ash-river",
+    lat: 48.4305,
+    lon: -92.855,
+    start: { lat: 48.43194, lon: -92.85025, nameZh: "Meadwood Road 上的步道停车场（去 Ash River 游客中心的路上）" },
+    durationMin: 20,
+    openMonths: [5, 6, 7, 8, 9, 10],
+    closedNote: "NPS 写这条步道只在春、夏、秋开放，冬天不维护。",
+    summary:
+      "去 Ash River 游客中心路上的一条短步道，约 0.2 英里的碎石路穿过松林，到一张长椅前，Kabetogama 湖被两边的树框在中间。是公园里少有的轮椅能到的观景点。",
+    tips: ["从这里可以接 Blind Ash Bay 步道，避开那条步道开头最陡的一段"],
+  },
+  {
+    id: "voya-blind-ash-bay",
+    park: "voya",
+    nameZh: "Blind Ash Bay 步道",
+    nameEn: "Blind Ash Bay Trail",
+    kind: "hike",
+    area: "ash-river",
+    lat: 48.432,
+    lon: -92.86095,
+    start: { lat: 48.43415, lon: -92.85032, nameZh: "Ash River 游客中心上层停车场的步道口" },
+    durationMin: 100,
+    hike: { distanceMi: 2.9, difficulty: "moderate", loop: true },
+    bestTime: ["morning", "sunset"],
+    summary:
+      "从 Ash River 游客中心出发的 2.9 英里棒棒糖形环线，又窄又绕、全是石头，钻过北方针叶林，到几处岩石顶上俯瞰 Blind Ash Bay 和 Kabetogama 湖，是 Ash River 一带景色最好的步道。",
+    tips: [
+      "开头一段最陡，可以从 Kabetogama 湖观景点那条步道接过来跳过",
+      "雨后岩石很滑；早晚常见鹿",
+    ],
+    trail: { via: [{ lat: 48.43375, lon: -92.85109 }, { lat: 48.432, lon: -92.86095 }], loop: true },
+  },
+  {
+    id: "voya-ice-road",
+    park: "voya",
+    nameZh: "冰上公路",
+    nameEn: "Rainy Lake & Kabetogama Ice Roads",
+    kind: "drive",
+    area: "rainy",
+    lat: 48.61,
+    lon: -93.1,
+    start: { lat: RAINY_VC.lat, lon: RAINY_VC.lon, nameZh: "Rainy Lake 游客中心的下水坡道（冰路起点）" },
+    durationMin: 90,
+    openMonths: [1, 2, 3],
+    closedNote: "冰上公路只在湖面冻实以后开（一般 1–3 月，每年不同），雪大、有冰水或冰薄时会关或缩短；其余时间湖上没有路。",
+    bestMonths: [2],
+    summary:
+      "冬天湖面冻实以后，公园在冰上铲出两条路：一条从 Rainy Lake 游客中心的下水坡道开上 Rainy Lake，一条连接 Kabetogama 和 Ash River 两个游客中心。普通小车就能开上湖面，两边是雪白的岛和冰钓小屋；Kabetogama 那条路边的 Sphunge 岛还有铲好的雪橇坡和冰场。",
+    tips: [
+      "只许 7,000 磅（约 3.2 吨）以下的车，限速 30 英里/时；不能开出铲好的路面",
+      "出发前看公园每周发的冬季冰况报告；路线每年看冰情定",
+      "夜里常到零下二三十摄氏度，车里带保暖的衣服、毯子和吃的",
+    ],
+  },
+  {
+    id: "voya-night-sky",
+    park: "voya",
+    nameZh: "看星空和北极光（Meadwood Road 日间休息区）",
+    nameEn: "Stargazing & Northern Lights",
+    kind: "experience",
+    area: "ash-river",
+    lat: 48.41672,
+    lon: -92.84456,
+    durationMin: 90,
+    bestTime: ["night"],
+    bestMonths: [8, 9, 10],
+    summary:
+      "2020 年起是国际暗夜公园。公园指定了两处方便看星空的地方：去 Ash River 游客中心路上的 Meadwood Road 日间休息区，和 Rainy Lake 游客中心的上层停车场。夏天银河最清楚；北极光一年四季都可能出现，秋冬夜长时最常见。",
+    tips: [
+      "选没有月亮的晴夜，看 NOAA 的极光预报（Kp 指数高的晚上）；眼睛适应黑暗要 20–30 分钟，用红光头灯",
+      "夏夜也凉，带外套和驱蚊水",
+    ],
+  },
+];

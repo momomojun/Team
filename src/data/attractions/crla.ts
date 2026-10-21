@@ -4,7 +4,7 @@ import type { Attraction } from "./types";
 const WEST_RIM = [6, 7, 8, 9, 10];
 // 东环湖路通常 6 月底到 7 月中旬才全线开通；高处的步道积雪也常到 6 月底甚至 7 月
 const SUMMER = [7, 8, 9, 10];
-const PINNACLES_ROAD_TIP = "2026 年 9 月时 Pinnacles Road 因施工只能步行或骑车进入，出发前查 NPS Current Conditions";
+const PINNACLES_ROAD_TIP = "2026 年整季 Pinnacles Road 因施工只能步行或骑车进入，出发前查 NPS Current Conditions";
 
 export const craterLake: Attraction[] = [
   {
@@ -24,6 +24,7 @@ export const craterLake: Attraction[] = [
       "全年都能开车到（冬季大雪时偶尔封路几天）；Rim 游客中心和辛诺特观景台只在夏秋开放，观景台要走一段陡石阶下去",
       "夏季每天有护林员讲解；环湖观光小巴 Crater Lake Trolley 也从这里出发，约 2 小时，建议提前网上订票",
       "湖面常被云遮住，出发前可以看 NPS 网站上的 Rim Village 实时摄像头",
+      "园内没有加油站，进园前在 Prospect（62 号公路）、Crater Lake Junction（97 号公路）或 Diamond Lake 加满",
     ],
     photoFile: "Crater Lake winter pano2.jpg",
   },
@@ -232,7 +233,7 @@ export const craterLake: Attraction[] = [
     hike: { distanceMi: 2, gainFt: 100, difficulty: "easy" },
     openMonths: SUMMER,
     closedNote:
-      "步道口在 Pinnacles Road 上，冬季和东环湖路一起关闭、积雪很深，通常 7 月前后才能去（以 NPS 公告为准），2026 年 9 月时 Pinnacles Road 因施工只能步行或骑车进入；冬春可以去 Rim Village 看湖。",
+      "步道口在 Pinnacles Road 上，冬季和东环湖路一起关闭、积雪很深，通常 7 月前后才能去（以 NPS 公告为准），2026 年整季 Pinnacles Road 因施工只能步行或骑车进入；冬春可以去 Rim Village 看湖。",
     bestMonths: [7, 8],
     summary: "穿过老龄林的平缓步道，尽头是一道由融雪汇成的瀑布（水不是从火山口湖流出来的），盛夏沿途野花很多。",
     tips: [

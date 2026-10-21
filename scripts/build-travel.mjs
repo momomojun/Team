@@ -5,7 +5,7 @@
 // 车程按平均车速校正过（OSRM 开高速偏慢 25–40%，见 src/lib/drive-speed.ts）。新增景点或住宿后重新跑：npm run data:travel
 import { writeFileSync } from "node:fs";
 import { airports } from "../src/data/airports.ts";
-import { fixedMinutes } from "../src/data/attractions/route-fixes.ts";
+import { fixedMinutes, routeAt } from "../src/data/attractions/route-fixes.ts";
 import { correctedMinutes } from "../src/lib/drive-speed.ts";
 import { attractions, lodgingOptions, parks, sleep, USER_AGENT } from "./load-data.mjs";
 
@@ -32,7 +32,7 @@ for (const park of parks) {
   const stops = attractions.filter((a) => a.park === park.code);
   const stays = lodgingOptions.filter((l) => l.park === park.code);
   const nodes = ["gateway", ...stops.map((a) => a.id), ...stays.map((l) => l.id)];
-  const points = [park.gateway, ...stops.map((a) => a.start ?? a), ...stays];
+  const points = [park.gateway, ...stops.map((a) => routeAt[a.id] ?? a.start ?? a), ...stays];
   const minutes = (await durationTable(points)).map((row, i) =>
     row.map((m, j) => (m == null || i === j ? m : fixedMinutes(m, nodes[i], nodes[j]))),
   );
@@ -55,7 +55,7 @@ for (const park of parks) {
     if (!other || pairTravel[key]) continue;
     const [first, second] = key.split("|");
     const nodesOf = (code) => [
-      ...attractions.filter((a) => a.park === code).map((a) => ({ id: a.id, point: a.start ?? a })),
+      ...attractions.filter((a) => a.park === code).map((a) => ({ id: a.id, point: routeAt[a.id] ?? a.start ?? a })),
       ...lodgingOptions.filter((l) => l.park === code).map((l) => ({ id: l.id, point: l })),
     ];
     const a = nodesOf(first);

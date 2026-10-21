@@ -9,11 +9,15 @@ export type RegionId =
   | "utah"
   | "southwest"
   | "plains"
+  | "greatlakes"
   | "appalachia"
+  | "south"
   | "newengland"
   | "florida"
+  | "caribbean"
   | "alaska"
   | "hawaii"
+  | "samoa"
   | "canada";
 
 export interface Park {
@@ -86,16 +90,26 @@ export const regionOrder: RegionId[] = [
   "utah",
   "southwest",
   "plains",
+  "greatlakes",
   "appalachia",
+  "south",
   "newengland",
   "florida",
+  "caribbean",
   "alaska",
   "hawaii",
+  "samoa",
   "canada",
 ];
 
 /** 是不是园外名胜（不是国家公园） */
 export const isSite = (park: Pick<Park, "kind">) => park.kind === "site";
+
+/**
+ * 英文全名：国家公园加上 “National Park”，园外名胜不加；名字本身就带着的（National Park of American Samoa）不再加一遍
+ */
+export const fullNameEn = (park: Pick<Park, "kind" | "nameEn">) =>
+  park.kind === "site" || /National Park/.test(park.nameEn) ? park.nameEn : `${park.nameEn} National Park`;
 
 /** 查 NPS 公告、门票用的代码；不在 NPS 管理范围里的返回 null */
 export const npsCodeOf = (park: Pick<Park, "code" | "npsCode">) => (park.npsCode === undefined ? park.code : park.npsCode);
@@ -1013,10 +1027,36 @@ export const parks: Park[] = [
     gateway: { nameZh: "图森市中心（东西两区之间）", lat: 32.2217, lon: -110.9747 },
     timeZone: "America/Phoenix",
     airports: ["TUS", "PHX"],
-    nearby: ["grca", "pefo", "whsa"],
+    nearby: ["grca", "pefo", "whsa", "chir"],
     nonresidentSurcharge: false,
     lodgingTip:
       "园内没有酒店和车能开进去的营地（只有要走进山里的背包营地），大家都住图森：只去一边的话，西区住图森山脚的度假村或 Gilbert Ray 县营地，东区住城东 Tanque Verde / Broadway 一带；两边都去、想吃得方便，住市中心或大学一带最省事，到两个园区都约 25–35 分钟。10 月到次年 4 月是旺季，2 月初的宝石矿物展期间全城酒店最贵、最难订。",
+  },
+  {
+    code: "chir",
+    nameZh: "奇里卡瓦",
+    nameEn: "Chiricahua",
+    region: "southwest",
+    tagline: "火山灰凝成的石柱森林",
+    stateEn: "Arizona",
+    hero: "chir-echo-canyon-loop",
+    intro:
+      "亚利桑那东南角的奇里卡瓦山是索诺兰、奇瓦瓦两片沙漠之间的一座“天空之岛”。约 2,700 万年前附近 Turkey Creek 火山大爆发，厚厚的火山灰熔结成流纹岩，后来裂开、风化成几千根石柱和摇摇欲坠的平衡石，早年的牧场主叫它“石林”（Wonderland of Rocks）。8 英里的观景路从橡树林谷底一直开到山顶的 Massai Point，几条步道从山顶下到石柱中间。这里也是奇里卡瓦阿帕奇人的故乡，谷底的 Faraway Ranch 讲早期移民的故事。1924 年设为国家纪念地，2026 年 10 月 20 日升为美国第 64 座国家公园（NPS 官网、步道指南和 Recreation.gov 暂时还写旧名 Chiricahua National Monument）。",
+    bestMonths: [3, 4, 5, 10, 11],
+    seasonNote:
+      "海拔约 1,600–2,200 米，比图森凉快不少。3 月最挤（亚利桑那的冬季候鸟和春假），10 月、12 月学校放假也多，10 月到次年 4 月的周末停车难；夏天人最少，但 6 月中到 9 月底是季风季，午后常有雷暴、山洪和闪电。11 月到次年 4 月随时可能下雪，一场几英寸到一英尺，山顶的路可能结冰。4–6 月最干，常有禁火令。",
+    areas: {
+      lower: "谷底 · 游客中心 · Faraway Ranch",
+      massai: "山顶 · Massai Point · Echo Canyon 石林",
+      "fort-bowie": "Fort Bowie 国家历史遗址（北边约 50 分钟，园外）",
+    },
+    gateway: { nameZh: "奇里卡瓦游客中心", lat: 32.00543, lon: -109.35642 },
+    timeZone: "America/Phoenix",
+    airports: ["TUS", "PHX", "ELP"],
+    nearby: ["sagu"],
+    nonresidentSurcharge: false,
+    lodgingTip:
+      "园里没有旅馆，只有一个 Bonita Canyon 营地（20 多个营位，Recreation.gov 提前 6 个月预约，3–4 月、10 月和节假日很快订满；车长 29 英尺以内，没有淋浴和电）。最近的住处在西北的 Willcox（约 50 分钟），I-10 边上有连锁汽车旅馆、超市和加油站，最方便；东边山那头的 Portal 是看鸟的人住的小村子，有几家山庄和出租小屋，但到公园要走 Pinery Canyon 土路翻山（建议高底盘车），铺装路要绕 Willcox 或 Douglas；南边的老矿镇 Bisbee 约 2 小时，住老房子改的民宿、逛街吃饭最有意思，适合和图森、Tombstone 连着玩。园内和附近没有加油站，Sunizona（27 英里）和 Willcox（37 英里）是最后的补给点。",
   },
   {
     code: "gumo",
@@ -1161,6 +1201,140 @@ export const parks: Park[] = [
       "园内没有酒店，只有 Cottonwood（South Unit）和 Juniper（North Unit）两个营地，2026 年 5 月起都要在 Recreation.gov 预订。多数人住 South Unit 门口的 Medora：镇上的酒店、汽车旅馆大多由西奥多·罗斯福 Medora 基金会经营，6 月初到 9 月中音乐剧季最难订；冬天只有 Rough Riders Hotel 和 Hotel 1883 两家开；订不到就住东边约 25 分钟的 Belfield 或 45 分钟的 Dickinson（连锁酒店最多）。去 North Unit 住 Watford City，到入口约 20 分钟；从 Medora 当天来回 North Unit 单程约 1 小时 15 分。Elkhorn Ranch 附近没有住处。",
   },
   {
+    code: "cuva",
+    nameZh: "凯霍加谷",
+    nameEn: "Cuyahoga Valley",
+    region: "greatlakes",
+    tagline: "克利夫兰和阿克伦之间的运河、瀑布和砂岩崖",
+    stateEn: "Ohio",
+    hero: "cuva-brandywine-falls",
+    intro:
+      "夹在克利夫兰和阿克伦两座城市之间、沿凯霍加河约 35 公里长的一条河谷，是美国离大城市最近的国家公园之一。19 世纪这里是俄亥俄–伊利运河（Ohio & Erie Canal）的主干，当年拉船的纤道现在是约 32 公里平坦的 Towpath 步道，可以骑车、走路，再坐观光火车回来；河谷两侧的小溪切出 Brandywine 等几十条瀑布，Virginia Kendall 一带还有长满青苔的砂岩崖壁 The Ledges。凯霍加河 1969 年因为污染严重着过火，后来成了美国治理环境的标志，如今河谷里有河狸、苍鹭和白头海雕。",
+    bestMonths: [5, 6, 9, 10],
+    seasonNote:
+      "10 月中旬红叶最好，也是一年里最挤的时候，天气好的周末 Brandywine 瀑布停车场 10 点前就满。春天（4–5 月）瀑布水量大、林下野花多；夏天可以骑车走 Towpath、坐火车，6–8 月有“Explorer”火车接骑车的人。冬天公园照开，Kendall Hills 一带能滑雪橇、越野滑雪，瀑布偶尔结冰。",
+    areas: {
+      boston: "Boston · Peninsula（游客中心 · 火车站）",
+      brandywine: "Brandywine 瀑布一带",
+      "virginia-kendall": "Virginia Kendall（The Ledges · Kendall Lake）",
+      south: "南段：Everett · Beaver Marsh（Ira）",
+      north: "北段：Canal Exploration Center · Rockside",
+    },
+    gateway: { nameZh: "Boston Mill 游客中心", lat: 41.2626, lon: -81.56031 },
+    timeZone: "America/New_York",
+    airports: ["CLE", "CAK"],
+    nonresidentSurcharge: false,
+    lodgingTip:
+      "园内住处很少：Brandywine 瀑布旁边的 Inn at Brandywine Falls 是一家老房子民宿，Boston 一带的 Stanford House 是公园的老农舍、整栋出租给团体。大多数人住园外：北头 I-77 和 Rockside Road 一带的 Independence 连锁酒店最多，离火车 Rockside 站近；东边的 Hudson 小镇安静、有餐馆；南头住阿克伦（Akron）或 Cuyahoga Falls，离 Beaver Marsh、Everett 一带近。从克利夫兰市区开过来约 30 分钟，当天来回也很常见。",
+  },
+  {
+    code: "indu",
+    nameZh: "印第安纳沙丘",
+    nameEn: "Indiana Dunes",
+    region: "greatlakes",
+    tagline: "密歇根湖南岸的沙丘、沼泽和湖滩",
+    stateEn: "Indiana",
+    hero: "indu-west-beach",
+    intro:
+      "芝加哥东南约 1 小时，密歇根湖南岸约 24 公里长的一条湖岸带：一边是能游泳的细沙湖滩和几十米高的沙丘，背后是一圈圈不同年代的老沙丘上长出来的橡树林、黑橡树稀树草原、沼泽和泥炭藓沼。20 世纪初芝加哥大学的 Henry Cowles 就是在这里研究沙丘上的植物怎么一步步演替，开创了美国的生态学；这里也是美国生物多样性最高的国家公园之一。公园和钢厂、电厂、小镇交错在一起，2019 年才从国家湖滨升为国家公园；中间的印第安纳沙丘州立公园是州里的，另收门票。",
+    bestMonths: [6, 7, 8, 9, 10],
+    seasonNote:
+      "6–8 月是湖滩季，周末 West Beach 等大停车场常满，湖水 7–8 月才暖；离岸流和大浪的日子很危险，看海滩的旗子。9–10 月人少、秋叶好，沙丘上走起来不晒。冬天湖边结冰、风大，沙丘可以越野滑雪；春天（4–5 月）是看候鸟的季节，Great Marsh 一带鸟最多。",
+    areas: {
+      west: "西区：West Beach · Miller Woods · Portage Lakefront",
+      central: "中区：游客中心 · Cowles Bog · Chellberg 农场",
+      "state-park": "印第安纳沙丘州立公园（州里的，另收费）",
+      east: "东区：Beverly Shores · Great Marsh · Mount Baldy",
+    },
+    gateway: { nameZh: "印第安纳沙丘游客中心（Porter）", lat: 41.6338, lon: -87.05443 },
+    timeZone: "America/Chicago",
+    airports: ["ORD", "MDW"],
+    nonresidentSurcharge: false,
+    lodgingTip:
+      "园内只有 Dunewood 营地（66 个营位，Recreation.gov 预订）。最方便的是住游客中心旁边的 Chesterton / Porter（连锁酒店、餐馆，到 West Beach、Mount Baldy 都在 20–25 分钟内）或东头的 Michigan City（湖边酒店、赌场酒店、大型奥特莱斯，离 Mount Baldy 最近）。Beverly Shores、Dune Acres 一带的湖边小镇有不少整套度假屋，夏天要提前几个月订。从芝加哥当天来回也很常见：开车约 1 小时，或者坐 South Shore Line 通勤火车到 Dune Park、Beverly Shores 站。",
+  },
+  {
+    code: "jeff",
+    nameZh: "圣路易斯拱门",
+    nameEn: "Gateway Arch",
+    region: "greatlakes",
+    tagline: "密西西比河边 192 米高的不锈钢拱门",
+    stateEn: "Missouri",
+    hero: "jeff-tram",
+    intro:
+      "美国面积最小的国家公园（约 0.8 平方公里），在圣路易斯市中心的密西西比河边。主角是芬兰裔建筑师埃罗·沙里宁（Eero Saarinen）设计的大拱门：不锈钢外皮，高、宽都是 630 英尺（约 192 米），1965 年建成，是美国最高的人造纪念碑，纪念托马斯·杰斐逊和 19 世纪美国的西进扩张。坐拱门里面的小电车上到顶端，从小窗户往下看密西西比河和整座城；拱门底下是免费的博物馆，讲从原住民到路易斯安那购地、刘易斯与克拉克、拓荒者的西部故事。几个街区外的老法院（Old Courthouse）是 1847 年德雷德·斯科特（Dred Scott）争取自由的诉讼开始的地方。2018 年由“杰斐逊国家扩张纪念地”改名升为国家公园。",
+    bestMonths: [4, 5, 9, 10],
+    seasonNote:
+      "全年都能去，室内为主。4–5 月、9–10 月最舒服；6–8 月又热又湿，电车票常提前卖光，暑假周末最挤；7 月 4 日前后 Fair Saint Louis 在拱门草地上办，人山人海。冬天冷、风大，但人少、电车好订。密西西比河涨水时河边的 Leonor K. Sullivan 大道和游船码头会被淹、游船停航。",
+    areas: {
+      arch: "拱门和地下博物馆",
+      downtown: "老法院 · 市中心",
+      riverfront: "河滨（游船码头 · Eads 大桥）",
+    },
+    gateway: { nameZh: "拱门游客中心（4th Street 入口）", lat: 38.62501, lon: -90.18653 },
+    timeZone: "America/Chicago",
+    airports: ["STL"],
+    nonresidentSurcharge: false,
+    lodgingTip:
+      "就住圣路易斯市中心：拱门西边隔一条街的 Hyatt Regency St. Louis at the Arch 等几家酒店走路几分钟到游客中心，房间能看到拱门的要另外选；北边河边的老仓库区 Laclede's Landing、西边市中心 Washington Avenue 一带有更多酒店和整套公寓。市中心晚上部分街区比较冷清，住得离拱门近、走大路比较安心。公园没有自己的停车场，开车来停附近的收费停车楼（比如 Stadium East 停车楼）或河边老码头的收费停车场。从机场（STL）坐 MetroLink 轻轨到 8th & Pine 或 Laclede's Landing 站约 30 分钟，不用开车。",
+  },
+  {
+    code: "isro",
+    nameZh: "皇家岛",
+    nameEn: "Isle Royale",
+    region: "greatlakes",
+    tagline: "苏必利尔湖上的狼、驼鹿和荒野岛",
+    stateEn: "Michigan",
+    hero: "isro-rock-harbor-day-trip",
+    intro:
+      "苏必利尔湖西北部的一座长约 72 公里的荒岛和周围 400 多个小岛，离加拿大比离密歇根本土还近。岛上不通车、没有公路，只有约 265 公里步道和 36 处只能走路、划船到的营地，是全美游客最少的国家公园之一，也是少有的游客平均停留好几天的公园：很多人从西头的 Windigo 背包走到东头的 Rock Harbor。岛上的狼和驼鹿从 1958 年起一直有人在研究，是世界上持续最久的捕食者和猎物研究。只能坐渡轮、水上飞机或自己的船来，每年只开 4 月 16 日到 10 月 31 日。",
+    bestMonths: [7, 8, 9],
+    seasonNote:
+      "公园 4 月 16 日到 10 月 31 日开放，11 月到次年 4 月中整座岛关闭。渡轮、水上飞机大约 5 月中到 9 月底才有，Rock Harbor Lodge、游客中心、商店只在 6 月上旬到 9 月中旬营业。7–8 月最暖、班次最多，但 6 月到 7 月初黑蝇、蚊子多；8 月底到 9 月蚊虫少、人少，9 月下旬开始有红叶，班次也越来越少。湖上常年冷，夏天也要带抓绒和雨衣。",
+    areas: {
+      "rock-harbor": "东头：Rock Harbor（Copper Harbor、Houghton 坐船）",
+      windigo: "西头：Windigo（Grand Portage 坐船）",
+      interior: "岛中间（背包穿越）",
+      keweenaw: "密歇根本土：Houghton · Copper Harbor",
+      "grand-portage": "明尼苏达本土：Grand Portage",
+    },
+    gateway: { nameZh: "Houghton（公园总部和游客中心）", lat: 47.12296, lon: -88.56375 },
+    mapAt: { lat: 48.0, lon: -88.83 },
+    timeZone: "America/Detroit",
+    airports: ["CMX", "DLH", "MQT"],
+    nearby: ["voya"],
+    nonresidentSurcharge: false,
+    lodgingTip:
+      "岛上只有东头的 Rock Harbor Lodge（60 间湖景房和 20 栋带小厨房的小木屋，2026 年 6 月 5 日到 9 月 11 日最后一晚）和西头 Windigo 的 2 间简易小木屋，提前 366 天开订、夏天很快订满；其余都是先到先得的营地（6 人以下免费、要在岛上领许可）。当天来回的住码头附近：去 Rock Harbor 的住 Copper Harbor（小镇上几家汽车旅馆，大多只在夏天开），或者 Houghton / Hancock（大学城，连锁酒店多，到 Copper Harbor 码头约 1 小时）；坐水上飞机的住 Houghton 最近。去 Windigo 的住 Grand Portage 的 Grand Portage Lodge & Casino，或者往南约 1 小时的 Grand Marais（明尼苏达北岸的度假小镇，小木屋、民宿多）。",
+  },
+  {
+    code: "voya",
+    nameZh: "航海家",
+    nameEn: "Voyageurs",
+    region: "greatlakes",
+    tagline: "明尼苏达北部的湖、岛和北极光",
+    stateEn: "Minnesota",
+    hero: "voya-kettle-falls",
+    intro:
+      "明尼苏达北部和加拿大安大略交界处的一片湖区：Rainy、Kabetogama、Namakan、Sand Point 四个大湖和 500 多个岛，水面约占公园四成，中间的 Kabetogama 半岛不通公路。名字来自 18 世纪划着桦皮大独木舟在这条水路上运皮毛的法裔加拿大船夫（voyageurs）。岸边是 20 多亿年前的古老岩石和北方针叶林，湖里有白头海雕、潜鸟，林子里有狼和黑熊。夏天坐护林员游船去湖中间 1913 年建成的 Kettle Falls 酒店，或者租船屋在湖上住几天；冬天湖面冻实，可以开车上冰上公路。2020 年被评为国际暗夜公园，常能看到北极光。",
+    bestMonths: [6, 7, 8, 9],
+    seasonNote:
+      "6 月中到 9 月底护林员游船、游客中心全开，7–8 月最暖、游船最多，但 6 月到 7 月蚊子、鹿虻多；9 月人少、开始变色，月底游船就停了。5 月初湖上可能还有冰，10 月以后只剩 Rainy Lake 游客中心短时间开放。冬天（大约 1–3 月）可以开冰上公路、雪地摩托、越野滑雪，夜里最冷到零下 30 多摄氏度。北极光一年四季都可能有，秋冬夜长最容易看到。",
+    areas: {
+      rainy: "Rainy Lake（International Falls 一侧）",
+      kabetogama: "Kabetogama Lake",
+      "ash-river": "Ash River · Namakan Lake",
+      "kettle-falls": "Kettle Falls（坐船）",
+    },
+    gateway: { nameZh: "Kabetogama Lake 游客中心", lat: 48.44487, lon: -93.03009 },
+    timeZone: "America/Chicago",
+    airports: ["INL", "DLH", "MSP"],
+    nearby: ["isro"],
+    nonresidentSurcharge: false,
+    lodgingTip:
+      "园内只有坐船才到得了的 Kettle Falls 酒店（1910–1913 年建的老客房，另有带厨房的度假屋，住客可以订酒店的船从 Ash River 游客中心接送）和许多只能划船、开船去的营地。多数人住园外：西边的 International Falls（连锁酒店最多，到 Rainy Lake 游客中心约 20 分钟），或者 Kabetogama、Ash River 湖边的家庭度假村（小木屋，大多带船出租，5 月到 10 月营业）；南边的 Crane Lake 也有几家。想住湖上的可以在 Rainy Lake、Ash River、Crane Lake 的公司租船屋，夏天周末很早订满。三个片区之间开车要 30–60 分钟，按要坐的游船选住处。",
+  },
+  {
     code: "grsm",
     nameZh: "大烟山",
     nameEn: "Great Smoky Mountains",
@@ -1250,6 +1424,83 @@ export const parks: Park[] = [
     nonresidentSurcharge: false,
     lodgingTip:
       "园内没有酒店，只有 8 处免费、先到先得、没有自来水的小营地（多在河边）。大多数人住大桥南边的 Fayetteville（走路就有餐馆，到 Canyon Rim、Long Point、Kaymoor 都在 10 分钟内）或旁边的 Oak Hill；大桥北边的 Adventures on the Gorge、Minden 的 ACE Adventure Resort 是漂流公司的度假村，有小木屋和营地，订漂流时一起订最方便。去 Grandview、Sandstone 瀑布住南边约 30 分钟的 Beckley（连锁酒店最多）或 Hinton 更顺路。桥日（10 月第三个周六）和红叶季的周末，Fayetteville 一带要提前几个月订。",
+  },
+  {
+    code: "maca",
+    nameZh: "猛犸洞",
+    nameEn: "Mammoth Cave",
+    region: "south",
+    tagline: "世界上最长的洞穴系统",
+    stateEn: "Kentucky",
+    hero: "maca-historic-tour",
+    intro:
+      "肯塔基中部的石灰岩丘陵底下，是世界上已知最长的洞穴系统：已经测绘的通道超过 430 英里（约 690 公里），而且还在不断发现新的。洞里分好几层，上层是又宽又干的大通道和巨大的洞厅，19 世纪的硝石矿遗迹、游客用烟熏在洞顶的签名都还在；东南边 Frozen Niagara 一带才有钟乳石、石笋和石瀑布。进洞都要买导览票（全年都有），大多是护林员带队，从 30 分钟的自助短线到 6 小时爬行钻洞的 Wild Cave 都有。地面上是 Green 河谷和丘陵森林，有 80 多英里步道；1981 年列为世界遗产，2021 年获国际暗夜公园认证。",
+    bestMonths: [4, 5, 6, 9, 10],
+    seasonNote:
+      "洞里常年约 12°C（50 多华氏度），一年四季都能看。6–8 月和春秋学校假期最挤，导览票常提前几周卖光；夏天地面闷热潮湿、多雷阵雨、蜱虫多。10 月下旬红叶。冬天导览场次、线路都少很多（2026 年 11 月中到 2027 年 2 月每天只有四五条线），园内两个大营地 12 月到 2 月关闭。",
+    areas: {
+      "visitor-center": "游客中心 · 历史入口",
+      "frozen-niagara": "Frozen Niagara · New Entrance 一带（坐车去）",
+      "flint-ridge": "Flint Ridge · Great Onyx 洞",
+      "south-side": "南侧：Cedar Sink · Sand Cave · Sloans Crossing",
+      river: "Green 河（划船 · 渡口）",
+    },
+    gateway: { nameZh: "猛犸洞游客中心", lat: 37.18702, lon: -86.10128 },
+    timeZone: "America/Chicago",
+    airports: ["BNA", "SDF"],
+    nonresidentSurcharge: false,
+    lodgingTip:
+      "园内只有游客中心旁边的 The Lodge at Mammoth Cave（Sunset Terrace 客房、Historic Cottages、Family Cabins 全年开，便宜的 Woodland Cottages 一般 4 月到 10 月底），走路就到游客中心和历史入口，早上的导览最方便。园外最多人住东边 I-65 旁的 Cave City（53 号出口，到游客中心约 20 分钟）：连锁汽车旅馆、餐馆、加油站都在这里；南边的 Park City（48 号出口）更小更安静。Bowling Green 离游客中心约 45 分钟，酒店和超市最多。园里的 Mammoth Cave Campground 3 月到 11 月开（Recreation.gov 预订），西侧的 Houchin Ferry 小营地全年开。Green 河北岸的营地和 Brownsville 一带要坐 Green River 渡轮过河，渡轮因为水位低或涨水常停（2026 年 9 月起因水位低停运），停了就要绕路约 45 分钟。",
+  },
+  {
+    code: "cong",
+    nameZh: "康加里",
+    nameEn: "Congaree",
+    region: "south",
+    tagline: "美国最高的阔叶老林和柏树沼泽",
+    stateEn: "South Carolina",
+    hero: "cong-boardwalk",
+    intro:
+      "南卡首府哥伦比亚东南约 30 分钟，Congaree 河和 Cedar Creek 的泛滥平原上保留着美国东南部面积最大的一片原始河漫滩阔叶林：没被砍过的火炬松、橡树、山核桃长到四五十米高，NPS 称这里是美国最高的落叶阔叶林；低洼处是膝根（cypress knees）密布的落羽杉、紫树沼泽。一年大约十次洪水把林子淹上，带来养分，也让这片地一直没被开发。大多数人走游客中心出发的约 4 公里高架木栈道，再往里走 Weston Lake 步道，或者跟导览公司在 Cedar Creek 上划独木舟；每年 5 月中旬还有同步闪光的萤火虫，要抽签才能进。",
+    bestMonths: [3, 4, 5, 10, 11],
+    seasonNote:
+      "春秋最舒服：3–4 月树刚发芽、蚊子还少，10–11 月凉爽，11 月落羽杉变成铁锈红。5 月中旬是同步萤火虫季（要抽签）。6–9 月又热又闷，蚊子非常多（游客中心门口有个“蚊子指数表”），午后常有雷雨。一年约十次洪水会淹掉低处的步道和一部分木栈道，冬春最常见，出发前看公告。",
+    areas: {
+      "harry-hampton": "Harry Hampton 游客中心 · 木栈道",
+      "cedar-creek": "Cedar Creek（South Cedar Creek 码头 · 划船）",
+      east: "东区：Bates Ferry（US-601）",
+    },
+    gateway: { nameZh: "Harry Hampton 游客中心", lat: 33.82962, lon: -80.82337 },
+    timeZone: "America/New_York",
+    airports: ["CAE", "CLT", "CHS"],
+    nonresidentSurcharge: false,
+    lodgingTip:
+      "园内没有旅馆，只有两个要预订、没有自来水的帐篷营地（Longleaf 能开车到停车场，Bluff 要背东西走约 1.6 公里）。多数人住西北约 30 分钟车程的哥伦比亚（Columbia）：市中心、大学一带和 I-77 沿线连锁酒店、餐馆最多，也有不少整套民宿；从园里开回市区路上几乎没有加油站和餐馆，进园前加满油、买好吃的。从机场来最方便的是哥伦比亚机场（CAE，到公园约 35 分钟）；从夏洛特（约 1 小时 45 分钟）或查尔斯顿（约 1 小时 45 分钟）开车过来也行。附近没有出租车和网约车，必须自己开车。",
+  },
+  {
+    code: "hosp",
+    nameZh: "温泉",
+    nameEn: "Hot Springs",
+    region: "south",
+    tagline: "老城里的浴场街和 62°C 的泉水",
+    stateEn: "Arkansas",
+    hero: "hosp-bathhouse-row",
+    intro:
+      "美国最特别的国家公园之一：它就在阿肯色州温泉市的老城中心。Hot Springs Mountain 山脚冒出 40 多处温泉，水温约 62°C（143°F），是约 4,000 年前落下的雨水渗进地下、被加热后再冒出来的。1832 年联邦政府就把这里划为保留地，比黄石还早 40 年；1921 年升为国家公园。主街 Central Avenue 旁的“浴场街”（Bathhouse Row）一排八座 1890–1920 年代的浴场，是当年全美最火的疗养胜地：现在 Fordyce 是游客中心和博物馆，Buckstaff 还照百年前的老规矩泡澡，Quapaw 改成了温泉池水疗馆，Superior 是用温泉水酿啤酒的啤酒厂。浴场背后的山上是约 42 公里步道和两条观景山路。",
+    bestMonths: [3, 4, 5, 10, 11],
+    seasonNote:
+      "温泉一年四季都一样热，泡澡冬天最舒服。春天（3–5 月）山上的山茱萸、紫荆开花，10 月下旬到 11 月上旬红叶；6–8 月又热又湿，午后常有雷雨，体感温度超过 38°C 时户外讲解取消。城里节庆多，周末住宿更贵。",
+    areas: {
+      "bathhouse-row": "浴场街（Bathhouse Row · Central Avenue）",
+      "hot-springs-mountain": "Hot Springs Mountain · North Mountain",
+      "west-mountain": "West Mountain · Sugarloaf Mountain",
+    },
+    gateway: { nameZh: "Fordyce 浴场游客中心", lat: 34.51372, lon: -93.05347 },
+    timeZone: "America/Chicago",
+    airports: ["LIT", "MEM"],
+    nonresidentSurcharge: false,
+    lodgingTip:
+      "公园就在城里，住处很多。想走路逛浴场街的住老城：浴场街北头的 Arlington Resort Hotel（1924 年的老酒店，正对浴场街）或者浴场街里 Hale 浴场改的 Hotel Hale（只有 9 间房，房间浴缸放的就是温泉水）。连锁酒店集中在城南 Central Avenue 往 Lake Hamilton 的一路上，停车方便、便宜；Lake Hamilton、Lake Ouachita 湖边有很多整套湖景民宿。园内唯一的营地 Gulpha Gorge 在城东，40 个带水电和排污的房车营位，全部要在 Recreation.gov 预订。",
   },
   {
     code: "acad",
@@ -1361,6 +1612,34 @@ export const parks: Park[] = [
     nonresidentSurcharge: false,
     lodgingTip:
       "公园里唯一能过夜的是 Garden Key 上的原始营地（8 个营位加一片空地，要坐渡轮带上全部的水和装备，渡轮的露营票提前 6 个月放、很快卖完），其余的人都住 Key West 当天来回。渡轮 7:00 就要报到，住 Key West 老城最方便，走路 10–15 分钟到码头，但房价是全佛州最贵的一档，冬季和周末更贵；新城、Stock Island 的连锁酒店便宜些，开车到码头 10–15 分钟，市政停车楼 $40/天。往回 40 分钟的 Big Pine Key 一带有带厨房的整套房子；从迈阿密开车过来约 3.5–4 小时，可以在 Key Largo 或 Marathon 住一晚分两段开。",
+  },
+  {
+    code: "viis",
+    nameZh: "维尔京群岛",
+    nameEn: "Virgin Islands",
+    region: "caribbean",
+    tagline: "加勒比海的白沙湾、珊瑚礁和甘蔗种植园遗址",
+    stateEn: "U.S. Virgin Islands",
+    hero: "viis-trunk-bay",
+    intro:
+      "美属维尔京群岛的圣约翰岛约六成是国家公园，另有约 2,300 公顷的海域：从山脊的干燥热带林一直到海湾里的珊瑚礁、海草床。北岸一串白沙湾一个接一个，Trunk Bay 常被评为世界上最美的海滩之一，Maho Bay 的海草床里常能看到绿海龟。林子里散落着丹麦殖民时代的甘蔗种植园和糖厂遗址，讲述着奴隶制和 1733 年奴隶起义的历史；Reef Bay 山谷里还有泰诺人留下的岩刻。1956 年 Laurance Rockefeller 把买下的土地捐给国家才建了公园。要从圣托马斯岛坐约 20 分钟的渡轮过来，岛上靠左开车。",
+    bestMonths: [12, 1, 2, 3, 4],
+    seasonNote:
+      "全年 25–32°C 左右。12 月到 4 月是旱季和旺季，风浪小、最舒服，但房价最高，渡轮、海滩人多；冬天偶尔有从北边来的大浪（“Christmas winds”），北岸海滩下水要小心。6–11 月是飓风季，8–10 月最容易有热带风暴，雨多、闷热，很多餐馆和度假屋 9 月前后歇业，但人少、便宜。夏天常有撒哈拉沙尘让天空发灰。",
+    areas: {
+      "cruz-bay": "Cruz Bay（码头 · 游客中心）",
+      "north-shore": "北岸海湾（North Shore Road）",
+      annaberg: "Annaberg · Leinster Bay",
+      "reef-bay": "中部山脊 · Reef Bay",
+      "coral-bay": "东南：Salt Pond · Ram Head",
+      "st-thomas": "圣托马斯岛（园外）",
+    },
+    gateway: { nameZh: "Cruz Bay（游客中心 · 客轮码头）", lat: 18.33275, lon: -64.79379 },
+    timeZone: "America/St_Thomas",
+    airports: ["STT"],
+    nonresidentSurcharge: false,
+    lodgingTip:
+      "园内能住的只有北岸的 Cinnamon Bay 海滩营地：带床和风扇的生态帐篷、水泥小屋和自带帐篷的营位，没有空调，提前 11 个月开订、最少住 2 晚（圣诞、新年、复活节等周最少 7 晚）。其余的住 Cruz Bay（码头边的小镇，酒店、度假屋、餐馆都在这里，坐客轮最方便），或者东边更安静的 Coral Bay（度假屋为主，餐馆少）。圣约翰岛整体房价高，旺季要提前很久订；想省钱可以住圣托马斯岛东头的 Red Hook 一带，每天坐客轮过去（单程约 20 分钟），但在岛上要另外租车或坐出租车。",
   },
   {
     code: "dena",
@@ -1625,6 +1904,34 @@ export const parks: Park[] = [
     nonresidentSurcharge: false,
     lodgingTip:
       "园内没有酒店，只有山顶区的 Hosmer Grove 和海边的 Kīpahulu 两个小营地（都要在 Recreation.gov 提前 30 天内订），以及要徒步下到火山口里的三间荒野小屋。看日出的人多住山腰的 Kula 或 Pukalani、Makawao 一带，开到山顶约 1–1.5 小时；住机场旁的卡胡卢伊或北岸小镇 Paia 约 1.5–2 小时，Paia 也是哈纳公路的起点。去 Kīpahulu 最好在哈纳（Hāna）住一晚，开到瀑布步道约 30 分钟。南岸的 Kīhei、Wailea 度假区去山顶要 2–2.5 小时，凌晨出发看日出很辛苦。",
+  },
+  {
+    code: "npsa",
+    nameZh: "美属萨摩亚",
+    nameEn: "National Park of American Samoa",
+    region: "samoa",
+    tagline: "南太平洋的雨林、果蝠和珊瑚礁",
+    stateEn: "American Samoa",
+    hero: "npsa-pola-island",
+    intro:
+      "美国唯一在赤道以南的国家公园，在夏威夷西南约 4,200 公里，分在三座火山岛上：主岛图图伊拉岛北岸的雨林和海崖，东边曼努阿群岛的 Ofu 岛珊瑚礁潟湖和 Ta'u 岛（美属萨摩亚最高的 Lata 山，966 米）。林子是和亚洲、非洲同源的旧热带雨林，唯一的本地哺乳动物是翼展近 1 米的果蝠，白天也常在树冠上飞；海里记录到 950 多种鱼、250 多种珊瑚。公园的土地是向当地村子租来的，萨摩亚人的生活方式（fa'asamoa）就在公园里：进村前先问许可，周日要安静，傍晚的祈祷时间（sā）要停下来等。几乎没有一般国家公园的设施，适合有探险精神的人。",
+    bestMonths: [6, 7, 8, 9],
+    seasonNote:
+      "全年都是 28–31°C 左右的高温高湿。6–9 月是稍凉、稍干的季节，最适合徒步；10 月到次年 5 月是漫长的雨季，热带风暴多，12–2 月雨最多。8–11 月常能看到南半球的座头鲸。周日几乎所有商店关门、公交停开，很多村子不让游泳、不让上部分步道，排行程时把周日当休息日。",
+    areas: {
+      "pago-pago": "帕果帕果和港湾（游客中心）",
+      vatia: "Vatia 一带（北岸）",
+      "mount-alava": "Mount 'Alava 山脊",
+      aunuu: "'Aunu'u 岛（园外）",
+      ofu: "Ofu 岛（坐小飞机）",
+      tau: "Ta'u 岛（坐小飞机）",
+    },
+    gateway: { nameZh: "帕果帕果（公园游客中心）", lat: -14.27445, lon: -170.6969 },
+    timeZone: "Pacific/Pago_Pago",
+    airports: ["PPG"],
+    nonresidentSurcharge: false,
+    lodgingTip:
+      "公园里没有住宿。图图伊拉岛上住帕果帕果港湾一带（Utulei 的 Sadie's by the Sea 在海边、Fagatogo 有老旅馆 Sadie Thompson Inn）或机场附近的 Tafuna（Tradewinds Hotel 最大，还有几家小旅馆和 Airbnb），到公园北岸开车都在 30–40 分钟以内。曼努阿群岛只有几家小旅馆（Ofu 岛的 Vaoto Lodge、Ta'u 岛的 Fitiuta Lodge 等），要和机票一起提前订，岛上没有餐馆和商店，吃住都靠旅馆。公园以前协助安排的村民家寄宿（homestay，Vatia、Fagasā、Fiti'uta 等村）现在开不开没能确认，想住要先发邮件问公园。",
   },
   {
     code: "banf",

@@ -132,4 +132,10 @@ export const lodgingSeasons: Record<string, LodgingSeason> = {
   "grca-stay-village": { closed: [{ from: "2026-08-31", to: "2026-11-19" }], year: 2026, source: "https://www.grandcanyonlodges.com/alerts/", checked: "2026-10-18" },
   // Delaware North: all lodging within the park is closed for overnight guests (Stage 4 water restrictions); no reopening date
   "grca-stay-yavapai": { closed: [{ from: "2026-08-31", to: null }], year: 2026, source: "https://www.visitgrandcanyon.com/operational-updates", checked: "2026-10-18" },
+  // Rock Harbor Lodge official site: Operating Season "June 5, 2026 – September 12, 2026 (Full Operations. Last Night Stay is 9/11/2026)"
+  "isro-stay-rock-harbor-lodge": { open: [{ from: "06-05", to: "09-11" }], year: 2026, source: "https://www.rockharborlodge.com/lodging/rock-harbor-lodge/", checked: "2026-10-20" },
+  // Site still lists the 2025 season: "June 6 – September 5, 2025 (last night)"; 2026 dates not posted, using 2025
+  "isro-stay-windigo-cabins": { open: [{ from: "06-06", to: "09-05" }], year: 2025, source: "https://www.rockharborlodge.com/lodging/washington-harbor-camper-cabins/", checked: "2026-10-20" },
+  // Hotel site gives no operating dates (summer by boat or floatplane, winter by snowmobile); Recreation.gov's Kettle Falls cruise note says the hotel kitchen is closed for October 2026 tours. | APPROXIMATE: common mid-May (fishing opener) to end of September, not an official date
+  "voya-stay-kettle-falls-hotel": { open: [{ from: "05-15", to: "09-30" }], year: 2026, source: "https://www.kettlefallshotel.com/faq", checked: "2026-10-20" },
 };

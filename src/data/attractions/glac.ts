@@ -258,6 +258,7 @@ export const glacier: Attraction[] = [
       "单程走法：洛根山口到 Granite Park Chalet 约 12.2 公里，再下坡约 6.8 公里（下降约 670 米）到 The Loop；2026 年班车下午在 The Loop 接人（回西侧 Apgar 方向），9 月 7 日以后没有班车，要两辆车接送，或者走一段再原路返回",
       "体力好可以在木屋前岔上 Grinnell Glacier Overlook：单程约 1 公里、爬升约 270 米的陡坡，俯瞰格林内尔冰川和上格林内尔湖",
       "全程几乎没有遮阴，带够水和防晒；Granite Park 一带是灰熊常出没的地方，带熊喷雾",
+      "NPS 按全程每一段上下坡算，累计爬升约 730 米、下降约 1,450 米，大部分是最后下到 The Loop 的长下坡，膝盖不好的带登山杖",
     ],
     photoFile: "Granite Park Chalet from the Highline Trail.jpg",
   },

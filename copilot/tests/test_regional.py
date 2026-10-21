@@ -40,8 +40,13 @@ def test_only_real_ambiguities_between_airports():
     for code, airport in airports().items():
         for alias in airport.aliases:
             owners[normalize(alias).lower()].add(code)
-    # 两个波特兰、华盛顿的两个机场是真的分不清，系统会追问
-    assert {frozenset(codes) for codes in owners.values() if len(codes) > 1} <= {frozenset({"PDX", "PWM"}), frozenset({"DCA", "IAD"})}
+    # 两个波特兰、华盛顿的两个机场、两个查尔斯顿（西弗吉尼亚、南卡）、芝加哥的两个机场是真的分不清，系统会追问
+    assert {frozenset(codes) for codes in owners.values() if len(codes) > 1} <= {
+        frozenset({"PDX", "PWM"}),
+        frozenset({"DCA", "IAD"}),
+        frozenset({"CRW", "CHS"}),
+        frozenset({"ORD", "MDW"}),
+    }
 
 
 def test_regional_names_have_sources():

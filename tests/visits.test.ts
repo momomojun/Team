@@ -10,9 +10,9 @@ import { parkVisits, visitRanking, visitsIn } from "../src/lib/visits";
 
 const units = { wan: "{n} 万", yi: "{n} 亿" };
 
-test("63 座国家公园按设立日期排好，网站上的美国国家公园都对得上", () => {
-  assert.equal(nationalParks.length, 63);
-  assert.equal(new Set(nationalParks.map((park) => park.code)).size, 63);
+test("64 座国家公园按设立日期排好，网站上的美国国家公园都对得上", () => {
+  assert.equal(nationalParks.length, 64);
+  assert.equal(new Set(nationalParks.map((park) => park.code)).size, 64);
   const dates = nationalParks.map((park) => park.established);
   assert.deepEqual(dates, [...dates].sort());
   assert.equal(nationalParks[0].code, "yell");

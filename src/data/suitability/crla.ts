@@ -118,7 +118,7 @@ export const suitability: Record<string, Suitability> = {
     stroller: "partial",
     wheelchair: "partial",
     seniors: "ok",
-    noteZh: "官方说步道平而宽，停车场边就能看到尖塔。2026 年 9 月时 Pinnacles Road 因施工只能步行或骑车进入，出发前查 NPS 路况。",
+    noteZh: "官方说步道平而宽，停车场边就能看到尖塔。2026 年整季 Pinnacles Road 因施工只能步行或骑车进入，出发前查 NPS 路况。",
     source: ACCESS,
   },
 };

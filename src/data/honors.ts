@@ -96,6 +96,8 @@ export const darkSky: Record<string, DarkSky> = {
   grsa: { program: "darksky", year: 2019, url: darkSkyPlace("great-sand-dunes-national-park-dark-sky-park") },
   voya: { program: "darksky", year: 2020, url: darkSkyPlace("voyageurs-national-park-dark-sky-park") },
   maca: { program: "darksky", year: 2021, url: darkSkyPlace("mammoth-cave-national-park-dark-sky-park") },
+  // NPS 2026 年步道指南：2021 年获暗夜公园认证（当时还叫国家纪念地）；DarkSky 地点页的地址打不开（403），没核对
+  chir: { program: "darksky", year: 2021, url: darkSkyPlace("chiricahua-national-monument") },
   meve: { program: "darksky", year: 2021, url: darkSkyPlace("mesa-verde-national-park-dark-sky-park") },
   zion: { program: "darksky", year: 2021, url: darkSkyPlace("zion-national-park-dark-sky-park") },
   badl: { program: "darksky", year: 2025, url: darkSkyPlace("badlands-national-park") },

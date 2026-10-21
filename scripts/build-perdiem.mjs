@@ -88,6 +88,7 @@ async function fccCounty(stay) {
 const STATE_FIPS = {
   "04": "AZ", "06": "CA", "08": "CO", "16": "ID", "30": "MT", "32": "NV", "35": "NM",
   "38": "ND", "41": "OR", "46": "SD", "48": "TX", "49": "UT", "53": "WA", "56": "WY",
+  "05": "AR", "18": "IN", "21": "KY", "26": "MI", "27": "MN", "29": "MO", "39": "OH", "45": "SC",
 };
 async function censusCounty(stay) {
   const url =
@@ -100,9 +101,10 @@ async function censusCounty(stay) {
 }
 
 const counties = existsSync(COUNTY_CACHE) ? JSON.parse(readFileSync(COUNTY_CACHE, "utf8")) : {};
-// 阿拉斯加、夏威夷不归 GSA 管（国防部另定标准），加拿大的公园也不在范围里
+// 阿拉斯加、夏威夷和海外领地（美属维尔京群岛、美属萨摩亚）不归 GSA 管（国防部另定标准），加拿大的公园也不在范围里
+const OUTSIDE_GSA = ["Alaska", "Hawaii", "U.S. Virgin Islands", "American Samoa"];
 const outside = new Set(
-  parks.filter((park) => park.country === "CA" || park.stateEn === "Alaska" || park.stateEn === "Hawaii").map((park) => park.code),
+  parks.filter((park) => park.country === "CA" || OUTSIDE_GSA.includes(park.stateEn)).map((park) => park.code),
 );
 const stays = lodgingOptions.filter((stay) => !outside.has(stay.park));
 for (const stay of stays) {

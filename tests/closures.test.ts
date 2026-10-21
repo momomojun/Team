@@ -60,13 +60,13 @@ test("实时公告：关闭类、标题写着关闭的才算；夜间封路、�
 });
 
 test("每周固定几天关：Cades Cove 夏天只有周三不让车进，攻略不会整趟去掉", () => {
-  // 2026-07-15 是周三，07-16 是周四
-  assert.ok(closureOn("grsm-cades-cove", "2026-07-15")?.certain);
-  assert.equal(closureOn("grsm-cades-cove", "2026-07-16"), null);
-  assert.equal(closureOn("grsm-cades-cove", "2026-10-07"), null, "10 月起不再禁车");
+  // 2027-07-14 是周三，07-15 是周四（2026 年那一段 10 月 1 日结束，已经从数据里去掉了）
+  assert.ok(closureOn("grsm-cades-cove", "2027-07-14")?.certain);
+  assert.equal(closureOn("grsm-cades-cove", "2027-07-15"), null);
+  assert.equal(closureOn("grsm-cades-cove", "2027-10-06"), null, "10 月起不再禁车");
   // 只去周三一天才算这几天都去不了
-  assert.ok(closedAllDays("grsm-abrams-falls", ["2026-07-15"]));
-  assert.equal(closedAllDays("grsm-abrams-falls", ["2026-07-14", "2026-07-15", "2026-07-16"]), null);
+  assert.ok(closedAllDays("grsm-abrams-falls", ["2027-07-14"]));
+  assert.equal(closedAllDays("grsm-abrams-falls", ["2027-07-13", "2027-07-14", "2027-07-15"]), null);
   for (const closure of tempClosures.filter((c) => c.weekdays)) {
     assert.ok(closure.reopen, "每周关的要写到哪天为止");
     assert.ok(closure.weekdays!.every((day) => Number.isInteger(day) && day >= 0 && day <= 6));

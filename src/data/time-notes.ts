@@ -156,6 +156,45 @@ export const timeNotes: TimeNote[] = [
     sources: ["https://www.alberta.ca/albertas-new-time-system-abt", "https://news.gov.bc.ca/releases/2026AG0013-000209"],
     checked: CHECKED,
   },
+  {
+    park: "maca",
+    noteZh:
+      "猛犸洞用中部时间（和纳什维尔一样），从路易斯维尔（SDF，东部时间）开过来要把表拨慢 1 小时；肯塔基的东西两半时区不同，州界在路易斯维尔和猛犸洞之间。Recreation.gov 的导览票、游客中心都按中部时间，别按手机上没跳过来的东部时间算。",
+    sources: ["https://www.recreation.gov/ticket/facility/234640"],
+    checked: "2026-10-20",
+  },
+  {
+    park: "indu",
+    noteZh:
+      "印第安纳沙丘所在的西北印第安纳三个县（Lake、Porter、LaPorte）用中部时间，和芝加哥一样；印第安纳州大部分地方、往东进密歇根州都是东部时间。从这里往东开去密歇根（比如 Warren Dunes 州立公园），或者从印第安纳波利斯开过来，表要差 1 小时。",
+    sources: ["https://www.nps.gov/indu/planyourvisit/wb16.htm"],
+    checked: "2026-10-20",
+  },
+  {
+    park: "isro",
+    noteZh:
+      "皇家岛属于密歇根，岛上、Houghton、Copper Harbor、水上飞机都按东部时间；但从明尼苏达 Grand Portage 开的渡轮（Sea Hunter III、Voyageur II）按中部时间，比岛上慢 1 小时，船公司的时刻表上 Windigo 的开船时间也写中部时间（10:00 到、14:00 开）。在 Windigo 坐回 Grand Portage 的船，按船票上的中部时间到码头。",
+    sources: [
+      "https://www.isleroyaleboats.com/schedules.html",
+      "https://www.isleroyaleseaplanes.com/before-you-go",
+      "https://www.nps.gov/isro/planyourvisit/hours.htm",
+    ],
+    checked: "2026-10-20",
+  },
+  {
+    park: "viis",
+    noteZh:
+      "美属维尔京群岛用大西洋时间（UTC-4），全年不调夏令时：3 月到 11 月初和美东一样，冬天比美东快 1 小时。飞机落地后手机会自动跳，但从美东订的渡轮、导览的时间注意按当地时间。",
+    sources: ["https://www.nps.gov/viis/planyourvisit/basicinfo.htm"],
+    checked: "2026-10-20",
+  },
+  {
+    park: "npsa",
+    noteZh:
+      "美属萨摩亚用萨摩亚标准时间（UTC-11），全年不调夏令时，比夏威夷晚 1 小时，是美国最晚的时区之一。隔壁的萨摩亚独立国（阿皮亚）2011 年跳到了日期变更线另一边（UTC+13）：两地钟表时间一样，但阿皮亚比这里早一整天，从阿皮亚飞过来的航班会“到在出发的前一天”，订票时看清日期。",
+    sources: ["https://www.americansamoa.travel/general-information"],
+    checked: "2026-10-20",
+  },
 ];
 
 /** 某座公园的时区说明；给了日期就只留这一天有差别的 */

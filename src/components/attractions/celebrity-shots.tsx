@@ -3,6 +3,9 @@ import type { Dictionary } from "@/i18n/dictionaries";
 import { fill, otherName } from "@/i18n/format";
 import { MediaEmbed } from "@/components/media-embed";
 
+/** YouTube 链接 → 视频 id（watch?v=、youtu.be/、shorts/） */
+const youtubeId = (url: string) => url.match(/(?:v=|youtu\.be\/|shorts\/)([\w-]{11})/)?.[1];
+
 type CelebText = Pick<Dictionary, "attraction" | "units">;
 
 /** 发帖日期：2026-08-10 → 2026.08.10，只知道月份的 2026-05 → 2026.05 */
@@ -44,6 +47,17 @@ export function CelebrityShotItem({ shot, text, compact = false }: { shot: Celeb
           title={`${shot.nameEn} · Instagram`}
           label={t.embedPost}
           note={fill(t.embedNote, { platform: "Instagram", channel: shot.nameEn })}
+          hide={t.embedHide}
+        />
+      )}
+      {/* 明星官方频道上的旅行视频：和电影同款一样，点了才用 youtube-nocookie 的嵌入播放 */}
+      {!compact && shot.postUrl && shot.platform === "youtube" && youtubeId(shot.postUrl) && (
+        <MediaEmbed
+          kind="youtube"
+          src={youtubeId(shot.postUrl)!}
+          title={`${shot.nameEn} · YouTube`}
+          label={t.embedPost}
+          note={fill(t.embedNote, { platform: "YouTube", channel: shot.nameEn })}
           hide={t.embedHide}
         />
       )}

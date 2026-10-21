@@ -1,4 +1,4 @@
-import { fixedMinutes } from "@/data/attractions/route-fixes";
+import { fixedMinutes, routeAt } from "@/data/attractions/route-fixes";
 import { correctedMinutes } from "./drive-speed";
 
 // 浏览器里直接调用 OSRM 公共服务（支持跨域）：加自定义住处时查一次车程表，行程地图上查当天的真实开车路线
@@ -37,7 +37,8 @@ export async function drivingMinutesFrom(
   const result: Record<string, number> = {};
   for (let i = 0; i < destinations.length; i += BATCH) {
     const batch = destinations.slice(i, i + BATCH);
-    const coords = [origin, ...batch].map((p) => `${p.lon.toFixed(5)},${p.lat.toFixed(5)}`).join(";");
+    // OSRM 路网缺了路的景点按 routeAt 的点算（见 route-fixes.ts）
+    const coords = [origin, ...batch.map((p) => routeAt[p.id] ?? p)].map((p) => `${p.lon.toFixed(5)},${p.lat.toFixed(5)}`).join(";");
     const res = await fetch(`${TABLE_URL}${coords}?sources=0&annotations=duration,distance`);
     const data = (await res.json()) as { code: string; durations?: (number | null)[][]; distances?: (number | null)[][] };
     if (data.code !== "Ok" || !data.durations) throw new Error(`OSRM: ${data.code}`);

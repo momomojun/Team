@@ -712,7 +712,7 @@
       "PHX": 289,
       "PGA": 19,
       "FLG": 135,
-      "SLC": 410
+      "SLC": 409
     },
     "nearby": [
       "hsbd",
@@ -749,7 +749,7 @@
       "PHX": 287,
       "PGA": 17,
       "FLG": 134,
-      "SLC": 418
+      "SLC": 417
     },
     "nearby": [
       "ante",
@@ -820,8 +820,8 @@
     "airportMinutes": {
       "LAS": 248,
       "SGU": 128,
-      "PGA": 53,
-      "PHX": 304,
+      "PGA": 54,
+      "PHX": 303,
       "SLC": 391
     },
     "nearby": [
@@ -1045,12 +1045,40 @@
     "nearby": [
       "grca",
       "pefo",
-      "whsa"
+      "whsa",
+      "chir"
     ],
     "aliases": [
       "巨人柱",
       "Saguaro",
       "sagu"
+    ]
+  },
+  {
+    "code": "chir",
+    "nameZh": "奇里卡瓦",
+    "nameEn": "Chiricahua",
+    "kind": "park",
+    "country": "US",
+    "nps": "chir",
+    "timeZone": "America/Phoenix",
+    "airports": [
+      "TUS",
+      "PHX",
+      "ELP"
+    ],
+    "airportMinutes": {
+      "TUS": 105,
+      "PHX": 251,
+      "ELP": 287
+    },
+    "nearby": [
+      "sagu"
+    ],
+    "aliases": [
+      "奇里卡瓦",
+      "Chiricahua",
+      "chir"
     ]
   },
   {
@@ -1067,7 +1095,7 @@
       "MAF"
     ],
     "airportMinutes": {
-      "ELP": 100,
+      "ELP": 101,
       "CNM": 49,
       "MAF": 175
     },
@@ -1199,6 +1227,131 @@
     ]
   },
   {
+    "code": "cuva",
+    "nameZh": "凯霍加谷",
+    "nameEn": "Cuyahoga Valley",
+    "kind": "park",
+    "country": "US",
+    "nps": "cuva",
+    "timeZone": "America/New_York",
+    "airports": [
+      "CLE",
+      "CAK"
+    ],
+    "airportMinutes": {
+      "CLE": 40,
+      "CAK": 38
+    },
+    "nearby": [],
+    "aliases": [
+      "凯霍加谷",
+      "凱霍加谷",
+      "Cuyahoga Valley",
+      "cuva"
+    ]
+  },
+  {
+    "code": "indu",
+    "nameZh": "印第安纳沙丘",
+    "nameEn": "Indiana Dunes",
+    "kind": "park",
+    "country": "US",
+    "nps": "indu",
+    "timeZone": "America/Chicago",
+    "airports": [
+      "ORD",
+      "MDW"
+    ],
+    "airportMinutes": {
+      "ORD": 116,
+      "MDW": 62
+    },
+    "nearby": [],
+    "aliases": [
+      "印第安纳沙丘",
+      "印第安納沙丘",
+      "Indiana Dunes",
+      "indu"
+    ]
+  },
+  {
+    "code": "jeff",
+    "nameZh": "圣路易斯拱门",
+    "nameEn": "Gateway Arch",
+    "kind": "park",
+    "country": "US",
+    "nps": "jeff",
+    "timeZone": "America/Chicago",
+    "airports": [
+      "STL"
+    ],
+    "airportMinutes": {
+      "STL": 23
+    },
+    "nearby": [],
+    "aliases": [
+      "圣路易斯拱门",
+      "聖路易斯拱門",
+      "Gateway Arch",
+      "jeff"
+    ]
+  },
+  {
+    "code": "isro",
+    "nameZh": "皇家岛",
+    "nameEn": "Isle Royale",
+    "kind": "park",
+    "country": "US",
+    "nps": "isro",
+    "timeZone": "America/Detroit",
+    "airports": [
+      "CMX",
+      "DLH",
+      "MQT"
+    ],
+    "airportMinutes": {
+      "CMX": 32,
+      "DLH": 263,
+      "MQT": 132
+    },
+    "nearby": [
+      "voya"
+    ],
+    "aliases": [
+      "皇家岛",
+      "皇家島",
+      "Isle Royale",
+      "isro"
+    ]
+  },
+  {
+    "code": "voya",
+    "nameZh": "航海家",
+    "nameEn": "Voyageurs",
+    "kind": "park",
+    "country": "US",
+    "nps": "voya",
+    "timeZone": "America/Chicago",
+    "airports": [
+      "INL",
+      "DLH",
+      "MSP"
+    ],
+    "airportMinutes": {
+      "INL": 37,
+      "DLH": 133,
+      "MSP": 261
+    },
+    "nearby": [
+      "isro"
+    ],
+    "aliases": [
+      "航海家",
+      "Voyageurs",
+      "voya"
+    ]
+  },
+  {
     "code": "grsm",
     "nameZh": "大烟山",
     "nameEn": "Great Smoky Mountains",
@@ -1287,6 +1440,79 @@
       "新河峽谷",
       "New River Gorge",
       "neri"
+    ]
+  },
+  {
+    "code": "maca",
+    "nameZh": "猛犸洞",
+    "nameEn": "Mammoth Cave",
+    "kind": "park",
+    "country": "US",
+    "nps": "maca",
+    "timeZone": "America/Chicago",
+    "airports": [
+      "BNA",
+      "SDF"
+    ],
+    "airportMinutes": {
+      "BNA": 92,
+      "SDF": 82
+    },
+    "nearby": [],
+    "aliases": [
+      "猛犸洞",
+      "猛獁洞",
+      "Mammoth Cave",
+      "maca"
+    ]
+  },
+  {
+    "code": "cong",
+    "nameZh": "康加里",
+    "nameEn": "Congaree",
+    "kind": "park",
+    "country": "US",
+    "nps": "cong",
+    "timeZone": "America/New_York",
+    "airports": [
+      "CAE",
+      "CLT",
+      "CHS"
+    ],
+    "airportMinutes": {
+      "CAE": 48,
+      "CLT": 109,
+      "CHS": 113
+    },
+    "nearby": [],
+    "aliases": [
+      "康加里",
+      "Congaree",
+      "cong"
+    ]
+  },
+  {
+    "code": "hosp",
+    "nameZh": "温泉",
+    "nameEn": "Hot Springs",
+    "kind": "park",
+    "country": "US",
+    "nps": "hosp",
+    "timeZone": "America/Chicago",
+    "airports": [
+      "LIT",
+      "MEM"
+    ],
+    "airportMinutes": {
+      "LIT": 52,
+      "MEM": 217
+    },
+    "nearby": [],
+    "aliases": [
+      "温泉",
+      "溫泉",
+      "Hot Springs",
+      "hosp"
     ]
   },
   {
@@ -1399,6 +1625,28 @@
       "幹龜",
       "Dry Tortugas",
       "drto"
+    ]
+  },
+  {
+    "code": "viis",
+    "nameZh": "维尔京群岛",
+    "nameEn": "Virgin Islands",
+    "kind": "park",
+    "country": "US",
+    "nps": "viis",
+    "timeZone": "America/St_Thomas",
+    "airports": [
+      "STT"
+    ],
+    "airportMinutes": {
+      "STT": 59
+    },
+    "nearby": [],
+    "aliases": [
+      "维尔京群岛",
+      "維京群島",
+      "Virgin Islands",
+      "viis"
     ]
   },
   {
@@ -1648,6 +1896,28 @@
       "哈萊阿卡拉",
       "Haleakalā",
       "hale"
+    ]
+  },
+  {
+    "code": "npsa",
+    "nameZh": "美属萨摩亚",
+    "nameEn": "National Park of American Samoa",
+    "kind": "park",
+    "country": "US",
+    "nps": "npsa",
+    "timeZone": "Pacific/Pago_Pago",
+    "airports": [
+      "PPG"
+    ],
+    "airportMinutes": {
+      "PPG": 15
+    },
+    "nearby": [],
+    "aliases": [
+      "美属萨摩亚",
+      "美屬薩摩亞",
+      "National Park of American Samoa",
+      "npsa"
     ]
   },
   {

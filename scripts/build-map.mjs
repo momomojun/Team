@@ -1,5 +1,5 @@
-// 首页的线描地图：美国西部和加拿大落基山（本土西部的公园）+ 美国东部、阿拉斯加、夏威夷三张小图。
-// 州界、省界来自 Natural Earth（公共领域），按 Albers 等积圆锥投影、化简后输出 SVG 路径，
+// 首页的线描地图：美国西部和加拿大落基山（本土西部的公园）+ 美国东部、阿拉斯加、夏威夷、美属维尔京群岛、美属萨摩亚几张小图。
+// 州界、省界来自 Natural Earth（公共领域），按 Albers 等积圆锥投影、化简后输出 SVG 路径；两块海外领地不在州界数据里，用 1:10m 的国界数据，
 // 公园和参考城市的位置也一起投影好。
 // 输出 src/data/map.generated.ts。重新跑：npm run data:map
 import { writeFile } from "node:fs/promises";
@@ -7,6 +7,9 @@ import { parks, USER_AGENT } from "./load-data.mjs";
 
 const SOURCE =
   "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_1_states_provinces.geojson";
+// 美属维尔京群岛、美属萨摩亚在国界数据里是单独的“国家”（州界数据没有它们）；1:10m 才画得出圣约翰岛、塔乌岛这样的小岛
+const SOURCE_ADMIN0 =
+  "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_admin_0_countries.geojson";
 const OUTPUT = new URL("../src/data/map.generated.ts", import.meta.url);
 const WIDTH = 1000;
 const TOLERANCE = 0.8;
@@ -32,10 +35,11 @@ const CITIES = [
   { id: "bos", nameZh: "波士顿", nameEn: "Boston", lat: 42.3601, lon: -71.0589, map: "east" },
   { id: "atl", nameZh: "亚特兰大", nameEn: "Atlanta", lat: 33.749, lon: -84.388, map: "east" },
   { id: "chi", nameZh: "芝加哥", nameEn: "Chicago", lat: 41.8781, lon: -87.6298, map: "east" },
+  // 维尔京群岛、萨摩亚小图不标城市：圣托马斯岛的夏洛特阿马利亚、图图伊拉岛的帕果帕果都紧挨着公园的圆点
 ];
 
 /** 东部片区的公园画在东部小图上 */
-const EAST_REGIONS = ["appalachia", "newengland", "florida"];
+const EAST_REGIONS = ["appalachia", "newengland", "florida", "south", "greatlakes"];
 
 const VIEWS = {
   west: {
@@ -148,11 +152,38 @@ const VIEWS = {
     /** 去掉西北夏威夷群岛的小岛（在 -161° 以西） */
     keep: (ring) => ring.reduce((sum, [lon]) => sum + lon, 0) / ring.length > -161,
   },
+  caribbean: {
+    projection: { lon0: -64.85, lat0: 18.33, lat1: 18.2, lat2: 18.5 },
+    source: "admin0",
+    states: ["United States Virgin Islands"],
+    focus: ["United States Virgin Islands"],
+    labels: {},
+    /** 圣托马斯岛（机场）和圣约翰岛（公园）；南边的圣克罗伊岛离得远、没有公园，不画 */
+    // 东边多留一块海面：公园在东头的圣约翰岛，名字标在圆点右边要有地方
+    bounds: { west: -65.08, east: -64.38, south: 18.27, north: 18.43 },
+    margin: 0.04,
+    keep: (ring) => ring.reduce((sum, [, lat]) => sum + lat, 0) / ring.length > 18.1,
+  },
+  samoa: {
+    projection: { lon0: -170.1, lat0: -14.25, lat1: -14.4, lat2: -14.1 },
+    source: "admin0",
+    states: ["American Samoa"],
+    focus: ["American Samoa"],
+    labels: {},
+    /** 图图伊拉岛和东边的马努阿群岛（奥夫、奥洛塞加、塔乌）；更远的斯温斯岛、罗斯环礁不画 */
+    bounds: { west: -170.88, east: -169.38, south: -14.4, north: -14.13 },
+    margin: 0.03,
+    keep: (ring) => {
+      const lon = ring.reduce((sum, [x]) => sum + x, 0) / ring.length;
+      const lat = ring.reduce((sum, [, y]) => sum + y, 0) / ring.length;
+      return lon < -169 && lat < -14;
+    },
+  },
 };
 
 /** 公园画在哪张图上 */
 const viewOf = (park) =>
-  park.region === "alaska" || park.region === "hawaii" ? park.region : EAST_REGIONS.includes(park.region) ? "east" : "west";
+  ["alaska", "hawaii", "caribbean", "samoa"].includes(park.region) ? park.region : EAST_REGIONS.includes(park.region) ? "east" : "west";
 
 /** 射线法：点在不在多边形（经纬度）里 */
 function inside([lon, lat], rings) {
@@ -249,6 +280,15 @@ const usStates = new Map(
     .map((feature) => [feature.properties.name, feature.geometry]),
 );
 
+console.log("下载 Natural Earth 国界（1:10m，给两块海外领地用）…");
+const admin0Response = await fetch(SOURCE_ADMIN0, { headers: { "User-Agent": USER_AGENT } });
+if (!admin0Response.ok) throw new Error(`下载失败：HTTP ${admin0Response.status}`);
+const territories = new Map(
+  (await admin0Response.json()).features
+    .map((feature) => [feature.properties.ADMIN ?? feature.properties.admin, feature.geometry])
+    .filter(([name]) => ["United States Virgin Islands", "American Samoa"].includes(name)),
+);
+
 const output = {};
 for (const [viewId, view] of Object.entries(VIEWS)) {
   const project = albers(view.projection);
@@ -268,8 +308,9 @@ for (const [viewId, view] of Object.entries(VIEWS)) {
       viewParks.some((park) => inside([parkAt(park).lon, parkAt(park).lat], ringsOf(usStates.get(name)))),
     );
   }
+  const shapes = view.source === "admin0" ? territories : usStates;
   for (const name of view.states) {
-    const geometry = usStates.get(name);
+    const geometry = shapes.get(name);
     if (!geometry) throw new Error(`找不到州：${name}`);
     const rings = ringsOf(geometry).filter((ring) => (view.keep ? view.keep(ring) : true));
     projected.set(name, rings.map((ring) => ring.map(([lon, lat]) => project(lon, lat))));
@@ -354,6 +395,10 @@ export const alaskaMap: MapView = ${JSON.stringify(output.alaska)};
 export const hawaiiMap: MapView = ${JSON.stringify(output.hawaii)};
 
 export const eastMap: MapView = ${JSON.stringify(output.east)};
+
+export const caribbeanMap: MapView = ${JSON.stringify(output.caribbean)};
+
+export const samoaMap: MapView = ${JSON.stringify(output.samoa)};
 `,
 );
 console.log(`已写入 ${OUTPUT.pathname}`);

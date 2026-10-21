@@ -1,0 +1,221 @@
+import type { Attraction } from "./types";
+
+// 温泉公园就在温泉市老城里：浴场街（Bathhouse Row）沿 Central Avenue 一排八座老浴场，背后是 Hot Springs Mountain，
+// 山上有步道、两条观景山路（Hot Springs Mountain Drive、North Mountain）和私营的观景塔；老城西边是 West Mountain。
+// 进园、游客中心、步道都免费；泡澡（Buckstaff、Quapaw）和观景塔是私营的，另付钱。
+// 步道长度按 NPS Hot Springs and North Mountain Trails 页面（单程）。
+// 坐标：浴场、塔、观景点、停车场按 OSM（Nominatim、Overpass，2026-10-20 查）。
+const FORDYCE = { lat: 34.51372, lon: -93.05347 };
+const DOWNTOWN_PARKING = { lat: 34.51275, lon: -93.05501, nameZh: "浴场街一带的停车场（Central Avenue 背后）" };
+const TOWER_PARKING = { lat: 34.51772, lon: -93.04545, nameZh: "Hot Springs Mountain Tower 停车场" };
+
+export const hotSprings: Attraction[] = [
+  {
+    id: "hosp-fordyce",
+    park: "hosp",
+    nameZh: "Fordyce 浴场（游客中心和博物馆）",
+    nameEn: "Fordyce Bathhouse Visitor Center & Museum",
+    kind: "visitor",
+    area: "bathhouse-row",
+    lat: FORDYCE.lat,
+    lon: FORDYCE.lon,
+    start: DOWNTOWN_PARKING,
+    durationMin: 75,
+    hours: [{ open: "09:00", close: "17:00" }],
+    mustSee: true,
+    summary:
+      "浴场街上最豪华的一座（1915 年），现在是游客中心，整栋楼按 1920 年代的样子复原，免费自己逛：一楼是彩色玻璃天花板下的男浴池大厅和雕像喷泉，二楼有更衣室、按摩间和像刑具一样的老式机械健身器（Zander 器械），三楼是音乐厅和健身房，地下室能透过玻璃看到 Fordyce 泉的出水口。看完就懂当年人们来这里“泡水治病”是怎么回事。",
+    tips: [
+      "2025 年 3 月起 NPS 公告游客中心每周二、周三关闭，只开周四到周一 9:00–17:00，2026 年是否恢复每天开没确认，周二周三去之前打电话问（501-620-6715）",
+      "护林员带的浴场街户外讲解从这里出发（约 45 分钟，不用预约）：春季每天 10:30、夏季 10:00 和 11:30、冬季 14:00",
+      "楼后面的大台阶（Stephens Balustrade）上去就是 Grand Promenade 和上山的步道",
+    ],
+    photoFile: "Fordyce Bathhouse Hot Springs NP 2023.jpg",
+  },
+  {
+    id: "hosp-bathhouse-row",
+    park: "hosp",
+    nameZh: "浴场街（Bathhouse Row）",
+    nameEn: "Bathhouse Row",
+    kind: "landmark",
+    area: "bathhouse-row",
+    lat: 34.51324,
+    lon: -93.05357,
+    start: DOWNTOWN_PARKING,
+    durationMin: 60,
+    mustSee: true,
+    summary:
+      "Central Avenue 东侧一排八座 1892–1923 年建的浴场，西班牙、新古典、意大利风格各不相同，是美国保存最完整的一条浴场街。现在每座都有新用途：Superior 是用温泉水酿酒的啤酒厂，Hale 是小酒店，Ozark 展出驻园艺术家的作品，Lamar 是公园商店，Buckstaff、Quapaw 还能泡澡。街两头和中间有几处能直接接热水的取水龙头，当地人提着大桶来灌。",
+    tips: [
+      "从北头的 Arlington 酒店走到南头的 Lamar 约 400 米，对面一侧是老城的商店和餐馆",
+      "取水龙头出来的水很烫（约 62°C），给孩子喝先放凉",
+      "晚上浴场的立面打灯，比白天清净",
+    ],
+    photoFile: "Bathhouse Row, Lamar, Hot Springs National Park, Arkansas.jpg",
+  },
+  {
+    id: "hosp-buckstaff",
+    park: "hosp",
+    nameZh: "Buckstaff 浴场传统泡澡",
+    nameEn: "Buckstaff Bathhouse traditional bath",
+    kind: "experience",
+    area: "bathhouse-row",
+    lat: 34.51242,
+    lon: -93.05358,
+    start: DOWNTOWN_PARKING,
+    durationMin: 90,
+    // 周一到周六 8:00–11:45、13:15–15:00，周日只有上午；上午 11:30、下午 14:45 前到
+    hours: [{ open: "08:00", lastEntry: "14:45", close: "15:00" }],
+    permit: "不能预约，只接待现场来的，先到先得；上午场 11:30 前、下午场 14:45 前到，周日只有上午场。按摩、美容要另外打电话预约（501-623-2308）",
+    mustSee: true,
+    summary:
+      "1912 年开业以来一直没停过业的老浴场，泡法和一百年前一样：男女分开，服务员带你先在单人浴缸里泡温泉水（有漩涡），再进蒸汽箱、坐浴盆，用热毛巾敷，最后冲凉，可以加一段瑞典式按摩。整套约 1 个多小时，是体验“浴场街”最地道的方式。",
+    tips: [
+      "感恩节、圣诞、元旦和复活节关门，其他联邦假日上午 10:30 就不再接待",
+      "价格官网没写，按现场的价目表；带上现金或卡，小费另给",
+      "人多时要等一会儿，开门就去最快",
+    ],
+    photoFile: "Buckstaff Bathhouse.jpg",
+  },
+  {
+    id: "hosp-quapaw",
+    park: "hosp",
+    nameZh: "Quapaw 浴场温泉池",
+    nameEn: "Quapaw Baths & Spa",
+    kind: "experience",
+    area: "bathhouse-row",
+    lat: 34.51324,
+    lon: -93.05357,
+    start: DOWNTOWN_PARKING,
+    durationMin: 120,
+    hours: [{ open: "10:00", close: "18:00" }],
+    permit: "私营水疗馆，温泉池按次收费，水疗服务可以在官网或打电话预约（501-609-9822）；不接待 14 岁以下的孩子",
+    summary:
+      "浴场街中段带马赛克瓷砖穹顶的那座，改成了现代的温泉水疗馆：穿泳衣泡几个水温不同的公共温泉池，还有私人浴池和建在温泉出水的岩洞里的蒸汽房。比 Buckstaff 轻松、能男女一起泡，适合不想脱光泡老式单人浴的人。",
+    tips: [
+      "网站写每周二休息、周三到周一 10:00–18:00，时间可能变，去之前看官网",
+      "自带泳衣；周末下午人最多",
+    ],
+    photoFile: "Bathhouse Row, Quapaw Bathhouse, Central Avenue, Hot Springs, Garland County, AR HABS ARK,26-HOSP,1-E- (sheet 1 of 2).png",
+  },
+  {
+    id: "hosp-grand-promenade",
+    park: "hosp",
+    nameZh: "Grand Promenade 和温泉出水口",
+    nameEn: "Grand Promenade, Display Springs & Hot Water Cascade",
+    kind: "hike",
+    area: "bathhouse-row",
+    lat: 34.51434,
+    lon: -93.05306,
+    start: DOWNTOWN_PARKING,
+    durationMin: 40,
+    hike: { distanceMi: 1, difficulty: "easy" },
+    summary:
+      "浴场街背后山坡上一条约 800 米的红砖步道，从这里往下看是一排浴场的屋顶和老城。步道两头有保留下来的露天温泉：浴场后面的展示泉（Display Springs）冒着热气，北头 Arlington 草坪旁的热水瀑布（Hot Water Cascade）让温泉水顺着石灰华岩坡流下来，冬天早上雾气腾腾。",
+    tips: [
+      "从 Fordyce 后面的大台阶或 Arlington 草坪上来；坡度很缓，推婴儿车能走",
+      "温泉出水口的水约 62°C，不要伸手进去，也不能泡脚",
+      "从步道中段接 Peak Trail（约 1 公里，很陡）能走上 Hot Springs Mountain 观景塔",
+    ],
+    photoFile: "The Grand Promenade, Hot Springs, Arkansas.jpg",
+    trail: { via: [{ lat: 34.51701, lon: -93.05139 }] },
+  },
+  {
+    id: "hosp-mountain-tower",
+    park: "hosp",
+    nameZh: "Hot Springs Mountain 观景塔",
+    nameEn: "Hot Springs Mountain Tower",
+    kind: "viewpoint",
+    area: "hot-springs-mountain",
+    lat: 34.51728,
+    lon: -93.04622,
+    start: TOWER_PARKING,
+    durationMin: 45,
+    hours: [{ open: "09:00", lastEntry: "17:30", close: "18:00" }],
+    mustSee: true,
+    summary:
+      "Hot Springs Mountain 山顶一座 66 米高的钢结构观景塔，坐电梯上到观景台（海拔约 383 米），一圈都能看：脚下是温泉城和浴场街，远处是一层层的 Ouachita 山脉，秋天满山红叶。塔是私营的，要买票；山顶还有 1911 年建的老亭子观景点和野餐区。",
+    tips: [
+      "成人（12–54 岁）$13、55 岁以上 $12、5–11 岁 $6.50、4 岁以下免费，停车免费，有电梯、轮椅能上",
+      "开车走 Hot Springs Mountain Drive 上山（Fountain Street 尽头起，1880 年代的马车路，弯多），或从 Grand Promenade 走 Peak Trail 上来",
+      "山顶的 Hot Springs Mountain Trail 是约 2.7 公里的平缓环线，有几处观景点，适合再走走",
+    ],
+    photoFile: "Hot Springs Mountain Tower.jpg",
+  },
+  {
+    id: "hosp-hot-springs-mountain-trail",
+    park: "hosp",
+    nameZh: "Hot Springs Mountain 山顶环线",
+    nameEn: "Hot Springs Mountain Trail",
+    kind: "hike",
+    area: "hot-springs-mountain",
+    lat: 34.51656,
+    lon: -93.04602,
+    start: TOWER_PARKING,
+    durationMin: 60,
+    hike: { distanceMi: 1.7, difficulty: "easy", loop: true },
+    bestMonths: [4, 10, 11],
+    summary:
+      "绕着 Hot Springs Mountain 山顶一圈、约 2.7 公里的林间步道，NPS 标的平均坡度只有 0.5%，是全园最平的一条，几处林间空地能看到周围的山。从观景塔停车场出发，走完再上塔。",
+    tips: ["想多走的从环线接 Honeysuckle、Peak 步道下山回浴场街（很陡），让同伴开车下去接", "春天山茱萸开花、秋天红叶时最好看"],
+    trail: { via: [{ lat: 34.51656, lon: -93.04602 }], loop: true },
+  },
+  {
+    id: "hosp-goat-rock",
+    park: "hosp",
+    nameZh: "Goat Rock 观景点",
+    nameEn: "Goat Rock Trail & Overlook",
+    kind: "hike",
+    area: "hot-springs-mountain",
+    lat: 34.52726,
+    lon: -93.03918,
+    // 步道口在 North Mountain 观景点停车场南边（NPS）；坐标按 OSM 上 North Mountain 一带的停车场推测
+    start: { lat: 34.529, lon: -93.05157, nameZh: "North Mountain 观景点停车场" },
+    durationMin: 75,
+    hike: { distanceMi: 2.2, difficulty: "moderate" },
+    bestTime: ["afternoon", "sunset"],
+    bestMonths: [4, 10, 11],
+    summary:
+      "North Mountain 上约 1.8 公里（单程）的林间步道，走到一片白色的诺瓦库石（Arkansas Novaculite，做磨刀石的燧石）岩坡顶上，往东看是 Zigzag 山和 Indian 山一道道山脊，人比观景塔少得多。",
+    tips: [
+      "North Mountain 观景点的停车位很少，满了可以从东边的 Gulpha Gorge 营地走 Gulpha Gorge 步道上来（很陡）",
+      "岩坡边没有护栏，看好孩子；碎石滑，穿抓地好的鞋",
+    ],
+    photoFile: "Goat Rock View Point Hot Springs NP 2023.jpg",
+    trail: { via: [{ lat: 34.52726, lon: -93.03918 }] },
+  },
+  {
+    id: "hosp-west-mountain",
+    park: "hosp",
+    nameZh: "West Mountain 观景路",
+    nameEn: "West Mountain Drive & Overlooks",
+    kind: "drive",
+    area: "west-mountain",
+    lat: 34.50843,
+    lon: -93.06848,
+    start: { lat: 34.51407, lon: -93.05674, nameZh: "West Mountain 下观景点（Prospect Avenue 入口上来）" },
+    durationMin: 45,
+    bestTime: ["sunset"],
+    summary:
+      "老城西边 West Mountain 上的一条双向山路，几个观景点由低到高：下观景点正好俯瞰浴场街和老城的屋顶，中间有 1924 年的老石头亭子和野餐桌，山顶环路上的观景点往南看 Trap 山和 Lake Hamilton。比东边的观景塔安静，傍晚看老城亮灯最好。",
+    tips: [
+      "从 Prospect Avenue 或 Whittington Avenue 上山；路窄弯多，房车不方便",
+      "想徒步的，Sunset Trail 从这里往西经过 Sugarloaf 山的 Balanced Rock 观景点，单程约 16 公里，是公园最长、最偏的步道",
+    ],
+    photoFile: "View from West Mountain P6220158.jpg",
+  },
+  {
+    id: "hosp-gulpha-gorge",
+    park: "hosp",
+    nameZh: "Gulpha Gorge（营地和溪谷）",
+    nameEn: "Gulpha Gorge",
+    kind: "landmark",
+    area: "hot-springs-mountain",
+    lat: 34.52446,
+    lon: -93.03652,
+    durationMin: 40,
+    summary:
+      "城东 Gulpha 溪边的一片林间谷地，园内唯一的营地就在这里，溪边有野餐桌，夏天可以在浅溪里玩水。从营地对面上山的 Gulpha Gorge 步道很陡（约 1 公里），能接上 Goat Rock 和 North Mountain 的步道。",
+    tips: ["营地 40 个营位都要在 Recreation.gov 预订（$34/晚，有水电排污）", "溪水很浅，下雨后可能涨水，小孩玩水要看着"],
+  },
+];

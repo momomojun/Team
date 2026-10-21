@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { alaskaMap, eastMap, hawaiiMap, westMap, type MapView } from "@/data/map.generated";
+import { alaskaMap, caribbeanMap, eastMap, hawaiiMap, samoaMap, westMap, type MapView } from "@/data/map.generated";
 import { MapDeclutter } from "./map-declutter";
 import { LABEL_CLASS, type Side } from "./map-sides";
 
@@ -71,6 +71,10 @@ const LABEL_SIDE: Record<string, Side> = {
   neri: "left",
   // 阿卡迪亚在小图右上角，右边放不下
   acad: "left",
+  // 圣路易斯拱门右边是猛犸洞、新河峡谷；航海家右边紧挨着皇家岛；猛犸洞下面空
+  jeff: "left",
+  voya: "left",
+  maca: "below",
 };
 
 /**
@@ -184,6 +188,8 @@ export function WestMap({
   eastLabel,
   alaskaLabel,
   hawaiiLabel,
+  caribbeanLabel,
+  samoaLabel,
 }: {
   /** 按热门程度排好：名字挤在一起时排在前面的先摆 */
   parks: MapPark[];
@@ -192,10 +198,14 @@ export function WestMap({
   eastLabel: string;
   alaskaLabel: string;
   hawaiiLabel: string;
+  caribbeanLabel: string;
+  samoaLabel: string;
 }) {
   const eastParks = parks.filter((park) => eastMap.parks[park.code]);
   const alaskaParks = parks.filter((park) => alaskaMap.parks[park.code]);
   const hawaiiParks = parks.filter((park) => hawaiiMap.parks[park.code]);
+  const caribbeanParks = parks.filter((park) => caribbeanMap.parks[park.code]);
+  const samoaParks = parks.filter((park) => samoaMap.parks[park.code]);
   return (
     <div className="relative">
       <MapDeclutter className="relative" style={{ aspectRatio: `${westMap.width} / ${westMap.height}` }}>
@@ -205,7 +215,7 @@ export function WestMap({
         ))}
       </MapDeclutter>
 
-      {/* 东部、阿拉斯加、夏威夷三张小图放在主图下面：东部在左，阿拉斯加、夏威夷在右边上下叠着，两边差不多高 */}
+      {/* 小图放在主图下面：东部在左；右边阿拉斯加、夏威夷上下叠着（手机上并排），维尔京群岛、萨摩亚又扁又长，各占一整行 */}
       <div className="mt-6 grid items-start gap-4 sm:grid-cols-[3fr_2fr]">
         <div className="w-full border border-line bg-paper p-4">
           <p className="eyebrow break-keep text-mute">{eastLabel}</p>
@@ -217,26 +227,25 @@ export function WestMap({
           </MapDeclutter>
         </div>
 
-        <div className="grid grid-cols-[3fr_2fr] items-start gap-4 sm:grid-cols-1">
-          <div className="w-full border border-line bg-paper p-3 sm:p-4">
-            <p className="eyebrow break-keep text-mute">{alaskaLabel}</p>
-            <MapDeclutter className="relative mt-2" style={{ aspectRatio: `${alaskaMap.width} / ${alaskaMap.height}` }}>
-              <Shapes view={alaskaMap} cityNames={cityNames} textScale={2} />
-              {alaskaParks.map((park) => (
-                <Marker key={park.code} park={park} view={alaskaMap} compact />
-              ))}
-            </MapDeclutter>
-          </div>
-
-          <div className="w-full border border-line bg-paper p-3">
-            <p className="eyebrow break-keep text-mute">{hawaiiLabel}</p>
-            <MapDeclutter className="relative mt-2" style={{ aspectRatio: `${hawaiiMap.width} / ${hawaiiMap.height}` }}>
-              <Shapes view={hawaiiMap} cityNames={cityNames} textScale={2.5} />
-              {hawaiiParks.map((park) => (
-                <Marker key={park.code} park={park} view={hawaiiMap} compact />
-              ))}
-            </MapDeclutter>
-          </div>
+        <div className="grid grid-cols-2 items-start gap-4">
+          {(
+            [
+              { view: alaskaMap, label: alaskaLabel, parks: alaskaParks, textScale: 2, wide: true },
+              { view: hawaiiMap, label: hawaiiLabel, parks: hawaiiParks, textScale: 2.5, wide: true },
+              { view: caribbeanMap, label: caribbeanLabel, parks: caribbeanParks, textScale: 3, wide: "always" },
+              { view: samoaMap, label: samoaLabel, parks: samoaParks, textScale: 3, wide: "always" },
+            ] as const
+          ).map(({ view, label, parks: inset, textScale, wide }) => (
+            <div key={label} className={`w-full border border-line bg-paper p-3 ${wide === "always" ? "col-span-2" : wide ? "sm:col-span-2 sm:p-4" : ""}`}>
+              <p className="eyebrow break-keep text-mute">{label}</p>
+              <MapDeclutter className="relative mt-2" style={{ aspectRatio: `${view.width} / ${view.height}` }}>
+                <Shapes view={view} cityNames={cityNames} textScale={textScale} />
+                {inset.map((park) => (
+                  <Marker key={park.code} park={park} view={view} compact />
+                ))}
+              </MapDeclutter>
+            </div>
+          ))}
         </div>
       </div>
     </div>
