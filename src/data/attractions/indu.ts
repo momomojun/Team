@@ -202,7 +202,7 @@ export const indianaDunes: Attraction[] = [
       "老房子现在是私人住着的，只能在路边看外观，别进院子",
       "别停在旁边 Beverly Shores 镇的海滩停车场，镇上查得很严、会开罚单（Recreation.gov 营地页的提醒）",
     ],
-    photoFile: "Century of Progress Homes, circa 2020 - Beverly Shores, Indiana (53840383841).jpg",
+    photoFile: "Beach, Lake Front Drive, Beverly Shores, IN - 54207960682.jpg",
   },
   {
     id: "indu-3-dune-challenge",

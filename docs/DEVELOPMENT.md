@@ -20,7 +20,7 @@
 | `src/data/activities.ts` | 各公园的特别活动、节庆和季节现象（火瀑布、天文节、游船、漂流、骑马……）：月份、怎么预约、2026 年的特殊情况 |
 | `src/data/airports.ts` | 各公园常用机场的位置，自动生成攻略时当出发 / 回程地 |
 | `scripts/build-asian-groceries.py`、`scripts/asian-names.mjs`、`scripts/data/asian-groceries.json` | 亚洲超市补漏：Python + duckdb 读 Overture Maps 的地点数据，按 `asian-names.mjs` 的店名规则（OSM 那边也用它）挑出各公园补给范围里和常用机场附近的亚洲超市，人工排除的写在 EXCLUDE；结果存成 JSON 提交进仓库，`data:services` 合并时不需要 Python |
-| `src/data/attractions/` | 每个公园一个文件的景点数据；`*.generated.ts` 由脚本生成，不要手改；`google.ts` 是 Google Maps 评分和评论数的手动快照；`route-fixes.ts` 修正 OSRM 明显估错的个别砂石路车程（`routeAt`：OSRM 路网缺了一段路、会把出发点吸到别处的，算车程时换一个点再补上缺的分钟数，比如奇里卡瓦山上的 Bonita Canyon Drive；同一段缺了的路上的几个点之间按固定分钟算） |
+| `src/data/attractions/` | 每个公园一个文件的景点数据；`*.generated.ts` 由脚本生成，不要手改；照片在 `gallery.ts` 合起来：Commons 的（`gallery.generated.ts`）在前、NPS 官方的（`gallery-nps.generated.ts`）补在后面，一个景点最多 8 张；`google.ts` 是 Google Maps 评分和评论数的手动快照；`route-fixes.ts` 修正 OSRM 明显估错的个别砂石路车程（`routeAt`：OSRM 路网缺了一段路、会把出发点吸到别处的，算车程时换一个点再补上缺的分钟数，比如奇里卡瓦山上的 Bonita Canyon Drive；同一段缺了的路上的几个点之间按固定分钟算） |
 | `src/data/lodging.ts` | 各公园的推荐住宿：园内酒店、门户小镇和民宿区（`rental`，Airbnb 整套房子集中的地方）；有 `airbnb` 地名的会按行程日期生成 Airbnb 搜索链接；车程已算进车程表 |
 | `src/data/lodging-seasons.ts`、`src/lib/lodging-season.ts` | 住处的营业季节和临时关闭：只收季节性营业的（56 家：园内酒店、帐篷木屋、阿拉斯加和加拿大落基山的夏季旅馆、东部山上的旅馆……），全年营业的不写；每家写营业的晚上（MM-DD，可以几段、可以跨年）、哪一年的日期、官方来源和核对日期。临时关闭（`closed`，YYYY-MM-DD；没公布重开日期的核对后 90 天内当关着）现在只有大峡谷南缘 2026 年山洪后的两处。`lodgingOpenOn(id, 入住日期)`：自动生成攻略每晚只在营业的里面挑（都关了才照旧），行程页的推荐把这晚不营业的排到最后、标“这晚不营业”，一键安排住宿不选它们；用户自己选了的，那晚提醒什么时候营业。只定了月份时按那个月的 15 号算 |
 | `src/lib/planner.ts` | 排行程：公园内按路线排序（从哪来、回哪去都知道、公园不超过 4 个时，各种公园先后顺序都试一遍，取总车程最短的）→ 按天切分（让最累的一天尽量轻松，一样时选更平均的；最累那天不到 10 小时的都算一样、比平均，不会为了让最累的一天少半小时就从住处折回去看顺路的景点；没景点但要换住处的一天也算车程，第一天就要从机场开很远的也算；第一个景点半天能开到的，第一天不空着）→ 当天按日出日落排顺序（一天六个景点以内逐一比较所有顺序，多的从路线顺序出发一站一站挪着找；游客中心按 9:00–17:00、游船导览这类没写最佳时段的体验按 8:30–18:30，早到了等开门，排顺序时尽量别等，到的时候已经关门或者只剩不到一刻钟会提醒；景点写了 `hours` 的按自己的时间，比如卡尔斯巴德洞窟 9:30–14:30 进洞、石化林 8:00–17:00，过了最晚入场或关门时间会提醒；只在日落、晚上才有的体验（日落漫步、星空）要排在当天最后，不在最后会提醒（`offTime`），最后一站是星空、前一站是日落观景点的先看日落再看星空；回住处越晚越不好；旺季早上就停满的停车场（`src/data/parking.ts`）尽量排在当天第一站，开始的时候多半已经满了（停满以后、又有空位以前；官方没说几点有空位的按下午 5 点算，等日落、等班次的按开始的时间看）按多开 90 分钟的车算，同一个停车场的几个景点一天只看第一个；第一站的停车场一早就满就提早出发、停满前 15 分钟到，最早 6 点，刚落地的那天、6 点出发也赶不上的（落基山 Glacier Gorge 天一亮就满）不提早，只提醒别的办法；有这类景点的一天，排顺序时另外从“看日出的、停车场早满的放前面”出发各找一遍）；专门看日出的体验（哈莱阿卡拉山顶日出）只能排在当天第一站，早上开车 2.5 小时以内都赶日出（一般的日出观景点 1 小时以内），排到别的时间提醒；早上从前一晚住处出发、晚上回当晚住处都算进去；班车季私家车开不进去的景点按“开到换乘点 + 等车 + 坐车”算，赶不上末班车会提醒，这些景点不看停车场（行程里第一次开到换乘点时说一下换乘点怎么停车） |
@@ -93,6 +93,7 @@
 
 ```bash
 npm run data:gallery     # 每个景点从 Wikimedia Commons 挑最多 6 张照片（photoFile 排第一），查缩略图、作者、授权
+npm run data:gallery-nps # 补 NPS 官方的公有领域照片（places 每个地点的照片、公园相册里标了 Public domain 的），按名字和距离对到景点，每个最多 4 张；PARKS=maca,cong 指定公园，要 DATA_GOV_API_KEY
 npm run data:travel      # 用 OSRM 按道路算各景点、住宿之间的车程；相邻公园（nearby）另算跨园直达的车程
 npm run data:trails      # 按 trail 途经点，用 Valhalla 沿 OpenStreetMap 步道生成徒步路线（UPDATE=whsa,cave 只重算这几个公园，没算出来的保留原来的）
 npm run data:map         # 首页线描地图：Natural Earth 州界、加拿大省界按 Albers 投影成 SVG，公园和城市位置一起算好
@@ -113,7 +114,7 @@ npm run data:visits      # 游客人次：NPS 的 IRMA 统计接口（1979 年�
 
 新增景点后，到 Google Maps 查它的评分和评论数，补进 `src/data/attractions/google.ts`（没有的话不参与热度排名）。
 
-照片是按名字搜索 + 景点附近带坐标的照片自动挑的，重新生成后最好人工看一遍：不合适的文件名加进 `scripts/build-gallery.mjs` 的 `EXCLUDE`，搜不到好照片的景点在 `TUNING` 里补搜索词。只想看某几个景点的候选照片（不写文件）：`ONLY=yose-taft-point,seki-mist-falls npm run data:gallery`；只重挑新加的公园或改过的景点、其他照片不动：`UPDATE=grte,olym-lake-quinault npm run data:gallery`（公园代码或景点 id）。
+照片是按名字搜索 + 景点附近带坐标的照片自动挑的，重新生成后最好人工看一遍（`EXCLUDE` 可以写景点 id，也可以写公园代码，对这座公园所有景点生效；挨着城镇的景点附近全是房子的，在 `TUNING` 里写 `geo: false`）。NPS 的照片按标题里的词（标牌、地图、画、老照片、监控相机……）和黑白照片自动去掉一批，剩下不合适的写进 `build-gallery-nps.mjs` 的 `EXCLUDE`（可以按网址里的一段）：不合适的文件名加进 `scripts/build-gallery.mjs` 的 `EXCLUDE`，搜不到好照片的景点在 `TUNING` 里补搜索词。只想看某几个景点的候选照片（不写文件）：`ONLY=yose-taft-point,seki-mist-falls npm run data:gallery`；只重挑新加的公园或改过的景点、其他照片不动：`UPDATE=grte,olym-lake-quinault npm run data:gallery`（公园代码或景点 id）。
 
 README 里的截图用 `npm run docs:screenshots` 重新生成（`scripts/screenshots.mjs`）：用本机的 Chrome / Edge 打开开着的网站（默认 http://localhost:3000，`BASE=` 可换），现场用“自动生成攻略”排一个黄石 + 大提顿 5 天的行程，截首页、公园页、行程页、榜单和公园页的“人多不多”、什么时候去、博主路线、价格页和手机版，存到 `docs/screenshots/`，另外合成 GitHub 的社交预览图 `docs/social-preview.jpg`。`ONLY=home,plan` 只截其中几张。
 
@@ -208,7 +209,7 @@ README 里的截图用 `npm run docs:screenshots` 重新生成（`scripts/screen
 | 景点坐标、加油站、亚洲超市等 POI | OpenStreetMap（Overpass） | 不需要 |
 | 亚洲超市补漏 | Overture Maps places（AWS 上的公开 GeoParquet，duckdb 按范围读；CDLA Permissive 2.0，页面上注明来源） | 不需要 |
 | Copilot 认各地中文叫法 | 维基数据（机场 IATA 代码 → 服务的城市）和中文维基各地区标题（varianttitles）、重定向（CC BY-SA 4.0），`python copilot/scripts/regional_names.py` 生成 `copilot/nps_copilot/data/regional_names.json` | 不需要 |
-| 景点照片 | Wikimedia Commons（按授权署名） | 不需要 |
+| 景点照片 | Wikimedia Commons（按授权署名）；NPS 官方照片（NPS API 的 places 和 multimedia/galleries，只收署名 NPS 或标了 Public domain 的，美国政府作品、公有领域，2026-10-21 起） | NPS 的要 api.data.gov |
 | 车程 | OSRM 公共服务（景点和推荐住宿预先生成车程表；自定义住处在浏览器里实时查） | 不需要 |
 | 搜索酒店 / 地址 | Photon（基于 OpenStreetMap） | 不需要 |
 | 徒步路线 | Valhalla 公共服务（FOSSGIS），OpenStreetMap 步道 | 不需要 |

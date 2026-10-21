@@ -1,4 +1,4 @@
-import { gallery } from "./attractions/gallery.generated";
+import { gallery } from "./attractions/gallery";
 import type { Photo } from "./attractions/types";
 import { filmShots, type FilmShot } from "./films";
 import { filmPhotos } from "./films-photos.generated";

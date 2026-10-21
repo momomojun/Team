@@ -96,7 +96,7 @@ export const hotSprings: Attraction[] = [
       "网站写每周二休息、周三到周一 10:00–18:00，时间可能变，去之前看官网",
       "自带泳衣；周末下午人最多",
     ],
-    photoFile: "Bathhouse Row, Quapaw Bathhouse, Central Avenue, Hot Springs, Garland County, AR HABS ARK,26-HOSP,1-E- (sheet 1 of 2).png",
+    photoFile: "Quapaw Bathhouse Hot Springs NP 2023.jpg",
   },
   {
     id: "hosp-grand-promenade",

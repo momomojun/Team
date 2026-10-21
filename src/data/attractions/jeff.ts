@@ -53,7 +53,7 @@ export const gatewayArch: Attraction[] = [
       "有触摸展品、盲文说明和助听设备，能免费借轮椅",
       "商店在博物馆关门前约 15 分钟关；咖啡馆 9:00–16:00（夏天延长时到 18:00）",
     ],
-    photoFile: "Gateway Arch visitors center.jpg",
+    photoFile: "Gateway Arch, Gateway Arch National Park, St. Louis, MO.jpg",
   },
   {
     id: "jeff-arch-grounds",

@@ -20,6 +20,8 @@ const TILE_HOSTS = [
   "upload.wikimedia.org",
   // 景点照片的缩略图在这个域名上
   "thumb.wikimedia.org",
+  // NPS 官方的景点照片
+  "www.nps.gov",
   // 加拿大公园的卫星图
   "tiles.maps.eox.at",
 ];

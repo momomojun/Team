@@ -15,7 +15,7 @@ const GEO_RADIUS_M = 500;
 const WIDE_RADIUS_M = 1500;
 const FEW_CANDIDATES = 12;
 
-/** 人工看过、不合适的照片（按文件名开头匹配）。"*" 对所有景点生效，其余只对该景点生效 */
+/** 人工看过、不合适的照片（按文件名开头匹配）。"*" 对所有景点生效，公园代码对这座公园的景点生效，其余只对该景点生效 */
 const EXCLUDE = {
   "*": [
     // 一组“人名, 地点”的游客合影，在犹他几个公园反复出现
@@ -626,6 +626,28 @@ const EXCLUDE = {
   "voya-grand-tour": ["R45 - Skipper Rock Island"],
   "voya-life-on-the-lake": ["Lyle Mine"],
   "voya-kabetogama-overlook": ["Happy 100th birthday"],
+  // 10-21 逐张看过 11 座新公园的图集。按公园代码写的对这座公园的所有景点生效：别处同名的地方（Sint Maarten 的 Maho Beach、
+  // 犹他和加州的滑雪场 Mount Baldy、黄石和别处的 Hot Springs）、警车和巡逻车、木屋、车站、汽车旅馆、建筑图纸、会议合影、和景点无关的特写
+  maca: ["Woodland Cabins", "Mammoth Cave Hotel Interior", "Mammoth Cave Hote New Lobby", "Visitors on a tour of Frozen Niagara"],
+  cong: ["CONG 2014 GIP", "Xylodon"],
+  hosp: ["Bathhouse Row, Quapaw Bathhouse, Central Avenue", "Inside the hot spa", "Cove Tourist Court", "Lynwood Tourist Court", "Parkway Courts", "Fordyce House", "Stitt-Patterson House", "Bill Clinton Boyhood Home", "Fordyce-Ricks House", "Company of soldiers", "Mammoth Hot Springs", "Sunset over Mammoth Hot Springs", "Highland Hot Springs", "Views along the Mary Mountain", "Forest of Trees and Meadow 2 Grover", "Hot springs, NC", "071 Black Mountain", "Tower P6240003", "Buckstaff Bathhouse Hot Springs National Park 2023", "Jack Tar Hotel", "Opal's Steak House", "Mountainaire Hotel", "Perry Plaza Court", "Passmore House", "Wildwood (Hot Springs", "Jemez Valley", "Park Hotel, Hot Springs", "Superior Baths 001", "Bicycle Route", "Metal handwieght", "Black & white print"],
+  cuva: ["Peninsula Police", "National Park Service Ranger", "Mother of Sorrows Church", "Peninsula, United States (Unsplash)", "Flat Isabel", "DMB - Cuyahoga Falls", "2019 Chevrolet Blazer", "Peninsula United Methodist"],
+  indu: ["Mount Baldy Ski", "Mount Baldy (Salt Lake", "Dune Acres Clubhouse", "Tiny Northern Cricket Frog", "Niveo aeolian", "Aluminum can", "Spongy ice ball", "Many spongy ice balls", "Portage Ogden Dunes station", "US 12 west at Portage", "Welcome to Ogden Dunes", "19681229", "Beverly Shores Train Depot", "Waiting Room, Beverly Shores", "Municipal Building (Bartlett", "Green Frog, Rana", "Blue-fronted Dancer", "Allegheny Mound Ants", "Moth (", "Eastern Chipmonk", "Blue Dasher", "Century of Progress Homes, circa", "Oak Hill Road", "Northern Cricket Frog", "Snail (", "School - Chapel", "Physical weathering styrofoam", "Municipal Shed", "19671008", "South Shore Line", "Good Fellow Club", "Beverly Shores South Shore Railroad", "In style (", "Common Spreadwing", "Spicebush Swallowtail", "Swensk Skola"],
+  viis: ["KLM Airplane", "Cruz Bay — Red share taxi", "Cruz Bay (U.S. Virgin Is.) — Share taxi", "Caribbean Man", "Ford automobile of the Virgin Islands", "Anas bahamensis", "Passenger ship Oriole", "Cat “Huntie Sprauve”", "United States Virgin Islands — Purple share taxi", "Le C-Lounge at Maho Bay", "Glance of Maho Bay"],
+  npsa: ["Day 2 Future Leaders", "Day 3 Future Leaders", "GOVERNMENT HOUSE", "Some thousands of white-painted", "Woven coconut baskets", "Mimegralla"],
+  chir: ["Hesperocyparis arizonica", "Pinus discolor"],
+  jeff: ["SaintLouisMetroLink", "Gateway Arch visitors center"],
+  // 只对一个景点：别的景点的照片跑到这里来、同一座桥或同一朵花重复太多
+  "maca-grand-avenue": ["Mammoth Cave National Park, Mammoth Cave, KY", "Visitor Center, Mammoth Cave"],
+  "hosp-quapaw": ["Buckstaff", "Fordyce", "Bathhouse Row 0", "Hot Springs National Park "],
+  "hosp-west-mountain": ["Bathhouse Row 0", "Hot Springs National Park "],
+  "cuva-beaver-marsh": ["Hale Farm", "Everett Knoll"],
+  "viis-maho-bay": ["Danish-Warehouse-Ruins"],
+  "viis-cinnamon-bay": ["Danish-Warehouse-Ruins", "Trunk Bay Beach"],
+  "npsa-mount-alava": ["Sadie's as made famous"],
+  "npsa-wwii-heritage": ["Sadie's as made famous"],
+  "chir-faraway-ranch": ["Echinocereus rigidissimus", "Ecobaria vivipara"],
+  "jeff-riverfront": ["Eads Bridge 20", "Eads Bridge - panoramio", "Eads Bridge-2"],
 };
 
 /**
@@ -633,6 +655,11 @@ const EXCLUDE = {
  * name: false 表示不按景点名搜（名字太常见，比如 The Wave 会搜到浮世绘和跑鞋），只用补充的搜索词
  */
 const TUNING = {
+  // 温泉城的几条山路紧挨着市区：附近带坐标的照片全是旅馆、老房子，只按名字搜；Hot Springs Mountain 别处也有（新墨西哥、黄石）
+  "hosp-goat-rock": { search: ["Goat Rock Hot Springs National Park"], geo: false },
+  "hosp-gulpha-gorge": { search: ["Gulpha Gorge Hot Springs"], geo: false },
+  "hosp-west-mountain": { search: ["West Mountain Hot Springs National Park"], geo: false },
+  "hosp-hot-springs-mountain-trail": { name: false, search: ["Hot Springs Mountain Arkansas", "Hot Springs National Park trail"], geo: false },
   "yose-horsetail-fall": { search: ["Horsetail Fall firefall", "Horsetail Fall El Capitan"], geo: false },
   "yose-hetch-hetchy": { search: ["Wapama Falls"] },
   "seki-kings-canyon": {
@@ -1180,7 +1207,8 @@ function toPhoto(page) {
 
 function excluded(id, title) {
   const lower = title.toLowerCase();
-  return [...EXCLUDE["*"], ...(EXCLUDE[id] ?? [])].some((prefix) => lower.startsWith(prefix.toLowerCase()));
+  const park = id.split("-")[0];
+  return [...EXCLUDE["*"], ...(EXCLUDE[park] ?? []), ...(EXCLUDE[id] ?? [])].some((prefix) => lower.startsWith(prefix.toLowerCase()));
 }
 
 /**
