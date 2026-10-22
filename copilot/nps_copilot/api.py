@@ -6,6 +6,8 @@ GET  /health                     → 版本、构建的 commit、提示词版本
 GET  /tts?text=…&lang=zh-CN       → 这一句的配音（MP3，本机 Kokoro，见 tts.py）；没装模型时 503
 GET  /stats?days=7               → 运行日志的统计（和 python -m nps_copilot stats 一样）：按版本的成功率、耗时，按模型的调用、token、花费，
                                    按天的数字、最近 30 轮、读公告的关闭清单状态（网站的后台 /admin 读这个）
+
+放到公网（Hugging Face Spaces）时的护栏在 guard.py：设了 COPILOT_TOKEN 就要请求头 X-Copilot-Token；发一句话、配音按来源限流。
 """
 from __future__ import annotations
 
@@ -13,15 +15,33 @@ import datetime as dt
 import os
 import shutil
 
-from fastapi import FastAPI, HTTPException, Response
+from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from . import __version__, alerts_live, monitor, tts
+from . import __version__, alerts_live, guard, monitor, tts
 from .pipeline import VERSION, Session, prompt_hashes
 from .providers import ProviderError, chat_provider
 
 app = FastAPI(title="NPS Guide Copilot", version=__version__)
 sessions: dict[str, Session] = {}
+
+
+async def guard_request(request: Request, call_next):
+    """口令和限流（guard.py）：口令不对 401；发一句话、配音超了次数 429 + Retry-After"""
+    headers = {key.lower(): value for key, value in request.headers.items()}
+    path = request.url.path
+    if not guard.authorized(path, headers):
+        return JSONResponse({"error": "unauthorized"}, status_code=401)
+    kind = guard.kind_of(request.method, path)
+    if kind:
+        wait = guard.limiter.check(kind, guard.client_of(headers, request.client.host if request.client else None))
+        if wait is not None:
+            return JSONResponse({"error": "rate_limited", "retry_after": wait}, status_code=429, headers={"Retry-After": str(wait)})
+    return await call_next(request)
+
+
+app.middleware("http")(guard_request)
 
 
 class NewSession(BaseModel):
@@ -54,6 +74,8 @@ def health() -> dict:
         "plan_tool": "http" if os.environ.get("COPILOT_PLAN_URL") else ("cli" if shutil.which("node") else "missing"),
         # 讲解版的配音：本机 Kokoro 能不能用
         "tts": "kokoro" if tts.available() else None,
+        # 放到公网时有没有设口令（不显示口令本身）
+        "auth": bool(guard.token()),
     }
 
 

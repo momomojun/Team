@@ -308,6 +308,38 @@ git -C D:/LLM/Team push origin copilot-v0.2.0
 
 镜像在 GHCR 上是公开的（仓库公开，包跟着公开），任何人不用登录就能拉。发过的版本见仓库的 [Releases](https://github.com/momomojun/Team/releases)。
 
+### 部署到 Hugging Face Spaces（放到公网，组员和老师不用装东西就能用）
+
+Hugging Face Spaces 能免费跑一个 Docker 容器，给一个 `https://…hf.space` 的网址；Vercel 上的网站连这个网址，行程页的对话框就能用了。
+Space 里只跑 Copilot（免费的云端模型），不跑本机模型和配音。打个比方：Vercel 是店面，Space 是后厨，店面通过一扇只有自己有钥匙的门（口令 `COPILOT_TOKEN`）找后厨。
+
+1. **注册账号**：https://huggingface.co/join （免费）。
+2. **建一个 Space**：右上角头像 → New Space → 名字比如 `nps-guide-copilot`、SDK 选 **Docker**（Blank 模板）、硬件选免费的 **CPU basic**、Public 或 Private 都行（Private 的话网站照样能连，因为走的是口令）。
+3. **建一个 Access Token**：头像 → Settings → Access Tokens → Create new token，类型选 **Write**（或者 Fine-grained、只勾这个 Space 的写权限），复制下来（只显示一次）。
+4. **GitHub 仓库设置**（仓库主人做）：Settings → Secrets and variables → Actions：
+   - Secrets 里加 `HF_TOKEN` = 上一步的 token；
+   - Variables 里加 `HF_SPACE` = `你的用户名/nps-guide-copilot`。
+5. **Space 的 Settings → Variables and secrets**，加 Secrets：
+   - `COPILOT_TOKEN`：自己编一串长的随机字符（比如 `python -c "import secrets;print(secrets.token_urlsafe(32))"` 生成），Vercel 那边要填同一串；
+   - 模型的 key：`GEMINI_API_KEY`、`OPENROUTER_API_KEY`、`GROQ_API_KEY`（有哪个填哪个，都是免费档）；
+   - 要的话 `DATA_GOV_API_KEY`（聊天时现读 NPS 公告）。
+   - 可选的限流变量：`COPILOT_RATE_MINUTE`、`COPILOT_RATE_DAY`、`COPILOT_RATE_GLOBAL_DAY`（默认见 [COPILOT.md](COPILOT.md#环境变量)）。
+6. **推上去**：GitHub → Actions → “Deploy Copilot to Hugging Face” → Run workflow。它把要用的文件拼好上传到 Space，Space 自己构建（第一次约 5–10 分钟），Space 页面的 Logs 里能看进度。以后每次发版（推 `copilot-v*` tag）也会自动推一次。
+7. **冒烟测试**：Space 的网址是 `https://你的用户名-nps-guide-copilot.hf.space`：
+
+```bash
+python copilot/scripts/smoke.py https://你的用户名-nps-guide-copilot.hf.space --wait 900
+```
+
+   先在这个终端里设 `COPILOT_TOKEN`（第 5 步那串；PowerShell 是 `$env:COPILOT_TOKEN="…"`），脚本会带上它。冒烟测试会真的发一句话，用掉三四次免费模型调用；看到“冒烟测试通过”就好。没带口令的请求会返回 401（`/health` 除外）。
+8. **Vercel**：项目的 Settings → Environment Variables 加 `COPILOT_URL` = 上面的网址、`COPILOT_TOKEN` = 第 5 步那串，重新部署一次。打开网站的行程页，最上面出现“Copilot · 用一句话说需求”就连上了。
+
+要知道的：
+
+- **免费 Space 闲置约 48 小时会休眠**，下次有人打开要等它重新启动（一两分钟）；重启以后正在聊的对话、运行日志（`/tmp/runs`）都会丢。要保留得开 Space 的持久存储（付费），以后对话改成能存档时再说。
+- **限流**：每个来源每分钟 20 句、每天 300 句，所有人加起来每天 2000 句（配音另算），超了返回 429，免得有人把免费额度刷光。
+- 配音（Kokoro）没装在 Space 里，讲解版会退回浏览器自带的声音。
+
 ### 回滚
 
 **换镜像**（新代码出了问题）：把 `COPILOT_TAG` 换成上一个 tag 再 `up -d`，用冒烟测试确认旧版本起来了：

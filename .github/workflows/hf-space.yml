@@ -1,0 +1,77 @@
+# 把 Copilot 推到 Hugging Face Spaces（Docker Space）：拼一个临时目录（行程引擎要的 src/ 等、copilot/、
+# deploy/hf-space/ 的 Dockerfile 和 README.md），用 huggingface_hub 上传到 Space 的仓库，Space 自己构建、重启。
+# 要在仓库设置里加 secret HF_TOKEN（Hugging Face 的 Access Token，Write 权限）和变量 HF_SPACE（比如 momomojun/nps-guide-copilot）；
+# 没加就跳过。手动触发（Actions → Deploy Copilot to Hugging Face → Run workflow），发版（copilot-v* tag）时也推一次。
+# 步骤说明见 docs/GUIDE.md 第 7 节“部署到 Hugging Face Spaces”。
+name: Deploy Copilot to Hugging Face
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["copilot-v*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hf-space
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check settings
+        id: check
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_SPACE: ${{ vars.HF_SPACE }}
+        run: |
+          if [ -z "$HF_TOKEN" ] || [ -z "$HF_SPACE" ]; then
+            echo "::notice::没有设 HF_TOKEN（secret）或 HF_SPACE（变量），跳过。设法见 docs/GUIDE.md 第 7 节。"
+            echo "skip=1" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.check.outputs.skip != '1'
+      - uses: actions/setup-python@v5
+        if: steps.check.outputs.skip != '1'
+        with:
+          python-version: "3.12"
+      - name: Assemble the Space
+        if: steps.check.outputs.skip != '1'
+        run: |
+          out=$RUNNER_TEMP/space
+          mkdir -p "$out/tests" "$out/scripts"
+          cp package.json "$out/"
+          cp tests/register.mjs tests/resolve.mjs "$out/tests/"
+          cp scripts/plan-trip.mjs scripts/lookup.mjs "$out/scripts/"
+          cp -r src "$out/src"
+          # Copilot：评测的录音和报告、运行日志、本机模型和配音缓存都不要
+          rsync -a --exclude 'runs/' --exclude 'eval/' --exclude 'models/' --exclude 'data/tts/' --exclude '__pycache__/' \
+            --exclude '*.egg-info/' --exclude '.pytest_cache/' copilot/ "$out/copilot/"
+          cp deploy/hf-space/Dockerfile deploy/hf-space/README.md "$out/"
+          sed -i "s/^ARG COPILOT_BUILD_SHA=unknown/ARG COPILOT_BUILD_SHA=${GITHUB_SHA::7}/" "$out/Dockerfile"
+          du -sh "$out"
+      - name: Upload to Hugging Face
+        if: steps.check.outputs.skip != '1'
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_SPACE: ${{ vars.HF_SPACE }}
+        run: |
+          pip install --quiet "huggingface_hub>=0.24"
+          python - <<'PY'
+          import os
+          from huggingface_hub import HfApi
+
+          api = HfApi(token=os.environ["HF_TOKEN"])
+          space = os.environ["HF_SPACE"]
+          api.upload_folder(
+              repo_id=space,
+              repo_type="space",
+              folder_path=os.path.join(os.environ["RUNNER_TEMP"], "space"),
+              commit_message=f"Deploy {os.environ['GITHUB_REF_NAME']} ({os.environ['GITHUB_SHA'][:7]})",
+              # 这几个目录里只留这次推的文件（仓库里删掉的旧文件也一起删）；Space 自己的 .gitattributes 不动
+              delete_patterns=["src/**", "copilot/**", "scripts/**", "tests/**"],
+          )
+          print(f"pushed to https://huggingface.co/spaces/{space}")
+          PY

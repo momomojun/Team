@@ -212,6 +212,11 @@ flowchart LR
 | `COPILOT_ALERTS_BUDGET` | `12` | 聊天时现读公告最多等几秒：没读过的几条同时交给模型，到时间还没读完的按规则算、不进缓存（10-21：一次排行程读公告用了 49 秒） |
 | `COPILOT_DISPATCH` | `1` | 设成 `0` 关掉调度员，每轮都走原来按规则的流程（对照实验、出问题时回滚） |
 | `COPILOT_BUILD_SHA` | — | 镜像构建时写入，`/health` 显示 |
+| `COPILOT_TOKEN` | — | 设了就要请求头 `X-Copilot-Token` 等于它（`/health` 除外），不对返回 401（`guard.py`，10-21）；放到公网（Hugging Face Spaces）时用，网站的中转（`src/lib/copilot/upstream.ts`）读同名变量带上。没设不检查 |
+| `COPILOT_RATE_MINUTE`、`COPILOT_RATE_DAY` | `20`、`300` | 每个来源（网站中转透传的 `X-Forwarded-For`）每分钟、每天最多发几句话（`POST /sessions/{id}/messages`），超了 429 + `Retry-After` |
+| `COPILOT_RATE_TTS_MINUTE`、`COPILOT_RATE_TTS_DAY` | `120`、`3000` | 配音（`GET /tts`）每个来源的上限 |
+| `COPILOT_RATE_GLOBAL_DAY` | `2000` | 所有人加起来每天最多发几句话，免得免费额度被刷光；设成 `0` 不限 |
+| `PORT` | `8765` | `serve` 的默认端口（Hugging Face Spaces 用 7860） |
 | `COPILOT_TAG`、`COPILOT_PORT`、`OLLAMA_MODELS` | `latest`、`8765`、Docker 卷 | 只给 docker compose 用：用哪个版本的镜像、本机端口、已经下好的模型目录 |
 
 ## 模型参数
