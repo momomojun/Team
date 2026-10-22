@@ -280,7 +280,7 @@ export interface SequenceEnds {
 }
 
 /** 起点、终点都知道时，公园不超过这么多个就把各种先后顺序都排一遍 */
-const MAX_PARK_ORDERS = 4;
+const MAX_PARK_ORDERS = 6;
 
 function permutations<T>(items: T[]): T[][] {
   if (items.length <= 1) return [items];

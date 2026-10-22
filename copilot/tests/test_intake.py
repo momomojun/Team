@@ -353,3 +353,14 @@ def test_typo_rejected_and_unknown_names_are_said_out_loud(make_intake):
     other = make_intake(extraction(parks=["优胜美地", "火星公园"]))
     turn = other.step("去优胜美地和火星公园")
     assert other.parks.value == ["yose"] and "没认出“火星公园”，先没算进去。" in turn.notices
+
+
+def test_long_multi_park_trips_are_one_trip():
+    # 仓库主人走过的：死亡谷 + 红杉与国王峡谷；锡安 + 布莱斯 + 羚羊峡谷 + 马蹄湾 + 大峡谷（5 座，以前最多 4 座、还要都挨着第一座）
+    from nps_copilot import catalog
+
+    assert catalog.one_trip(["deva", "seki"])
+    assert catalog.one_trip(["zion", "brca", "ante", "hsbd", "grca"])
+    assert catalog.one_trip(["deva", "seki", "yose", "zion", "brca", "grca"])
+    assert not catalog.one_trip(["zion", "acad"])
+    assert catalog.max_trip_parks() == 6

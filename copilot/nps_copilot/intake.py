@@ -38,6 +38,8 @@ EXTRACTION_SCHEMA = {
     },
 }
 MAX_DAYS = 14
+# “我还要去红木”“顺便去一下红木”“also Redwood”：在已经说过的公园上再加一座，不是换成它
+ADD_PARK = re.compile(r"还要去|还想去|还去|也要去|也想去|也去|再去|再加|加上|加一座|顺便|顺路去|一起去|\balso\b|\btoo\b|\badd\b|\bplus\b|as well", re.I)
 REGION_ZH = {"PDX": "俄勒冈州", "PWM": "缅因州", "IAD": "杜勒斯", "DCA": "里根"}
 
 PACE_OPTIONS = [
@@ -221,7 +223,7 @@ class Intake:
         if kind == "confirm_park":
             if yes(message):
                 codes = [*(self.parks.value or []), *[c for c in [pending["code"]] if c not in (self.parks.value or [])]]
-                self.parks = Field(self._order_parks(codes[:4]), "user_confirmation", f"{pending['said']}；{message.strip()}")
+                self.parks = Field(self._order_parks(codes[:catalog.max_trip_parks()]), "user_confirmation", f"{pending['said']}；{message.strip()}")
                 self.pending = None
                 return "confirm_park"
             if no(message):
@@ -254,7 +256,7 @@ class Intake:
         if kind == "choose" and pending.get("target") == "parks":
             named = [code for code, _ in catalog.find_all(message, catalog.parks())]
             if len(named) >= 2:
-                self.parks = Field(self._order_parks(named[:4]), "user_confirmation", message.strip())
+                self.parks = Field(self._order_parks(named[:catalog.max_trip_parks()]), "user_confirmation", message.strip())
                 self.pending = None
                 for part in catalog.unknown_parts(message, catalog.parks()):
                     if self._suggest(part, named):
@@ -413,7 +415,7 @@ class Intake:
         if not self.parks.value and not self.unsupported:
             hits = self._park_hits(message, message)
             if hits:
-                self.parks = Field(self._order_parks([code for code, _ in hits][:4]), "user", "、".join(alias for _, alias in hits))
+                self.parks = Field(self._order_parks([code for code, _ in hits][:catalog.max_trip_parks()]), "user", "、".join(alias for _, alias in hits))
                 filled.append("parks")
         return filled
 
@@ -455,17 +457,20 @@ class Intake:
                     self.unsupported.append(span)
         if not codes:
             return
-        if len(codes) > 4:
-            codes = codes[:4]
+        if self.parks.value and ADD_PARK.search(message):
+            codes = [*self.parks.value, *(code for code in codes if code not in self.parks.value)]
+        codes = codes[:catalog.max_trip_parks()]
         self.parks = Field(self._order_parks(codes), "user", "、".join(spans))
 
     @staticmethod
     def _order_parks(codes: list[str]) -> list[str]:
-        """第一座要能和其余的顺路一起玩（在它的 nearby 里）；用户说的顺序优先"""
-        table = catalog.parks()
+        """按用户说的顺序；第一座连不上其余几座、换一座能都连上的，换那一座打头（先后怎么走由行程引擎按车程排）"""
+        if catalog.one_trip(codes):
+            return codes
         for main in codes:
-            if all(other == main or other in table[main].nearby for other in codes):
-                return [main] + [code for code in codes if code != main]
+            ordered = [main] + [code for code in codes if code != main]
+            if catalog.one_trip(ordered):
+                return ordered
         return codes  # 凑不到一起：留给 _render 问
 
     def _read_relative_date(self, text: str, source: str = "user") -> bool:
@@ -629,11 +634,11 @@ class Intake:
             question = {"kind": "parks", "text": text}
         if question is None and not self.parks.value:
             question = {"kind": "parks", "text": "想去哪座国家公园？可以说几座顺路的。" if zh else "Which national park would you like to visit? A few nearby ones together is fine."}
-        if question is None and self.parks.value and len(self.parks.value) > 1 and self._order_parks(self.parks.value)[0] not in self._compatible_mains():
+        if question is None and self.parks.value and len(self.parks.value) > 1 and not catalog.one_trip(self.parks.value):
             names = [table[code].name_zh if zh else table[code].name_en for code in self.parks.value]
             question = {"kind": "choose", "target": "parks",
-                        "text": ("这几座离得太远，排不进同一趟（" + "、".join(names) + "）。先排哪一座？") if zh else
-                        ("These are too far apart for one trip (" + ", ".join(names) + "). Which one should I plan first?"),
+                        "text": ("这几座离得太远，开车一天到不了，排不进同一趟（" + "、".join(names) + "）。先排哪一座？") if zh else
+                        ("These are more than a day's drive apart, too far for one trip (" + ", ".join(names) + "). Which one should I plan first?"),
                         "options": [{"value": [code], "zh": table[code].name_zh, "en": table[code].name_en} for code in self.parks.value]}
         if question is None and not self.start_date.value and not self.month.value:
             question = self._date_question(zh)
@@ -701,11 +706,6 @@ class Intake:
             self.pending = None
             return {"kind": "dates", "text": pending["text"] + "，请再说一下出发日期。" if zh else "That date doesn't exist. What's your start date?"}
         return None
-
-    def _compatible_mains(self) -> list[str]:
-        table = catalog.parks()
-        codes = self.parks.value or []
-        return [main for main in codes if all(other == main or other in table[main].nearby for other in codes)]
 
     def _date_question(self, zh: bool) -> dict:
         parts = self.date

@@ -1,5 +1,6 @@
 import { airports } from "../../data/airports";
 import { parkZones } from "../../data/park-zones";
+import { MAX_TRIP_PARKS } from "../trip-parks";
 
 /**
  * Copilot 和行程引擎之间的契约（v1）。TripRequest 是 Copilot 理解完用户需求后交给 plan_trip 工具的输入，
@@ -27,7 +28,7 @@ export interface FieldSource {
 
 export interface TripRequest {
   contract: typeof TRIP_REQUEST_CONTRACT;
-  /** 第一个是主要的公园，后面是顺路一起玩的（要在主公园的 nearby 里） */
+  /** 按用户说的顺序；一段一段连得起来（常一起玩的，或者开车一天能到，见 trip-parks.ts） */
   parks: string[];
   /** 具体出发日期；和 month 至少给一个 */
   startDate?: string;
@@ -68,7 +69,7 @@ export type RequestField = (typeof REQUEST_FIELDS)[number];
 export const PACES: Pace[] = ["relaxed", "normal", "packed"];
 export const LODGING_PREFS: LodgingPref[] = ["any", "hotel", "rental", "camp"];
 export const MAX_TRIP_DAYS = 14;
-export const MAX_TRIP_PARKS = 4;
+export { MAX_TRIP_PARKS };
 
 /**
  * 行程里每一站的提醒（planner.ts 的 StopWarning），Critic 按这些代码判断要不要改。
