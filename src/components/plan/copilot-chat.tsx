@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { CommonsImage } from "@/components/commons-image";
 import { IconArrowRight } from "@/components/icons";
 import { buttonLarge } from "@/components/ui";
 import { fill } from "@/i18n/format";
 import type { Trip } from "@/lib/trip-store";
-import type { PlannerPark, PlannerText } from "./types";
+import type { PlannerText } from "./types";
 
 /**
  * 行程页的对话框：用一句话说需求，Copilot（本机模型 + 网站的排行程引擎）追问、排出行程，行程原样放进下面的行程页，
@@ -42,6 +41,10 @@ interface Progress {
   steps: Step[];
   conditions?: Conditions;
   started: number;
+  /** 最近一步是什么时候报的 */
+  at?: number;
+  /** 回复到了：车开到头 */
+  done?: boolean;
 }
 
 interface ChatReply {
@@ -55,13 +58,10 @@ interface ChatReply {
 export function CopilotChat({
   text,
   english,
-  parks,
   onTrip,
 }: {
   text: PlannerText;
   english: boolean;
-  /** 等的时候放这几座公园的首图 */
-  parks: PlannerPark[];
   /** 排出了行程：放进行程页；返回 false 表示用户不想换掉现在的行程 */
   onTrip: (trip: Trip) => boolean;
 }) {
@@ -127,7 +127,9 @@ export function CopilotChat({
               const step = event.step;
               setProgress((current) =>
                 current
-                  ? { ...current, steps: current.steps.includes(step) ? current.steps : [...current.steps, step], conditions: event.conditions ?? current.conditions }
+                  ? current.steps.includes(step)
+                    ? { ...current, conditions: event.conditions ?? current.conditions }
+                    : { ...current, steps: [...current.steps, step], at: Date.now(), conditions: event.conditions ?? current.conditions }
                   : current,
               );
             } else if (event.type === "reply") reply = event;
@@ -139,6 +141,9 @@ export function CopilotChat({
         setError(reply?.error === "offline" ? t.offline : t.error);
         return;
       }
+      // 车开到终点、帐篷亮起来，再换成回复
+      setProgress((current) => (current ? { ...current, done: true } : current));
+      await new Promise((resolve) => setTimeout(resolve, 700));
       session.current = reply.session;
       let applied = false;
       if (reply.trip) {
@@ -213,7 +218,7 @@ export function CopilotChat({
             {busy && (
               <li className="border-l-2 border-line pl-4">
                 {progress ? (
-                  <ChatProgress progress={progress} parks={parks} english={english} text={t} />
+                  <ChatProgress progress={progress} english={english} text={t} />
                 ) : (
                   <span className="animate-pulse text-sm text-mute">{t.thinking}</span>
                 )}
@@ -283,43 +288,55 @@ export function CopilotChat({
   );
 }
 
-const STEPS: Step[] = ["understand", "read", "alerts", "plan", "write"];
+/** 每一步做完时进度条走到哪（0–1）；两步之间慢慢往下一步挪，不会停住，也不会超过下一步 */
+const MARK: Record<Step, number> = { understand: 0.08, read: 0.22, alerts: 0.36, plan: 0.48, write: 0.82, answer: 0.4 };
+const NEXT: Record<Step, number> = { understand: 0.2, read: 0.45, alerts: 0.46, plan: 0.8, write: 0.97, answer: 0.95 };
+
+function progressOf(progress: Progress, now: number): number {
+  if (progress.done) return 1;
+  const step = progress.steps.at(-1);
+  const from = step ? MARK[step] : 0;
+  const to = step ? NEXT[step] : 0.07;
+  const waited = Math.max(0, now - (progress.at ?? progress.started)) / 1000;
+  return from + (to - from) * (1 - Math.exp(-waited / 9));
+}
+
+// 画面：远山、近山和松树，前面一条公路；车沿着路往右开，开过的路是砂岩红，太阳跟着升起来，开到头是今晚的帐篷
+const W = 600;
+const ROAD_FROM = 26;
+const ROAD_TO = 566;
+const roadY = (x: number) => 128 + 5 * Math.sin(x / 61 + 0.7);
+const hillY = (x: number) => 103 + 5 * Math.sin(x / 47) + 4 * Math.sin(x / 113 + 1.3);
+const trace = (f: (x: number) => number, from: number, to: number) =>
+  Array.from({ length: Math.round((to - from) / 6) + 1 }, (_, i) => {
+    const x = Math.min(to, from + i * 6);
+    return `${i ? "L" : "M"}${x.toFixed(1)} ${f(x).toFixed(1)}`;
+  }).join(" ");
+const ROAD = trace(roadY, ROAD_FROM, ROAD_TO);
+const HILL = trace(hillY, 0, W);
+const RIDGE = "M0 88 L34 78 L70 84 L112 58 L144 70 L190 46 L226 66 L262 56 L300 74 L336 62 Q350 34 384 32 L388 32 L391 70 L430 60 L468 52 L506 70 L548 56 L600 66";
+const PINES = [52, 63, 74, 206, 218, 418, 431, 512, 523, 534];
+const POSTS = [0.25, 0.5, 0.75];
 
 /**
- * 等回复时的过渡：按 Copilot 真实做到的步骤打勾（理解需求 → 读 NPS 公告（真要现读才出现）→ 排每天的路线 → 写说明；
- * 只是问问题的是“查资料回答”），旁边写已经等了几秒；认出了公园、日期、天数先显示出来，不对可以早点改；
- * 下面放这几座公园的首图，几秒换一张
+ * 等回复时的过渡：一张国家公园公路旅行的小画，进度条就是那条路。进度按 Copilot 真实做到的步骤推（边做边报），
+ * 但不把步骤念出来，下面一句话跟着进度换；认出了公园、日期、天数先写出来
  */
-function ChatProgress({
-  progress,
-  parks,
-  english,
-  text,
-}: {
-  progress: Progress;
-  parks: PlannerPark[];
-  english: boolean;
-  text: PlannerText["plan"]["copilot"];
-}) {
+function ChatProgress({ progress, english, text }: { progress: Progress; english: boolean; text: PlannerText["plan"]["copilot"] }) {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
-    const timer = setInterval(() => setNow(Date.now()), 500);
+    const timer = setInterval(() => setNow(Date.now()), 250);
     return () => clearInterval(timer);
   }, []);
-  const seconds = Math.max(0, Math.floor((now - progress.started) / 1000));
-  const answering = progress.steps.includes("answer") && !progress.steps.includes("plan");
-  // 没读条件（调度员直接判断是提问）的不显示“读出条件”；真要现读公告才显示那一步
-  const shown: Step[] = answering
-    ? ["understand", "answer"]
-    : STEPS.filter((step) => (step !== "alerts" || progress.steps.includes("alerts")) && (step !== "read" || !progress.steps.includes("plan") || progress.steps.includes("read")));
-  const current: Step = progress.steps.at(-1) ?? "understand";
-  const conditions = progress.conditions;
-  const photos = (conditions?.parkCodes ?? []).flatMap((code) => {
-    const park = parks.find((item) => item.code === code);
-    return park?.photo ? [{ ...park.photo, name: english ? park.nameEn : park.nameZh }] : [];
-  });
-  const photo = photos.length ? photos[Math.floor(seconds / 5) % photos.length] : undefined;
   const t = text.progress;
+  const p = progressOf(progress, now);
+  const x = ROAD_FROM + p * (ROAD_TO - ROAD_FROM);
+  const y = roadY(x);
+  const tilt = (Math.atan((5 / 61) * Math.cos(x / 61 + 0.7)) * 180) / Math.PI;
+  const answering = progress.steps.includes("answer") && !progress.steps.includes("plan");
+  const lines = answering ? t.answer : t.plan;
+  const line = lines[Math.min(lines.length - 1, Math.floor(p * lines.length))];
+  const conditions = progress.conditions;
   const when = conditions?.startDate
     ? fill(t.from, { m: Number(conditions.startDate.slice(5, 7)), d: Number(conditions.startDate.slice(8, 10)) })
     : conditions?.month
@@ -335,42 +352,64 @@ function ChatProgress({
         .filter(Boolean)
         .join(" · ")
     : null;
+  const move = "transition-transform duration-300 ease-linear motion-reduce:transition-none";
   return (
-    <div className="max-w-xl">
+    <div className="max-w-xl" role="progressbar" aria-label={t.label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(p * 100)}>
       <div className="flex items-baseline justify-between gap-4">
         <p className="eyebrow text-mute">{text.name}</p>
-        <p className="text-xs text-mute tabular-nums">{fill(t.elapsed, { s: seconds })}</p>
+        <p className="font-serif text-sm text-ink-soft tabular-nums lining-nums">{Math.round(p * 100)}%</p>
       </div>
-      {summary && <p className="mt-2 font-serif text-lg leading-snug lining-nums">{summary}</p>}
-      <ol className="mt-3 space-y-1.5 text-sm">
-        {shown.map((step) => {
-          const done = progress.steps.includes(step) && step !== current;
-          const active = step === current;
-          return (
-            <li key={step} className={`flex items-center gap-2.5 ${done ? "text-ink-soft" : active ? "text-ink" : "text-mute"}`}>
-              <span className="flex size-4 shrink-0 items-center justify-center" aria-hidden="true">
-                {done ? (
-                  <span className="text-[13px] text-clay-600">✓</span>
-                ) : active ? (
-                  <span className="size-1.5 animate-pulse rounded-full bg-clay-600 motion-reduce:animate-none" />
-                ) : (
-                  <span className="size-1.5 rounded-full border border-current" />
-                )}
-              </span>
-              {t.steps[step]}
-            </li>
-          );
+      <svg viewBox={`0 0 ${W} 150`} className="mt-2 block w-full" aria-hidden="true">
+        {/* 太阳：画在山后面，进度越多升得越高 */}
+        <g className={move} style={{ transform: `translate(0px, ${(1 - p) * 62}px)` }}>
+          <circle cx={462} cy={36} r={12} className="fill-clay-300" opacity={0.85} />
+        </g>
+        <path d={`${RIDGE} L600 150 L0 150 Z`} className="fill-paper-deep" />
+        <path d={RIDGE} fill="none" className="stroke-ink/25" strokeWidth={1} strokeLinejoin="round" />
+        <path d={`${HILL} L600 150 L0 150 Z`} className="fill-paper" />
+        <path d={HILL} fill="none" className="stroke-ink/50" strokeWidth={1} />
+        {PINES.map((px, i) => {
+          const h = 11 + (i % 3) * 3;
+          const base = hillY(px) + 2;
+          return <path key={px} d={`M${px - 3.6} ${base} L${px} ${base - h} L${px + 3.6} ${base} Z`} className="fill-ink-soft" />;
         })}
-      </ol>
-      {photo && (
-        <figure className="relative mt-4 aspect-[16/7] w-full overflow-hidden bg-paper-deep">
-          <CommonsImage key={photo.src} src={photo.src} alt="" fill sizes="576px" className="tour-pop object-cover" />
-          <figcaption className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 bg-gradient-to-t from-ink/70 to-transparent px-3 pt-8 pb-2 text-paper">
-            <span className="font-serif text-base">{photo.name}</span>
-            <span className="truncate text-[10px] text-paper/75">{photo.credit}</span>
-          </figcaption>
-        </figure>
-      )}
+        {/* 路：还没开的是虚线，开过的是砂岩红 */}
+        <path d={ROAD} fill="none" className="stroke-ink/12" strokeWidth={7} strokeLinecap="round" />
+        <path d={ROAD} fill="none" pathLength={1} className="stroke-ink/40" strokeWidth={1.1} strokeDasharray="0.01 0.012" />
+        <path
+          d={ROAD}
+          fill="none"
+          pathLength={1}
+          className="stroke-clay-600 transition-[stroke-dasharray] duration-300 ease-linear motion-reduce:transition-none"
+          strokeWidth={2.4}
+          strokeLinecap="round"
+          strokeDasharray={`${p} 1`}
+        />
+        {POSTS.map((at) => {
+          const px = ROAD_FROM + at * (ROAD_TO - ROAD_FROM);
+          const py = roadY(px) + 7;
+          return <path key={at} d={`M${px} ${py} V${py + 7}`} className={p >= at ? "stroke-clay-600" : "stroke-ink/35"} strokeWidth={1.4} />;
+        })}
+        {/* 起点的路牌、终点的帐篷（今晚住的地方） */}
+        <path d={`M${ROAD_FROM - 6} ${roadY(ROAD_FROM) + 3} V${roadY(ROAD_FROM) - 16}`} className="stroke-ink" strokeWidth={1.4} />
+        <rect x={ROAD_FROM - 13} y={roadY(ROAD_FROM) - 22} width={14} height={8} className="fill-clay-700" />
+        <g transform={`translate(${ROAD_TO + 18} ${roadY(ROAD_TO) + 2})`}>
+          <path d="M-13 0 L-1 -15 L1 -15 L13 0 Z" className={`${p >= 1 ? "fill-clay-600" : "fill-paper"} stroke-ink transition-colors duration-500`} strokeWidth={1.2} strokeLinejoin="round" />
+          <path d="M-4 0 L0 -7 L4 0 Z" className="fill-ink" />
+          <path d="M-1 -15 L-3 -18 M1 -15 L3 -18 M-17 0 H17" className="stroke-ink" strokeWidth={1} strokeLinecap="round" />
+        </g>
+        {/* 车 */}
+        <g className={move} style={{ transform: `translate(${x}px, ${y}px) rotate(${tilt}deg)` }}>
+          <path d="M-9 -3.2 L-9 -7.6 Q-9 -8.6 -8 -8.6 L-5.4 -8.6 L-3 -12.4 L4.2 -12.4 L6.8 -8.6 L8.4 -8.6 Q9.4 -8.6 9.4 -7.6 L9.4 -3.2 Z" className="fill-ink" />
+          <path d="M-2.2 -11.2 L-0.4 -11.2 L-0.4 -8.8 L-3.8 -8.8 Z M0.8 -11.2 L3.6 -11.2 L5.4 -8.8 L0.8 -8.8 Z" className="fill-paper/85" />
+          <circle cx={-5} cy={-2.6} r={2.3} className="fill-ink stroke-paper" strokeWidth={0.9} />
+          <circle cx={5.4} cy={-2.6} r={2.3} className="fill-ink stroke-paper" strokeWidth={0.9} />
+        </g>
+      </svg>
+      <p key={line} className="tour-pop mt-1 text-sm text-ink-soft">
+        {line}
+      </p>
+      {summary && <p className="mt-2 font-serif text-lg leading-snug lining-nums">{summary}</p>}
     </div>
   );
 }

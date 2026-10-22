@@ -1321,7 +1321,7 @@ export function Planner({
 
 
 
-      <CopilotChat text={text} english={locale === "en"} parks={parks} onTrip={applyCopilotTrip} />
+      <CopilotChat text={text} english={locale === "en"} onTrip={applyCopilotTrip} />
 
       <section id="plan-wizard" className="scroll-mt-32 border-t border-ink pt-6 print:hidden">
         <div className="flex flex-wrap items-baseline justify-between gap-4">
