@@ -21,6 +21,7 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Callable
 
 from . import __version__, catalog, knowledge, prompts, qa
 from . import dispatcher as dispatcher_module
@@ -62,6 +63,31 @@ class Session:
     log: bool = True
     dispatcher: bool = field(default_factory=lambda: os.environ.get("COPILOT_DISPATCH", "1") != "0")
     id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
+    # 做到哪一步就报一声（网站的对话框按真实的步骤显示进度）：
+    # {"step": "understand"（调度员）| "read"（读出条件）| "plan" | "alerts" | "write" | "answer", ...}
+    progress: Callable[[dict], None] | None = field(default=None, repr=False, compare=False)
+
+    def _emit(self, step: str, **detail) -> None:
+        if self.progress:
+            try:
+                self.progress({"step": step, **detail})
+            except Exception:  # 报进度出错（连接断了）不影响这一轮
+                pass
+
+    def _conditions_summary(self, request: dict) -> dict:
+        """认出来的条件，给对话框先显示：公园、日期或月份、几天、从哪出发"""
+        table = catalog.parks()
+        zh = self.zh
+        names = [(table[code].name_zh if zh else table[code].name_en) if code in table else code for code in request.get("parks") or []]
+        origin = request.get("origin") or {}
+        return {
+            "parks": names,
+            "parkCodes": list(request.get("parks") or []),
+            "startDate": request.get("startDate"),
+            "month": request.get("month"),
+            "days": request.get("days"),
+            "origin": origin.get("airport") or origin.get("city") or origin.get("query"),
+        }
 
     def __post_init__(self) -> None:
         # 记下每次模型调用（哪个模型、多少 token），写进每轮日志，monitor 按模型算花费
@@ -97,6 +123,7 @@ class Session:
         if self.intake.language is None:
             from .intake import is_english
             self.intake.language = "en" if is_english(message) else "zh"
+        self._emit("understand")
         reply = None
         if self.dispatcher and not self._quick_answer(message):
             plan = dispatcher_module.dispatch(self.provider, self.history, self._conditions(), self.last_result, message, self.zh)
@@ -136,6 +163,7 @@ class Session:
                 if codes:
                     self.intake.parks = Field(codes[:4], "user", said)
                     trace["context_parks"] = {"said": said, "parks": codes[:4]}
+            self._emit("read")
             turn = self.intake.step(message)
             trace["intake"] = turn.trace
             head.extend(turn.notices)
@@ -223,6 +251,8 @@ class Session:
 
     def _answers(self, asks: list, result: dict | None, zh: bool, trace: dict, message: str = "") -> list[str]:
         out = []
+        if asks:
+            self._emit("answer")
         solo = len(asks) == 1 and self._solo
         parks = (result or {}).get("request", {}).get("parks") or self.intake.parks.value or []
         for action in asks:
@@ -269,8 +299,9 @@ class Session:
         trace["request"] = request
         changes = writer_module.describe_changes(self.last_request, request, zh) if self.last_request else []
         user_request = request
+        self._emit("plan", conditions=self._conditions_summary(request))
         try:
-            call = plan_trip(request, self.reference_date)
+            call = plan_trip(request, self.reference_date, on_step=self._emit)
         except PlanError as error:
             trace["plan_error"] = {"message": str(error), "issues": error.issues}
             text = "这些条件排不出行程：" + "；".join(issue["message"] for issue in error.issues) if error.issues else str(error)
@@ -290,6 +321,7 @@ class Session:
                 review.reason = None
         trace["critic"] = [vars(finding) for finding in review.findings if finding.severity != "info"]
         language = self.intake.language or "zh"
+        self._emit("write", stops=sum(len(day.get("stops", [])) for day in result.get("days", [])))
         text, writer_trace = writer_module.write(request, result, review, language, self.provider,
                                                  self.intake.preferences, use_model=self.writer_model)
         trace["writer"] = writer_trace
@@ -321,6 +353,7 @@ class Session:
             history, language = self.history, self.intake.language
             self._reset()
             self.intake.language, self.history = language, history
+        self._emit("read")
         turn = self.intake.step(message)
         if restarted:
             turn.notices.insert(0, "好，重新排一个新的行程，前面说的条件都不算了。" if self.zh else "Sure, starting a new trip from scratch.")
@@ -329,6 +362,7 @@ class Session:
         if turn.status != "ready":
             head = list(turn.notices)
             if qa.is_question(message) and not is_ack(message):
+                self._emit("answer")
                 # 还没排出行程时也能问：先回答，再接着追问。这句话里读到了条件的，只在查到了才回答；什么条件都没有的，查不到也说一声
                 looked, tool_trace = self._lookup(message, self.intake.parks.value or [], None, None, zh)
                 said, trace["qa"] = qa.answer(message, self.intake.parks.value or [], self.last_text, self.provider, zh, looked=looked)

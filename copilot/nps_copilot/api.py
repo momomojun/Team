@@ -13,7 +13,12 @@ import datetime as dt
 import os
 import shutil
 
+import json
+import queue
+import threading
+
 from fastapi import FastAPI, HTTPException, Response
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 from . import __version__, alerts_live, monitor, tts
@@ -87,13 +92,42 @@ def create(body: NewSession) -> dict:
     return {"session": session.id, "greeting": "说说你的行程：想去哪、什么时候、玩几天、从哪飞。"}
 
 
+def reply_body(reply) -> dict:
+    return {"status": reply.status, "text": reply.text, "question": reply.question, "request": reply.request, "result": reply.result}
+
+
 @app.post("/sessions/{session_id}/messages")
-def send(session_id: str, body: Message) -> dict:
+def send(session_id: str, body: Message, stream: bool = False):
+    """stream=1：边做边报，一行一个 JSON（NDJSON）：{"type": "progress", "step": …} 若干行，最后一行 {"type": "reply", …}
+    （出错是 {"type": "error", "status": 503, "detail": …}）。网站的对话框按这些步骤显示进度"""
     session = sessions.get(session_id)
     if session is None:
         raise HTTPException(404, "没有这个会话")
-    try:
-        reply = session.send(body.text)
-    except ProviderError as error:
-        raise HTTPException(503, str(error)) from error
-    return {"status": reply.status, "text": reply.text, "question": reply.question, "request": reply.request, "result": reply.result}
+    if not stream:
+        try:
+            reply = session.send(body.text)
+        except ProviderError as error:
+            raise HTTPException(503, str(error)) from error
+        return reply_body(reply)
+
+    events: queue.Queue = queue.Queue()
+
+    def run() -> None:
+        session.progress = lambda event: events.put({"type": "progress", **event})
+        try:
+            events.put({"type": "reply", **reply_body(session.send(body.text))})
+        except ProviderError as error:
+            events.put({"type": "error", "status": 503, "detail": str(error)})
+        except Exception as error:  # 别的错误也要告诉网站，不然对话框一直转
+            events.put({"type": "error", "status": 500, "detail": str(error)})
+        finally:
+            session.progress = None
+            events.put(None)
+
+    threading.Thread(target=run, daemon=True).start()
+
+    def lines():
+        while (event := events.get()) is not None:
+            yield json.dumps(event, ensure_ascii=False, default=str) + "\n"
+
+    return StreamingResponse(lines(), media_type="application/x-ndjson", headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"})

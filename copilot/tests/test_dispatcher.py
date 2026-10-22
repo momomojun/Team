@@ -118,3 +118,23 @@ def test_short_answer_to_a_follow_up_skips_the_dispatcher():
     assert session.send("2027年6月1日从弗雷斯诺去优胜美地，节奏适中").question["kind"] == "days"
     reply = session.send("4")
     assert reply.status == "planned" and "dispatch" not in reply.trace and reply.request["days"] == 4
+
+
+def test_progress_is_reported_by_real_steps():
+    """网站的对话框按真实的步骤显示进度：先“理解”，条件齐了报认出的条件再排，排完写说明；问问题的报“回答”"""
+    provider = ScriptedProvider([
+        act({"type": "conditions"}),
+        extraction(parks=["优胜美地"], dates=["2027年6月1日"], duration="4天", origin="弗雷斯诺", preferences=["节奏适中"]),
+    ])
+    events = []
+    session = Session(provider, "2026-10-18", log=False, progress=events.append)
+    assert session.send(PLAN).status == "planned"
+    steps = [event["step"] for event in events]
+    assert steps == ["understand", "read", "plan", "write"]
+    conditions = events[2]["conditions"]
+    assert conditions["parks"] == ["优胜美地"] and conditions["startDate"] == "2027-06-01" and conditions["days"] == 4
+    assert conditions["origin"] == "FAT"
+    assert events[3]["stops"] > 0
+    # 报进度出错（连接断了）不影响这一轮
+    session.progress = lambda event: (_ for _ in ()).throw(RuntimeError("断了"))
+    assert session.send("好的").status == "planned"
