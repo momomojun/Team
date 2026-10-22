@@ -293,18 +293,20 @@ python copilot/scripts/smoke.py http://127.0.0.1:8765 --expect-version 0.2.0
 
 ### 发一个新版本
 
-1. 改 `copilot/nps_copilot/__init__.py` 的 `__version__` 和 `copilot/pyproject.toml` 的 `version`，走 PR。
+**什么时候发**（10-21 仓库主人定的）：每做完一个大功能就发一版，别攒太久（v0.2.1 到 v0.3.0 中间攒了 30 个 PR）。版本号三位：大功能升中间那位（0.3.0 → 0.4.0），只修问题升最后一位（0.3.0 → 0.3.1）；以后改了契约、接口不兼容了再升第一位。网站在 Vercel 上随 `main` 自动部署，不单独发版，网站的大改动一起写进这一版的说明。
+
+1. 改 `copilot/nps_copilot/__init__.py` 的 `__version__` 和 `copilot/pyproject.toml` 的 `version`；在 `docs/releases/copilot-v<版本>.md` 写这一版新增了什么（中英文，照着上一版的写法，按 `docs/timeline/` 里上一版以后的文件整理），走 PR。
 2. 合并以后打 tag 推上去：
 
 ```bash
-git -C D:/LLM/Team tag copilot-v0.2.0 origin/main
+git -C D:/LLM/Team tag copilot-v0.3.0 origin/main
 ```
 
 ```bash
-git -C D:/LLM/Team push origin copilot-v0.2.0
+git -C D:/LLM/Team push origin copilot-v0.3.0
 ```
 
-3. `Copilot release` workflow 会检查 tag 和代码里的版本一致，再跑一遍测试和七组门禁，构建镜像、冒烟测试、推到 `ghcr.io/momomojun/team-copilot:<tag>` 和 `:latest`，从 GHCR 拉回来再冒烟一次，最后建 GitHub Release（附评测报告、镜像 digest、默认提示词版本）。任何一步没过都不发。
+3. `Copilot release` workflow 会检查 tag 和代码里的版本一致，再跑一遍测试和七组门禁，构建镜像、冒烟测试、推到 `ghcr.io/momomojun/team-copilot:<tag>` 和 `:latest`，从 GHCR 拉回来再冒烟一次，最后建 GitHub Release（附评测报告、镜像 digest、默认提示词版本，后面接上 `docs/releases/` 里这一版的说明）。任何一步没过都不发。
 
 镜像在 GHCR 上是公开的（仓库公开，包跟着公开），任何人不用登录就能拉。发过的版本见仓库的 [Releases](https://github.com/momomojun/Team/releases)。
 

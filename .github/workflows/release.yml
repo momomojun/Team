@@ -86,6 +86,8 @@ jobs:
             echo "提示词 / Prompts: \`$(python3 -c 'import json;print(json.load(open("copilot/nps_copilot/prompts/defaults.json")))')\`"
             echo
             echo "评测报告在附件里（回放门禁）/ Replay eval reports are attached. 部署和回滚 / Deploy and rollback: docs/GUIDE.md"
+            # 这一版新增了什么（中英文），发版的 PR 里写好的
+            if [ -f "docs/releases/$GITHUB_REF_NAME.md" ]; then echo; echo "---"; echo; cat "docs/releases/$GITHUB_REF_NAME.md"; fi
           } > notes.md
           tar czf eval-reports.tgz -C copilot/eval reports
           gh release create "$GITHUB_REF_NAME" --title "Copilot $GITHUB_REF_NAME" --notes-file notes.md eval-reports.tgz
