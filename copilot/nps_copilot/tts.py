@@ -25,9 +25,9 @@ FILES = {
     "zh": ("kokoro-v1.1-zh.fp16.onnx", "voices-v1.1-zh.bin"),
     "en": ("kokoro-v1.0.fp16.onnx", "voices-v1.0.bin"),
 }
-# 默认的声音（10-21 试听过几个，仓库主人还没挑；可以用 COPILOT_TTS_VOICE_ZH / _EN 换）
+# 默认的声音（10-21 仓库主人试听后挑的：中文 zf_003、英文 af_heart；可以用 COPILOT_TTS_VOICE_ZH / _EN 换）
 VOICES = {
-    "zh": os.environ.get("COPILOT_TTS_VOICE_ZH", "zf_001"),
+    "zh": os.environ.get("COPILOT_TTS_VOICE_ZH", "zf_003"),
     "en": os.environ.get("COPILOT_TTS_VOICE_EN", "af_heart"),
 }
 MAX_CHARS = 400

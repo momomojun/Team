@@ -206,7 +206,7 @@ flowchart LR
 | `COPILOT_RUNS` | `copilot/runs` | 运行日志目录 |
 | `COPILOT_PROMPT_INTAKE`、`COPILOT_PROMPT_WRITER`、`COPILOT_PROMPT_QA`、`COPILOT_PROMPT_DISPATCH` | `defaults.json` 里的 | 临时换提示词版本，比如 `v1` |
 | `COPILOT_TTS_MODELS`、`COPILOT_TTS_CACHE` | `copilot/models/kokoro`、`copilot/data/tts` | 配音模型放在哪、生成过的语音存在哪（都不提交） |
-| `COPILOT_TTS_VOICE_ZH`、`COPILOT_TTS_VOICE_EN` | `zf_001`、`af_heart` | 配音用哪个声音（中文 v1.1-zh 有 100 多个：`zf_` 女声、`zm_` 男声；英文 `af_` `am_` 美式、`bf_` `bm_` 英式） |
+| `COPILOT_TTS_VOICE_ZH`、`COPILOT_TTS_VOICE_EN` | `zf_003`、`af_heart`（10-21 仓库主人试听后挑的） | 配音用哪个声音（中文 v1.1-zh 有 100 多个：`zf_` 女声、`zm_` 男声；英文 `af_` `am_` 美式、`bf_` `bm_` 英式） |
 | `COPILOT_TOOLS` | `1` | 设成 `0`：回答问题时不调查询工具，只按资料回答（对照实验、出问题时回滚） |
 | `COPILOT_CHAT_TIMEOUT` | `20` | 聊天时每次调商业模型最多等几秒，超时不重试、直接换顺序里的下一个（10-21：Gemini 偶尔 70 多秒才回，第一句话要等一分多钟）；评测、每晚读公告不受影响 |
 | `COPILOT_ALERTS_BUDGET` | `12` | 聊天时现读公告最多等几秒：没读过的几条同时交给模型，到时间还没读完的按规则算、不进缓存（10-21：一次排行程读公告用了 49 秒） |

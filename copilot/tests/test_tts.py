@@ -47,3 +47,7 @@ def test_endpoint_says_unavailable_without_models(monkeypatch):
         api.speak(" ")
     assert empty.value.status_code == 400
     assert api.health()["tts"] is None
+
+
+def test_default_voices_are_the_ones_the_owner_picked(monkeypatch):
+    assert tts.VOICES == {"zh": "zf_003", "en": "af_heart"} or "COPILOT_TTS_VOICE_ZH" in __import__("os").environ
