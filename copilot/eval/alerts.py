@@ -25,6 +25,7 @@ sys.path.insert(0, str(HERE.parent))
 from nps_copilot import alerts as alerts_module  # noqa: E402
 from nps_copilot.pipeline import prompt_hashes  # noqa: E402
 from guard import safe_name  # noqa: E402
+import tracking  # noqa: E402
 from nps_copilot.providers import RecordingProvider, ReplayProvider, from_env  # noqa: E402
 
 SNAPSHOT = HERE / "alerts" / "snapshot-2026-10-19.json"
@@ -161,6 +162,16 @@ def main() -> int:
     out = reports / f"{stamp}-alerts-{(label or 'rules').replace(':', '_').replace('/', '_')}.json"
     out.write_text(json.dumps({"label": label, "prompts": prompt_hashes(), **results}, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"报告：{out}")
+    scored = results.get("model") or results.get("rules") or {}
+    tracking.log(
+        "读公告（alerts）",
+        f"{args.snapshot.stem}{f' · 抽 {args.sample} 条' if args.sample else ''} · {label or 'rules'}",
+        {"snapshot": args.snapshot.name, "model": label or "rules", "mode": "replay" if args.replay else ("rules" if args.rules_only else "live"),
+         "sample": args.sample, "chain": args.chain, **tracking.prompt_params(prompt_hashes())},
+        {key: value for key, value in scored.items() if key in ("alerts", "type_accuracy", "full_precision", "full_recall",
+                                                               "attraction_precision", "attraction_recall", "attraction_f1")},
+        out,
+    )
     if args.chain and "model" in results:
         # 每晚抽查写给工作流开 issue 用：各家模型各读了几条（MiniMax 额度用完会换到 GPT-4.1 mini）
         summary = {key: results["model"][key] for key in ("alerts", "type_accuracy", "attraction_f1", "dates", "misses", "speed")}

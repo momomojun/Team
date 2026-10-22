@@ -57,3 +57,8 @@ copilot/data/alerts/
 # 讲解配音的本机模型（Kokoro，几百 MB，按 docs/COPILOT.md 下载）和生成过的语音
 copilot/models/
 copilot/data/tts/
+
+# 评测记到 MLflow 的本机记录（copilot/eval/tracking.py）、LangGraph 的对话存档
+copilot/mlruns/
+copilot/data/sessions.sqlite*
+copilot/data/chroma/

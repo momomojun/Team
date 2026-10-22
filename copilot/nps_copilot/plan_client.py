@@ -43,14 +43,16 @@ def live_closures() -> str | None:
     return path if os.path.exists(path) else None
 
 
-def plan_trip(request: dict, reference_date: str) -> PlanCall:
+def plan_trip(request: dict, reference_date: str, on_step=None) -> PlanCall:
+    """on_step(step, **detail)：真要现读 NPS 公告时报一声（对话框显示进度用）"""
     url = os.environ.get("COPILOT_PLAN_URL")
     start = time.perf_counter()
     refresh = None
     if os.environ.get("COPILOT_LIVE") != "0" and not os.environ.get("COPILOT_LIVE_CLOSURES"):
         # 两周内出发、要去的公园今天还没读过公告：当场只抓这几座公园的读一遍（出错就用原来的清单）
         from .alerts_live import refresh_for
-        refresh = refresh_for(request, reference_date)
+        refresh = refresh_for(request, reference_date,
+                              on_fetch=(lambda parks: on_step("alerts", parks=parks)) if on_step else None)
     if url:
         body = json.dumps(request, ensure_ascii=False).encode("utf-8")
         http = urllib.request.Request(f"{url}?reference={reference_date}", data=body, headers={"Content-Type": "application/json"})

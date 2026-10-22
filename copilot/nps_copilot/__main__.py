@@ -33,6 +33,7 @@ def main() -> None:
     stats = sub.add_parser("stats")
     stats.add_argument("--days", type=int, default=7)
     sub.add_parser("version")
+    sub.add_parser("graph", help="把一轮对话的 LangGraph 流程图打成 Mermaid")
     alerts_cmd = sub.add_parser("alerts")
     alerts_cmd.add_argument("--snapshot", default=str(DATA / "alerts" / "latest.json"))
     alerts_cmd.add_argument("--out", default=str(DATA / "alerts" / "closures-latest.json"))
@@ -44,6 +45,11 @@ def main() -> None:
         import uvicorn
 
         uvicorn.run("nps_copilot.api:app", host=args.host, port=args.port)
+        return
+    if args.command == "graph":
+        from .graph import default_graph
+
+        print(default_graph().mermaid())
         return
     if args.command == "version":
         print(json.dumps({"version": __version__, "build": os.environ.get("COPILOT_BUILD_SHA"), "prompts": prompts.current(),

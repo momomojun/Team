@@ -32,6 +32,7 @@ from nps_copilot.writer import template, write  # noqa: E402
 from nps_copilot.pipeline import prompt_hashes  # noqa: E402
 from nps_copilot.plan_client import PlanError, plan_trip  # noqa: E402
 from guard import StopEarly, safe_name  # noqa: E402
+import tracking  # noqa: E402
 from nps_copilot.providers import ProviderError, RecordingProvider, ReplayProvider, from_env  # noqa: E402
 
 REFERENCE = "2026-10-16"
@@ -180,6 +181,16 @@ def main() -> int:
         if not result["ok"]:
             print(f"  ✗ {result['id']}: {result.get('error') or ', '.join(result['problems']) or '追问类型不对'}")
     print(f"报告：{out / name}")
+    planned_ok = summary.get("planned_ok", "0/0").split("/")
+    tracking.log(
+        "单句理解（intake）",
+        f"{Path(args.cases).stem} · {model}",
+        {"cases_file": Path(args.cases).name, "model": model, "mode": "replay" if args.replay else "live", "plan": args.plan,
+         **tracking.prompt_params(prompt_hashes())},
+        {**summary, "pass_rate": summary["passed"] / max(1, summary["cases"]), "seconds": report["seconds"],
+         **({"planned_ok": int(planned_ok[0]), "planned_total": int(planned_ok[1])} if args.plan else {})},
+        out / name,
+    )
 
     if args.gate:
         baseline = json.loads(Path(args.gate).read_text(encoding="utf-8"))

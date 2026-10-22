@@ -1,4 +1,5 @@
-"""HTTP 服务（FastAPI）。对话状态存在内存里，重启就没了（单机、自用阶段够用）。
+"""HTTP 服务（FastAPI）。装了 langgraph 时一轮对话按 graph.py 的流程图跑，对话状态存在 LangGraph 的检查点里
+（copilot/data/sessions.sqlite），Copilot 重启以后用原来的会话 id 接着说；没装就只在内存里，重启就没了。
 
 POST /sessions                   → {"session": "...", "greeting": "..."}
 POST /sessions/{id}/messages     {"text": "..."} → 这一轮的回复（status、text、question、request、result）
@@ -15,16 +16,42 @@ import datetime as dt
 import os
 import shutil
 
+import json
+import queue
+import threading
+
 from fastapi import FastAPI, HTTPException, Request, Response
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel
 
 from . import __version__, alerts_live, guard, monitor, tts
+from . import graph as graph_module
 from .pipeline import VERSION, Session, prompt_hashes
 from .providers import ProviderError, chat_provider
 
 app = FastAPI(title="NPS Guide Copilot", version=__version__)
 sessions: dict[str, Session] = {}
+# LangGraph 的流程图和检查点（第一次用到时才建：chat_provider() 配错了也不影响 /health）
+_graph: graph_module.CopilotGraph | None = None
+_graph_ready = False
+
+
+def copilot_graph() -> graph_module.CopilotGraph | None:
+    global _graph, _graph_ready
+    if not _graph_ready:
+        _graph = graph_module.build(chat_provider)
+        _graph_ready = True
+    return _graph
+
+
+def find_session(session_id: str) -> Session | None:
+    graph = copilot_graph()
+    return graph.get(session_id) if graph else sessions.get(session_id)
+
+
+def run_turn(session: Session, text: str):
+    graph = copilot_graph()
+    return graph.send(session.id, text) if graph else session.send(text)
 
 
 async def guard_request(request: Request, call_next):
@@ -76,6 +103,8 @@ def health() -> dict:
         "tts": "kokoro" if tts.available() else None,
         # 放到公网时有没有设口令（不显示口令本身）
         "auth": bool(guard.token()),
+        # 一轮对话怎么跑：LangGraph（对话存档，重启不丢）还是直接调
+        "graph": "langgraph" if graph_module.enabled() else None,
     }
 
 
@@ -104,18 +133,52 @@ def stats(days: int = 7) -> dict:
 
 @app.post("/sessions")
 def create(body: NewSession) -> dict:
-    session = Session(chat_provider(), body.reference_date or dt.date.today().isoformat(), writer_model=body.writer_model)
-    sessions[session.id] = session
+    graph = copilot_graph()
+    reference = body.reference_date or dt.date.today().isoformat()
+    if graph:
+        session = graph.create(reference, writer_model=body.writer_model)
+    else:
+        session = Session(chat_provider(), reference, writer_model=body.writer_model)
+        sessions[session.id] = session
     return {"session": session.id, "greeting": "说说你的行程：想去哪、什么时候、玩几天、从哪飞。"}
 
 
+def reply_body(reply) -> dict:
+    return {"status": reply.status, "text": reply.text, "question": reply.question, "request": reply.request, "result": reply.result}
+
+
 @app.post("/sessions/{session_id}/messages")
-def send(session_id: str, body: Message) -> dict:
-    session = sessions.get(session_id)
+def send(session_id: str, body: Message, stream: bool = False):
+    """stream=1：边做边报，一行一个 JSON（NDJSON）：{"type": "progress", "step": …} 若干行，最后一行 {"type": "reply", …}
+    （出错是 {"type": "error", "status": 503, "detail": …}）。网站的对话框按这些步骤显示进度"""
+    session = find_session(session_id)
     if session is None:
         raise HTTPException(404, "没有这个会话")
-    try:
-        reply = session.send(body.text)
-    except ProviderError as error:
-        raise HTTPException(503, str(error)) from error
-    return {"status": reply.status, "text": reply.text, "question": reply.question, "request": reply.request, "result": reply.result}
+    if not stream:
+        try:
+            reply = run_turn(session, body.text)
+        except ProviderError as error:
+            raise HTTPException(503, str(error)) from error
+        return reply_body(reply)
+
+    events: queue.Queue = queue.Queue()
+
+    def run() -> None:
+        session.progress = lambda event: events.put({"type": "progress", **event})
+        try:
+            events.put({"type": "reply", **reply_body(run_turn(session, body.text))})
+        except ProviderError as error:
+            events.put({"type": "error", "status": 503, "detail": str(error)})
+        except Exception as error:  # 别的错误也要告诉网站，不然对话框一直转
+            events.put({"type": "error", "status": 500, "detail": str(error)})
+        finally:
+            session.progress = None
+            events.put(None)
+
+    threading.Thread(target=run, daemon=True).start()
+
+    def lines():
+        while (event := events.get()) is not None:
+            yield json.dumps(event, ensure_ascii=False, default=str) + "\n"
+
+    return StreamingResponse(lines(), media_type="application/x-ndjson", headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"})

@@ -31,7 +31,7 @@
 - [ ] 不同的步骤可以用不同的模型（P12；10-20 做了机制 `COPILOT_STEP_MODELS`，默认还是每一步都按 Gemini → MiniMax → Qwen（Groq）→ 本机（10-21 起不用 OpenAI）；按对照成绩怎么分配等仓库主人定）
 - [ ] Writer 的行程说明逐句附来源（P17）；Critic 最多退回 3 轮（P16，现在有意只改一次）；数据快照用 Pydantic 校验（P6）
 - [ ] 路线动画导出成短视频（第一版动画 10-19 做了）；Copilot 的线上部署（O53、A1；10-21 准备好了 Hugging Face Spaces 的部署文件和 workflow，等仓库主人注册账号、加 secret 后推上去）。网站行程页的对话框 10-19 做了（O61）
-- [ ] 排行程等得久时的过渡界面：按真实的步骤显示做到哪了（理解需求、读公告、排路线、写说明），先给看已经认出的条件（O65）
+- [x] 排行程等得久时的过渡界面：按真实的步骤显示做到哪了（理解需求、读公告、排路线、写说明），先给看已经认出的条件（O65；10-22 做了，见 [timeline/2026-10-22-progress-langgraph.md](timeline/2026-10-22-progress-langgraph.md)）
 - [ ] 照着小红书帖子排行程：把帖子里的图（路线多在图上）存下来上传给 Copilot，看图读出每天去哪，确认后排成行程（O64）
 - [ ] 明星同款：中国大陆明星、更多公园（O22；10-20 查了不登录的办法：微博单条帖子要登录、中文娱乐新闻搜不到，大陆明星一条也没找到，先加了港台的 3 条：蔡明思的马蹄湾和羚羊峡谷、阎奕格的冰川点；调研记录在 archive/audit/2026-10-20/）
 
@@ -203,14 +203,14 @@
 | P4 | 10-13 | 计划书要和实际做法一致 | 助手 10-13、10-18 两次建议 | 没做 | 10-13 仓库主人说“计划书先不改”；10-18 助手提醒 MLflow 等已经不一样，仓库主人没回复 | 下面 P7、P11、P14、P22、P24、P25 都要改写 |
 | P5 | 10-13 | 把 NPS Guide 数据导出成 JSON 快照 | §4 数据管理 | 已完成 | `copilot/contracts/parks.json`、`airports.json`、`knowledge.jsonl`（1600 多条），`npm run copilot:contracts` 生成，测试检查是不是最新 | |
 | P6 | 10-13 | 快照用 Pydantic 做 schema 校验 | §4 | 部分完成 | `TripRequest`/`TripResult` 用 JSON Schema（TS 里写、生成给 Python），请求逐字段报错；没有对数据快照本身做 Pydantic 校验 | |
-| P7 | 10-13 | 切块、做 embedding、存进 Chroma（向量检索） | §4、§7 | 改主意或放弃 | QA 用名字命中 + BM25，不用向量；COPILOT.md 写了“以后可以换嵌入模型做对照” | 计划书要改 |
+| P7 | 10-13 | 切块、做 embedding、存进 Chroma（向量检索） | §4、§7 | 部分完成 | 10-22 做了对照实验：Chroma + bge-m3（本机 Ollama）的向量检索，48 个问题前 5 条找到 0.92，关键词 BM25 0.81，英文问题 0.81 对 0.56（RESULTS.md）；Copilot 照旧用 BM25，换不换等仓库主人定（部署的地方要有嵌入模型、多轮对话要重录） | |
 | P8 | 10-13 | 每晚刷新 NPS 公告 | §4、§6 | 已完成 | 关闭信息还是手动维护的 `src/data/closures.ts`；`npm run check:closures` 只在本机定时任务里每天报告、不改数据、不在 CI 里；10-19 能抓快照、模型提取了（`npm run alerts:fetch`、`python -m nps_copilot alerts`），每晚自动跑和接进排行程还没做；10-19 GitHub 每晚抓一次（`alerts-nightly.yml`），新的关闭公告开 issue；模型提取在本机跑，没有自动接进数据；10-19 每晚在 GitHub 上用 Gemini 只读新的、改过的公告，issue 里列出模型找到的景点；聊天时要去的公园今天没读过就现读；10-20 每晚抽查模型、提议改 `closures.ts`（人开 PR 合并）、网站行程页也用模型提取的结果 | PROJECT.md“下一步”第 2 条 |
 | P9 | 10-13 | 每份快照有内容 hash，每个回答记下用的哪份数据 | §3、§4 | 没做 | 日志每轮记 Copilot 版本、提示词 hash、`reference_date`；`/health` 有构建提交；`TripResult.engine.version` 写死 "1"；没有数据 hash | |
 | P10 | 10-13 | Provider 抽象 + 测试用的 mock provider（不需要密钥） | §4、§6 | 已完成 | `providers.py`：Ollama、Replay、Recording、Scripted；CI 用回放 | |
 | P11 | 10-13 | 一个低成本商业 API 模型 + 一个开源模型（Ollama）对比，按配置切换 | §4、§7 | 部分完成 | 10-19 仓库主人改了主意：加了 Gemini、OpenAI 的 Provider（`COPILOT_PROVIDER=gemini / openai`），读公告这一项和本机 4B 比过（RESULTS.md）；对话那几步还没比，默认还是本机 | 仓库主人对另一个助手说过“目前不希望依赖云端 API”（archive/LLMOPS_WORK_LOG.md）；计划书要改 |
 | P12 | 10-13 | 每个 agent 可以用不同的模型 | §4 | 部分完成 | 10-20：`COPILOT_STEP_MODELS` 让调度员、摘条件、回答问题、写说明各自换模型（出错退回平常的顺序），后台显示换了哪几步；读公告本来就单独设（`COPILOT_ALERTS_PROVIDER`）。默认分配还没定 | |
 | P13 | 10-13 | 提示词进仓库、有版本，每次评测记下提示词版本 | §4 | 已完成 | `prompts/intake_v1.txt`、`intake_v2.txt`、`writer_v1.txt`、`qa_v1.txt`，`defaults.json`，环境变量切换；日志和 Release 记 hash | 计划书写 YAML，实际是 txt |
-| P14 | 10-13 | LangGraph 编排 5 个 agent（Intake、Retriever、Planner、Critic、Writer） | §4、§5 | 部分完成 | 自己写的固定流水线（`pipeline.py`），没有 LangGraph；Planner 是确定性引擎，不是 agent；Retriever 只在 QA 里；10-18 加了调度员（`dispatcher.py`）：模型决定改条件、提问、加减景点、指定住处、重新开始，代码执行和核对；仍然没有 LangGraph | 仓库主人 10-18 嫌“不智能”，助手建议改成模型调度工具（O60） |
+| P14 | 10-13 | LangGraph 编排 5 个 agent（Intake、Retriever、Planner、Critic、Writer） | §4、§5 | 部分完成 | 自己写的固定流水线（`pipeline.py`），没有 LangGraph；Planner 是确定性引擎，不是 agent；Retriever 只在 QA 里；10-18 加了调度员（`dispatcher.py`）：模型决定改条件、提问、加减景点、指定住处、重新开始，代码执行和核对；10-22 一轮对话改成按 LangGraph 的流程图跑（`graph.py`：understand → dispatch / legacy → finish），对话状态存进 LangGraph 的 SQLite 检查点，Copilot 重启以后接着聊；Planner、Critic 还是确定性的代码，不是 agent | 仓库主人 10-18 嫌“不智能”，助手建议改成模型调度工具（O60） |
 | P15 | 10-13 | Planner 能调用 search_attractions、is_open、drive_time 和行程引擎 | §4 | 已完成 | 10-21：`is_open`、`drive_time`、`search` 三个查询工具（`src/lib/copilot/lookup-tool.ts`），回答问题时由代码认出要查什么再调用；排行程还是 `plan_trip` | PROJECT.md 阶段 1 备注 |
 | P16 | 10-13 | Critic 把问题退回 Planner，最多 3 轮 | §4 | 部分完成 | `critic.py` 只用代码检查，最多改一次（节奏改轻松再排） | 有意的设计，COPILOT.md 写了 |
 | P17 | 10-13 | 每条事实都附来源 / 回答带引用 | §3、§4 | 部分完成 | QA 的回答注明用了哪几条资料；行程说明（Writer）没有逐句来源 | PROJECT.md 阶段 2 备注 |
@@ -221,7 +221,7 @@
 | P22 | 10-13 | Streamlit 演示界面 / demo UI | §4、§8 | 已完成 | 改成了网站行程页的对话框（10-19），不做 Streamlit | |
 | P23 | 10-13 | Docker Compose | §4 | 已完成 | `copilot/docker-compose.yml`、`.ollama.yml`、`.gpu.yml`、`Dockerfile` | |
 | P24 | 10-13 | 部署到 staging（AWS Academy 或 Render） | §4、§6 | 没做 | 只有 GHCR 公开镜像 + 本机 compose；网站在 Vercel，但 Copilot 没有线上环境 | 演示时 Copilot 放哪还没定 |
-| P25 | 10-13 | MLflow 追踪每一步（token、费用、延迟、工具调用、Critic 退回） | §4、§7 | 部分完成 | JSONL 日志 + `python -m nps_copilot stats`（按版本统计排出率、追问、出错、被丢掉的片段、Writer 退回、耗时中位数和 P90）；10-19 加了按模型的调用次数、出错、退到备用模型的次数、token 和花费（每轮日志的 `calls`，`GET /stats`），网站后台 `/zh-Hans/admin`（每天的图、按模型的花费、最近几轮、每晚读公告的结果）；没有 MLflow | 计划书要改 |
+| P25 | 10-13 | MLflow 追踪每一步（token、费用、延迟、工具调用、Critic 退回） | §4、§7 | 部分完成 | JSONL 日志 + `python -m nps_copilot stats`（按版本统计排出率、追问、出错、被丢掉的片段、Writer 退回、耗时中位数和 P90）；10-19 加了按模型的调用次数、出错、退到备用模型的次数、token 和花费（每轮日志的 `calls`，`GET /stats`），网站后台 `/zh-Hans/admin`（每天的图、按模型的花费、最近几轮、每晚读公告的结果）；10-22 评测（单句、多轮对话、读公告、检索）可以记到本机的 MLflow（`COPILOT_MLFLOW=1`，`eval/tracking.py`），历次模型对照的回放都补记进去了；线上每一步的追踪还是 JSONL + 后台 | |
 | P26 | 10-13 | 护栏：没查到来源不说开没开、输入校验、限流、外部 API 挂了退回缓存快照 | §4 | 部分完成 | 输入校验、提示注入没得逞（holdout 两组）、QA 数字核对和“查不到说不知道”有；10-21 加了限流（每个来源每分钟 20、每天 300 句，全局每天 2000 句）和共享口令（`guard.py`，为上 Hugging Face Spaces）；没有缓存回退（plan_trip 本来就不联网） | |
 | P27 | 10-13 | 每个 PR：Ruff lint、mock pytest、数据快照校验、工具契约测试 | §6 | 部分完成 | pytest、契约测试（`tests/copilot-plan.test.ts`、契约文件是否最新）都有；**没有 Ruff**（只有网站的 ESLint） | |
 | P28 | 10-13 | 改了提示词/agent/模型/数据的 PR 跑评测门禁，分数表贴到 PR 评论 | §6 | 部分完成 | 每个 PR 都跑 3 组回放门禁（不能低于基线），报告上传为 artifact；**没有贴 PR 评论**；只能拦代码改坏，改提示词要本机重录 | |
@@ -303,7 +303,8 @@
 | O62 | 10-19 | “奥林匹亚”是打错字，不要当别名加；可能打错字时做相似判断、反问一句 | 仓库主人 | 已完成 | PR #19：`catalog.similar`、`confirm_park`；一句话里认不出的公园名不再悄悄丢掉 | |
 | O63 | 10-19 | 加一个“国家公园可能遇到的危险”模块：棕熊、野牛、美洲狮等野生动物伤人事件，以及别的常见危险（落石、山洪、高温、溺水……）和怎么防 | Tianyue Chen（JadenChen10）提议，仓库主人转述 | 没做 | 已经有的相关内容：同行适合度里的危险标记（`src/data/suitability/`，有“野生动物”一项）、NPS 实时公告、个别景点提示里写的熊出没（北极之门 Arrigetch）。要做的：按官方资料（NPS 各公园的 safety、bear 页面、事故通报）整理，不渲染恐怖、写清楚怎么防；能对到景点和季节的放进行程提醒 | 之后做 |
 | O64 | 10-21 | 刷到小红书帖子，想照着它的路线去玩：网站要能读出帖子的路线、排成行程。复制文字太麻烦，很多帖子正文不写行程、路线只在图上 | 仓库主人的朋友提议，仓库主人要求记成目标 | 没做 | 打算的做法（10-21 和仓库主人商量的）：用户把帖子的图存到相册，在行程页的 Copilot 一次上传几张（电脑上可以粘贴、拖进来；安卓装到主屏后可以从“分享到”直接发过来，iPhone 的 Safari 不支持）；能看图的模型（Gemini，本机小模型看不了图；本机识别文字只当备用）读出第几天去哪、从哪出发，对到网站的景点，先给用户确认、对不上的列出来，再交给排行程引擎，按日期照常检查封路、抽签、住处、同行适合度。只给用户自己排这一趟，不存帖子内容、不做公开的路线库；不按链接自动打开小红书（要登录、有防机器人验证，WR2、R3 不变）。要新加“导入路线”的动作和帖子式的评测样例（截图只放本机、不提交）；用户是安卓还是 iPhone、测试用的帖子还没给 | 先记下 |
-| O65 | 10-21 | 排行程时间长的话，做个界面让用户过渡，别干等 | 仓库主人 | 没做 | 现在对话框等回复时只有一行闪烁的“思考中”，一轮最长等过一分多钟（10-21 试用：第一句 71 秒、排行程那轮 49 秒，PR #47 已经压短）。打算：Copilot 每走一步就报一次（理解需求 → 读 NPS 公告 → 排每天的路线 → 写说明），对话框按真实的步骤显示进度和已经等了多久，不按时间假装走进度；认出公园、日期、天数后马上显示出来，等的时候可以放这几座公园的照片和一句介绍。要把现在“一问一答”的接口改成边做边报（流式返回或者分段查询），网站这边跟着改；不改排行程本身的结果 | 先记下 |
+| O65 | 10-21 | 排行程时间长的话，做个界面让用户过渡，别干等 | 仓库主人 | 已完成 | 现在对话框等回复时只有一行闪烁的“思考中”，一轮最长等过一分多钟（10-21 试用：第一句 71 秒、排行程那轮 49 秒，PR #47 已经压短）。打算：Copilot 每走一步就报一次（理解需求 → 读 NPS 公告 → 排每天的路线 → 写说明），对话框按真实的步骤显示进度和已经等了多久，不按时间假装走进度；认出公园、日期、天数后马上显示出来，等的时候可以放这几座公园的照片和一句介绍。要把现在“一问一答”的接口改成边做边报（流式返回或者分段查询），网站这边跟着改；不改排行程本身的结果 | 10-22 做了：Copilot 每做一步报一次（`messages?stream=1`），对话框按真实步骤打勾、写等了几秒、先显示认出的条件和公园照片 |
+| O66 | 10-21 | 做完一个大功能就发一个新版本，别攒太久 | 仓库主人 | 已执行 | GUIDE.md“发一个新版本”写了什么时候发、版本号怎么升，每一版的说明写在 `docs/releases/`；v0.3.0（10-21）是第一次按这个规矩发的 | |
 | O61 | 10-18 | 网站行程页加对话框（助手提议，仓库主人同意排进计划） | 计划 | 已完成 | 10-19：行程页的对话框（`copilot-chat.tsx`，经 `/api/copilot/chat` 连本机 Copilot），排出的行程原样放进行程页，可以接着改；没开 Copilot 时不显示。演示时 Copilot 放哪（本机还是服务器）还没定，先按本机 | 对应 P22 |
 
 ### D. 长期规则
