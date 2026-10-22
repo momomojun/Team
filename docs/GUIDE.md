@@ -153,6 +153,14 @@ cd copilot && python -m nps_copilot chat --reference 2026-10-16
 cd copilot && python -m nps_copilot serve --port 8765
 ```
 
+- **对话存档（可选，LangGraph）**：装了 `python -m pip install "copilot[graph]"`，`serve` 就按 LangGraph 的流程图跑，对话存在 `copilot/data/sessions.sqlite`，Copilot 重启以后网站上接着聊不用重新说条件。
+- **评测记到 MLflow（可选）**：`python -m pip install "copilot[experiments]"`，跑评测前设 `COPILOT_MLFLOW=1`（PowerShell 里 `$env:COPILOT_MLFLOW=1`），看成绩：
+
+```bash
+mlflow ui --backend-store-uri sqlite:///D:/LLM/Team/copilot/mlruns/mlflow.db
+```
+
+  打开 http://127.0.0.1:5000 ，在实验（单句理解、多轮对话、读公告、检索）里勾几条 run 比。
 - **讲解版的配音（可选）**：行程页的“讲解版”默认用浏览器自带的声音，比较机械。想要像真人的配音，在开 Copilot 服务的那台电脑上装本机模型 Kokoro（免费、不联网），装好重启 `serve`，讲解版就自动换成它：
 
 ```bash

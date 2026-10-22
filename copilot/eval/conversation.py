@@ -30,6 +30,7 @@ os.environ.setdefault("COPILOT_LIVE", "0")
 
 from nps_copilot.pipeline import Session, prompt_hashes  # noqa: E402
 from guard import StopEarly, safe_name  # noqa: E402
+import tracking  # noqa: E402
 from nps_copilot.providers import FaultyProvider, ProviderChain, ProviderError, RecordingProvider, ReplayProvider, from_env  # noqa: E402
 from run import subset  # noqa: E402
 
@@ -151,6 +152,15 @@ def main() -> int:
                                   "total_cases": len(results), "total_turns": len(turns), "results": results},
                                  ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"报告：{report}")
+    tracking.log(
+        "多轮对话（conversation）",
+        f"{Path(args.cases).stem} · {label}",
+        {"cases_file": Path(args.cases).name, "model": label, "mode": "replay" if args.replay else "live", "chaos": args.chaos,
+         **tracking.prompt_params(prompt_hashes())},
+        {"cases_passed": passed, "cases": len(results), "turns_passed": turn_ok, "turns": len(turns),
+         "turn_rate": turn_ok / max(1, len(turns)), "median_turn_ms": statistics.median(latencies) if latencies else 0},
+        report,
+    )
     if args.gate:
         baseline = json.loads(args.gate.read_text(encoding="utf-8"))
         if turn_ok < baseline["turns"] or passed < baseline["cases"]:

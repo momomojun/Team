@@ -115,8 +115,15 @@ class Session:
         return (self.intake.language or "zh") != "en"
 
     def send(self, message: str) -> Reply:
+        """一轮对话。拆成 begin → understand → respond → finish 四步：graph.py 的 LangGraph 每个节点调其中一步，
+        评测、测试直接调这里，走的是同一套代码"""
+        turn = self.begin(message)
+        plan = self.understand(message, turn)
+        return self.finish(self.respond(plan, message, turn), turn)
+
+    def begin(self, message: str) -> dict:
+        """这一轮开始：计数、日志的开头、认语言"""
         self.turn += 1
-        start = time.perf_counter()
         self.provider.take()  # 上一轮半路出错没写进日志的调用不算到这一轮
         trace = {"session": self.id, "turn": self.turn, "version": VERSION, "prompts": prompt_hashes(),
                  "reference_date": self.reference_date, "message": message}
@@ -124,19 +131,58 @@ class Session:
             from .intake import is_english
             self.intake.language = "en" if is_english(message) else "zh"
         self._emit("understand")
-        reply = None
-        if self.dispatcher and not self._quick_answer(message):
-            plan = dispatcher_module.dispatch(self.provider, self.history, self._conditions(), self.last_result, message, self.zh)
-            trace["dispatch"] = plan.trace
-            if plan.actions:
-                reply = self._run(plan, message, trace)
+        return {"trace": trace, "start": time.perf_counter()}
+
+    def understand(self, message: str, turn: dict) -> dispatcher_module.Dispatch | None:
+        """调度员看整段对话决定做哪几件事；只是回答追问（“5”）、调度员关掉或者没给出能做的事，返回 None 走原来的规则"""
+        if not self.dispatcher or self._quick_answer(message):
+            return None
+        plan = dispatcher_module.dispatch(self.provider, self.history, self._conditions(), self.last_result, message, self.zh)
+        turn["trace"]["dispatch"] = plan.trace
+        return plan if plan.actions else None
+
+    def respond(self, plan: dispatcher_module.Dispatch | None, message: str, turn: dict) -> Reply:
+        """按调度员给的几件事做；没有就走原来按规则的流程"""
+        trace = turn["trace"]
+        reply = self._run(plan, message, trace) if plan is not None else None
         if reply is None:
             trace["route"] = "legacy"
             reply = self._legacy(message, trace)
-        self.history.append((message, reply.text))
+        return reply
+
+    def finish(self, reply: Reply, turn: dict) -> Reply:
+        """记下对话、写日志"""
+        self.history.append((turn["trace"]["message"], reply.text))
         if reply.status == "needs_input" and reply.question:
             self.last_question = reply.question
-        return self._done(reply, start)
+        return self._done(reply, turn["start"])
+
+    # ---------- 存档（graph.py 用 LangGraph 的检查点存，Copilot 重启以后接着聊） ----------
+    def snapshot(self) -> str:
+        """对话状态（条件、上一次的行程、改动、聊过的话）：模型提供方、进度回调不存，恢复时重新接上"""
+        import base64
+        import copy
+        import pickle
+
+        state = {key: value for key, value in vars(self).items() if key not in ("provider", "progress")}
+        intake = copy.copy(state["intake"])
+        intake.provider = None
+        state["intake"] = intake
+        return base64.b64encode(pickle.dumps(state)).decode("ascii")
+
+    @classmethod
+    def restore(cls, data: str, provider: Provider) -> "Session":
+        """从 snapshot() 恢复。数据是 Copilot 自己写在本机的存档（copilot/data/sessions.sqlite），不读别人给的"""
+        import base64
+        import pickle
+
+        state = pickle.loads(base64.b64decode(data))  # noqa: S301
+        session = cls.__new__(cls)
+        vars(session).update(state)
+        session.provider = provider if isinstance(provider, Metered) else Metered(provider)
+        session.progress = None
+        session.intake.provider = session.provider
+        return session
 
     # ---------- 调度员给的几件事 ----------
     def _run(self, plan: dispatcher_module.Dispatch, message: str, trace: dict) -> Reply:
