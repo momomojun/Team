@@ -102,7 +102,7 @@ flowchart LR
 | `copilot/scripts/alerts_report.py`、`.github/workflows/alerts-nightly.yml` | 每晚抓公告、新的关闭公告开 issue；抽查模型（`eval/baseline-alerts-canary.json`）、提议改 `closures.ts`（`scripts/propose-closures.mjs`）、把关闭清单推到 `data/alerts-live` 分支给网站用（`src/lib/alerts-live.ts`） |
 | `copilot/nps_copilot/dispatcher.py` | 调度员：给模型看的上下文、输出格式、丢掉编造的名字 |
 | `copilot/nps_copilot/knowledge.py`、`qa.py` | QA：在 `knowledge.jsonl` 里检索（名字命中 + BM25）、让模型只按查到的资料回答、检查回答里的数字，对不上就摘原文 |
-| `copilot/nps_copilot/graph.py` | 一轮对话按 LangGraph 的流程图跑（10-22）：understand（`Session.begin` + 调度员）→ dispatch（按调度员给的几件事做）或 legacy（原来的规则）→ finish（写日志、存档）。每个节点调 `pipeline.py` 同一套代码，评测直接调 `Session.send` 测到的就是这里跑的。对话状态（`Session.snapshot`）存进 LangGraph 的 SQLite 检查点（`copilot/data/sessions.sqlite`），Copilot 重启以后用原来的会话 id 接着说。`python -m nps_copilot graph` 打出 Mermaid 流程图。没装 langgraph（`pip install "copilot[graph]"`）或 `COPILOT_GRAPH=0` 就直接调 `Session.send`、会话只在内存里 |
+| `copilot/nps_copilot/graph.py` | 一轮对话按 LangGraph 的流程图跑（10-22）：understand（`Session.begin` + 调度员）→ dispatch（按调度员给的几件事做）或 legacy（原来的规则）→ finish（写日志、存档）。每个节点调 `pipeline.py` 同一套代码，评测直接调 `Session.send` 测到的就是这里跑的。对话状态（`Session.snapshot`）存进 LangGraph 的 SQLite 检查点（`copilot/data/sessions.sqlite`），Copilot 重启以后用原来的会话 id 接着说。`python -m nps_copilot graph` 打出 Mermaid 流程图。没装 langgraph（`pip install "copilot[graph]"`）或 `COPILOT_GRAPH=0` 就直接调 `Session.send`、会话只在内存里。Docker 镜像和 Hugging Face Space 里没装（免费 Space 重启会清空磁盘，存档本来也留不住） |
 | `copilot/eval/tracking.py`、`copilot/eval/retrieval.py` | 评测记到 MLflow（`COPILOT_MLFLOW=1`，本机 `copilot/mlruns/` 的 SQLite，`mlflow ui --backend-store-uri sqlite:///copilot/mlruns/mlflow.db` 看）；检索对照实验（关键词 vs Chroma 向量 vs 混合，结果在 RESULTS.md） |
 | `copilot/nps_copilot/tts.py`、`src/app/api/copilot/tts/route.ts` | 讲解版的配音（10-21）：本机跑 Kokoro（开源 TTS，ONNX 版，CPU 上一句一秒左右），中文用 v1.1-zh（读音按 misaki 的 v1.1 规则转成注音，“11:04”先改成“11点04分”、间隔号去掉），英文用 v1.0；`GET /tts?text=&lang=` 返回 MP3，按“文字 + 声音 + 模型”存在 `copilot/data/tts/`，同一句只生成一次；没装模型时 503，网站退回浏览器自带的声音。`/health` 的 `tts` 写着能不能用 |
 | `copilot/nps_copilot/tools.py`、`src/lib/copilot/lookup-tool.ts`、`scripts/lookup.mjs` | 查询工具（is_open、drive_time、search）：Python 认问题、地方和日期，调 Node 命令行 `npm run copilot:lookup`（读 JSON 请求，一个或一组），结果写成给 QA 模型看的几行 |
@@ -219,6 +219,11 @@ flowchart LR
 | `COPILOT_ALERTS_BUDGET` | `12` | 聊天时现读公告最多等几秒：没读过的几条同时交给模型，到时间还没读完的按规则算、不进缓存（10-21：一次排行程读公告用了 49 秒） |
 | `COPILOT_DISPATCH` | `1` | 设成 `0` 关掉调度员，每轮都走原来按规则的流程（对照实验、出问题时回滚） |
 | `COPILOT_BUILD_SHA` | — | 镜像构建时写入，`/health` 显示 |
+| `COPILOT_TOKEN` | — | 设了就要请求头 `X-Copilot-Token` 等于它（`/health` 除外），不对返回 401（`guard.py`，10-21）；放到公网（Hugging Face Spaces）时用，网站的中转（`src/lib/copilot/upstream.ts`）读同名变量带上。没设不检查 |
+| `COPILOT_RATE_MINUTE`、`COPILOT_RATE_DAY` | `20`、`300` | 每个来源（网站中转透传的 `X-Forwarded-For`）每分钟、每天最多发几句话（`POST /sessions/{id}/messages`），超了 429 + `Retry-After` |
+| `COPILOT_RATE_TTS_MINUTE`、`COPILOT_RATE_TTS_DAY` | `120`、`3000` | 配音（`GET /tts`）每个来源的上限 |
+| `COPILOT_RATE_GLOBAL_DAY` | `2000` | 所有人加起来每天最多发几句话，免得免费额度被刷光；设成 `0` 不限 |
+| `PORT` | `8765` | `serve` 的默认端口（Hugging Face Spaces 用 7860） |
 | `COPILOT_TAG`、`COPILOT_PORT`、`OLLAMA_MODELS` | `latest`、`8765`、Docker 卷 | 只给 docker compose 用：用哪个版本的镜像、本机端口、已经下好的模型目录 |
 
 ## 模型参数

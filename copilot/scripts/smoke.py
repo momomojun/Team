@@ -5,11 +5,13 @@
 
 用回放模型跑（COPILOT_PROVIDER=replay）时，用的这句话要在录音里（默认的这句在开发集里）。
 CI 构建镜像以后、发版推镜像以后都跑一次；回滚以后也用它确认旧版本起来了。
+服务设了口令（COPILOT_TOKEN，比如 Hugging Face Spaces 上的）：在跑这个脚本的终端里设同一个 COPILOT_TOKEN，请求会带上。
 """
 from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
 import time
@@ -21,7 +23,10 @@ MESSAGE = "2027年6月1日从弗雷斯诺飞，去优胜美地玩4天，带爸�
 
 def call(url: str, body: dict | None = None) -> dict:
     data = None if body is None else json.dumps(body, ensure_ascii=False).encode("utf-8")
-    request = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json; charset=utf-8"})
+    headers = {"Content-Type": "application/json; charset=utf-8"}
+    if os.environ.get("COPILOT_TOKEN"):
+        headers["X-Copilot-Token"] = os.environ["COPILOT_TOKEN"]
+    request = urllib.request.Request(url, data=data, headers=headers)
     with urllib.request.urlopen(request, timeout=120) as response:
         return json.loads(response.read().decode("utf-8"))
 

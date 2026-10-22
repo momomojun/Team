@@ -6,6 +6,8 @@
  *
  * 同一句话的配音不会变，浏览器可以一直缓存；Copilot 那边也按句存着，同一句只生成一次。
  */
+import { copilotHeaders } from "@/lib/copilot/upstream";
+
 const BASE = (process.env.COPILOT_URL || "http://127.0.0.1:8765").replace(/\/$/, "");
 /** 第一次要把模型装进内存（几秒），之后一句一两秒 */
 const TIMEOUT_MS = 30_000;
@@ -16,7 +18,7 @@ export async function GET(request: Request) {
   const text = (params.get("text") ?? "").trim().slice(0, MAX_CHARS);
   if (!text) {
     try {
-      const response = await fetch(`${BASE}/health`, { signal: AbortSignal.timeout(3_000), cache: "no-store" });
+      const response = await fetch(`${BASE}/health`, { headers: copilotHeaders(request), signal: AbortSignal.timeout(3_000), cache: "no-store" });
       const health = (await response.json()) as { tts?: string | null };
       return Response.json({ available: response.ok && Boolean(health.tts) });
     } catch {
@@ -25,7 +27,11 @@ export async function GET(request: Request) {
   }
   const lang = params.get("lang") === "en-US" ? "en-US" : "zh-CN";
   try {
-    const response = await fetch(`${BASE}/tts?${new URLSearchParams({ text, lang })}`, { signal: AbortSignal.timeout(TIMEOUT_MS), cache: "no-store" });
+    const response = await fetch(`${BASE}/tts?${new URLSearchParams({ text, lang })}`, {
+      headers: copilotHeaders(request),
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+      cache: "no-store",
+    });
     if (!response.ok) return Response.json({ error: "tts" }, { status: 503 });
     return new Response(await response.arrayBuffer(), {
       headers: { "Content-Type": "audio/mpeg", "Cache-Control": "public, max-age=31536000, immutable" },

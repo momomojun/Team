@@ -7,6 +7,8 @@
  * 最近几轮里有用户说的原话：部署到公网又没设访问密码（SITE_PASSWORD）时不给，返回 404。
  * Copilot 没开（或者部署在 Vercel 上连不到）时 available: false，GitHub 那部分照样给
  */
+import { copilotHeaders } from "@/lib/copilot/upstream";
+
 const BASE = (process.env.COPILOT_URL || "http://127.0.0.1:8765").replace(/\/$/, "");
 const REPO = "momomojun/Team";
 const WORKFLOW = "alerts-nightly.yml";
@@ -69,8 +71,8 @@ export async function GET(request: Request) {
   const github = nightly();
   try {
     const [health, stats] = await Promise.all([
-      getJson(`${BASE}/health`, 4_000),
-      getJson(`${BASE}/stats?days=${days}`, 15_000),
+      getJson(`${BASE}/health`, 4_000, copilotHeaders()),
+      getJson(`${BASE}/stats?days=${days}`, 15_000, copilotHeaders()),
     ]);
     // 端口上可能是别的程序：要像 Copilot 的 /health 才算
     const available = typeof health.version === "string" && stats && typeof stats === "object" && "usage" in stats;

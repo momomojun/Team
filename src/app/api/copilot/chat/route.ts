@@ -10,6 +10,8 @@
  * Copilot 的地址是 COPILOT_URL（默认 http://127.0.0.1:8765；8765 被别的程序占了就在 .env.local 里改，比如 :8766）。
  * 部署在 Vercel 上时连不到谁电脑上的 Copilot，GET 返回 available: false，对话框不出现，页面照旧能用
  */
+import { copilotHeaders } from "@/lib/copilot/upstream";
+
 const BASE = (process.env.COPILOT_URL || "http://127.0.0.1:8765").replace(/\/$/, "");
 /** 模型几秒一句、排行程一两秒；第一次调用要把模型装进显卡，多等一会儿 */
 const TIMEOUT_MS = 120_000;
@@ -21,10 +23,10 @@ interface CopilotReply {
   result: { trip?: unknown } | null;
 }
 
-async function call(path: string, body?: unknown, timeout = TIMEOUT_MS): Promise<Response> {
+async function call(path: string, body?: unknown, timeout = TIMEOUT_MS, request?: Request): Promise<Response> {
   return fetch(`${BASE}${path}`, {
     method: body === undefined ? "GET" : "POST",
-    headers: body === undefined ? undefined : { "Content-Type": "application/json" },
+    headers: { ...copilotHeaders(request), ...(body === undefined ? {} : { "Content-Type": "application/json" }) },
     body: body === undefined ? undefined : JSON.stringify(body),
     signal: AbortSignal.timeout(timeout),
     cache: "no-store",
@@ -100,18 +102,23 @@ export async function POST(request: Request) {
   try {
     let session = typeof body.session === "string" && /^[0-9a-f]{6,32}$/.test(body.session) ? body.session : null;
     if (!session) {
-      const created = await call("/sessions", {});
+      const created = await call("/sessions", {}, TIMEOUT_MS, request);
       if (!created.ok) return Response.json({ error: "offline" }, { status: 503 });
       session = ((await created.json()) as { session: string }).session;
     }
     const stream = body.stream === true;
     const path = (id: string) => `/sessions/${id}/messages${stream ? "?stream=1" : ""}`;
-    let response = await call(path(session), { text });
+    let response = await call(path(session), { text }, TIMEOUT_MS, request);
     if (response.status === 404) {
       // Copilot 重启过，会话没了：开个新的再说一遍（前面的对话它不记得了，回复里会再问）
-      const created = await call("/sessions", {});
+      const created = await call("/sessions", {}, TIMEOUT_MS, request);
       session = ((await created.json()) as { session: string }).session;
-      response = await call(path(session), { text });
+      response = await call(path(session), { text }, TIMEOUT_MS, request);
+    }
+    // 发得太多（Copilot 放在公网时按来源限流，guard.py）：照原样告诉页面还要等几秒
+    if (response.status === 429) {
+      const wait = response.headers.get("Retry-After") ?? "60";
+      return Response.json({ error: "rate_limited", retryAfter: Number(wait) }, { status: 429, headers: { "Retry-After": wait } });
     }
     if (!response.ok) return Response.json({ error: response.status === 503 ? "model" : "copilot" }, { status: 502 });
     if (stream && response.body) return relay(session, response);

@@ -28,7 +28,8 @@ def main() -> None:
     chat.add_argument("--writer-model", action="store_true", help="让模型改写说明（会检查有没有编造，对不上就用模板）")
     serve = sub.add_parser("serve")
     serve.add_argument("--host", default="127.0.0.1", help="在 Docker 里要用 0.0.0.0")
-    serve.add_argument("--port", type=int, default=8765)
+    # Hugging Face Spaces 用 PORT 环境变量（7860）
+    serve.add_argument("--port", type=int, default=int(os.environ.get("PORT", 8765)))
     stats = sub.add_parser("stats")
     stats.add_argument("--days", type=int, default=7)
     sub.add_parser("version")
