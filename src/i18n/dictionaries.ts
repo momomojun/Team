@@ -1392,6 +1392,7 @@ const zhHans = {
       restart: "重新开始",
       offline: "连不上 Copilot（本机的 Copilot 服务可能关了），可以先用下面的“自动生成攻略”。",
       error: "Copilot 这次出错了，换个说法再试一次。",
+      rateLimited: "说得太快了，{n} 秒后再试。",
       note: "Copilot 用本机的 Qwen3.5 4B 模型理解你的话、追问缺的条件，行程由网站的排行程引擎排，开放时间、车程都来自网站的数据；出发前仍以 nps.gov 为准。",
       replaceConfirm: "用 Copilot 排的行程换掉现在的行程吗？",
     },

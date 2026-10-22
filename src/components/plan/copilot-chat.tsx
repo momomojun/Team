@@ -108,7 +108,7 @@ export function CopilotChat({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: message, session: session.current, stream: true }),
       });
-      let reply: (ChatReply & { error?: string }) | null = null;
+      let reply: (ChatReply & { error?: string; retryAfter?: number }) | null = null;
       if (response.ok && response.headers.get("Content-Type")?.includes("ndjson") && response.body) {
         // 边做边报：一行一个 JSON，进度一到就显示，最后一行是这一轮的回复
         const reader = response.body.getReader();
@@ -136,7 +136,13 @@ export function CopilotChat({
         }
       } else reply = (await response.json()) as ChatReply & { error?: string };
       if (!response.ok || !reply || reply.error) {
-        setError(reply?.error === "offline" ? t.offline : t.error);
+        setError(
+          reply?.error === "offline"
+            ? t.offline
+            : reply?.error === "rate_limited"
+              ? fill(t.rateLimited, { n: reply.retryAfter ?? 60 })
+              : t.error,
+        );
         return;
       }
       session.current = reply.session;

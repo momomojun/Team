@@ -90,3 +90,38 @@ def test_middleware_rejects_and_limits(monkeypatch):
     limited = run(_Request("POST", "/sessions/x/messages", good))
     assert limited.status_code == 429 and int(limited.headers["retry-after"]) >= 1
     assert api.health()["auth"] is True
+
+
+def test_stream_passes_through_the_guard(monkeypatch):
+    """边做边报（?stream=1）经过口令、限流的中间件：进度和最后的回复一行不少"""
+    pytest.importorskip("fastapi")
+    pytest.importorskip("httpx")
+    import json
+
+    from fastapi.testclient import TestClient
+
+    from nps_copilot import api
+    from nps_copilot.pipeline import Reply
+    from nps_copilot.providers import ScriptedProvider
+
+    monkeypatch.setenv("COPILOT_TOKEN", "s3cret")
+    monkeypatch.setattr(guard, "limiter", guard.Limiter())
+    monkeypatch.setattr(api, "copilot_graph", lambda: None)
+    monkeypatch.setattr(api, "chat_provider", lambda: ScriptedProvider([]))
+
+    def fake_turn(session, text):
+        session.progress({"step": "understand"})
+        session.progress({"step": "plan", "conditions": {"parks": ["优胜美地"], "days": 3}})
+        return Reply("planned", "排好了", None, None, None, {})
+
+    monkeypatch.setattr(api, "run_turn", fake_turn)
+    client = TestClient(api.app)
+    good = {"X-Copilot-Token": "s3cret"}
+    assert client.post("/sessions", json={}).status_code == 401
+    session = client.post("/sessions", json={"reference_date": "2026-10-16"}, headers=good).json()["session"]
+    response = client.post(f"/sessions/{session}/messages?stream=1", json={"text": "优胜美地 3 天"}, headers=good)
+    assert response.status_code == 200 and "ndjson" in response.headers["content-type"]
+    events = [json.loads(line) for line in response.text.splitlines() if line.strip()]
+    assert [event.get("step") for event in events[:2]] == ["understand", "plan"]
+    assert events[1]["conditions"]["days"] == 3
+    assert events[-1] == {"type": "reply", "status": "planned", "text": "排好了", "question": None, "request": None, "result": None}
