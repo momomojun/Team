@@ -11,6 +11,7 @@ import { formatClock, minutesOfDay, sunTimes } from "../sun";
 import { fitFor, type Party } from "../suitability";
 import { zoneOf } from "../time-zone";
 import { airportMinutes, gatewayNode, travelMinutes } from "../travel";
+import { reachable } from "../trip-parks";
 import type { Trip, TripLodging } from "../trip-store";
 import {
   SKIP_REASONS,
@@ -52,6 +53,7 @@ export interface PlanOptions {
 }
 
 const parkByCode = new Map(parks.map((park) => [park.code, park]));
+const nearbyOf = (code: string) => parkByCode.get(code)?.nearby ?? [];
 const stopById = new Map(attractions.map((stop) => [stop.id, stop]));
 const stayOptions = [...lodgingOptions, ...campgrounds];
 const lodgingById = new Map(stayOptions.map((option) => [option.id, option]));
@@ -94,12 +96,12 @@ const clock = (minutes: number | undefined) => (minutes === undefined ? null : f
 export function planTrip(input: unknown, options: PlanOptions) {
   const issues = validateTripRequest(input);
   const request = input as TripRequest;
-  const main = issues.length === 0 ? parkByCode.get(request.parks[0]) : undefined;
-  if (main) {
-    const nearby = new Set(main.nearby ?? []);
-    request.parks.slice(1).forEach((code, i) => {
-      if (!nearby.has(code)) {
-        issues.push({ path: `/parks/${i + 1}`, message: `${code} 不在 ${main.code} 常一起玩的公园里（${[...nearby].join(", ") || "没有"}）` });
+  if (issues.length === 0) {
+    // 一段一段连得起来就行（常一起玩的，或者开车一天能到）：死亡谷 + 红杉与国王峡谷、锡安 + 布莱斯 + 羚羊峡谷 + 马蹄湾 + 大峡谷
+    const reached = new Set(reachable(request.parks, nearbyOf));
+    request.parks.forEach((code, i) => {
+      if (!reached.has(code)) {
+        issues.push({ path: `/parks/${i}`, message: `${code} 离 ${request.parks.filter((c) => reached.has(c)).join(", ")} 太远，开车一天到不了，排不进同一趟` });
       }
     });
   }
@@ -115,6 +117,7 @@ export function planTrip(input: unknown, options: PlanOptions) {
     if (!stays.has(id)) issues.push({ path: `/lodging/${i}/id`, message: `${id} 不是 ${request.parks.join(", ")} 的推荐住宿` });
     if (night >= request.days) issues.push({ path: `/lodging/${i}/night`, message: `${request.days} 天的行程只有 ${request.days - 1} 晚在外面住` });
   });
+  const main = issues.length === 0 ? parkByCode.get(request.parks[0]) : undefined;
   if (issues.length > 0 || !main) throw new TripRequestError(issues);
 
   const normalized: TripRequest = {

@@ -22,6 +22,14 @@
     "nearby": [
       "seki"
     ],
+    "linked": [
+      "seki",
+      "pinn",
+      "chis",
+      "jotr",
+      "lavo",
+      "deva"
+    ],
     "aliases": [
       "优胜美地",
       "優勝美地",
@@ -47,6 +55,14 @@
     },
     "nearby": [
       "yose"
+    ],
+    "linked": [
+      "yose",
+      "pinn",
+      "chis",
+      "jotr",
+      "lavo",
+      "deva"
     ],
     "aliases": [
       "红杉与国王峡谷",
@@ -79,6 +95,14 @@
       "seki",
       "yose"
     ],
+    "linked": [
+      "yose",
+      "seki",
+      "chis",
+      "jotr",
+      "lavo",
+      "deva"
+    ],
     "aliases": [
       "尖峰石阵",
       "尖峰石陣",
@@ -105,6 +129,13 @@
       "SBA": 42
     },
     "nearby": [],
+    "linked": [
+      "yose",
+      "seki",
+      "pinn",
+      "jotr",
+      "deva"
+    ],
     "aliases": [
       "海峡群岛",
       "海峽群島",
@@ -137,6 +168,17 @@
     "nearby": [
       "deva"
     ],
+    "linked": [
+      "yose",
+      "seki",
+      "pinn",
+      "chis",
+      "deva",
+      "zion",
+      "brca",
+      "grca",
+      "wave"
+    ],
     "aliases": [
       "约书亚树",
       "約書亞樹",
@@ -167,6 +209,10 @@
     "nearby": [
       "crla",
       "lavo"
+    ],
+    "linked": [
+      "lavo",
+      "crla"
     ],
     "aliases": [
       "红木",
@@ -199,6 +245,13 @@
       "crla",
       "redw"
     ],
+    "linked": [
+      "yose",
+      "seki",
+      "pinn",
+      "redw",
+      "crla"
+    ],
     "aliases": [
       "拉森火山",
       "Lassen Volcanic",
@@ -229,6 +282,10 @@
       "redw",
       "lavo"
     ],
+    "linked": [
+      "redw",
+      "lavo"
+    ],
     "aliases": [
       "火山口湖",
       "Crater Lake",
@@ -252,6 +309,10 @@
       "PDX": 177
     },
     "nearby": [
+      "olym",
+      "noca"
+    ],
+    "linked": [
       "olym",
       "noca"
     ],
@@ -284,6 +345,10 @@
       "mora",
       "noca"
     ],
+    "linked": [
+      "mora",
+      "noca"
+    ],
     "aliases": [
       "奥林匹克",
       "奧林匹克",
@@ -308,6 +373,10 @@
       "BLI": 119
     },
     "nearby": [
+      "mora",
+      "olym"
+    ],
+    "linked": [
       "mora",
       "olym"
     ],
@@ -347,6 +416,10 @@
       "grte",
       "glac"
     ],
+    "linked": [
+      "grte",
+      "glac"
+    ],
     "aliases": [
       "黄石",
       "黃石",
@@ -375,6 +448,9 @@
       "BZN": 319
     },
     "nearby": [
+      "yell"
+    ],
+    "linked": [
       "yell"
     ],
     "aliases": [
@@ -410,6 +486,11 @@
       "banf",
       "yell"
     ],
+    "linked": [
+      "yell",
+      "banf",
+      "yoho"
+    ],
     "aliases": [
       "冰川",
       "Glacier",
@@ -434,6 +515,13 @@
       "arch",
       "cany",
       "grsa"
+    ],
+    "linked": [
+      "grsa",
+      "blca",
+      "arch",
+      "cany",
+      "wica"
     ],
     "aliases": [
       "落基山",
@@ -471,6 +559,22 @@
       "blca",
       "grsa"
     ],
+    "linked": [
+      "grsa",
+      "blca",
+      "zion",
+      "brca",
+      "grca",
+      "grba",
+      "ante",
+      "hsbd",
+      "mova",
+      "wave",
+      "arch",
+      "cany",
+      "care",
+      "pefo"
+    ],
     "aliases": [
       "梅萨维德",
       "梅薩維德",
@@ -502,6 +606,16 @@
       "romo",
       "meve",
       "blca"
+    ],
+    "linked": [
+      "romo",
+      "meve",
+      "blca",
+      "mova",
+      "arch",
+      "cany",
+      "whsa",
+      "pefo"
     ],
     "aliases": [
       "大沙丘",
@@ -536,6 +650,19 @@
       "romo",
       "grsa"
     ],
+    "linked": [
+      "romo",
+      "meve",
+      "grsa",
+      "ante",
+      "hsbd",
+      "mova",
+      "wave",
+      "arch",
+      "cany",
+      "care",
+      "pefo"
+    ],
     "aliases": [
       "甘尼森黑峡谷",
       "甘尼森黑峽谷",
@@ -559,6 +686,19 @@
     },
     "nearby": [
       "jotr"
+    ],
+    "linked": [
+      "yose",
+      "seki",
+      "pinn",
+      "chis",
+      "jotr",
+      "zion",
+      "grca",
+      "grba",
+      "ante",
+      "hsbd",
+      "wave"
     ],
     "aliases": [
       "死亡谷",
@@ -592,6 +732,22 @@
       "ante",
       "wave"
     ],
+    "linked": [
+      "jotr",
+      "meve",
+      "deva",
+      "brca",
+      "grca",
+      "grba",
+      "ante",
+      "hsbd",
+      "mova",
+      "wave",
+      "arch",
+      "cany",
+      "care",
+      "pefo"
+    ],
     "aliases": [
       "锡安",
       "錫安",
@@ -623,6 +779,22 @@
       "care",
       "hsbd",
       "ante"
+    ],
+    "linked": [
+      "jotr",
+      "meve",
+      "blca",
+      "zion",
+      "grca",
+      "grba",
+      "ante",
+      "hsbd",
+      "mova",
+      "wave",
+      "arch",
+      "cany",
+      "care",
+      "pefo"
     ],
     "aliases": [
       "布莱斯峡谷",
@@ -656,6 +828,21 @@
       "ante",
       "mova"
     ],
+    "linked": [
+      "jotr",
+      "meve",
+      "deva",
+      "zion",
+      "brca",
+      "ante",
+      "hsbd",
+      "mova",
+      "wave",
+      "arch",
+      "cany",
+      "pefo",
+      "sagu"
+    ],
     "aliases": [
       "大峡谷",
       "大峽谷",
@@ -684,6 +871,19 @@
     "nearby": [
       "zion",
       "brca",
+      "care"
+    ],
+    "linked": [
+      "meve",
+      "deva",
+      "zion",
+      "brca",
+      "ante",
+      "hsbd",
+      "mova",
+      "wave",
+      "arch",
+      "cany",
       "care"
     ],
     "aliases": [
@@ -722,6 +922,23 @@
       "zion",
       "brca"
     ],
+    "linked": [
+      "meve",
+      "blca",
+      "deva",
+      "zion",
+      "brca",
+      "grca",
+      "grba",
+      "hsbd",
+      "mova",
+      "wave",
+      "arch",
+      "cany",
+      "care",
+      "pefo",
+      "sagu"
+    ],
     "aliases": [
       "羚羊峡谷",
       "羚羊峽谷",
@@ -759,6 +976,23 @@
       "zion",
       "brca"
     ],
+    "linked": [
+      "meve",
+      "blca",
+      "deva",
+      "zion",
+      "brca",
+      "grca",
+      "grba",
+      "ante",
+      "mova",
+      "wave",
+      "arch",
+      "cany",
+      "care",
+      "pefo",
+      "sagu"
+    ],
     "aliases": [
       "马蹄湾",
       "馬蹄灣",
@@ -794,6 +1028,22 @@
       "grca",
       "arch",
       "cany"
+    ],
+    "linked": [
+      "meve",
+      "grsa",
+      "blca",
+      "zion",
+      "brca",
+      "grca",
+      "grba",
+      "ante",
+      "hsbd",
+      "wave",
+      "arch",
+      "cany",
+      "care",
+      "pefo"
     ],
     "aliases": [
       "纪念碑谷",
@@ -831,6 +1081,23 @@
       "brca",
       "grca"
     ],
+    "linked": [
+      "jotr",
+      "meve",
+      "blca",
+      "deva",
+      "zion",
+      "brca",
+      "grca",
+      "grba",
+      "ante",
+      "hsbd",
+      "mova",
+      "arch",
+      "cany",
+      "care",
+      "pefo"
+    ],
     "aliases": [
       "波浪谷",
       "The Wave",
@@ -866,6 +1133,23 @@
       "romo",
       "blca"
     ],
+    "linked": [
+      "romo",
+      "meve",
+      "grsa",
+      "blca",
+      "zion",
+      "brca",
+      "grca",
+      "grba",
+      "ante",
+      "hsbd",
+      "mova",
+      "wave",
+      "cany",
+      "care",
+      "pefo"
+    ],
     "aliases": [
       "拱门",
       "拱門",
@@ -900,6 +1184,23 @@
       "romo",
       "blca"
     ],
+    "linked": [
+      "romo",
+      "meve",
+      "grsa",
+      "blca",
+      "zion",
+      "brca",
+      "grca",
+      "grba",
+      "ante",
+      "hsbd",
+      "mova",
+      "wave",
+      "arch",
+      "care",
+      "pefo"
+    ],
     "aliases": [
       "峡谷地",
       "峽谷地",
@@ -933,6 +1234,20 @@
       "brca",
       "zion"
     ],
+    "linked": [
+      "meve",
+      "blca",
+      "zion",
+      "brca",
+      "grba",
+      "ante",
+      "hsbd",
+      "mova",
+      "wave",
+      "arch",
+      "cany",
+      "pefo"
+    ],
     "aliases": [
       "圆顶礁",
       "圓頂礁",
@@ -958,6 +1273,13 @@
     },
     "nearby": [
       "cave"
+    ],
+    "linked": [
+      "grsa",
+      "cave",
+      "sagu",
+      "chir",
+      "gumo"
     ],
     "aliases": [
       "白沙",
@@ -985,6 +1307,11 @@
     },
     "nearby": [
       "whsa"
+    ],
+    "linked": [
+      "whsa",
+      "gumo",
+      "bibe"
     ],
     "aliases": [
       "卡尔斯巴德洞窟",
@@ -1020,6 +1347,23 @@
       "hsbd",
       "meve"
     ],
+    "linked": [
+      "meve",
+      "grsa",
+      "blca",
+      "zion",
+      "brca",
+      "grca",
+      "ante",
+      "hsbd",
+      "mova",
+      "wave",
+      "arch",
+      "cany",
+      "care",
+      "sagu",
+      "chir"
+    ],
     "aliases": [
       "石化林",
       "Petrified Forest",
@@ -1046,6 +1390,12 @@
       "grca",
       "pefo",
       "whsa",
+      "chir"
+    ],
+    "linked": [
+      "grca",
+      "whsa",
+      "pefo",
       "chir"
     ],
     "aliases": [
@@ -1075,6 +1425,12 @@
     "nearby": [
       "sagu"
     ],
+    "linked": [
+      "whsa",
+      "pefo",
+      "sagu",
+      "gumo"
+    ],
     "aliases": [
       "奇里卡瓦",
       "Chiricahua",
@@ -1102,6 +1458,12 @@
     "nearby": [
       "cave",
       "whsa"
+    ],
+    "linked": [
+      "whsa",
+      "cave",
+      "chir",
+      "bibe"
     ],
     "aliases": [
       "瓜达卢佩山",
@@ -1134,6 +1496,10 @@
       "gumo",
       "cave"
     ],
+    "linked": [
+      "cave",
+      "gumo"
+    ],
     "aliases": [
       "大弯",
       "大彎",
@@ -1161,6 +1527,10 @@
       "wica",
       "thro"
     ],
+    "linked": [
+      "wica",
+      "thro"
+    ],
     "aliases": [
       "恶地",
       "惡地",
@@ -1185,6 +1555,11 @@
       "DEN": 388
     },
     "nearby": [
+      "badl",
+      "thro"
+    ],
+    "linked": [
+      "romo",
       "badl",
       "thro"
     ],
@@ -1219,6 +1594,10 @@
       "badl",
       "wica"
     ],
+    "linked": [
+      "badl",
+      "wica"
+    ],
     "aliases": [
       "西奥多·罗斯福",
       "西奧多·羅斯福",
@@ -1243,6 +1622,11 @@
       "CAK": 38
     },
     "nearby": [],
+    "linked": [
+      "indu",
+      "shen",
+      "neri"
+    ],
     "aliases": [
       "凯霍加谷",
       "凱霍加谷",
@@ -1267,6 +1651,11 @@
       "MDW": 62
     },
     "nearby": [],
+    "linked": [
+      "cuva",
+      "jeff",
+      "maca"
+    ],
     "aliases": [
       "印第安纳沙丘",
       "印第安納沙丘",
@@ -1289,6 +1678,10 @@
       "STL": 23
     },
     "nearby": [],
+    "linked": [
+      "indu",
+      "maca"
+    ],
     "aliases": [
       "圣路易斯拱门",
       "聖路易斯拱門",
@@ -1317,6 +1710,9 @@
     "nearby": [
       "voya"
     ],
+    "linked": [
+      "voya"
+    ],
     "aliases": [
       "皇家岛",
       "皇家島",
@@ -1343,6 +1739,9 @@
       "MSP": 261
     },
     "nearby": [
+      "isro"
+    ],
+    "linked": [
       "isro"
     ],
     "aliases": [
@@ -1375,6 +1774,12 @@
       "shen",
       "neri"
     ],
+    "linked": [
+      "shen",
+      "neri",
+      "maca",
+      "cong"
+    ],
     "aliases": [
       "大烟山",
       "大煙山",
@@ -1403,6 +1808,12 @@
     "nearby": [
       "neri",
       "grsm"
+    ],
+    "linked": [
+      "cuva",
+      "grsm",
+      "neri",
+      "cong"
     ],
     "aliases": [
       "仙纳度",
@@ -1435,6 +1846,13 @@
       "shen",
       "grsm"
     ],
+    "linked": [
+      "cuva",
+      "grsm",
+      "shen",
+      "maca",
+      "cong"
+    ],
     "aliases": [
       "新河峡谷",
       "新河峽谷",
@@ -1459,6 +1877,13 @@
       "SDF": 82
     },
     "nearby": [],
+    "linked": [
+      "cuva",
+      "indu",
+      "jeff",
+      "grsm",
+      "neri"
+    ],
     "aliases": [
       "猛犸洞",
       "猛獁洞",
@@ -1485,6 +1910,11 @@
       "CHS": 113
     },
     "nearby": [],
+    "linked": [
+      "grsm",
+      "shen",
+      "neri"
+    ],
     "aliases": [
       "康加里",
       "Congaree",
@@ -1508,6 +1938,9 @@
       "MEM": 217
     },
     "nearby": [],
+    "linked": [
+      "jeff"
+    ],
     "aliases": [
       "温泉",
       "溫泉",
@@ -1536,6 +1969,7 @@
       "BOS": 261
     },
     "nearby": [],
+    "linked": [],
     "aliases": [
       "阿卡迪亚",
       "阿卡迪亞",
@@ -1565,6 +1999,10 @@
       "bisc",
       "drto"
     ],
+    "linked": [
+      "bisc",
+      "drto"
+    ],
     "aliases": [
       "大沼泽地",
       "大沼澤地",
@@ -1589,6 +2027,10 @@
       "FLL": 67
     },
     "nearby": [
+      "ever",
+      "drto"
+    ],
+    "linked": [
       "ever",
       "drto"
     ],
@@ -1620,6 +2062,10 @@
       "ever",
       "bisc"
     ],
+    "linked": [
+      "ever",
+      "bisc"
+    ],
     "aliases": [
       "干龟",
       "幹龜",
@@ -1642,6 +2088,7 @@
       "STT": 59
     },
     "nearby": [],
+    "linked": [],
     "aliases": [
       "维尔京群岛",
       "維京群島",
@@ -1666,6 +2113,12 @@
       "FAI": 124
     },
     "nearby": [
+      "kefj",
+      "wrst",
+      "gaar",
+      "lacl"
+    ],
+    "linked": [
       "kefj",
       "wrst",
       "gaar",
@@ -1698,6 +2151,12 @@
       "katm",
       "lacl"
     ],
+    "linked": [
+      "dena",
+      "wrst",
+      "katm",
+      "lacl"
+    ],
     "aliases": [
       "基奈峡湾",
       "基奈峽灣",
@@ -1725,6 +2184,12 @@
       "kefj",
       "dena"
     ],
+    "linked": [
+      "dena",
+      "kefj",
+      "katm",
+      "lacl"
+    ],
     "aliases": [
       "兰格尔–圣伊莱亚斯",
       "蘭格爾–聖伊萊亞斯",
@@ -1747,6 +2212,7 @@
       "GST": 23
     },
     "nearby": [],
+    "linked": [],
     "aliases": [
       "冰川湾",
       "冰川灣",
@@ -1771,6 +2237,9 @@
     "nearby": [
       "dena"
     ],
+    "linked": [
+      "dena"
+    ],
     "aliases": [
       "北极之门",
       "北極之門",
@@ -1793,6 +2262,7 @@
       "OTZ": 0
     },
     "nearby": [],
+    "linked": [],
     "aliases": [
       "科伯克谷",
       "Kobuk Valley",
@@ -1818,6 +2288,11 @@
     "nearby": [
       "lacl",
       "kefj"
+    ],
+    "linked": [
+      "kefj",
+      "wrst",
+      "lacl"
     ],
     "aliases": [
       "卡特迈",
@@ -1847,6 +2322,12 @@
       "kefj",
       "dena"
     ],
+    "linked": [
+      "dena",
+      "kefj",
+      "wrst",
+      "katm"
+    ],
     "aliases": [
       "克拉克湖",
       "Lake Clark",
@@ -1870,6 +2351,7 @@
       "KOA": 191
     },
     "nearby": [],
+    "linked": [],
     "aliases": [
       "夏威夷火山",
       "Hawaiʻi Volcanoes",
@@ -1891,6 +2373,7 @@
       "OGG": 58
     },
     "nearby": [],
+    "linked": [],
     "aliases": [
       "哈莱阿卡拉",
       "哈萊阿卡拉",
@@ -1913,6 +2396,7 @@
       "PPG": 15
     },
     "nearby": [],
+    "linked": [],
     "aliases": [
       "美属萨摩亚",
       "美屬薩摩亞",
@@ -1943,6 +2427,11 @@
       "jasp",
       "glac"
     ],
+    "linked": [
+      "glac",
+      "jasp",
+      "yoho"
+    ],
     "aliases": [
       "班夫",
       "Banff",
@@ -1968,6 +2457,10 @@
       "YVR": 465
     },
     "nearby": [
+      "banf",
+      "yoho"
+    ],
+    "linked": [
       "banf",
       "yoho"
     ],
@@ -1997,6 +2490,11 @@
       "YVR": 461
     },
     "nearby": [
+      "banf",
+      "jasp"
+    ],
+    "linked": [
+      "glac",
       "banf",
       "jasp"
     ],

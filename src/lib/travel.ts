@@ -91,6 +91,12 @@ export function travelMinutes(from: string, to: string): number {
   return (toGateway ?? 0) + (between ?? FALLBACK_MIN) + (fromGateway ?? 0);
 }
 
+/** 两座公园的定位点之间开车几分钟（OSRM）；不通公路或表里没有是 null */
+export function parkDriveMinutes(a: string, b: string): number | null {
+  if (a === b) return 0;
+  return lookup(interParkTravel, a, b) ?? null;
+}
+
 /** 从机场开到公园定位点的分钟数（OSRM）；表里没有就是 null */
 export function airportMinutes(airport: string, park: string): number | null {
   const i = airportTravel.airports.indexOf(airport);

@@ -28,6 +28,7 @@ from . import dispatcher as dispatcher_module
 from . import writer as writer_module
 from .critic import critique
 from .intake import Field, Intake
+from .knowledge import inside_place_name
 from .plan_client import PlanError, plan_trip
 from .providers import Metered, Provider
 from .text import contains
@@ -36,6 +37,8 @@ VERSION = f"copilot/{__version__}"
 RUNS = Path(os.environ.get("COPILOT_RUNS", Path(__file__).resolve().parents[1] / "runs"))
 # 刚问了用户一句（玩几天、选哪个），回答这么短的就直接按追问读，不用调度员
 QUICK_ANSWER_CHARS = 6
+# 调度员把自己的话当成了“提问”：“用户想……”“The user wants……”
+NARRATION = re.compile(r"\s*(用户|the user)", re.I)
 CONTEXTUAL = re.compile(r"那|这|它|他们|她们|呢|上面|刚才|前面|(it|that|there|those|they|this)", re.I)
 QUICK_ANSWER = re.compile(r"\s*(\d{1,2}|[一二两三四五六七八九十]+|是的?|对|对的|好|好的|不是|不对|不用|都去|都要|第.{1,2}个?|yes|no|yep|nope)\s*(天|日|个|号|岁|晚)?[。.!！]?\s*", re.I)
 
@@ -194,7 +197,15 @@ class Session:
             self.intake.language = language
             self.history = history
             head.append("好，重新排一个新的行程，前面说的条件都不算了。" if zh else "Sure, starting a new trip from scratch.")
-        asks = [action for action in plan.actions if action.type == "ask"]
+        # 调度员有时把自己的想法写成“提问”（“用户想去拉森和红木，请确认……”），这不是用户在问，不拿去回答
+        asks = [action for action in plan.actions if action.type == "ask" and not NARRATION.match(action.query or "")]
+        current = (self.last_request or {}).get("parks") or self.intake.parks.value or []
+        if not plan.has("conditions") and not plan.has("new_trip") and not qa.is_question(message) and any(
+            code not in current and not inside_place_name(alias, code, message) for code, alias in catalog.find_all(message, catalog.parks())
+        ) and not any(action.type == "add_stop" and catalog.find_all(action.place, catalog.parks()) for action in plan.actions):
+            # “我的意思是去拉森和红木两个国家公园”：点了这次行程里没有的公园、又不是在问，就是在改去哪，按条件读
+            plan.actions.append(dispatcher_module.Action("conditions", ""))
+            trace["added_conditions"] = True
         self._solo = all(action.type in ("ask", "chat") for action in plan.actions)
         edits = [action for action in plan.actions if action.type in ("add_stop", "remove_stop", "set_lodging")]
         if not asks and qa.is_question(message) and not is_ack(message):
@@ -207,8 +218,9 @@ class Session:
             if said and not self.intake.parks.value:
                 codes = [code for code, _ in catalog.find_all(said, catalog.parks())]
                 if codes:
-                    self.intake.parks = Field(codes[:4], "user", said)
-                    trace["context_parks"] = {"said": said, "parks": codes[:4]}
+                    codes = codes[:catalog.max_trip_parks()]
+                    self.intake.parks = Field(codes, "user", said)
+                    trace["context_parks"] = {"said": said, "parks": codes}
             self._emit("read")
             turn = self.intake.step(message)
             trace["intake"] = turn.trace
@@ -255,6 +267,23 @@ class Session:
         for action in edits:
             kind = "lodging" if action.type == "set_lodging" else "attraction"
             doc = knowledge.resolve(action.place, parks, kind)
+            # 只认说的就是一座公园的（“拉森国家公园”“Lassen”）；“黄石的老忠实泉”是景点，照旧按景点找
+            named = [code for code, _ in catalog.find_all(action.place, catalog.parks())] if not catalog.leftover(action.place, catalog.parks()) else []
+            if doc is None and named and action.type in ("add_stop", "remove_stop"):
+                # “这两个国家公园我都要去”“拉森不去了”：调度员当成加减景点，其实说的是整座公园，改这次去的公园
+                if action.type == "add_stop":
+                    changed = [*parks, *(code for code in named if code not in parks)][:catalog.max_trip_parks()]
+                else:
+                    changed = [code for code in parks if code not in named] or parks
+                table = catalog.parks()
+                if changed != parks and not catalog.one_trip(Intake._order_parks(changed)):
+                    names = "、".join(table[code].name_zh if zh else table[code].name_en for code in named)
+                    notes.append(f"{names}离这次的公园太远，开车一天到不了，没有加进来；可以另排一趟。" if zh else
+                                 f"{names} is more than a day's drive from this trip, so I didn't add it. It could be a separate trip.")
+                elif changed != parks:
+                    parks = request["parks"] = Intake._order_parks(changed)
+                    self.intake.parks = Field(parks, "user", action.place)
+                continue
             # “那就加上它吧”：这句只用了代词、名字是调度员从上下文补的。用户上一句正好点了一个地方，就以它为准
             # （调度员有时会补成行程里别的地方，比如上一句问塔夫特点，它补成了冰川点）
             if self.history and action.place and not contains(message, action.place) and CONTEXTUAL.search(message):

@@ -9,11 +9,14 @@ import { attractions } from "../src/data/attractions/index.ts";
 import { knowledge } from "./build-copilot-knowledge.mjs";
 import { localize } from "../src/i18n/convert.ts";
 import { airportMinutes } from "../src/lib/travel.ts";
+import { linked } from "../src/lib/trip-parks.ts";
 import { tripRequestSchema, tripResultSchema } from "../src/lib/copilot/contract.ts";
 
 const OUT = new URL("../copilot/contracts/", import.meta.url);
 mkdirSync(OUT, { recursive: true });
 const write = (name, value) => writeFileSync(new URL(name, OUT), `${JSON.stringify(value, null, 2)}\n`);
+
+const nearbyOf = (code) => parks.find((park) => park.code === code)?.nearby ?? [];
 
 export function catalog() {
   const parkList = parks.map((park) => {
@@ -37,6 +40,8 @@ export function catalog() {
         }),
       ),
       nearby: (park.nearby ?? []).filter((code) => parks.some((other) => other.code === code)),
+      // 能排进同一趟的：常一起玩的，或者开车一天能到（trip-parks.ts 的 linked；Intake 判断几座公园能不能一起排）
+      linked: parks.filter((other) => other.code !== park.code && linked(park.code, other.code, nearbyOf)).map((other) => other.code),
       // Intake 认公园名用：简体、繁体、英文全名和去掉 National Park 的短名，都按小写比较
       aliases: [...new Set([park.nameZh, hant, park.nameEn, shortEn, park.code])],
     };

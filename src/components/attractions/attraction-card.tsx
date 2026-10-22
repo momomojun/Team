@@ -203,7 +203,10 @@ export function AttractionCard({
           <h3
             className={`mt-3 font-serif text-[1.7rem] leading-tight transition-colors duration-500 ${selected ? "text-clay-700" : ""}`}
           >
-            {a.nameZh}
+            {/* 点名字：地图飞到这个景点（鼠标停在卡片上只让地图上的点亮起来，不动镜头） */}
+            <button type="button" onClick={onShowOnMap} title={t.showOnMap} className="cursor-pointer text-left transition-colors hover:text-clay-700">
+              {a.nameZh}
+            </button>
           </h3>
           <p className="eyebrow mt-2 text-mute">{otherName(a.nameZh, a.nameEn)}</p>
         </header>

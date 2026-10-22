@@ -358,6 +358,7 @@ export function ParkMap({
   tourRequest = null,
   tourSummary,
   hoverId = null,
+  focusTick = 0,
   narration,
   text,
   className = "",
@@ -390,6 +391,8 @@ export function ParkMap({
   tourSummary?: string;
   /** 鼠标停在列表里的哪个景点上：地图拉近到它，移开以后回到原来的范围 */
   hoverId?: string | null;
+  /** 每点一次“在地图上看”加一：同一个景点再点一次，镜头也再飞过去 */
+  focusTick?: number;
   /** 有就显示“讲解版”：全屏、逐站讲解、朗读（开头和结尾的话在这里，每一天、每一站的在 tour 里） */
   narration?: TourNarration & { onStart?: () => void };
   text: MapText;
@@ -1612,8 +1615,9 @@ export function ParkMap({
     return () => document.removeEventListener("fullscreenchange", onChange);
   }, []);
 
-  // 鼠标停在列表里的某个景点上：停够 250 毫秒才拉近（鼠标扫过一串景点时地图不乱跳），离开 450 毫秒后回到原来的视角；
-  // 移开之前点过某个景点（选中了）就停在选中的那个，不回去；播动画的时候不动
+  // 鼠标停在列表里的某个景点上：地图上那个点亮起来（加一圈），镜头不动；点不在画面里时只平移过去、不拉近，
+  // 离开 450 毫秒后回到原来的位置。往下翻列表时鼠标扫过一张张卡片，地图不再一下一下拉到几百米那么近（10-22 仓库主人觉得晕）；
+  // 要看清楚就点景点的名字（selectedId），那时才拉近。移开之前点过某个景点（选中了）就停在选中的那个，不回去；播动画的时候不动
   useEffect(() => {
     const map = mapRef.current;
     if (!ready || !map) return;
@@ -1629,7 +1633,7 @@ export function ParkMap({
             bearing: map.getBearing(),
             pitch: map.getPitch(),
           };
-          map.flyTo({ center: [point.lon, point.lat], zoom: Math.max(14, map.getZoom()), duration: 900, essential: true });
+          if (!map.getBounds().contains([point.lon, point.lat])) map.easeTo({ center: [point.lon, point.lat], duration: 700 });
         } else if (beforeHover.current) {
           if (!selectedRef.current) map.easeTo({ ...beforeHover.current, duration: 800 });
           beforeHover.current = null;
@@ -1649,9 +1653,16 @@ export function ParkMap({
       map.setLayoutProperty("camps", "icon-size", ["case", ["==", ["get", "id"], selectedId ?? ""], 1.35, 1]);
     }
     map.setFilter("trails-highlight", ["==", ["get", "id"], highlightTrailId ?? ""]);
-    const point = points.find((p) => p.id === selectedId);
-    if (point) map.easeTo({ center: [point.lon, point.lat], zoom: Math.max(map.getZoom(), 12), duration: 800 });
   }, [ready, points, selectedId, highlightTrailId]);
+
+  // 点了名字（或地图上的点）：拉近到看得清这一处、周围的路和景点也还在画面里，不拉到几百米。
+  // 只在选中的景点变了、或者又点了一次（focusTick）时动镜头；鼠标在别的卡片上移来移去不会把地图拉回来
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!ready || !map || tourRef.current) return;
+    const point = pointsRef.current.find((p) => p.id === selectedId);
+    if (point) map.flyTo({ center: [point.lon, point.lat], zoom: Math.min(Math.max(map.getZoom(), 12.5), 14), duration: 900, essential: true });
+  }, [ready, selectedId, focusTick]);
 
   useEffect(() => {
     const map = mapRef.current;
