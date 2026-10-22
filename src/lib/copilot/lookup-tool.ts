@@ -106,7 +106,11 @@ function roadFacts(road: SeasonalRoad, date: string): OpenFact[] {
     return [{ kind: "road", effect: "closed", zh: `${road.nameZh}这一年 ${md(status.closed)} 已经封路`, en: `${road.nameEn} closed for the season on ${mdEn(status.closed)} that year.`, source: road.source }];
   }
   const share = status.open / status.known;
-  const range = status.earliest && status.latest
+  // 两头先通的路段：春天的“往年开通日期”是同一天（这一段一般通车的日子），说成一句话
+  const early = status.phase === "opening" && road.endSections && status.earliest === road.endSections.opens;
+  const range = early
+    ? `，路两头这一段春天比全线早通车，一般 ${md(road.endSections!.opens)}前后就能开进来`
+    : status.earliest && status.latest
     ? status.phase === "opening"
       ? `，往年最早 ${md(status.earliest)}、最晚 ${md(status.latest)}通车`
       : `，往年最早 ${md(status.earliest)}、最晚 ${md(status.latest)}封路`

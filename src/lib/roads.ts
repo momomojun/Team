@@ -13,7 +13,20 @@ export const ROAD_MIN_KNOWN = 8;
 const LATE_SUMMER: MonthDay = "08-15";
 
 const byAttraction = new Map<string, SeasonalRoad>();
-for (const road of seasonalRoads) for (const id of [...road.attractions, ...(road.afterRoad ?? [])]) byAttraction.set(id, road);
+for (const road of seasonalRoads) {
+  for (const id of [...road.attractions, ...(road.afterRoad ?? [])]) byAttraction.set(id, road);
+  // 两头先通的路段：同一条路，只是每年的开通日期换成这一段一般通车的那天（比全线早），封路日期照旧
+  if (road.endSections) {
+    const { ids, opens } = road.endSections;
+    const early: SeasonalRoad = {
+      ...road,
+      attractions: ids,
+      afterRoad: [],
+      years: road.years.map(([year, open, close, skip]) => [year, open && open > opens ? opens : open, close, skip] as RoadYear),
+    };
+    for (const id of ids) byAttraction.set(id, early);
+  }
+}
 
 /** 这个景点要走哪条季节性道路 */
 export function roadFor(attractionId: string): SeasonalRoad | undefined {
