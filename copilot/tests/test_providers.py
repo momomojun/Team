@@ -153,26 +153,29 @@ def test_openrouter_uses_the_openai_style_api_and_stops_on_the_daily_free_limit(
     assert len(sent) == 2  # 每天的免费额度用完了：不重试
 
 
-def test_chat_falls_back_gemini_then_openai_then_local(monkeypatch, tmp_path, fake_api):
+def test_chat_falls_back_gemini_then_minimax_then_local(monkeypatch, tmp_path, fake_api):
     from nps_copilot.providers import OllamaProvider, ProviderChain, chat_provider
 
     monkeypatch.delenv("COPILOT_PROVIDER", raising=False)
-    chosen = chat_provider()  # fake_api 设好了两把假 key
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-openrouter-key")
+    chosen = chat_provider()  # fake_api 设好了 Gemini、OpenAI 两把假 key，这里再加 OpenRouter 的
     assert isinstance(chosen, ProviderChain) and chosen.model == "gemini-3.5-flash-lite"
-    assert [type(p).__name__ for p in chosen.providers] == ["GeminiProvider", "OpenAIProvider", "OllamaProvider"]
-    assert chosen.providers[1].model == "gpt-4.1-mini"
-    # 聊天不排队、只重试一次：Gemini 忙就很快换 OpenAI
+    # 10-21 起 OpenAI（没额度了）不在默认顺序里，有 key 也不用
+    assert [type(p).__name__ for p in chosen.providers] == ["GeminiProvider", "OpenRouterProvider", "OllamaProvider"]
+    assert chosen.providers[1].model == "minimax/minimax-m3.1-flash:free"
+    # 聊天不排队、只重试一次：Gemini 忙就很快换 MiniMax
     assert chosen.providers[0].pace.rpm == 0 and chosen.providers[0].pace.waits == (2,)
-    openai_ok = {"choices": [{"message": {"content": '{"park": "Zion"}'}}], "usage": {}}
-    sent = fake_api(http_error(429, "PerDay quota"), openai_ok)
+    minimax_ok = {"choices": [{"message": {"content": '{"park": "Zion"}'}}], "usage": {}}
+    sent = fake_api(http_error(429, "PerDay quota"), minimax_ok)
     completion = chosen.complete_json("intake", "s", "u", SCHEMA)
     assert completion.data == {"park": "Zion"} and completion.meta["fallback_from"][0]["model"] == "gemini-3.5-flash-lite"
-    assert [r["url"].split("/")[2] for r in sent] == ["generativelanguage.googleapis.com", "api.openai.com"]
-    # 只有 OpenAI 的 key：OpenAI → 本机
+    assert [r["url"].split("/")[2] for r in sent] == ["generativelanguage.googleapis.com", "openrouter.ai"]
+    # 只有 OpenRouter 的 key：MiniMax → 本机
     monkeypatch.delenv("GEMINI_API_KEY")
     monkeypatch.setattr(providers, "ROOT", tmp_path)
-    assert [type(p).__name__ for p in chat_provider().providers] == ["OpenAIProvider", "OllamaProvider"]
+    assert [type(p).__name__ for p in chat_provider().providers] == ["OpenRouterProvider", "OllamaProvider"]
     # 什么 key 都没有（组员）：照旧本机
+    monkeypatch.delenv("OPENROUTER_API_KEY")
     monkeypatch.delenv("OPENAI_API_KEY")
     assert isinstance(chat_provider(), OllamaProvider)
     # 明确指定了就按指定的
@@ -260,9 +263,9 @@ def test_free_models_come_first_in_chat_and_alerts(fake_api, monkeypatch):
 
     monkeypatch.setenv("GROQ_API_KEY", "test-groq-key")
     monkeypatch.setenv("OPENROUTER_API_KEY", "test-openrouter-key")
-    assert [p.model for p in cloud_chain()] == ["gemini-3.5-flash-lite", "qwen/qwen3.8-27b", "gpt-4.1-mini"]
+    assert [p.model for p in cloud_chain()] == ["gemini-3.5-flash-lite", "minimax/minimax-m3.1-flash:free", "qwen/qwen3.8-27b"]
     chain = alerts_chain()
-    assert [p.model for p in chain] == ["minimax/minimax-m3.1-flash:free", "gpt-4.1-mini", "gemini-3.5-flash-lite"]
+    assert [p.model for p in chain] == ["minimax/minimax-m3.1-flash:free", "gemini-3.5-flash-lite", "qwen/qwen3.8-27b"]
     assert chain[0].reasoning == {"effort": "high"}
     # 只有 Gemini 一把 key：两条链都只剩 Gemini
     for name in ("GROQ_API_KEY", "OPENROUTER_API_KEY", "OPENAI_API_KEY"):

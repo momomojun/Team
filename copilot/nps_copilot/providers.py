@@ -604,24 +604,26 @@ def _available(specs: list, batch: bool) -> list:
 
 
 def cloud_chain(batch: bool = False) -> list:
-    """聊天用的商业 API。10-20 仓库主人定的“哪个稳哪个准用哪个，免费的能用就先用免费的”，按第四轮对照：
-    Gemini 3.5 Flash Lite（免费；单句三组最好，真实对话 15/15）→ Groq 上的 Qwen3.8 27B（免费、很快；没见过的单句 38/40，
-    但每分钟只有 8000 token）→ OpenAI GPT-4.1 mini（付费，最稳，前两个都出错才用）。没配 key 的跳过"""
+    """聊天用的商业 API，全是免费档（10-20 仓库主人定的“哪个稳哪个准用哪个，免费的能用就先用免费的”，按第四轮对照）：
+    Gemini 3.5 Flash Lite（单句三组最好，真实对话 15/15）→ OpenRouter 上的 MiniMax M3.1 Flash（真实对话 15/15，
+    一次约 3 秒，每天约 50 次）→ Groq 上的 Qwen3.8 27B（没见过的单句 38/40，很快，但每分钟只有 8000 token）。
+    10-21 仓库主人的 OpenAI key 没额度了，GPT-4.1 mini 从默认顺序里拿掉（设 COPILOT_PROVIDER=openai 还能单独用）。
+    没配 key 的跳过"""
     return _available([
         (GeminiProvider, {"model": "gemini-3.5-flash-lite"}),
+        (OpenRouterProvider, {"model": "minimax/minimax-m3.1-flash:free"}),
         (GroqProvider, {"model": "qwen/qwen3.8-27b"}),
-        (OpenAIProvider, {"model": "gpt-4.1-mini"}),
     ], batch)
 
 
 def alerts_chain(batch: bool = True) -> list:
-    """读公告用的商业 API（10-20，同样的规矩）：OpenRouter 上的 MiniMax M3.1 Flash 推理开 high（免费；26 条抽样上景点 F1 0.67，
-    和 GPT-4.1 mini 一样；每天约 50 次，每晚只读新的、改过的几条够用）→ GPT-4.1 mini（全部 151 条上最准，付费，MiniMax
-    额度用完或出错才用）→ Gemini。没配 key 的跳过"""
+    """读公告用的商业 API（同样的规矩，全是免费档）：OpenRouter 上的 MiniMax M3.1 Flash 推理开 high（26 条抽样上景点 F1 0.67；
+    每天约 50 次，每晚只读新的、改过的几条够用）→ Gemini 3.5 Flash Lite（26 条上同样 0.67，151 条上 0.54）→ Groq 上的
+    Qwen3.8 27B（0.44）。10-21 起不再用 GPT-4.1 mini（OpenAI 的 key 没额度了）。没配 key 的跳过"""
     return _available([
         (OpenRouterProvider, {"model": "minimax/minimax-m3.1-flash:free", "reasoning": {"effort": "high"}}),
-        (OpenAIProvider, {"model": "gpt-4.1-mini"}),
         (GeminiProvider, {"model": "gemini-3.5-flash-lite"}),
+        (GroqProvider, {"model": "qwen/qwen3.8-27b"}),
     ], batch)
 
 
