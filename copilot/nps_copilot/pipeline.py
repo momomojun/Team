@@ -479,7 +479,8 @@ class Session:
         reply.trace["latency_ms"] = round((time.perf_counter() - start) * 1000)
         reply.trace["calls"] = self.provider.take()
         reply.trace["at"] = dt.datetime.now().astimezone().isoformat(timespec="seconds")
-        if self.log:
+        # 测试用的假模型（ScriptedProvider，按写好的答案吐）跑出来的不记：10-21 复现对话时记进去过，后台把它当成了真的对话
+        if self.log and not is_scripted(reply.trace):
             RUNS.mkdir(parents=True, exist_ok=True)
             path = RUNS / f"{dt.date.today().isoformat()}.jsonl"
             with path.open("a", encoding="utf-8") as handle:
@@ -493,6 +494,11 @@ RESTART = re.compile(r"新的?(行程|旅行|计划|攻略)|另(一|外一?)个(
 
 def stop_ids(result: dict | None) -> list[str]:
     return [stop["id"] for day in (result or {}).get("days", []) for stop in day["stops"] if stop.get("id")]
+
+
+def is_scripted(trace: dict) -> bool:
+    """这一轮是测试用的假模型跑的（模型名 scripted）"""
+    return any(call.get("model") == "scripted" for call in trace.get("calls") or [])
 
 
 def same_request(before: dict, after: dict) -> bool:
