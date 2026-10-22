@@ -128,7 +128,11 @@ const ORBIT_DEG_PER_MS = 0.0035;
 /** 环绕时比跟车拉近多少级，最近到 15 级 */
 const ORBIT_ZOOM_IN = 0.9;
 const ORBIT_MAX_ZOOM = 15;
-const TERRAIN_EXAGGERATION = 1.45;
+const TERRAIN_EXAGGERATION = 1.3;
+/** 视线检查多久做一次（毫秒）：每次沿视线查二十几个点的地形高度 */
+const SIGHT_EVERY_MS = 250;
+/** 山挡视线时最多抬到从这个角度往下看（再低于这个倾角就是几乎正上方） */
+const SIGHT_MIN_PITCH = 28;
 // 配乐开不开记在这台设备上
 const MUSIC_KEY = "nps-tour-music";
 // 跟车时设过的焦点偏移，停下来要清掉（MapLibre 会一直记着，之后缩放、拉近都会偏）
@@ -173,6 +177,8 @@ interface TourState {
   camera: { center: [number, number]; zoom: number; bearing: number; pitch?: number } | null;
   /** 讲解版自己打开的 3D 地形：结束时关回去 */
   terrainAdded: boolean;
+  /** 视线检查的结果：最多能倾斜到几度才不被山挡住（at 是上次查的时间） */
+  sight: { at: number; cap: number } | null;
   pausedAt: number | null;
   raf: number;
   cum: number[];
@@ -1093,13 +1099,46 @@ export function ParkMap({
     if (clockRef.current) clockRef.current.textContent = `${clockText(state.position, speedRef.current)} / ${clockText(total, speedRef.current)}`;
   };
 
+  /**
+   * 镜头倾斜到几度还看得见 target（车、这一站）：从 target 往镜头那边（方向的反面）沿地面查十几个点的地形高度，
+   * 有哪座山高过视线，就算出最多能倾斜多少（倾斜越大视线越平，越容易被前面的山挡住），再留 4° 余量。
+   * 优胜美地这种深谷里，压低的航拍镜头常被山脊挡住，车和站牌被山盖得半透明。没开地形时不管
+   */
+  const sightCap = (state: TourState, map: MapLibreMap, target: [number, number], bearing: number, zoom: number, want: number) => {
+    if (state.sight && state.clock - state.sight.at < SIGHT_EVERY_MS) return Math.min(want, state.sight.cap);
+    const base = map.queryTerrainElevation(target);
+    let cap = want;
+    if (base !== null) {
+      const lat = target[1] * (Math.PI / 180);
+      // 镜头离 target 多远（米）：MapLibre 默认视角下大约是画面高度的 1.5 倍像素，再按这一级缩放的米每像素换算
+      const metersPerPixel = (156543.03 * Math.cos(lat)) / 2 ** zoom;
+      const reach = 1.5 * map.getContainer().clientHeight * metersPerPixel * Math.sin(want * (Math.PI / 180));
+      const back = (bearing + 180) * (Math.PI / 180);
+      // 离 target 越近查得越密（d 按平方分布）：挡住视线的多半是站旁边的山包，窄，隔太远会跳过去
+      for (let i = 1; i <= 24; i++) {
+        const d = reach * (i / 24) ** 2;
+        const point: [number, number] = [
+          target[0] + (d * Math.sin(back)) / (111320 * Math.cos(lat)),
+          target[1] + (d * Math.cos(back)) / 111320,
+        ];
+        const rise = (map.queryTerrainElevation(point) ?? base) - base + 60;
+        if (rise > 0) cap = Math.min(cap, (Math.atan(d / rise) * 180) / Math.PI - 4);
+      }
+    }
+    cap = Math.max(SIGHT_MIN_PITCH, cap);
+    state.sight = { at: state.clock, cap };
+    return Math.min(want, cap);
+  };
+
   /** 环绕镜头的一帧：绕着镜头现在对着的地方（这一站）慢慢转，拉近、压低 */
   const orbit = (state: TourState, map: MapLibreMap, delta: number) => {
     const prev = state.camera!;
     const zoom = prev.zoom + (Math.min(ORBIT_MAX_ZOOM, followZoom(1.2) + ORBIT_ZOOM_IN) - prev.zoom) * (1 - Math.exp(-delta / 2400));
     const prevPitch = prev.pitch ?? map.getPitch();
-    const pitch = prevPitch + (ORBIT_PITCH - prevPitch) * (1 - Math.exp(-delta / 1600));
     const bearing = prev.bearing + delta * ORBIT_DEG_PER_MS;
+    // 转到被山挡住的方向时自动抬高，转过去了再压低
+    const want = sightCap(state, map, prev.center, bearing, zoom, ORBIT_PITCH);
+    const pitch = prevPitch + (want - prevPitch) * (1 - Math.exp(-delta / 900));
     state.camera = { center: prev.center, zoom, bearing, pitch };
     map.jumpTo({ center: prev.center, zoom, bearing, pitch, padding: followPadding(map) });
   };
@@ -1135,8 +1174,9 @@ export function ParkMap({
       // 讲解版：飞到起点以后这一天开头的话还没念完，镜头就绕着起点慢慢转、压低一点（像片头的航拍）；开车时从这里接着跟
       if (state.narrated && !state.calm && elapsed >= fly && state.speaking) {
         const prevPitch = map.getPitch();
-        const pitch = prevPitch + (ORBIT_PITCH - prevPitch) * (1 - Math.exp(-delta / 1600));
         const bearing = map.getBearing() + delta * ORBIT_DEG_PER_MS;
+        const center = map.getCenter().toArray() as [number, number];
+        const pitch = prevPitch + (sightCap(state, map, center, bearing, map.getZoom(), ORBIT_PITCH) - prevPitch) * (1 - Math.exp(-delta / 900));
         map.jumpTo({ bearing, pitch });
         state.camera = { center: map.getCenter().toArray() as [number, number], zoom: map.getZoom(), bearing, pitch };
       }
@@ -1166,9 +1206,9 @@ export function ParkMap({
         const moving = further[0] !== head[0] || further[1] !== head[1];
         const bearing = moving ? turnToward(prev.bearing, bearingOf(head, further), 1 - Math.exp(-delta / 900)) : prev.bearing;
         // 从环绕镜头出来时慢慢抬回跟车的角度
-        const pitchTarget = state.narrated ? NARRATED_PITCH : FOLLOW_PITCH;
+        const pitchTarget = state.narrated ? sightCap(state, map, head, bearing, zoom, NARRATED_PITCH) : FOLLOW_PITCH;
         const prevPitch = prev.pitch ?? map.getPitch();
-        const pitch = prevPitch + (pitchTarget - prevPitch) * (1 - Math.exp(-delta / 1600));
+        const pitch = prevPitch + (pitchTarget - prevPitch) * (1 - Math.exp(-delta / 900));
         state.camera = { center, zoom, bearing, pitch };
         map.jumpTo({ center, zoom, bearing, pitch, padding: followPadding(map) });
       }
@@ -1374,6 +1414,7 @@ export function ParkMap({
       done: days.slice(0, from).map((day) => lineFeature(day.path, day.color)),
       markers: [],
       terrainAdded: false,
+      sight: null,
     };
     tourRef.current = state;
     // 讲解版：打开 3D 地形和天空（远处的山带一点雾），镜头压低时像航拍；平常已经开着地形的不动它
