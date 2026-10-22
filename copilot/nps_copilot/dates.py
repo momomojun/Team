@@ -175,6 +175,8 @@ RELATIVE_DAY = [  # 先长后短：“大后天”在“后天”前面
 ]
 WEEK_ZH = re.compile(r"(下下|下个?|这个?|本)?\s*(?:周|星期|礼拜)\s*([一二三四五六日天末])|(下下|下个?|这个?|本)?\s*(周末)")
 WEEK_EN = re.compile(r"\b(next|this|on)?\s*(" + _EN_DAYS + r"|weekend)\b", re.I)
+# 只说“下周”“下个星期”“next week”、没说星期几：按那个星期的周一出发（10-21 仓库主人试用时说“下周”，被当成没说日期又问了一遍）
+NEXT_WEEK = re.compile(r"(下下|下个?)\s*(?:周|星期|礼拜)(?!\s*[一二三四五六日天末])|\b(week after next|next week)\b", re.I)
 MONTH_DAY_REL = re.compile(r"(下下个?|下个?|这个?|本)\s*月\s*(\d{1,2}|" + ZH_NUMBER + r")\s*[号日]")
 DAY_ONLY = re.compile(r"(?<![月\d])(\d{1,2}|" + ZH_NUMBER + r")\s*(?:号|日(?=\s*(?:出发|走|开始|到|飞|动身|启程|去)))")
 
@@ -198,6 +200,10 @@ def relative_date(text: str, reference: dt.date) -> tuple[dt.date, str] | None:
         weekday = 5 if word == "weekend" else WEEKDAY_EN[word]
         prefix = {"next": "下", "this": "这"}.get((match.group(1) or "").lower(), "")
         return _weekday(reference, weekday, prefix), match.group(0).strip()
+    match = NEXT_WEEK.search(text)
+    if match:
+        later = (match.group(1) or "").startswith("下下") or (match.group(2) or "").lower().startswith("week after")
+        return _weekday(reference, 0, "下下" if later else "下"), match.group(0).strip()
     match = MONTH_DAY_REL.search(text)
     if match:
         offset = 2 if match.group(1).startswith("下下") else 1 if match.group(1).startswith("下") else 0

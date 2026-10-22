@@ -60,7 +60,7 @@ def test_chat_time_refresh_reads_only_the_trip_parks_and_merges(tmp_path, monkey
     path.write_text(json.dumps(old), encoding="utf-8")
     fetched = []
     monkeypatch.setattr(alerts_live, "fetch_alerts", lambda parks: fetched.append(parks) or [TUNNEL])
-    monkeypatch.setattr(alerts_live, "alerts_provider", lambda: ScriptedProvider([tunnel_reply()]))
+    monkeypatch.setattr(alerts_live, "alerts_provider", lambda chat=False: ScriptedProvider([tunnel_reply()]))
     request = {"parks": ["yose"], "startDate": "2026-10-25", "days": 3}
     info = alerts_live.refresh_for(request, "2026-10-20", path, cache)
     assert info["refreshed"] and info["parks"] == ["yose"] and fetched == [["yose"]]
@@ -98,3 +98,31 @@ def test_status_for_the_admin_page(tmp_path, monkeypatch):
     got = alerts_live.status()
     assert (got["fetched"], got["closures"], got["strict"], got["model_only"]) == ("2026-10-19", 2, 1, 1)
     assert (got["parks"], got["oldest_park"], got["cache_entries"], got["prompts"]) == (2, "2026-10-17", 3, "alerts/v1")
+
+
+def test_chat_time_reading_waits_only_so_long():
+    # 聊天时现读：几条同时读，到点还没读完的按规则算、不进缓存（下次再读）；读完的照常进缓存
+    import threading
+    import time
+
+    from nps_copilot.providers import Completion
+
+    release = threading.Event()
+
+    class SlowOnInfo:
+        name = "slow"
+
+        def complete_json(self, task, system, user, schema):
+            if "Bears" in user:
+                release.wait(2)  # 这一条要等很久
+                return Completion(data=none_reply(), model="slow", latency_ms=2000)
+            return Completion(data=tunnel_reply(), model="slow", latency_ms=10)
+
+    cache = {}
+    start = time.monotonic()
+    closures, stats = alerts_live.read_alerts([TUNNEL, INFO], SlowOnInfo(), TODAY, cache, budget=0.5)
+    release.set()
+    assert time.monotonic() - start < 1.5
+    assert stats["read"] == 1 and stats["rules_only"] == 1 and stats["late"] == 1
+    assert [c["attractions"] for c in closures] == [["yose-tunnel-view"]]
+    assert len(cache) == 1  # 没读完的那条下次再读

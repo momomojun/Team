@@ -53,7 +53,7 @@ export const gatewayArch: Attraction[] = [
       "有触摸展品、盲文说明和助听设备，能免费借轮椅",
       "商店在博物馆关门前约 15 分钟关；咖啡馆 9:00–16:00（夏天延长时到 18:00）",
     ],
-    photoFile: "Gateway Arch visitors center.jpg",
+    photoFile: "Gateway Arch, Gateway Arch National Park, St. Louis, MO.jpg",
   },
   {
     id: "jeff-arch-grounds",
@@ -93,7 +93,7 @@ export const gatewayArch: Attraction[] = [
       "有电梯到二楼的法庭；东边的法庭无障碍，西边的门口有一级台阶",
       "从拱门游客中心走过来约 5 分钟，中间穿过 Luther Ely Smith 广场",
     ],
-    photoFile: "Old Courthouse (2012).jpg",
+    photoFile: "Old St. Louis County Courthouse, Gateway Arch National Park, St. Louis, MO - 53057879019.jpg",
   },
   {
     id: "jeff-riverboat",

@@ -433,7 +433,38 @@ body {
 .tour-ring {
   animation: tour-ring 900ms ease-out forwards;
 }
+/* 讲解卡片的照片窗：第一张解码好了（data-ready）才淡出来，片名从下面浮上来 */
+.tour-reel {
+  opacity: 0;
+  transition: opacity 700ms ease-out;
+}
+.tour-reel[data-ready] {
+  opacity: 1;
+}
+.tour-reel .tour-reel-line,
+.tour-reel .tour-reel-title {
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 800ms ease-out,
+    transform 900ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.tour-reel[data-ready] .tour-reel-line {
+  opacity: 1;
+  transform: none;
+  transition-delay: 250ms;
+}
+.tour-reel[data-ready] .tour-reel-title {
+  opacity: 1;
+  transform: none;
+  transition-delay: 420ms;
+}
 @media (prefers-reduced-motion: reduce) {
+  .tour-reel .tour-reel-line,
+  .tour-reel .tour-reel-title {
+    transform: none;
+    transition: opacity 400ms;
+  }
   .tour-pop,
   .tour-ring {
     animation: none;

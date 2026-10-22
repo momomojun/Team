@@ -8,7 +8,7 @@ import { channelIslands } from "./chis";
 import { craterLake } from "./crla";
 import { denali } from "./dena";
 import { deathValley } from "./deva";
-import { gallery } from "./gallery.generated";
+import { gallery } from "./gallery";
 import { googlePlaces } from "./google";
 import { grandCanyon } from "./grca";
 import { grandTeton } from "./grte";

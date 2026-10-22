@@ -12,7 +12,7 @@ WORKDIR /app
 # 行程引擎：src/ 里的数据和逻辑、命令行入口、让 Node 直接跑 TypeScript 的解析钩子
 COPY package.json ./
 COPY tests/register.mjs tests/resolve.mjs ./tests/
-COPY scripts/plan-trip.mjs ./scripts/
+COPY scripts/plan-trip.mjs scripts/lookup.mjs ./scripts/
 COPY src ./src
 
 # Copilot（可编辑安装：代码按 /app/copilot 的位置找契约、提示词和录音）

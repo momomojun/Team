@@ -26,7 +26,7 @@
 
 - **网站 NPS Guide**（`src/`，Next.js）：美国国家公园行程规划，按日期排行程、算车程、提醒封路和预约。排行程的是**确定的代码**，不用 AI。
 - **Copilot**（`copilot/`，Python）：课程 CSYE 7374 LLMOps 加的 AI 部分。用户随口说一句“6 月带爸妈去优胜美地玩 4 天”，AI 模型从里面摘出条件，代码检查、追问，齐了以后交给网站的排行程引擎，再写成说明。
-- **模型**：谁稳谁准用谁，免费的先用（10-20 仓库主人定的，按评测成绩排）。聊天：Gemini 3.5 Flash Lite → Groq 上的 Qwen3.8 27B → OpenAI GPT-4.1 mini（付费，前两个都出错才用）→ 本机跑的 Qwen3.5 4B（通过 Ollama）；读 NPS 公告：OpenRouter 上的 MiniMax M3.1 Flash（推理开 high）→ GPT-4.1 mini → Gemini → 本机。前一个出错（额度用完、服务忙）这一句就换下一个，`.env.local` 里没有那一家的 key 就跳过，什么 key 都没有就只用本机。评测、CI 用本机模型录好的回答回放，不调云端（比较的成绩见 RESULTS.md）。
+- **模型**：谁稳谁准用谁，免费的先用（10-20 仓库主人定的，按评测成绩排）。全是免费档：聊天：Gemini 3.5 Flash Lite → OpenRouter 上的 MiniMax M3.1 Flash → Groq 上的 Qwen3.8 27B → 本机跑的 Qwen3.5 4B（通过 Ollama）；读 NPS 公告：MiniMax M3.1 Flash（推理开 high）→ Gemini → Qwen3.8 27B → 本机。10-21 仓库主人的 OpenAI key 没额度了，付费的 GPT-4.1 mini 不再放进默认顺序（`COPILOT_PROVIDER=openai` 还能单独用）。前一个出错（额度用完、服务忙）这一句就换下一个，`.env.local` 里没有那一家的 key 就跳过，什么 key 都没有就只用本机。评测、CI 用本机模型录好的回答回放，不调云端（比较的成绩见 RESULTS.md）。
 - **CI/CD**：每个 PR 自动检查；推 `copilot-v*` 标签自动发版到 GHCR。
 
 ## 2. 装工具（只做一次）
@@ -153,6 +153,13 @@ cd copilot && python -m nps_copilot chat --reference 2026-10-16
 cd copilot && python -m nps_copilot serve --port 8765
 ```
 
+- **讲解版的配音（可选）**：行程页的“讲解版”默认用浏览器自带的声音，比较机械。想要像真人的配音，在开 Copilot 服务的那台电脑上装本机模型 Kokoro（免费、不联网），装好重启 `serve`，讲解版就自动换成它：
+
+```bash
+python -m pip install kokoro-onnx onnxruntime soundfile "misaki[zh]==0.9.4" --ignore-requires-python
+```
+
+  再到 https://github.com/thewh1teagle/kokoro-onnx/releases/tag/model-files-v1.1 下载 `kokoro-v1.1-zh.fp16.onnx`、`voices-v1.1-zh.bin`、`kokoro-v1.0.fp16.onnx`、`voices-v1.0.bin`（一共约 390 MB），放进 `copilot/models/kokoro/`。`--ignore-requires-python`：misaki 写着要 Python 3.12 以下，实际 3.13 上能用。
   8765 被占了（momomojun 的电脑上 ski-deals 用它）就换成 `--port 8766`，并在 `.env.local` 里写 `COPILOT_URL=http://127.0.0.1:8766`，再重启 `npm run dev`。用 Docker 起的 Copilot（B）也一样，网站默认连 8765。
 - Ollama 地址默认 `http://127.0.0.1:11435`（momomojun 电脑上实验目录里的便携版，用 `powershell -File experiments/local-model-validation/start-local.ps1` 启动）。自己装的 Ollama 默认端口是 11434，先设 `OLLAMA_HOST_URL=http://127.0.0.1:11434`。其他环境变量见 [COPILOT.md](COPILOT.md#环境变量)。
 
@@ -343,7 +350,7 @@ docker compose -f copilot/docker-compose.yml exec -T copilot python -m nps_copil
 - Writer 退回模板变多；
 - 耗时中位数明显变长。
 
-最后一段“模型用量”按模型列出调用次数、出错、token 和花费：Gemini 出错多、轮到 GPT-4.1 mini 的变多，说明免费额度不够了，花费会跟着涨。
+最后一段“模型用量”按模型列出调用次数、出错、token 和花费：Gemini 出错多、轮到 MiniMax、Qwen 甚至本机的变多，说明免费额度不够了（MiniMax 每天约 50 次、Groq 每分钟 8000 token）。
 
 同样的数字也可以在网站的后台看：开着 Copilot 服务和网站时打开 http://localhost:3000/zh-Hans/admin （有每天的图、每个模型的花费、最近几轮对话、每晚读公告的结果，每 30 秒刷新）。
 

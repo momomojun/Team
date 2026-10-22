@@ -233,7 +233,11 @@ class Session:
             # 补全有时会补错（把“雾径”补成编出来的英文名），小模型会跟着错的走
             needs_context = CONTEXTUAL.search(question) is not None
             meaning = action.query if question != action.query and needs_context else ""
-            said, qa_trace = qa.answer(question, parks, self.last_text, self.provider, zh, stop_ids(result), meaning=meaning)
+            looked, tool_trace = self._lookup(f"{question} {meaning}".strip(), parks, (result or {}).get("request"), result, zh)
+            said, qa_trace = qa.answer(question, parks, self.last_text, self.provider, zh, stop_ids(result), meaning=meaning,
+                                       skipped=(result or {}).get("skipped"), looked=looked)
+            if tool_trace:
+                qa_trace["tools"] = tool_trace
             trace.setdefault("qa", []).append({"query": action.query, **qa_trace})
             out.append(said)
         return out
@@ -243,6 +247,15 @@ class Session:
             return self.last_request
         request = self.intake.request()
         return {key: value for key, value in request.items() if value is not None and key != "provenance"}
+
+    def _lookup(self, question: str, parks: list[str], request: dict | None, result: dict | None, zh: bool) -> tuple[list[str], dict]:
+        """问题要算的（开没开、车程、按条件找景点）：先调查询工具（tools.py），结果交给回答问题的模型。COPILOT_TOOLS=0 关掉"""
+        if os.environ.get("COPILOT_TOOLS") == "0":
+            return [], {}
+        from . import tools
+
+        found = tools.lookup(question, parks, request, result, self.reference_date, zh)
+        return found.lines, (found.trace if found.requests else {})
 
     def _quick_answer(self, message: str) -> bool:
         """刚问了用户一句、回答像是在答这一问（“5”“5天”“2”“是的”“第二个”）：直接按追问读，不用调度员。
@@ -285,6 +298,10 @@ class Session:
             lines.append(("好，改了：" + "、".join(changes) + "。") if zh else ("Done. Changed: " + "; ".join(changes) + "."))
             if self.last_result:
                 lines.extend(writer_module.lodging_changes(self.last_result, result, zh))
+                # 只是换了住宿偏好、节奏这类条件，每天去哪也变了的说一句（换了公园、天数的本来就是整趟重排）
+                same_trip = lambda r: (r.get("parks"), r.get("days"), r.get("startDate"), r.get("month"))  # noqa: E731
+                if self.last_request and same_trip(self.last_request) == same_trip(request):
+                    lines.extend(writer_module.day_changes(self.last_result, result, zh))
             trace["changes"] = changes
         # 点名要去、但这几天去不了的：说清楚为什么没排
         skipped = {item["id"]: item for item in result.get("skipped", [])}
@@ -313,7 +330,10 @@ class Session:
             head = list(turn.notices)
             if qa.is_question(message) and not is_ack(message):
                 # 还没排出行程时也能问：先回答，再接着追问。这句话里读到了条件的，只在查到了才回答；什么条件都没有的，查不到也说一声
-                said, trace["qa"] = qa.answer(message, self.intake.parks.value or [], self.last_text, self.provider, zh)
+                looked, tool_trace = self._lookup(message, self.intake.parks.value or [], None, None, zh)
+                said, trace["qa"] = qa.answer(message, self.intake.parks.value or [], self.last_text, self.provider, zh, looked=looked)
+                if tool_trace:
+                    trace["qa"]["tools"] = tool_trace
                 if trace["qa"].get("answer") == "model" or not turn.trace.get("absorbed"):
                     head.append(said)
             text = "\n".join([*head, turn.question["text"]]) if turn.question else "\n".join(head)
@@ -325,14 +345,22 @@ class Session:
             if is_ack(message) or not qa.is_question(message):
                 said = unchanged_reply(message, zh)
             else:
-                said, trace["qa"] = qa.answer(message, request["parks"], self.last_text, self.provider, zh, stop_ids(self.last_result))
+                looked, tool_trace = self._lookup(message, request["parks"], request, self.last_result, zh)
+                said, trace["qa"] = qa.answer(message, request["parks"], self.last_text, self.provider, zh, stop_ids(self.last_result),
+                                              skipped=(self.last_result or {}).get("skipped"), looked=looked)
+                if tool_trace:
+                    trace["qa"]["tools"] = tool_trace
             text = "\n".join([*turn.notices, said])
             return Reply("planned", text, None, request, self.last_result, trace)
         had_plan = self.last_request is not None
         reply = self._plan(request, list(turn.notices), zh, trace)
         if reply.status == "planned" and had_plan and trace.get("changes") and qa.is_question(message):
             # 一句话里既改了条件又在问：先给新行程，再回答查得到的那部分；查不到就不多说
-            said, trace["qa"] = qa.answer(message, request["parks"], self.last_text, self.provider, zh, stop_ids(reply.result))
+            looked, tool_trace = self._lookup(message, request["parks"], request, reply.result, zh)
+            said, trace["qa"] = qa.answer(message, request["parks"], self.last_text, self.provider, zh, stop_ids(reply.result),
+                                          skipped=(reply.result or {}).get("skipped"), looked=looked)
+            if tool_trace:
+                trace["qa"]["tools"] = tool_trace
             if trace["qa"].get("answer") == "model":
                 reply.text += "\n" + said
         return reply

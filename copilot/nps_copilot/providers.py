@@ -198,6 +198,7 @@ class _Paced:
     last: float = -1e9
     # 最后一次成功的请求本身花了多久（不算为了免费档限速等的时间、重试前等的时间）
     last_ms: int = 0
+    retry_timeouts: bool = True
 
     def run(self, send):
         gap = 60.0 / self.rpm if self.rpm > 0 else 0.0
@@ -219,7 +220,9 @@ class _Paced:
                     raise ProviderError(f"API 出错（{error.code}）：{detail[:200]}") from error
                 wait(self.waits[attempt])
             except OSError as error:
-                if attempt == len(self.waits):
+                # 聊天时超时了不再等一遍同一家，直接换下一家（retry_timeouts 是 False）
+                timed_out = isinstance(error, TimeoutError) or "timed out" in str(error)
+                if attempt == len(self.waits) or (timed_out and not self.retry_timeouts):
                     raise ProviderError(f"连不上 API：{error}") from error
                 wait(self.waits[attempt])
         raise ProviderError("API 重试次数用完")
@@ -577,6 +580,10 @@ class ProviderChain:
         raise ProviderError("没有可用的模型")
 
 
+# 聊天时每家模型最多等几秒（一次读一批公告不限，照常 120 秒）
+CHAT_TIMEOUT = float(os.environ.get("COPILOT_CHAT_TIMEOUT", "20"))
+
+
 def _available(specs: list, batch: bool) -> list:
     """按顺序造出有 key 的那几个；聊天（batch=False）不按免费档的每分钟次数排队、服务忙只重试一次，免得一句话等很久，
     超了就换下一个；一次读一批公告（batch=True）照常按免费档放慢、多重试几次"""
@@ -589,29 +596,34 @@ def _available(specs: list, batch: bool) -> list:
         if not batch:
             provider.pace.rpm = 0
             provider.pace.waits = (2,)
+            # 聊天时一家 20 秒还没回就换下一家：10-21 仓库主人试用，第一句话 Gemini 卡了 71 秒才回
+            provider.timeout = CHAT_TIMEOUT
+            provider.pace.retry_timeouts = False
         chain.append(provider)
     return chain
 
 
 def cloud_chain(batch: bool = False) -> list:
-    """聊天用的商业 API。10-20 仓库主人定的“哪个稳哪个准用哪个，免费的能用就先用免费的”，按第四轮对照：
-    Gemini 3.5 Flash Lite（免费；单句三组最好，真实对话 15/15）→ Groq 上的 Qwen3.8 27B（免费、很快；没见过的单句 38/40，
-    但每分钟只有 8000 token）→ OpenAI GPT-4.1 mini（付费，最稳，前两个都出错才用）。没配 key 的跳过"""
+    """聊天用的商业 API，全是免费档（10-20 仓库主人定的“哪个稳哪个准用哪个，免费的能用就先用免费的”，按第四轮对照）：
+    Gemini 3.5 Flash Lite（单句三组最好，真实对话 15/15）→ OpenRouter 上的 MiniMax M3.1 Flash（真实对话 15/15，
+    一次约 3 秒，每天约 50 次）→ Groq 上的 Qwen3.8 27B（没见过的单句 38/40，很快，但每分钟只有 8000 token）。
+    10-21 仓库主人的 OpenAI key 没额度了，GPT-4.1 mini 从默认顺序里拿掉（设 COPILOT_PROVIDER=openai 还能单独用）。
+    没配 key 的跳过"""
     return _available([
         (GeminiProvider, {"model": "gemini-3.5-flash-lite"}),
+        (OpenRouterProvider, {"model": "minimax/minimax-m3.1-flash:free"}),
         (GroqProvider, {"model": "qwen/qwen3.8-27b"}),
-        (OpenAIProvider, {"model": "gpt-4.1-mini"}),
     ], batch)
 
 
 def alerts_chain(batch: bool = True) -> list:
-    """读公告用的商业 API（10-20，同样的规矩）：OpenRouter 上的 MiniMax M3.1 Flash 推理开 high（免费；26 条抽样上景点 F1 0.67，
-    和 GPT-4.1 mini 一样；每天约 50 次，每晚只读新的、改过的几条够用）→ GPT-4.1 mini（全部 151 条上最准，付费，MiniMax
-    额度用完或出错才用）→ Gemini。没配 key 的跳过"""
+    """读公告用的商业 API（同样的规矩，全是免费档）：OpenRouter 上的 MiniMax M3.1 Flash 推理开 high（26 条抽样上景点 F1 0.67；
+    每天约 50 次，每晚只读新的、改过的几条够用）→ Gemini 3.5 Flash Lite（26 条上同样 0.67，151 条上 0.54）→ Groq 上的
+    Qwen3.8 27B（0.44）。10-21 起不再用 GPT-4.1 mini（OpenAI 的 key 没额度了）。没配 key 的跳过"""
     return _available([
         (OpenRouterProvider, {"model": "minimax/minimax-m3.1-flash:free", "reasoning": {"effort": "high"}}),
-        (OpenAIProvider, {"model": "gpt-4.1-mini"}),
         (GeminiProvider, {"model": "gemini-3.5-flash-lite"}),
+        (GroqProvider, {"model": "qwen/qwen3.8-27b"}),
     ], batch)
 
 

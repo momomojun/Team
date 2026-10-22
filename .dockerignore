@@ -4,6 +4,7 @@
 !tests/register.mjs
 !tests/resolve.mjs
 !scripts/plan-trip.mjs
+!scripts/lookup.mjs
 !src/
 !copilot/
 copilot/runs/
@@ -11,3 +12,5 @@ copilot/eval/reports/
 **/__pycache__/
 **/*.egg-info/
 **/.pytest_cache/
+copilot/models/
+copilot/data/tts/

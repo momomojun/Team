@@ -1,4 +1,4 @@
-import { gallery } from "@/data/attractions/gallery.generated";
+import { gallery } from "@/data/attractions/gallery";
 import { parks } from "@/data/parks";
 
 // 行程页点开景点详情时才按公园取图集，页面本身不带照片；构建时每个公园生成一个静态 JSON
