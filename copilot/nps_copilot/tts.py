@@ -87,15 +87,15 @@ def key(text: str, lang: str, voice: str) -> str:
 
 
 def synthesize(text: str, lang: str = "zh", voice: str | None = None) -> bytes:
-    """一句话 → MP3 的字节；生成过的直接读缓存"""
-    import soundfile as sf
-
+    """一句话 → MP3 的字节；生成过的直接读缓存（读缓存不用装 soundfile、模型）"""
     lang = lang_of(lang)
     text = text.strip()[:MAX_CHARS]
     voice = voice or VOICES[lang]
     path = CACHE / f"{key(text, lang, voice)}.mp3"
     if path.exists():
         return path.read_bytes()
+    import soundfile as sf
+
     with _lock:
         model = _model(lang)
         if lang == "zh":

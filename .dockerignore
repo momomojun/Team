@@ -4,6 +4,7 @@
 !tests/register.mjs
 !tests/resolve.mjs
 !scripts/plan-trip.mjs
+!scripts/lookup.mjs
 !src/
 !copilot/
 copilot/runs/
