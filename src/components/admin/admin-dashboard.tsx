@@ -2,10 +2,12 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { buttonPrimary, buttonSecondary } from "@/components/ui";
+import { ArchitectureDiagram, type AdminLang } from "./architecture-diagram";
 
 /**
  * 后台页面：读 /api/copilot/admin（Copilot 服务的 /health、/stats 和 GitHub 上每晚读公告的结果），每 30 秒刷新一次。
- * 数字的意思见 docs/COPILOT.md 的“监控指标”；什么时候该回滚见 docs/GUIDE.md
+ * 数字的意思见 docs/COPILOT.md 的“监控指标”；什么时候该回滚见 docs/GUIDE.md。
+ * 中英两套字（/en/admin 给老师看，10-22）：后台不进网站的翻译表，字都写在下面的 TEXT 里
  */
 
 interface ModelUsage {
@@ -118,16 +120,196 @@ interface AdminData {
 const PERIODS = [1, 7, 30];
 /** 和 src/lib/copilot/live.ts 的 LIVE_STALE_DAYS 一样：关闭清单超过 3 天就不用了 */
 const STALE_DAYS = 3;
-const STEP_TEXT: Record<string, string> = { dispatch: "调度员", intake: "摘条件", qa: "回答问题", writer: "写说明" };
-const STATUS_TEXT: Record<string, string> = { planned: "排出行程", needs_input: "追问", error: "出错" };
 
-const ms = (value: number | null | undefined) =>
-  value == null ? "—" : value >= 1000 ? `${(value / 1000).toFixed(1)} 秒` : `${Math.round(value)} ms`;
-const money = (value: number, unpriced = 0) => (unpriced ? "不知道" : value === 0 ? "$0" : value < 0.01 ? `$${value.toFixed(4)}` : `$${value.toFixed(2)}`);
+const TEXT = {
+  zh: {
+    steps: { dispatch: "调度员", intake: "摘条件", qa: "回答问题", writer: "写说明" } as Record<string, string>,
+    status: { planned: "排出行程", needs_input: "追问", error: "出错" } as Record<string, string>,
+    seconds: "秒",
+    unknown: "不知道",
+    locale: "zh-CN",
+    eyebrow: "后台 · Copilot",
+    heading: "运行情况",
+    intro: "Copilot 每回答一句都记一条日志：用了哪几个模型、多少 token、花了多少、排没排出行程。这里把最近几天的汇总在一起；每 30 秒自动刷新。",
+    today: "今天",
+    lastDays: (n: number) => `最近 ${n} 天`,
+    refresh: "刷新",
+    updated: (time: string) => `更新于 ${time}`,
+    failed: "读不到后台数据（/api/copilot/admin）。网站部署到公网又没设访问密码时，这里不给数据。",
+    loading: "读取中…",
+    running: "Copilot 在运行",
+    chain: "模型顺序",
+    stepModels: "单独换了模型",
+    prompts: "提示词",
+    planTool: "行程引擎",
+    noNode: "找不到 node",
+    offline: "Copilot 没开（或者连不上 COPILOT_URL）。下面只有架构图和 GitHub 上每晚读公告的结果。",
+    startHint: "在本机启动：",
+    startEnv: "，并在 .env.local 里写 COPILOT_URL=http://127.0.0.1:8766",
+    turns: "对话",
+    turnsSub: (n: number) => `${n} 个会话的轮数`,
+    planned: "排出行程",
+    plannedSub: (planned: number, needs: number) => `${planned} 轮；追问 ${needs} 轮`,
+    errors: "出错",
+    errorsSub: "plan_trip 拒绝了请求",
+    latency: "耗时（中位）",
+    latencySub: "每天中位数的中位数",
+    calls: "模型调用",
+    callsSub: (turns: number, errors: number, fallbacks: number) => `${turns} 轮记了调用；出错 ${errors}，换备用模型 ${fallbacks}`,
+    cost: "花费",
+    costUnpriced: (n: number) => `${n} 次调用的模型没有价格`,
+    costFree: "免费档、本机按 $0 算",
+    archTitle: "模型调用架构",
+    archNote: "每一步调不调模型、按什么顺序换模型；模型顺序是服务现在报的",
+    daily: "每天",
+    noLogs: "这段时间没有日志。",
+    chartLabel: "每天的对话轮数和花费",
+    chartTitle: (day: string, turns: number, cost: string) => `${day}：${turns} 轮，${cost}`,
+    chartPlanned: "排出行程",
+    chartNeeds: "追问",
+    chartError: "出错",
+    chartCost: "柱子上的数字是那天的花费",
+    usage: "模型用量",
+    usageNote: "按真正回答的那个模型算；前一个模型出错、换到它的，算在“换来的”里",
+    usageHead: ["模型", "调用", "换来的", "出错", "输入 token", "输出 token", "思考 token", "花费"],
+    usageEmpty: "这段时间的日志里还没有记模型调用（10-19 以后的版本才记）。",
+    alertsRead: (n: number) => `聊天时现读了 ${n} 条 NPS 公告，那部分的 token 不在上表里。`,
+    quality: "质量",
+    qualityNote: "按 Copilot 版本和提示词版本分，最近用上的在上面；新版本上线后和上一版比，变差就回滚（docs/GUIDE.md）",
+    qualityHead: ["版本", "轮数", "排出", "追问", "出错", "中位", "P90", "编造被丢", "规则补", "Writer 退回", "调度员失败", "回答改摘原文"],
+    alerts: "NPS 公告",
+    alertsNote: "Copilot 读公告提取的关闭清单；两周内出发的行程用它，超过 3 天就不用了",
+    localList: "本机的关闭清单",
+    localOff: "Copilot 没开，看不到。",
+    localMissing: "还没有关闭清单：先跑 npm run alerts:fetch 和 python -m nps_copilot alerts。",
+    fetched: "公告抓取",
+    fetchedAgo: (days: number, stale: boolean) => `（${days} 天前${stale ? "，已经不用了" : ""}）`,
+    closed: "关了网站景点",
+    closedLine: (all?: number, strict?: number, model?: number) => `${all} 条：代码也确认的 ${strict}，只有模型找到的 ${model}（照排、提醒）`,
+    parks: "覆盖公园",
+    parksLine: (n?: number, oldest?: string | null) => `${n} 座，最旧的是 ${oldest}`,
+    cache: "读过的公告",
+    cacheLine: (n: number) => `缓存 ${n} 条（没改过的不再读）`,
+    nightly: "GitHub 上每晚读公告",
+    nightlyError: (error: string) => `查不到 GitHub（${error}）。`,
+    runRunning: "在跑",
+    runOk: "成功",
+    runSkipped: "跳过",
+    scheduled: "定时",
+    noRuns: "还没跑过。",
+    issues: "还开着的 nps-alerts issue",
+    recent: "最近的对话",
+    recentNote: "最新的在上面，最多 30 轮；原话只截前 120 个字",
+    recentHead: ["时间", "说了什么", "结果", "耗时", "模型", "调用", "token", "备注"],
+    oldLog: "旧日志没记",
+    fallback: "换了备用模型",
+    callErrors: (n: number) => `${n} 次调用出错`,
+    dropped: (n: number) => `丢掉编造 ${n}`,
+    writerFallback: "说明退回模板",
+    sep: "；",
+    listSep: "、",
+    recentEmpty: "这段时间没有对话。",
+  },
+  en: {
+    steps: { dispatch: "Dispatcher", intake: "Intake", qa: "Q&A", writer: "Writer" } as Record<string, string>,
+    status: { planned: "Planned", needs_input: "Follow-up", error: "Error" } as Record<string, string>,
+    seconds: "s",
+    unknown: "unknown",
+    locale: "en-US",
+    eyebrow: "Dashboard · Copilot",
+    heading: "How the Copilot is running",
+    intro: "The Copilot logs every reply: which models it called, how many tokens, what it cost, and whether a trip was planned. This page sums up the last few days and refreshes every 30 seconds.",
+    today: "Today",
+    lastDays: (n: number) => `Last ${n} days`,
+    refresh: "Refresh",
+    updated: (time: string) => `Updated ${time}`,
+    failed: "Can't read the dashboard data (/api/copilot/admin). A public deployment without a site password returns nothing here.",
+    loading: "Loading…",
+    running: "Copilot is running",
+    chain: "Model order",
+    stepModels: "Per-step models",
+    prompts: "Prompts",
+    planTool: "Trip engine",
+    noNode: "node not found",
+    offline: "The Copilot is off (or COPILOT_URL can't be reached). Only the architecture and the nightly alerts runs on GitHub are shown below.",
+    startHint: "Start it locally: ",
+    startEnv: ", and set COPILOT_URL=http://127.0.0.1:8766 in .env.local",
+    turns: "Turns",
+    turnsSub: (n: number) => `across ${n} sessions`,
+    planned: "Planned",
+    plannedSub: (planned: number, needs: number) => `${planned} turns; ${needs} follow-ups`,
+    errors: "Errors",
+    errorsSub: "plan_trip rejected the request",
+    latency: "Latency (median)",
+    latencySub: "median of daily medians",
+    calls: "Model calls",
+    callsSub: (turns: number, errors: number, fallbacks: number) => `${turns} turns logged calls; ${errors} errors, ${fallbacks} fallbacks`,
+    cost: "Cost",
+    costUnpriced: (n: number) => `${n} calls used a model with no price`,
+    costFree: "free tiers and the local model count as $0",
+    archTitle: "Model call architecture",
+    archNote: "Which steps call a model and in what order models are tried; the order comes from the running service",
+    daily: "By day",
+    noLogs: "No logs in this period.",
+    chartLabel: "Turns and cost per day",
+    chartTitle: (day: string, turns: number, cost: string) => `${day}: ${turns} turns, ${cost}`,
+    chartPlanned: "Planned",
+    chartNeeds: "Follow-up",
+    chartError: "Error",
+    chartCost: "the number above each bar is that day's cost",
+    usage: "Model usage",
+    usageNote: "Counted for the model that actually answered; calls it took over after an earlier model failed are under \"fallback\"",
+    usageHead: ["Model", "Calls", "Fallback", "Errors", "Input tokens", "Output tokens", "Thinking tokens", "Cost"],
+    usageEmpty: "No model calls logged in this period (versions from 10-19 on log them).",
+    alertsRead: (n: number) => `${n} NPS alerts were read live during chats; those tokens aren't in the table above.`,
+    quality: "Quality",
+    qualityNote: "By Copilot and prompt version, newest first. Compare a new release with the previous one and roll back if it is worse (docs/GUIDE.md)",
+    qualityHead: ["Version", "Turns", "Planned", "Follow-up", "Errors", "Median", "P90", "Made-up spans dropped", "Rule fills", "Writer fallback", "Dispatcher failed", "Q&A quoted source"],
+    alerts: "NPS alerts",
+    alertsNote: "Closure list the Copilot extracts from NPS alerts; used for trips within two weeks, ignored after 3 days",
+    localList: "Local closure list",
+    localOff: "The Copilot is off, so this isn't available.",
+    localMissing: "No closure list yet: run npm run alerts:fetch and python -m nps_copilot alerts first.",
+    fetched: "Alerts fetched",
+    fetchedAgo: (days: number, stale: boolean) => ` (${days} days ago${stale ? ", no longer used" : ""})`,
+    closed: "Closes site sights",
+    closedLine: (all?: number, strict?: number, model?: number) => `${all}: ${strict} confirmed by code, ${model} found only by the model (still planned, with a warning)`,
+    parks: "Parks covered",
+    parksLine: (n?: number, oldest?: string | null) => `${n}; oldest is ${oldest}`,
+    cache: "Alerts read",
+    cacheLine: (n: number) => `${n} cached (unchanged ones aren't read again)`,
+    nightly: "Nightly alerts runs on GitHub",
+    nightlyError: (error: string) => `Can't reach GitHub (${error}).`,
+    runRunning: "running",
+    runOk: "success",
+    runSkipped: "skipped",
+    scheduled: "scheduled",
+    noRuns: "No runs yet.",
+    issues: "Open nps-alerts issues",
+    recent: "Recent turns",
+    recentNote: "Newest first, up to 30; messages cut to the first 120 characters",
+    recentHead: ["Time", "Message", "Result", "Latency", "Models", "Calls", "Tokens", "Notes"],
+    oldLog: "not logged (old)",
+    fallback: "used a fallback model",
+    callErrors: (n: number) => `${n} call errors`,
+    dropped: (n: number) => `${n} made-up spans dropped`,
+    writerFallback: "writer used the template",
+    sep: "; ",
+    listSep: ", ",
+    recentEmpty: "No turns in this period.",
+  },
+};
+type AdminText = (typeof TEXT)["zh"];
+
+const makeFormat = (t: AdminText) => ({
+  ms: (value: number | null | undefined) =>
+    value == null ? "—" : value >= 1000 ? `${(value / 1000).toFixed(1)} ${t.seconds}` : `${Math.round(value)} ms`,
+  money: (value: number, unpriced = 0) => (unpriced ? t.unknown : value === 0 ? "$0" : value < 0.01 ? `$${value.toFixed(4)}` : `$${value.toFixed(2)}`),
+  clock: (iso?: string) => (iso ? new Date(iso).toLocaleString(t.locale, { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }) : ""),
+});
 const big = (value: number) => (value >= 10_000 ? `${(value / 1000).toFixed(value >= 100_000 ? 0 : 1)}k` : value.toLocaleString("en-US"));
 const percent = (part: number, whole: number) => (whole ? `${Math.round((part / whole) * 100)}%` : "—");
 const daysAgo = (date: string) => Math.round((Date.now() - new Date(`${date}T12:00:00`).getTime()) / 86_400_000);
-const clock = (iso?: string) => (iso ? new Date(iso).toLocaleString("zh-CN", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "");
 
 function Section({ title, note, children }: { title: string; note?: string; children: React.ReactNode }) {
   return (
@@ -168,13 +350,14 @@ function fillDays(daily: Day[], period: number): Day[] {
 }
 
 /** 每天多少轮（排出行程 / 追问 / 出错叠起来），柱子上方写花费 */
-function DailyChart({ days }: { days: Day[] }) {
+function DailyChart({ days, t }: { days: Day[]; t: AdminText }) {
+  const { money } = makeFormat(t);
   const max = Math.max(1, ...days.map((day) => day.turns));
   return (
     <div className="mt-6">
-      <div className="flex h-48 items-end gap-1.5 border-b border-ink/40" role="img" aria-label="每天的对话轮数和花费">
+      <div className="flex h-48 items-end gap-1.5 border-b border-ink/40" role="img" aria-label={t.chartLabel}>
         {days.map((day) => (
-          <div key={day.day} className="relative flex h-full min-w-0 max-w-16 flex-1 flex-col justify-end" title={`${day.day}：${day.turns} 轮，${money(day.cost, day.unpriced)}`}>
+          <div key={day.day} className="relative flex h-full min-w-0 max-w-16 flex-1 flex-col justify-end" title={t.chartTitle(day.day, day.turns, money(day.cost, day.unpriced))}>
             <span className="mb-1 truncate text-center text-[10px] tabular-nums text-mute">{day.cost > 0 ? money(day.cost) : ""}</span>
             <div className="flex flex-col-reverse" style={{ height: `${(day.turns / max) * 85}%` }}>
               <div className="bg-pine-500" style={{ flexGrow: day.planned }} />
@@ -192,10 +375,10 @@ function DailyChart({ days }: { days: Day[] }) {
         ))}
       </div>
       <p className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-[11px] text-ink-soft">
-        <span><i className="mr-1.5 inline-block size-2 bg-pine-500 align-middle" />排出行程</span>
-        <span><i className="mr-1.5 inline-block size-2 bg-clay-200 align-middle" />追问</span>
-        <span><i className="mr-1.5 inline-block size-2 bg-clay-700 align-middle" />出错</span>
-        <span className="text-mute">柱子上的数字是那天的花费</span>
+        <span><i className="mr-1.5 inline-block size-2 bg-pine-500 align-middle" />{t.chartPlanned}</span>
+        <span><i className="mr-1.5 inline-block size-2 bg-clay-200 align-middle" />{t.chartNeeds}</span>
+        <span><i className="mr-1.5 inline-block size-2 bg-clay-700 align-middle" />{t.chartError}</span>
+        <span className="text-mute">{t.chartCost}</span>
       </p>
     </div>
   );
@@ -232,7 +415,9 @@ function Table({ head, rows, align }: { head: string[]; rows: React.ReactNode[][
 
 const flag = (value: number) => <span className={value ? "text-clay-700" : "text-mute"}>{value}</span>;
 
-export function AdminDashboard() {
+export function AdminDashboard({ lang = "zh" }: { lang?: AdminLang }) {
+  const t = TEXT[lang];
+  const { ms, money, clock } = makeFormat(t);
   const [days, setDays] = useState(7);
   const [data, setData] = useState<AdminData | null>(null);
   const [failed, setFailed] = useState(false);
@@ -249,13 +434,13 @@ export function AdminDashboard() {
         if (!alive) return;
         setData(next);
         setFailed(false);
-        setLoadedAt(new Date().toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit", second: "2-digit" }));
+        setLoadedAt(new Date().toLocaleTimeString(t.locale, { hour: "2-digit", minute: "2-digit", second: "2-digit" }));
       })
       .catch(() => alive && setFailed(true));
     return () => {
       alive = false;
     };
-  }, [days, tick]);
+  }, [days, tick, t.locale]);
 
   useEffect(() => {
     const timer = window.setInterval(refresh, 30_000);
@@ -290,11 +475,9 @@ export function AdminDashboard() {
     <div className="mx-auto w-full max-w-[1400px] px-4 pt-28 pb-24 sm:px-10">
       <div className="flex flex-wrap items-end justify-between gap-6">
         <div>
-          <p className="eyebrow text-mute">后台 · Copilot</p>
-          <h1 className="mt-4 font-serif text-[clamp(2.2rem,4vw,3.4rem)] leading-tight">运行情况</h1>
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-soft">
-            Copilot 每回答一句都记一条日志：用了哪几个模型、多少 token、花了多少、排没排出行程。这里把最近几天的汇总在一起；每 30 秒自动刷新。
-          </p>
+          <p className="eyebrow text-mute">{t.eyebrow}</p>
+          <h1 className="mt-4 font-serif text-[clamp(2.2rem,4vw,3.4rem)] leading-tight">{t.heading}</h1>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-ink-soft">{t.intro}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {PERIODS.map((period) => (
@@ -305,86 +488,92 @@ export function AdminDashboard() {
               aria-pressed={days === period}
               className={days === period ? buttonPrimary : buttonSecondary}
             >
-              {period === 1 ? "今天" : `最近 ${period} 天`}
+              {period === 1 ? t.today : t.lastDays(period)}
             </button>
           ))}
           <button type="button" onClick={refresh} className={buttonSecondary}>
-            刷新
+            {t.refresh}
           </button>
-          {loadedAt && <span className="text-[11px] text-mute">更新于 {loadedAt}</span>}
+          {loadedAt && <span className="text-[11px] text-mute">{t.updated(loadedAt)}</span>}
         </div>
       </div>
 
       {/* 服务状态 */}
       <div className="mt-10 border-y border-ink py-4 text-sm">
         {failed ? (
-          <p className="text-clay-700">读不到后台数据（/api/copilot/admin）。网站部署到公网又没设访问密码时，这里不给数据。</p>
+          <p className="text-clay-700">{t.failed}</p>
         ) : !data ? (
-          <p className="text-mute">读取中…</p>
+          <p className="text-mute">{t.loading}</p>
         ) : data.available && health ? (
           <div className="flex flex-wrap items-center gap-x-8 gap-y-2">
             <span className="flex items-center gap-2">
               <i className="inline-block size-2 rounded-full bg-pine-500" />
-              Copilot 在运行 <span className="tabular-nums text-mute">{health.version}{health.build ? ` · ${health.build.slice(0, 7)}` : ""}</span>
+              {t.running} <span className="tabular-nums text-mute">{health.version}{health.build ? ` · ${health.build.slice(0, 7)}` : ""}</span>
             </span>
             <span>
-              <span className="text-mute">模型顺序 </span>
+              <span className="text-mute">{t.chain} </span>
               {health.error ? <span className="text-clay-700">{health.error}</span> : (health.chain ?? [health.model ?? "?"]).join(" → ")}
             </span>
             {health.steps && Object.keys(health.steps).length > 0 && (
               <span>
-                <span className="text-mute">单独换了模型 </span>
+                <span className="text-mute">{t.stepModels} </span>
                 {Object.entries(health.steps)
-                  .map(([step, models]) => `${STEP_TEXT[step] ?? step} ${models[0]}`)
-                  .join("，")}
+                  .map(([step, models]) => `${t.steps[step] ?? step} ${models[0]}`)
+                  .join(t.sep)}
               </span>
             )}
             <span>
-              <span className="text-mute">提示词 </span>
-              {Object.keys(health.prompts).join("、") || "—"}
+              <span className="text-mute">{t.prompts} </span>
+              {Object.keys(health.prompts).join(t.listSep) || "—"}
             </span>
             <span>
-              <span className="text-mute">行程引擎 </span>
-              {health.plan_tool === "missing" ? <span className="text-clay-700">找不到 node</span> : health.plan_tool}
+              <span className="text-mute">{t.planTool} </span>
+              {health.plan_tool === "missing" ? <span className="text-clay-700">{t.noNode}</span> : health.plan_tool}
             </span>
           </div>
         ) : (
           <div className="space-y-2">
             <p className="flex items-center gap-2">
               <i className="inline-block size-2 rounded-full bg-clay-700" />
-              Copilot 没开（或者连不上 COPILOT_URL）。下面只有 GitHub 上每晚读公告的结果。
+              {t.offline}
             </p>
             <p className="text-[12px] text-mute">
-              在本机启动：<code className="bg-paper-deep px-1.5 py-0.5">cd copilot && python -m nps_copilot serve --port 8766</code>，并在 .env.local 里写 COPILOT_URL=http://127.0.0.1:8766
+              {t.startHint}
+              <code className="bg-paper-deep px-1.5 py-0.5">cd copilot && python -m nps_copilot serve --port 8766</code>
+              {t.startEnv}
             </p>
           </div>
         )}
       </div>
 
+      <Section title={t.archTitle} note={t.archNote}>
+        <ArchitectureDiagram lang={lang} chain={data?.available && !health?.error ? health?.chain : null} />
+      </Section>
+
       {stats && totals && (
         <>
           <div className="mt-2 grid grid-cols-2 gap-x-6 lg:grid-cols-6">
-            <Figure label="对话" value={big(totals.turns)} sub={`${totals.sessions} 个会话的轮数`} />
-            <Figure label="排出行程" value={percent(totals.planned, totals.turns)} sub={`${totals.planned} 轮；追问 ${totals.needs} 轮`} />
-            <Figure label="出错" value={String(totals.error)} sub="plan_trip 拒绝了请求" warn={totals.error > 0} />
-            <Figure label="耗时（中位）" value={ms(latencies.length ? [...latencies].sort((a, b) => a - b)[Math.floor(latencies.length / 2)] : null)} sub="每天中位数的中位数" />
+            <Figure label={t.turns} value={big(totals.turns)} sub={t.turnsSub(totals.sessions)} />
+            <Figure label={t.planned} value={percent(totals.planned, totals.turns)} sub={t.plannedSub(totals.planned, totals.needs)} />
+            <Figure label={t.errors} value={String(totals.error)} sub={t.errorsSub} warn={totals.error > 0} />
+            <Figure label={t.latency} value={ms(latencies.length ? [...latencies].sort((a, b) => a - b)[Math.floor(latencies.length / 2)] : null)} sub={t.latencySub} />
             <Figure
-              label="模型调用"
+              label={t.calls}
               value={big(calls)}
-              sub={`${stats.usage.turns} 轮记了调用；出错 ${callErrors}，换备用模型 ${fallbacks}`}
+              sub={t.callsSub(stats.usage.turns, callErrors, fallbacks)}
               warn={callErrors > 0 || fallbacks > 0}
             />
-            <Figure label="花费" value={money(cost, unpriced)} sub={unpriced ? `${unpriced} 次调用的模型没有价格` : "免费档、本机按 $0 算"} />
+            <Figure label={t.cost} value={money(cost, unpriced)} sub={unpriced ? t.costUnpriced(unpriced) : t.costFree} />
           </div>
 
-          <Section title="每天" note={stats.days === 1 ? "今天" : `最近 ${stats.days} 天`}>
-            {stats.daily.length ? <DailyChart days={fillDays(stats.daily, stats.days)} /> : <p className="mt-4 text-sm text-mute">这段时间没有日志。</p>}
+          <Section title={t.daily} note={stats.days === 1 ? t.today : t.lastDays(stats.days)}>
+            {stats.daily.length ? <DailyChart days={fillDays(stats.daily, stats.days)} t={t} /> : <p className="mt-4 text-sm text-mute">{t.noLogs}</p>}
           </Section>
 
-          <Section title="模型用量" note="按真正回答的那个模型算；前一个模型出错、换到它的，算在“换来的”里">
+          <Section title={t.usage} note={t.usageNote}>
             {models.length ? (
               <Table
-                head={["模型", "调用", "换来的", "出错", "输入 token", "输出 token", "思考 token", "花费"]}
+                head={t.usageHead}
                 align={["l", "r", "r", "r", "r", "r", "r", "r"]}
                 rows={models.map(([model, item]) => [
                   <span key="m" className="font-medium">{model}</span>,
@@ -398,16 +587,16 @@ export function AdminDashboard() {
                 ])}
               />
             ) : (
-              <p className="mt-4 text-sm text-mute">这段时间的日志里还没有记模型调用（10-19 以后的版本才记）。</p>
+              <p className="mt-4 text-sm text-mute">{t.usageEmpty}</p>
             )}
             {stats.usage.alerts_read > 0 && (
-              <p className="mt-3 text-[11px] text-mute">聊天时现读了 {stats.usage.alerts_read} 条 NPS 公告，那部分的 token 不在上表里。</p>
+              <p className="mt-3 text-[11px] text-mute">{t.alertsRead(stats.usage.alerts_read)}</p>
             )}
           </Section>
 
-          <Section title="质量" note="按 Copilot 版本和提示词版本分，最近用上的在上面；新版本上线后和上一版比，变差就回滚（docs/GUIDE.md）">
+          <Section title={t.quality} note={t.qualityNote}>
             <Table
-              head={["版本", "轮数", "排出", "追问", "出错", "中位", "P90", "编造被丢", "规则补", "Writer 退回", "调度员失败", "回答改摘原文"]}
+              head={t.qualityHead}
               align={["l", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r"]}
               rows={Object.entries(stats.versions).reverse().map(([version, item]) => [
                 <span key="v" className="text-[12px] leading-5">{version}</span>,
@@ -428,60 +617,62 @@ export function AdminDashboard() {
         </>
       )}
 
-      <Section title="NPS 公告" note="Copilot 读公告提取的关闭清单；两周内出发的行程用它，超过 3 天就不用了">
+      <Section title={t.alerts} note={t.alertsNote}>
         <div className="mt-4 grid gap-x-10 gap-y-6 lg:grid-cols-2">
           <div>
-            <h3 className="eyebrow text-mute">本机的关闭清单</h3>
+            <h3 className="eyebrow text-mute">{t.localList}</h3>
             {!alerts ? (
-              <p className="mt-3 text-sm text-mute">Copilot 没开，看不到。</p>
+              <p className="mt-3 text-sm text-mute">{t.localOff}</p>
             ) : !alerts.closures_file ? (
-              <p className="mt-3 text-sm text-clay-700">还没有关闭清单：先跑 npm run alerts:fetch 和 python -m nps_copilot alerts。</p>
+              <p className="mt-3 text-sm text-clay-700">{t.localMissing}</p>
             ) : (
               <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
-                <dt className="text-mute">公告抓取</dt>
+                <dt className="text-mute">{t.fetched}</dt>
                 <dd className={stale ? "text-clay-700" : ""}>
-                  {alerts.fetched}（{daysAgo(alerts.fetched ?? "")} 天前{stale ? "，已经不用了" : ""}）
+                  {alerts.fetched}
+                  {t.fetchedAgo(daysAgo(alerts.fetched ?? ""), stale)}
                 </dd>
-                <dt className="text-mute">关了网站景点</dt>
-                <dd>
-                  {alerts.closures} 条：代码也确认的 {alerts.strict}，只有模型找到的 {alerts.model_only}（照排、提醒）
-                </dd>
+                <dt className="text-mute">{t.closed}</dt>
+                <dd>{t.closedLine(alerts.closures, alerts.strict, alerts.model_only)}</dd>
                 {alerts.parks ? (
                   <>
-                    <dt className="text-mute">覆盖公园</dt>
-                    <dd>{alerts.parks} 座，最旧的是 {alerts.oldest_park}</dd>
+                    <dt className="text-mute">{t.parks}</dt>
+                    <dd>{t.parksLine(alerts.parks, alerts.oldest_park)}</dd>
                   </>
                 ) : null}
-                <dt className="text-mute">读过的公告</dt>
-                <dd>缓存 {alerts.cache_entries} 条（没改过的不再读）{alerts.prompts ? ` · ${alerts.prompts}` : ""}</dd>
+                <dt className="text-mute">{t.cache}</dt>
+                <dd>
+                  {t.cacheLine(alerts.cache_entries)}
+                  {alerts.prompts ? ` · ${alerts.prompts}` : ""}
+                </dd>
               </dl>
             )}
           </div>
           <div>
-            <h3 className="eyebrow text-mute">GitHub 上每晚读公告</h3>
+            <h3 className="eyebrow text-mute">{t.nightly}</h3>
             {data?.nightly.error ? (
-              <p className="mt-3 text-sm text-mute">查不到 GitHub（{data.nightly.error}）。</p>
+              <p className="mt-3 text-sm text-mute">{t.nightlyError(data.nightly.error)}</p>
             ) : (
               <ul className="mt-3 text-sm">
                 {data?.nightly.runs.map((run) => {
                   const ok = run.conclusion === "success";
-                  const label = run.status !== "completed" ? "在跑" : ok ? "成功" : run.conclusion === "skipped" ? "跳过" : run.conclusion ?? "?";
+                  const label = run.status !== "completed" ? t.runRunning : ok ? t.runOk : run.conclusion === "skipped" ? t.runSkipped : run.conclusion ?? "?";
                   return (
                     <li key={run.id} className="flex items-baseline justify-between gap-4 border-b border-line py-2">
                       <a href={run.url} target="_blank" rel="noreferrer" className="hover:text-clay-700">
                         {clock(run.created)}
-                        <span className="ml-2 text-[11px] text-mute">{run.event === "schedule" ? "定时" : run.event}</span>
+                        <span className="ml-2 text-[11px] text-mute">{run.event === "schedule" ? t.scheduled : run.event}</span>
                       </a>
-                      <span className={ok ? "text-pine-600" : run.status !== "completed" || label === "跳过" ? "text-mute" : "text-clay-700"}>{label}</span>
+                      <span className={ok ? "text-pine-600" : run.status !== "completed" || label === t.runSkipped ? "text-mute" : "text-clay-700"}>{label}</span>
                     </li>
                   );
                 })}
-                {data && !data.nightly.runs.length && <li className="py-2 text-mute">还没跑过。</li>}
+                {data && !data.nightly.runs.length && <li className="py-2 text-mute">{t.noRuns}</li>}
               </ul>
             )}
             {data?.nightly.issues.length ? (
               <div className="mt-5">
-                <h3 className="eyebrow text-mute">还开着的 nps-alerts issue</h3>
+                <h3 className="eyebrow text-mute">{t.issues}</h3>
                 <ul className="mt-2 text-sm">
                   {data.nightly.issues.map((issue) => (
                     <li key={issue.number} className="border-b border-line py-2">
@@ -498,10 +689,10 @@ export function AdminDashboard() {
       </Section>
 
       {stats && (
-        <Section title="最近的对话" note="最新的在上面，最多 30 轮；原话只截前 120 个字">
+        <Section title={t.recent} note={t.recentNote}>
           {stats.recent.length ? (
             <Table
-              head={["时间", "说了什么", "结果", "耗时", "模型", "调用", "token", "备注"]}
+              head={t.recentHead}
               align={["l", "l", "l", "r", "l", "r", "r", "l"]}
               rows={stats.recent.map((turn) => [
                 <span key="t" className="whitespace-nowrap text-[12px] text-mute">
@@ -510,26 +701,26 @@ export function AdminDashboard() {
                 </span>,
                 <span key="m" className="block max-w-[28rem] leading-6">{turn.message}</span>,
                 <span key="s" className={turn.status === "error" ? "text-clay-700" : turn.status === "planned" ? "text-pine-600" : ""}>
-                  {STATUS_TEXT[turn.status] ?? turn.status}
+                  {t.status[turn.status] ?? turn.status}
                 </span>,
                 ms(turn.latency_ms),
-                <span key="md" className="text-[12px]">{turn.logged === false ? <span className="text-mute">旧日志没记</span> : turn.models.join("、") || "—"}</span>,
+                <span key="md" className="text-[12px]">{turn.logged === false ? <span className="text-mute">{t.oldLog}</span> : turn.models.join(t.listSep) || "—"}</span>,
                 turn.calls,
                 big(turn.tokens),
                 <span key="n" className="text-[12px] text-clay-700">
                   {[
-                    turn.fallback && "换了备用模型",
-                    turn.call_errors && `${turn.call_errors} 次调用出错`,
-                    turn.dropped && `丢掉编造 ${turn.dropped}`,
-                    turn.writer_fallback && "说明退回模板",
+                    turn.fallback && t.fallback,
+                    turn.call_errors && t.callErrors(turn.call_errors),
+                    turn.dropped && t.dropped(turn.dropped),
+                    turn.writer_fallback && t.writerFallback,
                   ]
                     .filter(Boolean)
-                    .join("；")}
+                    .join(t.sep)}
                 </span>,
               ])}
             />
           ) : (
-            <p className="mt-4 text-sm text-mute">这段时间没有对话。</p>
+            <p className="mt-4 text-sm text-mute">{t.recentEmpty}</p>
           )}
         </Section>
       )}
