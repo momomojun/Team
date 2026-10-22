@@ -96,7 +96,8 @@ def load(days: int, runs: Path = RUNS) -> list[dict]:
         except ValueError:
             continue
         rows.extend({**json.loads(line), "day": path.stem} for line in path.read_text(encoding="utf-8").splitlines() if line.strip())
-    return rows
+    # 测试用的假模型（scripted）跑的不算：10-21 以前写进日志的几轮在这里滤掉，文件不动
+    return [row for row in rows if not any(call.get("model") == "scripted" for call in row.get("calls") or [])]
 
 
 def summarize(rows: list[dict]) -> dict[str, dict]:
