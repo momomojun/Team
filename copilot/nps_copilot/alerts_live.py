@@ -200,7 +200,7 @@ def fetch_alerts(parks: list[str], timeout: float = 20.0) -> list[dict]:
 
 
 def refresh_for(request: dict, reference_date: str, path: Path = CLOSURES, cache_path: Path = CACHE,
-                now: dt.datetime | None = None) -> dict:
+                now: dt.datetime | None = None, on_fetch=None) -> dict:
     """聊天时：两周内出发、要去的公园距上次读公告超过 REFRESH_HOURS 小时（或者没记读的时间、不是今天读的），
     就当场抓这几座公园的公告读一遍，合进关闭清单。每座公园读的时间记在 readAt（精确到秒），parks 照旧只记日期
     （网站的 live.ts 按日期比新旧）。出错（没网、接口限流、模型出错）就用原来的清单，不影响排行程。返回发生了什么（写进 trace）"""
@@ -228,6 +228,9 @@ def refresh_for(request: dict, reference_date: str, path: Path = CLOSURES, cache
     stale = [code for code in request.get("parks", []) if code in nps_codes() and not fresh(code)]
     if not stale:
         return {"refreshed": False, "why": "fresh"}
+    if on_fetch:
+        # 真要现读公告了：告诉对话框“正在读 NPS 公告”（读要几秒）
+        on_fetch(stale)
     try:
         alerts = fetch_alerts(stale)
         cache = load_json(cache_path, {})

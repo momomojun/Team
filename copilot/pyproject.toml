@@ -8,6 +8,10 @@ dependencies = []
 [project.optional-dependencies]
 api = ["fastapi>=0.110", "uvicorn>=0.29"]
 # 讲解版的本机配音（可选）；misaki 0.9 写着要 Python 3.12 以下，3.13 上装要加 --ignore-requires-python
+# 一轮对话按 LangGraph 的流程图跑、对话存档（可选）
+graph = ["langgraph>=1.0", "langgraph-checkpoint-sqlite>=2.0"]
+# 评测记到 MLflow、向量检索对照实验（可选，只在本机跑）
+experiments = ["mlflow>=3.0", "chromadb>=1.0"]
 tts = ["kokoro-onnx>=0.6", "onnxruntime>=1.20", "misaki[zh]>=0.9.4", "soundfile>=0.13"]
 dev = ["pytest>=8", "jsonschema>=4.21"]
 

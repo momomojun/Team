@@ -94,7 +94,7 @@ def test_every_model_down_the_copilot_still_answers_with_rules():
 def test_the_trip_engine_refusing_a_request_gives_a_clear_reply(monkeypatch):
     from nps_copilot import pipeline
 
-    def refuse(request, reference_date):
+    def refuse(request, reference_date, **_):
         raise PlanError("行程引擎拒绝了请求", [{"path": "/days", "message": "天数要在 1 到 14 天之间"}])
 
     monkeypatch.setattr(pipeline, "plan_trip", refuse)

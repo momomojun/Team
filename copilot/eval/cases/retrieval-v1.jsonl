@@ -1,0 +1,48 @@
+{"id": "N01", "kind": "named", "query": "隧道观景点几点去光线最好", "parks": ["yose"], "relevant": ["yose-tunnel-view"]}
+{"id": "N02", "kind": "named", "query": "El Portal离园区多远", "parks": ["yose"], "relevant": ["yose-stay-el-portal"]}
+{"id": "N03", "kind": "named", "query": "天使降临要抽签吗", "parks": ["zion"], "relevant": ["zion-angels-landing", "activity:zion:Angels Landing Permit Lottery"]}
+{"id": "N04", "kind": "named", "query": "老忠实泉多久喷一次", "parks": ["yell"], "relevant": ["yell-old-faithful"]}
+{"id": "N05", "kind": "named", "query": "精致拱门的步道难不难走", "parks": ["arch"], "relevant": ["arch-delicate-arch"]}
+{"id": "N06", "kind": "named", "query": "冰川点几月开放", "parks": ["yose"], "relevant": ["yose-glacier-point"]}
+{"id": "N07", "kind": "named", "query": "大棱镜泉从哪里看最好", "parks": ["yell"], "relevant": ["yell-grand-prismatic", "yell-grand-prismatic-overlook"]}
+{"id": "N08", "kind": "named", "query": "洛根山口停车场几点满", "parks": ["glac"], "relevant": ["glac-logan-pass"]}
+{"id": "N09", "kind": "named", "query": "雾径要走多久", "parks": ["yose"], "relevant": ["yose-mist-trail"]}
+{"id": "N10", "kind": "named", "query": "马里波萨巨杉林要坐班车吗", "parks": ["yose"], "relevant": ["yose-mariposa-grove"]}
+{"id": "N11", "kind": "named", "query": "珍妮湖可以坐船过去吗", "parks": ["grte"], "relevant": ["grte-jenny-lake"]}
+{"id": "N12", "kind": "named", "query": "拉马尔山谷能看到狼吗", "parks": ["yell"], "relevant": ["yell-lamar-valley", "activity:yell:Winter Wolf Watching in Lamar Valley"]}
+{"id": "N13", "kind": "named", "query": "扎布里斯基角看日出还是日落", "parks": ["deva"], "relevant": ["deva-zabriskie"]}
+{"id": "N14", "kind": "named", "query": "翡翠池步道适合带小孩吗", "parks": ["zion"], "relevant": ["zion-emerald-pools"]}
+{"id": "N15", "kind": "named", "query": "光明天使步道往下走要带多少水", "parks": ["grca"], "relevant": ["grca-bright-angel"]}
+{"id": "N16", "kind": "named", "query": "骷髅岩在哪", "parks": ["jotr"], "relevant": ["jotr-skull-rock"]}
+{"id": "V01", "kind": "vague", "query": "优胜美地哪里能一眼看到酋长岩、瀑布和半穹顶同框", "parks": ["yose"], "relevant": ["yose-tunnel-view"]}
+{"id": "V02", "kind": "vague", "query": "锡安那条要蹚着河水走的峡谷", "parks": ["zion"], "relevant": ["zion-narrows"]}
+{"id": "V03", "kind": "vague", "query": "黄石最有名、差不多按时喷发的那个间歇泉", "parks": ["yell"], "relevant": ["yell-old-faithful"]}
+{"id": "V04", "kind": "vague", "query": "犹他州车牌上那个拱门在哪看", "parks": ["arch"], "relevant": ["arch-delicate-arch", "arch-delicate-arch-viewpoint"]}
+{"id": "V05", "kind": "vague", "query": "北美海拔最低的地方", "parks": ["deva"], "relevant": ["deva-badwater"]}
+{"id": "V06", "kind": "vague", "query": "大雾山里能看到熊、鹿和老木屋的环形路", "parks": ["grsm"], "relevant": ["grsm-cades-cove"]}
+{"id": "V07", "kind": "vague", "query": "世界上体积最大的那棵树", "parks": ["seki"], "relevant": ["seki-general-sherman"]}
+{"id": "V08", "kind": "vague", "query": "火山口湖唯一能下到湖边的地方", "parks": ["crla"], "relevant": ["crla-cleetwood-cove"]}
+{"id": "V09", "kind": "vague", "query": "拉森公园里沿着木栈道看泥浆池冒泡的地热区", "parks": ["lavo"], "relevant": ["lavo-bumpass-hell"]}
+{"id": "V10", "kind": "vague", "query": "卡尔斯巴德洞窟里最大的那个地下大厅", "parks": ["cave"], "relevant": ["cave-big-room"]}
+{"id": "V11", "kind": "vague", "query": "大弯河两边是几百米高悬崖的那个峡谷", "parks": ["bibe"], "relevant": ["bibe-santa-elena-canyon"]}
+{"id": "V12", "kind": "vague", "query": "大沼泽地最容易看到短吻鳄的木栈道", "parks": ["ever"], "relevant": ["ever-anhinga-trail"]}
+{"id": "V13", "kind": "vague", "query": "二月日落时瀑布被夕阳照成火红色", "parks": ["yose"], "relevant": ["activity:yose:Horsetail Fall Firefall"]}
+{"id": "V14", "kind": "vague", "query": "爬那个要抓着铁链上去的花岗岩圆顶要什么许可", "parks": ["yose"], "relevant": ["yose-half-dome", "activity:yose:Half Dome Cables Permit Lottery"]}
+{"id": "V15", "kind": "vague", "query": "美国本土最早看到日出的山顶", "parks": ["acad"], "relevant": ["acad-cadillac-summit", "activity:acad:First sunrise in the U.S. from Cadillac Mountain"]}
+{"id": "V16", "kind": "vague", "query": "哪里能走进满是苔藓的温带雨林", "parks": ["olym"], "relevant": ["olym-hoh-visitor-center"]}
+{"id": "E01", "kind": "english", "query": "where can I watch Old Faithful erupt", "parks": ["yell"], "relevant": ["yell-old-faithful"]}
+{"id": "E02", "kind": "english", "query": "is there a shuttle to the giant sequoias in Yosemite", "parks": ["yose"], "relevant": ["yose-mariposa-grove"]}
+{"id": "E03", "kind": "english", "query": "best sunrise viewpoint at the Grand Canyon South Rim", "parks": ["grca"], "relevant": ["grca-mather-point", "grca-lipan-point", "grca-grandview-point"]}
+{"id": "E04", "kind": "english", "query": "do I need a permit for Angels Landing", "parks": ["zion"], "relevant": ["zion-angels-landing", "activity:zion:Angels Landing Permit Lottery"]}
+{"id": "E05", "kind": "english", "query": "lowest point in North America", "parks": ["deva"], "relevant": ["deva-badwater"]}
+{"id": "E06", "kind": "english", "query": "hike to the edge of the Grand Prismatic hot spring for the view from above", "parks": ["yell"], "relevant": ["yell-grand-prismatic-overlook"]}
+{"id": "E07", "kind": "english", "query": "where to see wolves in Yellowstone", "parks": ["yell"], "relevant": ["yell-lamar-valley", "activity:yell:Winter Wolf Watching in Lamar Valley"]}
+{"id": "E08", "kind": "english", "query": "biggest tree on earth", "parks": ["seki"], "relevant": ["seki-general-sherman"]}
+{"id": "E09", "kind": "english", "query": "walk through the river in a slot canyon in Zion", "parks": ["zion"], "relevant": ["zion-narrows"]}
+{"id": "E10", "kind": "english", "query": "wildflower meadow trail with views of Mount Rainier from Paradise", "parks": ["mora"], "relevant": ["mora-skyline-trail"]}
+{"id": "E11", "kind": "english", "query": "alligators boardwalk Everglades", "parks": ["ever"], "relevant": ["ever-anhinga-trail"]}
+{"id": "E12", "kind": "english", "query": "glowing lava crater at night in Hawaii Volcanoes", "parks": ["havo"], "relevant": ["havo-uekahuna", "havo-kilauea-overlook", "havo-eruption-glow"]}
+{"id": "E13", "kind": "english", "query": "easy lake walk with a shuttle in Rocky Mountain National Park", "parks": ["romo"], "relevant": ["romo-bear-lake"]}
+{"id": "E14", "kind": "english", "query": "how far can I drive on the Denali park road in my own car", "parks": ["dena"], "relevant": ["dena-savage-river"]}
+{"id": "E15", "kind": "english", "query": "drive into the white gypsum sand dunes", "parks": ["whsa"], "relevant": ["whsa-dunes-drive"]}
+{"id": "E16", "kind": "english", "query": "two big arches you can walk under on a short trail in Arches", "parks": ["arch"], "relevant": ["arch-windows"]}

@@ -21,6 +21,11 @@ export interface SeasonalRoad {
   /** 也要走这条路，但路通了还要等步道、支路化雪的景点：路况和它们自己的开放月份都要看 */
   afterRoad?: string[];
   /**
+   * 在路两头、春天先扫雪的路段上的景点（拉森的硫磺厂、Devastated Area）：春天比全线早通（opens 前后），
+   * 秋天和全线一起封。按“春天 opens 就通、秋天按全线往年的封路日期”算，秋天和路中间的景点说法一致
+   */
+  endSections?: { ids: string[]; opens: string };
+  /**
    * 路封着的时候，side 这一侧的住处、景点和公园里另一侧之间要绕到园外：两侧各取一个出入口（住处 id），
    * minutes 是两个出入口之间绕一圈要开多久（OSRM 按绕路经过的山口算，校正过车速）；
    * neutral 是绕路的路上就经过、两边都不用翻山的（比如冰川 2 号公路边的 Goat Lick），按原来的车程算
@@ -173,6 +178,8 @@ const roads: Omit<SeasonalRoad, "years" | "checked">[] = [
     nameEn: "Lassen National Park Highway (SR 89)",
     attractions: ["lavo-lake-helen", "lavo-kings-creek-falls"],
     afterRoad: ["lavo-bumpass-hell", "lavo-lassen-peak"],
+    // 10-21 仓库主人试用时发现：11 月初海伦湖说“往年 16/19 年通车”，同一条路上的硫磺厂却按开放月份说“去不了”
+    endSections: { ids: ["lavo-sulphur-works", "lavo-devastated-area", "lavo-hot-rock"], opens: "05-01" },
     around: {
       side: [
         "lavo-manzanita-lake",
