@@ -57,11 +57,12 @@ export function AttractionsExplorer({
   text: AttractionText;
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  // 鼠标停在哪张卡片上（地图拉近过去）；触屏没有悬停，不记
+  // 鼠标停在哪张卡片上（地图上那个点亮起来，镜头不动）；触屏没有悬停，不记
   const [hoverId, setHoverId] = useState<string | null>(null);
   const hover = (id: string | null) => {
     if (id === null || window.matchMedia("(hover: hover) and (pointer: fine)").matches) setHoverId(id);
   };
+  const [focusTick, setFocusTick] = useState(0);
   const [filter, setFilter] = useState<Filter>("all");
   const [sort, setSort] = useState<Sort>("rank");
   const mapRef = useRef<HTMLDivElement>(null);
@@ -125,6 +126,7 @@ export function AttractionsExplorer({
   // 点卡片上的“在地图上看”：手机上先把地图滚回视野
   const selectFromList = (id: string) => {
     setSelectedId(id);
+    setFocusTick((tick) => tick + 1);
     mapRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   };
 
@@ -144,6 +146,7 @@ export function AttractionsExplorer({
             highlightTrailId={hoverId ?? selectedId}
             selectedId={selectedId}
             hoverId={hoverId}
+            focusTick={focusTick}
             onSelect={selectFromMap}
             text={text.map}
             className="h-[26rem] lg:h-[calc(100vh-8rem)]"

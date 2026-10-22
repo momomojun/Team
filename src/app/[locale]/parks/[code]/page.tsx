@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ParkLocator } from "@/components/park/park-locator";
 import { ParkProfile } from "@/components/park/park-profile";
+import { ParkYear } from "@/components/park/park-year";
 import { TimeZoneBlock } from "@/components/park/time-zone-block";
 import { IconArrowRight } from "@/components/icons";
 import { CommonsImage } from "@/components/commons-image";
@@ -45,10 +47,6 @@ export default async function ParkOverviewPage({ params }: PageProps<"/[locale]/
           )}
         </div>
         <aside className="space-y-10 lg:col-span-3">
-          <div>
-            <p className="eyebrow text-mute">{t.seasonTitle}</p>
-            <p className="mt-4 text-sm leading-7 text-ink-soft">{park.seasonNote}</p>
-          </div>
           <TimeZoneBlock park={park.code} timeZone={park.timeZone} locale={view.locale} dict={dict} />
           <ParkProfile code={park.code} visits={visits} locale={view.locale} dict={dict} />
           <div>
@@ -101,6 +99,9 @@ export default async function ParkOverviewPage({ params }: PageProps<"/[locale]/
           </div>
         </section>
       )}
+
+      <ParkLocator park={park} locale={view.locale} dict={dict} />
+      <ParkYear park={park} locale={view.locale} dict={dict} />
     </>
   );
 }
