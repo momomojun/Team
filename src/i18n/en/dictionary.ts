@@ -1459,7 +1459,8 @@ export const en: Dictionary = {
       partyWheelchair: "Wheelchair user",
       together: "Combine into one trip",
       togetherHint:
-        "The parks you pick are linked into one route. For example, start in Salt Lake City, visit Grand Teton, head north into Yellowstone, then drive back to Salt Lake City.",
+        "The parks you pick are linked into one route. For example, start in Salt Lake City, visit Grand Teton, head north into Yellowstone, then drive back to Salt Lake City. Parks shown with hours are within a day's drive and can join too, up to 6 per trip.",
+      driveHours: "· about {h} hr drive",
       lodgingPref: "Lodging preference",
       lodgingPrefs: { any: "Any", hotel: "Hotels & in-park lodges", rental: "Vacation rentals (Airbnb)", camp: "Camping" },
       lodgingPrefHints: {

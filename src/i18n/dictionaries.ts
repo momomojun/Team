@@ -1425,7 +1425,8 @@ const zhHans = {
       partySeniors: "老人 / 体力一般",
       partyWheelchair: "坐轮椅",
       together: "顺路一起玩",
-      togetherHint: "选上的公园会排成一条线路，比如从盐湖城出发，先玩大提顿、再往北进黄石，最后开回盐湖城。",
+      togetherHint: "选上的公园会排成一条线路，比如从盐湖城出发，先玩大提顿、再往北进黄石，最后开回盐湖城。后面写着几小时的是开车一天能到的，也能一起排，一趟最多 6 座。",
+      driveHours: "· 开车约 {h} 小时",
       lodgingPref: "住宿偏好",
       lodgingPrefs: { any: "不限", hotel: "酒店 / 园内住宿", rental: "民宿（Airbnb）", camp: "露营" },
       lodgingPrefHints: {

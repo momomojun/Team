@@ -138,3 +138,52 @@ def test_progress_is_reported_by_real_steps():
     # 报进度出错（连接断了）不影响这一轮
     session.progress = lambda event: (_ for _ in ()).throw(RuntimeError("断了"))
     assert session.send("好的").status == "planned"
+
+
+# 10-22 仓库主人试的：先说拉森，再说“我还要去红木”，拉森被换成了红木；后面两次说“两个都要去”也没加回来
+LASSEN = "2027年6月6日从奥克兰去拉森国家公园玩4天，节奏适中"
+
+
+def lassen_session(*more):
+    provider = ScriptedProvider([
+        act({"type": "conditions", "place": "拉森国家公园"}),
+        extraction(parks=["拉森国家公园"], dates=["2027年6月6日"], duration="4天", origin="奥克兰", preferences=["节奏适中"]),
+        *more,
+    ])
+    session = Session(provider, "2026-10-22", log=False)
+    first = session.send(LASSEN)
+    assert first.status == "planned" and first.request["parks"] == ["lavo"]
+    return session
+
+
+def test_also_going_adds_the_park_instead_of_replacing_it():
+    session = lassen_session(
+        act({"type": "conditions"}, {"type": "add_stop", "place": "红木国家公园"}),
+        extraction(parks=["红木国家公园"]),
+    )
+    reply = session.send("我还要去红木国家公园")
+    assert reply.status == "planned" and sorted(reply.request["parks"]) == ["lavo", "redw"]
+    assert "没找到" not in reply.text
+
+
+def test_add_stop_naming_a_park_adds_the_park():
+    session = lassen_session(act({"type": "add_stop", "place": "红木国家公园"}))
+    reply = session.send("红木国家公园也要去")
+    assert sorted(reply.request["parks"]) == ["lavo", "redw"] and "没找到" not in reply.text
+
+
+def test_correction_naming_both_parks_is_read_as_conditions():
+    # 调度员把它当成提问（还写成“用户想……请确认”）：这句点了行程里没有的公园、又不是在问，按条件读
+    session = lassen_session(
+        act({"type": "ask", "query": "用户想去拉森国家公园和红木国家公园，请确认是否需要在行程中加入。"}),
+        extraction(parks=["拉森", "红木"]),
+    )
+    reply = session.send("我的意思是去拉森和红木两个国家公园")
+    assert reply.trace.get("added_conditions") and sorted(reply.request["parks"]) == ["lavo", "redw"]
+    assert "用户想" not in reply.text
+
+
+def test_a_park_too_far_away_is_not_added():
+    session = lassen_session(act({"type": "add_stop", "place": "阿卡迪亚"}))
+    reply = session.send("阿卡迪亚也要去")
+    assert reply.request["parks"] == ["lavo"] and "开车一天到不了" in reply.text

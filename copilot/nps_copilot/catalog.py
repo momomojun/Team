@@ -30,6 +30,8 @@ class Park:
     aliases: tuple[str, ...]
     # 常用机场开到公园定位点的分钟数
     airport_minutes: tuple[tuple[str, int], ...] = ()
+    # 能和它排进同一趟的公园：常一起玩的，或者开车一天能到（网站的 trip-parks.ts 算好写进 parks.json）
+    linked: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -100,8 +102,36 @@ def parks() -> dict[str, Park]:
             nearby=tuple(row["nearby"]),
             aliases=tuple(dict.fromkeys(aliases)),
             airport_minutes=tuple(row.get("airportMinutes", {}).items()),
+            linked=tuple(row.get("linked", row["nearby"])),
         )
     return result
+
+
+@lru_cache(maxsize=1)
+def max_trip_parks() -> int:
+    """一趟最多几座公园：按契约的 parks.maxItems（网站的 MAX_TRIP_PARKS）"""
+    schema = json.loads((CONTRACTS / "trip-request.v1.schema.json").read_text(encoding="utf-8"))
+    return int(schema["properties"]["parks"]["maxItems"])
+
+
+def reachable(codes: list[str]) -> list[str]:
+    """从第一座出发，一段一段连得到的公园（保持原来的顺序）：死亡谷 + 红杉与国王峡谷、锡安 + 布莱斯 + 羚羊峡谷 + 马蹄湾 + 大峡谷都连得上"""
+    table = parks()
+    if not codes:
+        return []
+    reached = {codes[0]}
+    grew = True
+    while grew:
+        grew = False
+        for code in codes:
+            if code not in reached and any(code in table[other].linked or other in table[code].linked for other in reached):
+                reached.add(code)
+                grew = True
+    return [code for code in codes if code in reached]
+
+
+def one_trip(codes: list[str]) -> bool:
+    return len(reachable(codes)) == len(codes)
 
 
 @lru_cache(maxsize=1)

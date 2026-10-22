@@ -8,6 +8,7 @@ import { fill, otherName } from "@/i18n/format";
 import type { LodgingPref, Pace } from "@/lib/generate-trip";
 import { searchPlaces, type PlaceResult } from "@/lib/geocode";
 import type { Party } from "@/lib/suitability";
+import { driveFromTrip, linked, MAX_TRIP_PARKS, reachable } from "@/lib/trip-parks";
 import { MAX_DAYS } from "@/lib/trip-store";
 import type { PlannerPark, PlannerText } from "./types";
 
@@ -211,8 +212,19 @@ export function TripWizard({
   const [destination, setDestination] = useState<WizardPlace | null>(null);
 
   const park = parks.find((p) => p.code === (parkCode ?? requestedPark)) ?? parks[0];
-  const companions = park.nearby.flatMap((code) => parks.filter((p) => p.code === code));
-  const selectedParks = [park, ...companions.filter((p) => extraParks.includes(p.code))];
+  const nearbyOf = (code: string) => parks.find((p) => p.code === code)?.nearby ?? [];
+  // 选上的：主公园 + 顺路的；取消了中间那座、剩下的连不上主公园了，就不算
+  const chosen = reachable([park.code, ...extraParks.filter((code) => code !== park.code)], nearbyOf);
+  const selectedParks = chosen.flatMap((code) => parks.filter((p) => p.code === code));
+  // 能加的：和已经选的任意一座连得上（常一起玩的，或者开车一天能到）；常一起玩的排前面，其余按开车多久排
+  const companions = parks
+    .filter((p) => p.code !== park.code && (chosen.includes(p.code) || chosen.some((code) => linked(code, p.code, nearbyOf))))
+    .map((p) => {
+      const others = chosen.filter((code) => code !== p.code);
+      return { park: p, usual: others.some((code) => nearbyOf(code).includes(p.code) || p.nearby.includes(code)), minutes: driveFromTrip(p.code, others) };
+    })
+    .sort((a, b) => Number(b.usual) - Number(a.usual) || (a.minutes ?? Infinity) - (b.minutes ?? Infinity));
+  const full = selectedParks.length >= MAX_TRIP_PARKS;
   // 几个公园的常用机场合在一起，主要公园的排前面
   const quick = [...new Set(selectedParks.flatMap((p) => p.airports))]
     .map((code) => airports[code])
@@ -367,17 +379,24 @@ export function TripWizard({
         <div>
           <p className="eyebrow text-mute">{t.together}</p>
           <div className="mt-3 flex flex-wrap gap-2">
-            {companions.map((p) => (
-              <button
-                key={p.code}
-                type="button"
-                aria-pressed={extraParks.includes(p.code)}
-                className={chip(extraParks.includes(p.code))}
-                onClick={() => toggleCompanion(p.code)}
-              >
-                + {p.nameZh} {otherName(p.nameZh, p.nameEn)}
-              </button>
-            ))}
+            {companions.map(({ park: p, usual, minutes }) => {
+              const picked = chosen.includes(p.code);
+              return (
+                <button
+                  key={p.code}
+                  type="button"
+                  aria-pressed={picked}
+                  disabled={!picked && full}
+                  className={`${chip(picked)} disabled:opacity-40`}
+                  onClick={() => toggleCompanion(p.code)}
+                >
+                  + {p.nameZh} {otherName(p.nameZh, p.nameEn)}
+                  {!usual && minutes !== null && (
+                    <span className={picked ? "ml-1.5 opacity-75" : "ml-1.5 text-mute"}>{fill(t.driveHours, { h: Math.max(1, Math.round(minutes / 30) / 2) })}</span>
+                  )}
+                </button>
+              );
+            })}
           </div>
           <p className="mt-2 text-xs leading-6 text-mute">{t.togetherHint}</p>
         </div>
