@@ -616,7 +616,7 @@ export const en: Dictionary = {
     embedHide: "Hide",
     filmSource: "Source",
     filmHowTo: "How to get the shot",
-    celebPlatforms: { instagram: "Instagram", x: "X", weibo: "Weibo", youtube: "YouTube" } as Record<string, string>,
+    celebPlatforms: { instagram: "Instagram", x: "X", weibo: "Weibo", youtube: "YouTube", facebook: "Facebook" } as Record<string, string>,
     bilibili: "Bilibili",
     creatorLanguages,
     photos: "{n} {n|photo|photos}",

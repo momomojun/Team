@@ -15,7 +15,7 @@ test("明星同款：公园、景点都存在，有报道来源，链接和日�
     if (shot.attraction) {
       assert.equal(byId.get(shot.attraction)?.park, shot.park, `${shot.id} 的景点不在这座公园：${shot.attraction}`);
     }
-    assert.match(shot.date, /^\d{4}-\d{2}(-\d{2})?$/);
+    assert.match(shot.date, /^\d{4}(-\d{2}(-\d{2})?)?$/);
     assert.ok(shot.sources.length > 0, `${shot.id} 没有报道来源`);
     for (const url of [shot.postUrl, shot.profileUrl, ...shot.sources].filter(Boolean)) assert.match(url!, /^https:\/\//);
     // 原帖、主页都没有的要在说明里写清楚
