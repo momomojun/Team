@@ -593,7 +593,7 @@ const zhHans = {
     embedHide: "收起",
     filmSource: "来源",
     filmHowTo: "怎么拍同款",
-    celebPlatforms: { instagram: "Instagram", x: "X", weibo: "微博", youtube: "YouTube" } as Record<string, string>,
+    celebPlatforms: { instagram: "Instagram", x: "X", weibo: "微博", youtube: "YouTube", facebook: "Facebook" } as Record<string, string>,
     bilibili: "B 站",
     creatorLanguages,
     photos: "{n} 张照片",
