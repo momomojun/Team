@@ -1,4 +1,6 @@
+import { CreditedPhoto } from "@/components/credited-photo";
 import type { CelebrityShot } from "@/data/celebrities";
+import type { Photo } from "@/data/attractions/types";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { fill, otherName } from "@/i18n/format";
 import { MediaEmbed } from "@/components/media-embed";
@@ -15,11 +17,30 @@ const dateText = (date: string) => date.replaceAll("-", ".");
  * 一条明星同款：谁、哪天发的、链接（原帖，没有就本人主页）和报道，照片里怎么拍的、怎么拍同款、安全提醒。
  * compact：行程里展开的景点详情，只留拍法和链接
  */
-export function CelebrityShotItem({ shot, text, compact = false }: { shot: CelebrityShot; text: CelebText; compact?: boolean }) {
+export function CelebrityShotItem({
+  shot,
+  text,
+  compact = false,
+  photo,
+}: {
+  shot: CelebrityShot;
+  text: CelebText;
+  compact?: boolean;
+  photo?: Photo;
+}) {
   const t = text.attraction;
   const link = shot.postUrl ?? shot.profileUrl;
   return (
     <div className="text-sm leading-6">
+      {photo && !compact && (
+        <CreditedPhoto
+          photo={photo}
+          alt={`${shot.nameZh} · ${shot.placeZh}`}
+          creditTemplate={t.photoCredit}
+          sizes="(min-width: 768px) 40vw, 100vw"
+          className="mb-3 aspect-[3/2]"
+        />
+      )}
       <p className="flex flex-wrap items-baseline gap-x-2 text-xs text-mute">
         <span className="font-serif text-base text-ink">{shot.nameZh}</span>
         {otherName(shot.nameZh, shot.nameEn) && <span className="text-ink-soft">{shot.nameEn}</span>}

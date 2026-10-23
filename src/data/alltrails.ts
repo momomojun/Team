@@ -75,12 +75,50 @@ export const ALLTRAILS_PARKS: Record<string, string[]> = {
 
 export const alltrailsParkUrls = (park: string) => (ALLTRAILS_PARKS[park] ?? []).map((path) => `https://www.alltrails.com/parks/${path}`);
 
+/** 已知 AllTrails 步道 slug 时直接拼出步道详情页链接 */
+export const alltrailsTrailUrl = (slug: string) => `https://www.alltrails.com/trail/${slug}`;
+
+/** 根据 AllTrails 的 profile_photo_data（形如 "127072286-3d432de0c3b377614907487488a91895"）拼出官方精选封面图 CDN 地址 */
+export function alltrailsPhotoUrl(photoData?: string, width = 320, height = 320): string | undefined {
+  if (!photoData) return undefined;
+  const dash = photoData.indexOf("-");
+  if (dash <= 0) return undefined;
+  const id = photoData.slice(0, dash);
+  const hash = photoData.slice(dash + 1);
+  const payload = JSON.stringify({
+    bucket: "assets.alltrails.com",
+    key: `uploads/photo/image/${id}/${hash}.jpg`,
+    edits: {
+      toFormat: "jpeg",
+      resize: { width, height, fit: "inside" },
+      rotate: null,
+      jpeg: {
+        trellisQuantisation: true,
+        overshootDeringing: true,
+        optimiseScans: true,
+        quantisationTable: 3,
+      },
+    },
+  });
+  const b64 = typeof btoa === "function" ? btoa(payload) : Buffer.from(payload).toString("base64");
+  return `https://images.alltrails.com/${b64}`;
+}
+
 /**
- * 单条步道：AllTrails 的地址按它自己的名字起（mist-trail、angels-landing-trail……），和我们的名字对不上，
- * 也没有不登录、不抓页面就能查的接口；所以用搜索，只搜 alltrails.com/trail 下面的页面，第一条一般就是这条步道
+ * 单条步道回退搜索：当没有精确匹配到 AllTrails slug 时，
+ * 用 Google 限定搜 alltrails.com/trail 下面的页面
  */
 export function alltrailsSearchUrl(trailNameEn: string, parkNameEn: string) {
-  // 不加引号：AllTrails 的名字常和我们的差一点（“Upper Yosemite Fall Trail” 在那边是 “Upper Yosemite Falls Trail”），加了引号反而搜到别的步道
   const query = `site:alltrails.com/trail ${trailNameEn.replace(/["“”]/g, "")} ${parkNameEn}`;
   return `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+}
+
+/** 优先返回已匹配的 AllTrails 步道直达链接，无匹配时回退到搜索 */
+export function alltrailsAttractionUrl(
+  attraction: { nameEn: string; alltrails?: { slug: string } },
+  parkNameEn: string,
+) {
+  return attraction.alltrails?.slug
+    ? alltrailsTrailUrl(attraction.alltrails.slug)
+    : alltrailsSearchUrl(attraction.nameEn, parkNameEn);
 }

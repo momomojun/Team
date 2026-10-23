@@ -17,8 +17,14 @@ export type AttractionText = Pick<
   "attraction" | "kinds" | "difficulty" | "timeOfDay" | "units" | "trip" | "map"
 >;
 
-/** 热度名次（按 Google 评论数）+ Google 评分和评论数；没有 Google 数据时不显示 */
-export function PopularityBadge({ attraction, text }: { attraction: AttractionWithPhoto; text: AttractionText }) {
+/** 景点页的热度名次（按 Google 评论数）+ Google 评分和评论数；与徒步页（AllTrails）完全独立 */
+export function PopularityBadge({
+  attraction,
+  text,
+}: {
+  attraction: AttractionWithPhoto;
+  text: AttractionText;
+}) {
   const { google, hotRank } = attraction;
   if (!google) return null;
   const t = text.attraction;

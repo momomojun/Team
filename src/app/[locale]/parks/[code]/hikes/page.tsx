@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { HikesExplorer } from "@/components/attractions/hikes-explorer";
 import { IconArrowRight } from "@/components/icons";
+import { alltrailsParkCounts, alltrailsParkTop } from "@/data/attractions";
 import { alltrailsParkUrls } from "@/data/alltrails";
-import { fill } from "@/i18n/format";
+import { fill, formatCount } from "@/i18n/format";
 import { loadParkPage, parkContainer, parkPath } from "@/lib/park-page";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/parks/[code]/hikes">): Promise<Metadata> {
@@ -13,14 +14,17 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/parks/[c
   return { title: `${view.t.nav.hikes} · ${view.title}` };
 }
 
-/** 徒步路线：这座公园所有带徒步数据的景点，地图上画出步道，附 AllTrails 链接（10-22 仓库主人要的） */
+/** 徒步步道专页：与“景点”完全独立，直接基于 AllTrails 国家公园步道数据集展示热门 Trail */
 export default async function HikesPage({ params }: PageProps<"/[locale]/parks/[code]/hikes">) {
   const { locale, code } = await params;
   const view = loadParkPage(locale, code);
   if (!view) notFound();
   const { park, attractions, canada, dict, t } = view;
   const hikes = attractions.filter((a) => a.hike);
-  if (hikes.length === 0) notFound();
+  const topTrails = alltrailsParkTop[park.code] ?? [];
+  if (hikes.length === 0 && topTrails.length === 0) notFound();
+  const totalTrails = alltrailsParkCounts[park.code] ?? topTrails.length;
+  const displayCount = topTrails.length > 0 ? topTrails.length : hikes.length;
   const parkPages = alltrailsParkUrls(park.code);
   const parkPageNames = park.code === "seki" ? ["Sequoia", "Kings Canyon"] : [];
 
@@ -29,12 +33,19 @@ export default async function HikesPage({ params }: PageProps<"/[locale]/parks/[
       <div className="mb-12 grid gap-8 lg:grid-cols-12">
         <div className="lg:col-span-7">
           <p className="eyebrow text-mute">{t.hikes.eyebrow}</p>
-          <h2 className="mt-5 font-serif text-[clamp(2rem,3.5vw,3.2rem)] leading-tight">{fill(t.hikes.title, { n: hikes.length })}</h2>
-          <p className="mt-5 max-w-2xl text-sm leading-7 text-ink-soft">{t.hikes.intro}</p>
+          <h2 className="mt-5 font-serif text-[clamp(2rem,3.5vw,3.2rem)] leading-tight">
+            {fill(t.hikes.title, { n: displayCount })}
+          </h2>
+          <p className="mt-5 max-w-2xl text-sm leading-7 text-ink-soft">
+            {totalTrails > displayCount
+              ? `${fill(t.hikes.list.topSubtitle, { total: formatCount(totalTrails) })} `
+              : ""}
+            {t.hikes.intro}
+          </p>
         </div>
         {parkPages.length > 0 && (
           <div className="self-end border-l border-clay-600 pl-5 text-sm leading-7 lg:col-span-5">
-            <p className="eyebrow text-clay-700">AllTrails</p>
+            <p className="eyebrow text-clay-700">AllTrails Dataset</p>
             <ul className="mt-2 space-y-1">
               {parkPages.map((url, i) => (
                 <li key={url}>
@@ -51,6 +62,8 @@ export default async function HikesPage({ params }: PageProps<"/[locale]/parks/[
       </div>
       <HikesExplorer
         hikes={hikes}
+        topTrails={topTrails}
+        totalTrails={totalTrails}
         parkNameEn={park.nameEn}
         attractionsHref={parkPath(locale, code, "attractions")}
         imagery={canada ? "eox" : "usgs"}

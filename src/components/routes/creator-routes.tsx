@@ -25,6 +25,7 @@ export function CreatorRoutes({
   routes,
   parks,
   stopNames,
+  stopPhotos,
   locale,
   text,
 }: {
@@ -33,6 +34,8 @@ export function CreatorRoutes({
   parks: { code: string; nameZh: string }[];
   /** 景点 id → 名字和公园（路线里用到的） */
   stopNames: Record<string, { nameZh: string; park: string }>;
+  /** 景点 id → 缩略图 */
+  stopPhotos?: Record<string, string>;
   locale: string;
   text: RoutesText;
 }) {
@@ -143,8 +146,37 @@ export function CreatorRoutes({
       <ul className="mt-10 grid gap-x-12 gap-y-14 lg:grid-cols-2">
         {visible.map((route) => {
           const linked = (route.route ?? []).flatMap((day) => day.stops).filter(known);
+          const coverUrl =
+            route.cover ||
+            (route.platform === "youtube" ? `https://i.ytimg.com/vi/${route.id.replace("yt-", "")}/hqdefault.jpg` : undefined);
           return (
             <li key={route.id} id={route.id} className="scroll-mt-32 border-t border-ink pt-5">
+              {coverUrl && (
+                <a
+                  href={route.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group relative mb-4 block aspect-video w-full overflow-hidden border border-line bg-paper-deep"
+                >
+                  <img
+                    src={coverUrl}
+                    alt={route.title}
+                    referrerPolicy="no-referrer"
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/25 opacity-0 transition-opacity group-hover:opacity-100">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-clay-700/90 text-white shadow-lg transition-transform group-hover:scale-110">
+                      <span className="ml-0.5 text-base leading-none" aria-hidden>▶</span>
+                    </span>
+                  </div>
+                  {route.durationMin !== undefined && (
+                    <span className="absolute right-2 bottom-2 rounded bg-black/80 px-2 py-0.5 text-[11px] font-mono text-white backdrop-blur-xs">
+                      {route.durationMin} min
+                    </span>
+                  )}
+                </a>
+              )}
               <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-mute">
                 <span
                   className={`px-1.5 py-0.5 text-[11px] tracking-[0.08em] text-paper ${
@@ -209,6 +241,31 @@ export function CreatorRoutes({
                       </li>
                     ))}
                   </ol>
+                  {stopPhotos && linked.some((id) => stopPhotos[id]) && (
+                    <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+                      {linked
+                        .filter((id) => stopPhotos[id])
+                        .slice(0, 5)
+                        .map((id) => (
+                          <Link
+                            key={id}
+                            href={`/${locale}/parks/${stopNames[id]?.park}/attractions#attraction-${id}`}
+                            className="group relative h-14 w-20 shrink-0 overflow-hidden border border-line bg-paper-deep"
+                            title={stopNames[id]?.nameZh}
+                          >
+                            <img
+                              src={stopPhotos[id]}
+                              alt={stopNames[id]?.nameZh ?? id}
+                              loading="lazy"
+                              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                            />
+                            <span className="absolute inset-x-0 bottom-0 bg-black/60 px-1 py-0.5 text-[9px] text-white truncate block">
+                              {stopNames[id]?.nameZh}
+                            </span>
+                          </Link>
+                        ))}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -222,8 +279,8 @@ export function CreatorRoutes({
                     {route.notes.map((note) => (
                       <li key={note.stop}>
                         <span className="text-ink">{stopNames[note.stop]?.nameZh ?? note.stop}</span>
-                          {text.colon}
-                          {note.text}
+                        {text.colon}
+                        {note.text}
                       </li>
                     ))}
                   </ul>

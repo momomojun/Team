@@ -56,16 +56,5 @@ export const content: Record<string, string> = {
   "南卡罗来纳": "South Carolina",
   "密苏里": "Missouri",
   "印第安纳": "Indiana",
-  "西弗吉尼亚": "West Virginia",
-  "温泉": "Hot Springs",
-  "皇家岛": "Isle Royale",
-  "猛犸洞": "Mammoth Cave",
-  "维尔京群岛": "Virgin Islands",
-  "航海家": "Voyageurs",
-  "美属萨摩亚": "American Samoa",
-  "凯霍加谷": "Cuyahoga Valley",
-  "康加里": "Congaree",
-  "圣路易斯拱门": "Gateway Arch",
-  "印第安纳沙丘": "Indiana Dunes",
-  "奇里卡瓦": "Chiricahua"
+  "西弗吉尼亚": "West Virginia"
 };

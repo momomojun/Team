@@ -42,6 +42,8 @@ export interface CreatorRoute {
   views: number;
   /** 视频多长；图文没有 */
   durationMin?: number;
+  /** 视频/图文封面图链接 */
+  cover?: string;
   parks: string[];
   /** 玩了几天（视频里说了才有） */
   days?: number;
@@ -434,6 +436,7 @@ export const creatorRoutes: CreatorRoute[] = [
   },
   {
     id: "bili-BV18NAQzQEEj",
+    cover: "https://i2.hdslb.com/bfs/archive/84fa282756f76f23dbd2a8f9569bd4edfd6806d4.jpg",
     platform: "bilibili",
     language: "zh",
     url: "https://www.bilibili.com/video/BV18NAQzQEEj/",
@@ -507,6 +510,7 @@ export const creatorRoutes: CreatorRoute[] = [
   },
   {
     id: "bili-BV1m14y1E7hF",
+    cover: "https://i0.hdslb.com/bfs/archive/2b67414b871fce94009fe9b49fcc0dba8fe4f1cf.jpg",
     platform: "bilibili",
     language: "zh",
     url: "https://www.bilibili.com/video/BV1m14y1E7hF/",
@@ -548,6 +552,7 @@ export const creatorRoutes: CreatorRoute[] = [
   },
   {
     id: "bili-BV1nw43exE5z",
+    cover: "https://i1.hdslb.com/bfs/archive/767139c0cbc46bbdb18d544d4444cd5651fb6e0f.jpg",
     platform: "bilibili",
     language: "zh",
     url: "https://www.bilibili.com/video/BV1nw43exE5z/",
@@ -775,6 +780,7 @@ export const creatorRoutes: CreatorRoute[] = [
   },
   {
     id: "bili-BV1JBu7zXEjR",
+    cover: "https://i1.hdslb.com/bfs/archive/0e223236681a755c0a08c81068f9e2d578a0eaed.jpg",
     platform: "bilibili",
     language: "zh",
     url: "https://www.bilibili.com/video/BV1JBu7zXEjR/",
@@ -801,6 +807,7 @@ export const creatorRoutes: CreatorRoute[] = [
   },
   {
     id: "bili-BV1EX4y1a74w",
+    cover: "https://i2.hdslb.com/bfs/archive/1aa3a4ea03f6cb5f842731ad0e3c7a781b887e4e.jpg",
     platform: "bilibili",
     language: "zh",
     origin: "加拿大温哥华",
@@ -883,6 +890,7 @@ export const creatorRoutes: CreatorRoute[] = [
   },
   {
     id: "bili-BV1ikAczWEJJ",
+    cover: "https://i1.hdslb.com/bfs/archive/2a16ab1b5a1e24af2a3db3fd5858eb89b012ae56.jpg",
     platform: "bilibili",
     language: "zh",
     url: "https://www.bilibili.com/video/BV1ikAczWEJJ/",
@@ -918,6 +926,7 @@ export const creatorRoutes: CreatorRoute[] = [
   },
   {
     id: "bili-BV1DfAxzUE2f",
+    cover: "https://i1.hdslb.com/bfs/archive/458d7dc7a5dda0ac0dafb62805367aefed740edd.jpg",
     platform: "bilibili",
     language: "zh",
     url: "https://www.bilibili.com/video/BV1DfAxzUE2f/",
@@ -1072,6 +1081,7 @@ export const creatorRoutes: CreatorRoute[] = [
   },
   {
     id: "bili-BV1NEDCBoEtJ",
+    cover: "https://i1.hdslb.com/bfs/archive/d6f6b5b9f7f3474f93c7c5943f6a6216b9149379.jpg",
     platform: "bilibili",
     language: "zh",
     url: "https://www.bilibili.com/video/BV1NEDCBoEtJ/",
@@ -1111,6 +1121,7 @@ export const creatorRoutes: CreatorRoute[] = [
   },
   {
     id: "bili-BV1TseCeLE4k",
+    cover: "https://i1.hdslb.com/bfs/archive/49c88a2bd66207d9674f755aac320311eb461fb5.jpg",
     platform: "bilibili",
     language: "zh",
     url: "https://www.bilibili.com/video/BV1TseCeLE4k/",
@@ -1182,6 +1193,7 @@ export const creatorRoutes: CreatorRoute[] = [
   },
   {
     id: "bili-BV11Q4y1i7bx",
+    cover: "https://i2.hdslb.com/bfs/archive/93129c2754237abc7e4a1537612d42dd7fc1f7cd.jpg",
     platform: "bilibili",
     language: "zh",
     url: "https://www.bilibili.com/video/BV11Q4y1i7bx/",
@@ -1303,6 +1315,7 @@ export const creatorRoutes: CreatorRoute[] = [
   },
   {
     id: "bili-cv12867386",
+    cover: "https://i0.hdslb.com/bfs/article/420e9fbe08e202ee8719afdefcb50a387d368284.jpg",
     platform: "bilibili",
     format: "article",
     language: "zh",
@@ -1391,6 +1404,7 @@ export const creatorRoutes: CreatorRoute[] = [
   },
   {
     id: "bili-BV1Nesaz2Ehs",
+    cover: "https://i2.hdslb.com/bfs/archive/b077f8bdeb7eac4ce49faff352cd5527a23e6ca3.jpg",
     platform: "bilibili",
     language: "zh",
     url: "https://www.bilibili.com/video/BV1Nesaz2Ehs/",
@@ -1427,6 +1441,7 @@ export const creatorRoutes: CreatorRoute[] = [
   },
   {
     id: "bili-BV1HczAYEEvG",
+    cover: "https://i2.hdslb.com/bfs/archive/05ff600cc25a2afc88d0f870057f68ef023e9f2f.jpg",
     platform: "bilibili",
     language: "zh",
     url: "https://www.bilibili.com/video/BV1HczAYEEvG/",
@@ -1489,6 +1504,7 @@ export const creatorRoutes: CreatorRoute[] = [
   },
   {
     id: "bili-cv27133576",
+    cover: "https://i0.hdslb.com/bfs/article/ed8f52f4a2b8d02ff6a96f0b5dcca357401341409.jpg",
     platform: "bilibili",
     format: "article",
     language: "zh",
@@ -2389,5 +2405,373 @@ export const creatorRoutes: CreatorRoute[] = [
       "环球旅行 5 年、后来移居泰国的德国夫妻 Daniel 和 Jessi，开露营车从摩押经盐湖城到黄石，从西门进园、在园里待了 4 天。这一集是第一天：营地、熊、野牛和沿途风景，下一集还有更多熊。",
     route: [{ label: "路线", stops: ["摩押", "盐湖城（逛几天、采购）", "西门进园", "园内营地"] }],
     byDay: false,
+  },
+  {
+    id: "bili-BV1SKDTBFExk",
+    platform: "bilibili",
+    language: "zh",
+    origin: "中国大陆",
+    url: "https://www.bilibili.com/video/BV1SKDTBFExk/",
+    title: "美西环线：火山口上的自然天堂，你一定要来一次的黄石国家公园！",
+    creator: "崔崔与芃哥的环球旅行",
+    published: "2026-04",
+    views: 51875,
+    durationMin: 30,
+    cover: "https://i2.hdslb.com/bfs/archive/dc7eb8cd03693c669ce67928e628a0fe83186104.jpg",
+    parks: ["yell"],
+    days: 3,
+    visited: "初夏自驾，房车营地",
+    basis: "chapters",
+    summary: "自驾黄石8字环线，重点打卡老忠实、大棱镜温泉、泥火山、诺里斯间歇泉盆地以及黄石大峡谷下瀑布。在海登山谷近距离目击美洲野牛和灰熊，建议清晨避开人流前往观景点。",
+    route: [
+      {
+        label: "间歇泉核心区",
+        stops: ["yell-old-faithful","yell-grand-prismatic-overlook","yell-grand-prismatic"],
+      },
+      {
+        label: "地热与峡谷",
+        stops: ["yell-mud-volcano","yell-norris-geyser-basin","yell-artist-point","yell-brink-lower-falls"],
+      },
+      {
+        label: "动物与北线",
+        stops: ["yell-hayden-valley","yell-mammoth-terraces"],
+      },
+    ],
+    byDay: false,
+    notes: [
+      { stop: "yell-grand-prismatic-overlook", text: "走步道去俯瞰台才能看到完整的大棱镜彩虹圈，比木板路平视壮观得多。" },
+      { stop: "yell-hayden-valley", text: "清晨和黄昏野牛成群过马路，经常造成堵车；带望远镜或长焦镜头能看到远处的熊。" },
+      { stop: "yell-artist-point", text: "观赏黄石大峡谷与下瀑布全景的必去点，上午光线顺光适合拍照。" },
+    ],
+    tips: [
+      "黄石公园旺季停车位紧缺，大棱镜和老忠实建议早上9点前或下午5点后前往。",
+      "园内偶遇大型野生动物请务必保持安全距离，熊和狼至少保持91米，野牛鹿类至少23米。"
+],
+  },
+  {
+    id: "bili-BV16vX5BgEjT",
+    platform: "bilibili",
+    language: "zh",
+    origin: "中国大陆",
+    url: "https://www.bilibili.com/video/BV16vX5BgEjT/",
+    title: "美西环线：被黄石掩盖的大提顿？错过这雪山盛宴就亏了！",
+    creator: "崔崔与芃哥的环球旅行",
+    published: "2026-03",
+    views: 20137,
+    durationMin: 10,
+    cover: "https://i2.hdslb.com/bfs/archive/f7ee78b7927ba9f800079d0b8d2cbfc81ec8cad5.jpg",
+    parks: ["grte"],
+    days: 2,
+    visited: "初夏自驾",
+    basis: "chapters",
+    summary: "精选大提顿雪山经典观景台与徒步线路：清晨在蛇河观景台、施瓦巴赫码头与摩门街谷仓拍日照金山倒影，随后前往珍妮湖坐船深入卡斯卡德峡谷徒步。",
+    route: [
+      {
+        label: "经典雪山倒影与人文",
+        stops: ["grte-snake-river-overlook","grte-schwabacher-landing","grte-mormon-row"],
+      },
+      {
+        label: "峡谷深度徒步",
+        stops: ["grte-jenny-lake","grte-cascade-canyon"],
+      },
+    ],
+    byDay: false,
+    notes: [
+      { stop: "grte-schwabacher-landing", text: "日出无风时小溪如镜面，倒映提顿峰群的日照金山，是全园最佳摄影点之一。" },
+      { stop: "grte-cascade-canyon", text: "从珍妮湖乘船到对岸后一路深入U型冰川峡谷，两侧绝壁巍峨，溪水清澈，常能偶遇驼鹿。" },
+    ],
+    tips: [
+      "珍妮湖游船旺季排队较长，建议清早第一班船出发去徒步。"
+],
+  },
+  {
+    id: "bili-BV1mCfFBFEnz",
+    platform: "bilibili",
+    language: "zh",
+    origin: "中国大陆",
+    url: "https://www.bilibili.com/video/BV1mCfFBFEnz/",
+    title: "美西环线：锡安The Narrows涉水步道—《下半身失踪事件》",
+    creator: "崔崔与芃哥的环球旅行",
+    published: "2026-02",
+    views: 31842,
+    durationMin: 10,
+    cover: "https://i1.hdslb.com/bfs/archive/47050a7f737a047e4eca72e72c5ea26b2828ca2c.jpg",
+    parks: ["zion"],
+    days: 1,
+    visited: "秋季自驾",
+    basis: "chapters",
+    summary: "专注打卡锡安国家公园两大招牌体验：租专业装备溯溪徒步窄缝（The Narrows），感受红岩千仞、溪流湍急的震撼地貌；随后走东侧的峡谷观景步道俯瞰棋盘台地与大峡谷。",
+    route: [
+      {
+        label: "窄缝溯溪与峡谷俯瞰",
+        stops: ["zion-riverside-walk","zion-narrows","zion-canyon-overlook"],
+      },
+    ],
+    byDay: false,
+    notes: [
+      { stop: "zion-narrows", text: "水深从脚踝到胸口不等，水流较急、水底鹅卵石很滑，专业溯溪鞋、氯丁橡胶袜和木制硬木手杖必不可少。" },
+      { stop: "zion-canyon-overlook", text: "只有1英里短步道，却能站在悬崖边缘俯瞰整个锡安大峡谷和盘山公路，性价比极高。" },
+    ],
+    tips: [
+      "进窄缝前务必在游客中心或官方网站查看山洪预警（Flash Flood Warning），有降雨风险切勿下水。"
+],
+  },
+  {
+    id: "bili-BV1hdZLBVEvS",
+    platform: "bilibili",
+    language: "zh",
+    origin: "中国大陆",
+    url: "https://www.bilibili.com/video/BV1hdZLBVEvS/",
+    title: "美西环线：5大奇景！承包你对美国西部的所有想象！羚羊谷/纪念碑谷/马蹄湾/鲍威尔湖大合集！",
+    creator: "崔崔与芃哥的环球旅行",
+    published: "2026-02",
+    views: 20339,
+    durationMin: 12,
+    cover: "https://i0.hdslb.com/bfs/archive/cbdf6ce1aa23cfcf165bc4ec6dbeaac4cb1d37d6.jpg",
+    parks: ["ante","mova","hsbd"],
+    days: 2,
+    visited: "秋季自驾",
+    basis: "chapters",
+    summary: "佩吉及纪念碑谷区域精华串联：下羚羊峡谷拍波浪纹砂岩与天光、阿甘正传公路与谷地环线看红色孤丘、傍晚在马蹄湾俯瞰科罗拉多河大回转、鲍威尔湖 Wahweap 观景台看红岩碧水。",
+    route: [
+      {
+        label: "佩吉地标",
+        stops: ["ante-lower-antelope-canyon","hsbd-horseshoe-bend","hsbd-wahweap-overlook"],
+      },
+      {
+        label: "西部经典",
+        stops: ["mova-forrest-gump-point","mova-valley-drive"],
+      },
+    ],
+    byDay: false,
+    notes: [
+      { stop: "ante-lower-antelope-canyon", text: "顺着铁梯下到地缝，狭窄蜿蜒，两侧砂岩纹路如丝绸般流动，向导会热心指导机位与滤镜设置。" },
+      { stop: "hsbd-horseshoe-bend", text: "悬崖高约300米，广角镜头才能拍下完整的马蹄形大拐弯，夕阳西下时对岸红岩被染上金色。" },
+      { stop: "mova-forrest-gump-point", text: "阿甘停下脚步的163号公路笔直延伸至地平线，配合远方孤丘是美西最有辨识度的公路景致。" },
+    ],
+    tips: [
+      "马蹄湾观景台往返需步行约1.5英里沙石坡，夏季高温干燥务必携带充足饮用水和防晒装备。"
+],
+  },
+  {
+    id: "bili-BV16qiwBaEhn",
+    platform: "bilibili",
+    language: "zh",
+    origin: "中国大陆",
+    url: "https://www.bilibili.com/video/BV16qiwBaEhn/",
+    title: "美西环线：北美最出名的冰川山谷，优胜美地国家公园！",
+    creator: "崔崔与芃哥的环球旅行",
+    published: "2026-01",
+    views: 20127,
+    durationMin: 12,
+    cover: "https://i2.hdslb.com/bfs/archive/387cfeaa35b1b2955b6a916520cb2333d535d0c4.jpg",
+    parks: ["yose"],
+    days: 2,
+    visited: "初夏自驾",
+    basis: "chapters",
+    summary: "优胜美地山谷经典两日行程：第一天驾车穿越隧道观景点领略山谷全貌，近距离观赏新娘面纱瀑布与酋长岩；第二天挑战雾径步道至弗纳尔瀑布，漫步镜湖赏半穹顶倒影。",
+    route: [
+      {
+        label: "山谷标志景观",
+        stops: ["yose-tunnel-view","yose-bridalveil-fall","yose-el-capitan","yose-yosemite-falls"],
+      },
+      {
+        label: "山谷徒步体验",
+        stops: ["yose-mist-trail","yose-mirror-lake"],
+      },
+    ],
+    byDay: false,
+    notes: [
+      { stop: "yose-tunnel-view", text: "刚出隧道豁然开朗的经典视角，左手酋长岩、右手新娘面纱瀑布、正前方半穹顶一览无余。" },
+      { stop: "yose-mist-trail", text: "初夏水量丰沛时，行至瀑布下方水汽弥漫扑面而来，阶梯湿滑需穿防水防滑鞋与雨衣。" },
+    ],
+    tips: [
+      "旺季优胜美地山谷车位极其紧张，上午9点后进入常遇严重堵车，强烈建议入住谷内或搭乘穿梭巴士。"
+],
+  },
+  {
+    id: "bili-BV1AdF6zMEqZ",
+    platform: "bilibili",
+    language: "zh",
+    origin: "中国大陆",
+    url: "https://www.bilibili.com/video/BV1AdF6zMEqZ/",
+    title: "美西环线：站在地球最壮观的红色裂痕上，一眼20亿年岁月！徒步大峡谷国家公园！",
+    creator: "崔崔与芃哥的环球旅行",
+    published: "2026-02",
+    views: 19197,
+    durationMin: 15,
+    cover: "https://i2.hdslb.com/bfs/archive/c507dab58854c6ebd53e1698447d0d7f01d5125e.jpg",
+    parks: ["grca"],
+    days: 2,
+    visited: "秋季自驾",
+    basis: "chapters",
+    summary: "大峡谷南缘深度游览：搭乘红线巴士沿隐士之路探访霍皮点与隐士休息站，在橙线马瑟点与亚瓦派欣赏层次分明的地质断层，并沿光明天使步道向下小走一段体验谷底深度。",
+    route: [
+      {
+        label: "红线隐士之路",
+        stops: ["grca-hopi-point","grca-mohave-point","grca-hermits-rest"],
+      },
+      {
+        label: "游客中心与步道体验",
+        stops: ["grca-mather-point","grca-yavapai","grca-bright-angel"],
+      },
+      {
+        label: "东线沙漠之路",
+        stops: ["grca-lipan-point","grca-desert-view"],
+      },
+    ],
+    byDay: false,
+    notes: [
+      { stop: "grca-hopi-point", text: "突出于峡谷的岬角，视野极为开阔，是南缘观赏日出与日落的首选机位。" },
+      { stop: "grca-desert-view", text: "玛丽·科尔特设计的印第安瞭望塔，登上高层可以透过窗口饱览科罗拉多河转弯向北奔流的宏阔景象。" },
+    ],
+    tips: [
+      "隐士之路3月至11月禁止私家车通行，需乘坐免费红线穿梭巴士；走步道下谷务必量力而行，下山容易上山难。"
+],
+  },
+  {
+    id: "bili-BV18jRKBMEWJ",
+    platform: "bilibili",
+    language: "zh",
+    origin: "中国大陆",
+    url: "https://www.bilibili.com/video/BV18jRKBMEWJ/",
+    title: "该如何形容落基山的美？班夫终于给了我答案！",
+    creator: "崔崔与芃哥的环球旅行",
+    published: "2026-05",
+    views: 51517,
+    durationMin: 22,
+    cover: "https://i2.hdslb.com/bfs/archive/c5b9d732a4629a264b2e8ba354ee0cb85467860f.jpg",
+    parks: ["banf"],
+    days: 4,
+    visited: "盛夏自驾",
+    basis: "chapters",
+    summary: "加拿大落基山班夫国家公园完整环线：清晨抢坐班车探访梦莲湖与露易丝湖碧蓝冰川水，漫步明尼万卡湖与双杰克湖，乘坐班夫硫磺山缆车俯瞰落基山群峰，沿弓河谷走约翰斯顿峡谷并北上佩托湖。",
+    route: [
+      {
+        label: "双湖奇景",
+        stops: ["banf-moraine-lake","banf-lake-louise"],
+      },
+      {
+        label: "班夫小镇周边",
+        stops: ["banf-lake-minnewanka","banf-two-jack-lake","banf-banff-gondola"],
+      },
+      {
+        label: "峡谷与冰原大道",
+        stops: ["banf-johnston-canyon","banf-peyto-lake"],
+      },
+    ],
+    byDay: false,
+    notes: [
+      { stop: "banf-moraine-lake", text: "十峰山环抱下的梦莲湖犹如宝石般纯粹，爬上落石堆观景台俯瞰是全网公认的明信片机位。" },
+      { stop: "banf-peyto-lake", text: "形状酷似狐狸或狼头的冰川湖，木栈道观景台修葺完善，色彩在艳阳下呈现不真实的荧光青蓝。" },
+    ],
+    tips: [
+      "梦莲湖已完全禁止私家车进入，必须提前在加拿大公园局官网预订官方穿梭巴士或商业车票。"
+],
+  },
+  {
+    id: "bili-BV1BPRnYAEx6",
+    platform: "bilibili",
+    language: "zh",
+    origin: "中国大陆",
+    url: "https://www.bilibili.com/video/BV1BPRnYAEx6/",
+    title: "在美国国家公园，我找到了全世界最大的树｜Links的美西之旅 下集",
+    creator: "Linksphotograph",
+    published: "2025-03",
+    views: 2955202,
+    durationMin: 27,
+    cover: "https://i1.hdslb.com/bfs/archive/0db893292e714906cd515bdb0389273b59f78ebe.jpg",
+    parks: ["seki","deva"],
+    days: 3,
+    visited: "春季摄影自驾",
+    basis: "chapters",
+    summary: "摄影师视角探寻两处极端自然：先在巨杉国家公园仰望体积全球最大的谢尔曼将军树，攀登莫罗岩；再驱车进入北美海拔最低、最干旱的死亡谷，探访扎布里斯基角金黄色皱褶山丘与恶水盆地盐结晶。",
+    route: [
+      {
+        label: "巨树森林",
+        stops: ["seki-general-sherman","seki-moro-rock"],
+      },
+      {
+        label: "荒芜死谷",
+        stops: ["deva-zabriskie","deva-badwater","deva-artists-palette"],
+      },
+    ],
+    byDay: false,
+    notes: [
+      { stop: "seki-general-sherman", text: "树龄超过2000年的巨杉之王，站立其下能真切体会人类的渺小与巨木的生命力。" },
+      { stop: "deva-zabriskie", text: "千沟万壑的侵蚀泥岩地貌，日出金光照在山尖如同巧克力与奶油流淌的异星世界。" },
+      { stop: "deva-badwater", text: "海拔负86米，六边形白色盐壳向远方地平线无限延伸，空气干燥纯净适合拍摄极简风大片。" },
+    ],
+    tips: [
+      "死亡谷夏季地表温度可高达50度以上，春秋季前往最为舒适，进入荒漠前检查车辆油量与防冻液。"
+],
+  },
+  {
+    id: "bili-BV1Tr421J7Ea",
+    platform: "bilibili",
+    language: "zh",
+    origin: "中国大陆",
+    url: "https://www.bilibili.com/video/BV1Tr421J7Ea/",
+    title: "ZION VLOG｜锡安国家公园｜公路旅行｜野奢帐篷Under Canvas体验｜风景美到无语😂",
+    creator: "Vickysoupsss",
+    published: "2024-05",
+    views: 179824,
+    durationMin: 35,
+    cover: "https://i0.hdslb.com/bfs/archive/be81fded4c22b6973cf5e3cff95faf8d16fa8d7f.jpg",
+    parks: ["zion"],
+    days: 2,
+    visited: "春季公路旅行",
+    basis: "description",
+    summary: "一家人公路旅行探访锡安国家公园，体验红岩荒野野奢露营帐篷，漫步守望者步道欣赏峡谷日落，乘坐峡谷班车打卡族长庭院与翡翠池。",
+    route: [
+      {
+        label: "锡安悠闲体验",
+        stops: ["zion-watchman-trail","zion-patriarchs","zion-emerald-pools"],
+      },
+    ],
+    byDay: false,
+    notes: [
+      { stop: "zion-watchman-trail", text: "就在游客中心旁边，徒步难度适中，傍晚攀升到高处俯瞰守望者峰和峡谷沐浴在夕阳中。" },
+      { stop: "zion-emerald-pools", text: "穿行在下翡翠池的小瀑布水帘后方，绿树与红岩掩映，适合亲子全家同行。" },
+    ],
+    tips: [
+      "露营帐篷早晚温差大，春季需备好保暖厚衣物；园内穿梭巴士站点较多，提前在游客中心拿地图。"
+],
+  },
+  {
+    id: "bili-BV11qqmYCErY",
+    platform: "bilibili",
+    language: "zh",
+    origin: "中国大陆",
+    url: "https://www.bilibili.com/video/BV11qqmYCErY/",
+    title: "JACKSON HOLE VLOG（上）飞去下雪的地方看麋鹿🫎 小镇的冬日魅力❄️ 大提顿国家公园",
+    creator: "Vickysoupsss",
+    published: "2024-12",
+    views: 212586,
+    durationMin: 31,
+    cover: "https://i2.hdslb.com/bfs/archive/a33c8e6cbffc796a1c55665517f84670b73f2311.jpg",
+    parks: ["grte"],
+    days: 3,
+    visited: "冬季圣诞假期",
+    basis: "description",
+    summary: "冬季探访怀俄明州杰克逊小镇与大提顿国家公园：漫步挂满彩灯的鹿角拱门广场，坐马拉雪橇深入国家麋鹿保护区近距离观察数千头野生麋鹿群，眺望覆雪的提顿山脉与结冰的珍妮湖。",
+    route: [
+      {
+        label: "冬日小镇与保护区",
+        stops: ["grte-jackson-town-square","grte-elk-refuge"],
+      },
+      {
+        label: "冬日雪山远眺",
+        stops: ["grte-jenny-lake","grte-mormon-row"],
+      },
+    ],
+    byDay: false,
+    notes: [
+      { stop: "grte-elk-refuge", text: "冬天数以千计的野生麋鹿迁徙到谷底越冬，乘坐马拉雪橇能走到距离麋鹿几米远的地方，冬日特有体验。" },
+      { stop: "grte-jackson-town-square", text: "镇中心四角的巨型麋鹿角拱门是标志性打卡点，冬夜积雪与彩灯映衬下格外有节日气氛。" },
+    ],
+    tips: [
+      "大提顿部分园区道路冬季因大雪封闭，自驾车辆必须具备全驱或雪胎配置，关注路况与封路通知。"
+],
   },
 ];
