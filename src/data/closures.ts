@@ -273,4 +273,13 @@ export const tempClosures: TempClosure[] = [
     source: "https://www.nps.gov/cuva/planyourvisit/conditions.htm",
     checked: "2026-10-20",
   },
+  {
+    // 2026-10-23 每晚读公告自动提议（公告 96A00261-453A-467D-A1D5-24D68A59AB50）：核对公告原文，把 reasonZh 改成中文说明再合并
+    attractions: ["acad-schoodic-point","acad-schoodic-loop"],
+    from: "2026-08-31",
+    reopen: null,
+    reasonZh: "NPS 公告：Schoodic Mountain Road Closed for Repairs（每晚读公告自动提议，机器读取；合并前改成中文说明、写上替代办法）",
+    source: "",
+    checked: "2026-10-23",
+  },
 ];
