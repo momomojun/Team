@@ -175,11 +175,11 @@ const IN_PARK_BONUS = 10;
 const RENTAL_BONUS = 20;
 
 /**
- * 徒步的 AllTrails 热度，补 Google 名次的空缺：还没有 Google 名次的徒步（新加的公园、Google 上找不到条目的步道），
- * 按园内有 AllTrails 数据的徒步的评价数排名（评价数是“多少人走过”，比 AllTrails 自己的热度分数可靠：那个分数大多挤在 99 以上，
- * Watchman Trail 两万多条评价却只有 20），分量和 Google 名次一样；评分 4.5 以上的再加一点、4.2 以下的减一点。
- * 已经有 Google 名次的不再叠加：叠上去会把偏远的小步道抬高（峡谷地 Needles 的 Cave Spring、瓜达卢佩山的 Dog Canyon），
- * 原来“为它专门绕路不值得”的判断就被推翻了
+ * 徒步的热度看 AllTrails，不看 Google：真正走步道的人在 AllTrails 上打卡、写评价，Google 的评论多给了路边的观景点
+ * （优胜美地的雾径 AllTrails 上 2.7 万条评价、园内第一，Google 上只有 320 条、排第 16；两边都有的徒步，AllTrails 的评价数一般是 Google 的 20 倍）。
+ * 按园内有 AllTrails 数据的徒步的评价数排名，分量和 Google 名次一样；评分 4.5 以上的再加一点、4.2 以下的减一点。
+ * 用评价数不用 AllTrails 自己的热度分数：那个分数大多挤在 99 以上，Watchman Trail 两万多条评价却只有 20。
+ * 别的景点、没对上 AllTrails（或者对错了路线）的徒步照旧看 Google 名次
  */
 const TRAIL_RANK_WEIGHT = 40;
 
@@ -204,11 +204,11 @@ function trailRanks(stops: GuideStop[]): Map<string, { rank: number; count: numb
 function score(stop: GuideStop, month: number, parkSize: number, trail?: { rank: number; count: number }): number {
   let value = 0;
   if (stop.mustSee) value += 50;
-  if (stop.hotRank !== undefined) value += 40 * (1 - (stop.hotRank - 1) / Math.max(parkSize, 1));
-  if (stop.hotRank === undefined && trail && stop.alltrails && !DOUBTFUL.has(stop.id)) {
+  // 徒步看 AllTrails（真正走步道的人在那边打卡、写评价），别的景点和没对上 AllTrails 的徒步看 Google
+  if (trail && stop.alltrails && !DOUBTFUL.has(stop.id)) {
     const share = 1 - (trail.rank - 1) / Math.max(trail.count, 1);
     value += TRAIL_RANK_WEIGHT * share + Math.max(-6, Math.min(8, (stop.alltrails.rating - 4.5) * 20));
-  }
+  } else if (stop.hotRank !== undefined) value += 40 * (1 - (stop.hotRank - 1) / Math.max(parkSize, 1));
   if (stop.bestMonths?.includes(month)) value += 12;
   // 瀑布过了最佳月份水量小，有的会断流
   else if (stop.kind === "waterfall" && stop.bestMonths) value -= 30;

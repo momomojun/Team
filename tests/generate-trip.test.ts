@@ -7,6 +7,7 @@ import { lodgingOptions } from "../src/data/lodging";
 import { parks } from "../src/data/parks";
 import { seasonalRoads } from "../src/data/roads";
 import { addDays, nominalDate } from "../src/lib/dates";
+import { planTrip } from "../src/lib/copilot/plan-tool";
 import { openChance, roadFor, roadStatus } from "../src/lib/roads";
 import { generateTrip, type LiveClosures, type Pace } from "../src/lib/generate-trip";
 import { buildTimeline, NOMINAL_SUN, type LodgingPoint, type PlanStop } from "../src/lib/planner";
@@ -101,8 +102,18 @@ test("补景点不为 20 分钟的观景点绕三小时（6/1 第一天不去 Ti
 test("偏远片区只为一两个小景点专门绕路的不排；片区别的天还有景点的不算偏远", () => {
   const moab = generate({ parks: ["arch", "cany"], start: "2027-04-20", days: 4, airport: "SLC" });
   // 峡谷地的 Needles 片区离拱门、Island in the Sky 都要开一个半到三小时
-  assert.ok(!planned(moab.trip).some((id) => id === "cany-cave-spring" || id === "cany-big-spring-canyon-overlook"));
-  assert.ok((moab.guide.skipped.tooFar ?? []).includes("cany-cave-spring"));
+  // 10-23 起徒步按 AllTrails 评价数挑：Needles 只在走 Chesler Park 这种值得专门去一天的大步道时去（顺路看 Big Spring 观景点），
+  // 不为 Cave Spring 这种走的人少的小步道专门绕路
+  assert.ok(!planned(moab.trip).includes("cany-cave-spring"));
+  const needlesDay = moab.trip.days.find((day) => day.some((item) => item.id === "cany-big-spring-canyon-overlook"));
+  assert.ok(!needlesDay || needlesDay.some((item) => item.id === "cany-chesler-park"), "去 Needles 的那天应该是为了 Chesler Park");
+  // 冰川北叉的 Bowman Lake：开砂石路专门绕过去，只为一个湖，不排、列为离其他景点太远（按 Copilot 用的 planTrip：机场车程查表）
+  const glacier = planTrip(
+    { contract: "trip-request/v1", parks: ["glac"], startDate: "2027-09-20", days: 4, origin: { airport: "FCA" }, pace: "normal" },
+    { referenceDate: "2026-10-23" },
+  );
+  assert.ok(!glacier.days.some((day) => day.stops.some((stop) => stop.id === "glac-bowman-lake")));
+  assert.ok(glacier.skipped.some((item) => item.id === "glac-bowman-lake" && item.reason === "tooFar"));
   // 锡安峡谷里的族长庭院和别的峡谷景点在同一片区，不算偏远
   const zion = generate({ parks: ["zion"], start: "2027-04-09", days: 3, airport: "LAS" });
   assert.ok(!(zion.guide.skipped.tooFar ?? []).includes("zion-patriarchs"));
@@ -270,7 +281,8 @@ test("北极之门 + 德纳里 7 天（费尔班克斯进出）：第一天不�
 test("瓜达卢佩山 + 卡尔斯巴德洞窟 4 天（埃尔帕索进出）：不为 45 分钟的 Dog Canyon 专门开一天车，列为离其他景点太远", () => {
   const { trip, guide } = generate({ parks: ["gumo", "cave"], start: "2027-10-28", days: 4, airport: "ELP" });
   assert.ok(!planned(trip).includes("gumo-dog-canyon"), planned(trip).join());
-  assert.ok(guide.skipped?.tooFar?.includes("gumo-dog-canyon"));
+  // 10-23 起徒步按 AllTrails 评价数挑，Dog Canyon 一开始就挑不上；被提到的话只能是因为太远
+  assert.ok(!guide.skipped.noTime.includes("gumo-dog-canyon"));
 });
 
 test("12 月去红杉与国王峡谷：Cedar Grove 那边的 Zumwalt Meadow 去不了，列在“这个月不开放”里，不排进行程", () => {
