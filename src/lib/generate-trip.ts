@@ -1,3 +1,4 @@
+import { alltrailsDoubtful } from "../data/attractions/alltrails-doubtful.generated";
 import type { Suitability } from "../data/attractions/types";
 import {
   arrangeDay,
@@ -62,6 +63,8 @@ export interface GuideStop extends PlanStop {
   /** 二选一的另一个景点（attractions/types.ts） */
   alternativeTo?: string;
   hike?: { difficulty: "easy" | "moderate" | "hard" };
+  /** 对上的 AllTrails 步道：评分和评价数（挑步道时一起算热度，attractions/alltrails.generated.ts） */
+  alltrails?: { rating: number; reviews: number };
   /** 园内片区 */
   area?: string;
   /** 带小孩、老人、轮椅能不能去 */
@@ -171,10 +174,41 @@ const IN_PARK_BONUS = 10;
 /** 优先民宿时，专门的民宿区比门户小镇多算这么多分钟的优势 */
 const RENTAL_BONUS = 20;
 
-function score(stop: GuideStop, month: number, parkSize: number): number {
+/**
+ * 徒步的 AllTrails 热度，补 Google 名次的空缺：还没有 Google 名次的徒步（新加的公园、Google 上找不到条目的步道），
+ * 按园内有 AllTrails 数据的徒步的评价数排名（评价数是“多少人走过”，比 AllTrails 自己的热度分数可靠：那个分数大多挤在 99 以上，
+ * Watchman Trail 两万多条评价却只有 20），分量和 Google 名次一样；评分 4.5 以上的再加一点、4.2 以下的减一点。
+ * 已经有 Google 名次的不再叠加：叠上去会把偏远的小步道抬高（峡谷地 Needles 的 Cave Spring、瓜达卢佩山的 Dog Canyon），
+ * 原来“为它专门绕路不值得”的判断就被推翻了
+ */
+const TRAIL_RANK_WEIGHT = 40;
+
+/** 对上的 AllTrails 步道多半不是同一条路线的（scripts/check-hikes.mjs 查出来的），不拿它的热度 */
+const DOUBTFUL = new Set(alltrailsDoubtful);
+
+function trailRanks(stops: GuideStop[]): Map<string, { rank: number; count: number }> {
+  const byPark = new Map<string, GuideStop[]>();
+  for (const stop of stops) {
+    if (stop.kind !== "hike" || !stop.alltrails || DOUBTFUL.has(stop.id)) continue;
+    byPark.set(stop.park, [...(byPark.get(stop.park) ?? []), stop]);
+  }
+  const ranks = new Map<string, { rank: number; count: number }>();
+  for (const list of byPark.values()) {
+    list
+      .sort((a, b) => b.alltrails!.reviews - a.alltrails!.reviews || a.id.localeCompare(b.id))
+      .forEach((stop, index) => ranks.set(stop.id, { rank: index + 1, count: list.length }));
+  }
+  return ranks;
+}
+
+function score(stop: GuideStop, month: number, parkSize: number, trail?: { rank: number; count: number }): number {
   let value = 0;
   if (stop.mustSee) value += 50;
   if (stop.hotRank !== undefined) value += 40 * (1 - (stop.hotRank - 1) / Math.max(parkSize, 1));
+  if (stop.hotRank === undefined && trail && stop.alltrails && !DOUBTFUL.has(stop.id)) {
+    const share = 1 - (trail.rank - 1) / Math.max(trail.count, 1);
+    value += TRAIL_RANK_WEIGHT * share + Math.max(-6, Math.min(8, (stop.alltrails.rating - 4.5) * 20));
+  }
   if (stop.bestMonths?.includes(month)) value += 12;
   // 瀑布过了最佳月份水量小，有的会断流
   else if (stop.kind === "waterfall" && stop.bestMonths) value -= 30;
@@ -270,7 +304,8 @@ export function generateTrip(input: GenerateInput, original: GenerateContext): {
   // 热度名次是按公园排的，按各自公园的景点数折算
   const parkSize = new Map<string, number>();
   for (const stop of context.stops) parkSize.set(stop.park, (parkSize.get(stop.park) ?? 0) + 1);
-  const scores = new Map(available.map((stop) => [stop.id, score(stop, input.month, parkSize.get(stop.park) ?? 1)]));
+  const trails = trailRanks(context.stops);
+  const scores = new Map(available.map((stop) => [stop.id, score(stop, input.month, parkSize.get(stop.park) ?? 1, trails.get(stop.id))]));
   const ranked = [...available].sort((a, b) => scores.get(b.id)! - scores.get(a.id)!);
 
   // 时间预算：扣掉从出发地开到公园、从公园开到回程地的时间（按最近的景点算）

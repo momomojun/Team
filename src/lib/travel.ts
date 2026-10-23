@@ -73,9 +73,37 @@ export function travelNodeListed(id: string): boolean {
   return table?.nodes.includes(tableNode(id)) ?? false;
 }
 
+/**
+ * 车程表里没有、借用别的点算车程的站（从徒步页加进行程的 AllTrails 步道，custom-stops.ts）：
+ * 到它的车程 = 到借用的景点的车程 + 从那里开过去的分钟数；两站借用同一个景点时按两站之间的直线距离估
+ */
+const proxies = new Map<string, { anchor: string; minutes: number; lat: number; lon: number }>();
+
+export function registerTravelProxy(id: string, anchor: string, minutes: number, at: { lat: number; lon: number }) {
+  proxies.set(id, { anchor, minutes, lat: at.lat, lon: at.lon });
+}
+
+const RAD = Math.PI / 180;
+const straightMinutes = (a: { lat: number; lon: number }, b: { lat: number; lon: number }) => {
+  const h =
+    Math.sin(((b.lat - a.lat) * RAD) / 2) ** 2 +
+    Math.cos(a.lat * RAD) * Math.cos(b.lat * RAD) * Math.sin(((b.lon - a.lon) * RAD) / 2) ** 2;
+  const km = 2 * 6371 * Math.asin(Math.sqrt(h));
+  // 和 custom-stops.ts 一样：绕路系数 1.35、园区里每小时 35 公里
+  return Math.round(((km * 1.35) / 35) * 60);
+};
+
 /** 两个景点（或公园定位点）之间的开车分钟数；跨公园时查相邻公园的表，没有就经过两边的定位点 */
 export function travelMinutes(from: string, to: string): number {
   if (from === to) return 0;
+  const viaFrom = proxies.get(from);
+  const viaTo = proxies.get(to);
+  if (viaFrom || viaTo) {
+    if (viaFrom && viaTo && viaFrom.anchor === viaTo.anchor) return straightMinutes(viaFrom, viaTo);
+    const a = viaFrom?.anchor ?? from;
+    const b = viaTo?.anchor ?? to;
+    return travelMinutes(a, b) + (viaFrom?.minutes ?? 0) + (viaTo?.minutes ?? 0);
+  }
   const fromPark = parkOf(from);
   const toPark = parkOf(to);
   if (fromPark === toPark) {

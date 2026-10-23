@@ -550,6 +550,11 @@ const zhHans = {
     googleRating: "Google ★{rating} · {reviews} 条评价",
     googleSource: "Google Maps 条目「{name}」，{date} 快照",
     alltrailsRating: "AllTrails ★{rating} · {reviews} 条评价",
+    /** 从徒步页加进行程、网站没收录的 AllTrails 步道 */
+    customTrailSummary:
+      "AllTrails 上的步道（★{rating} · {reviews} 条评价）：{length}，{gain}。网站没收录这条步道，开放季节、许可证、带孩子老人行不行都不知道，出发前到 AllTrails 和公园官网确认。",
+    customTrailTip: "要走多久是估的：平地每小时 2 英里、每爬 1000 英尺多 1 小时，再加 15 分钟休息拍照。开车时间按附近已收录的景点估，可能不准。",
+    addTrail: "加入行程",
     alltrailsSource: "AllTrails 步道「{name}」· 热度指数 {popularity}",
     sortByRank: "按热度",
     sortByArea: "按片区",
