@@ -222,7 +222,6 @@ export const content: Record<string, string> = {
   "上面是 7 天票；只玩一天可以买 1 天票：每车 $30、步行 / 骑行每人 $15、摩托车 $25": "Prices above are for a 7-day pass. For a single day, buy a 1-day pass: $30 per vehicle, $15 per person on foot or bike, $25 per motorcycle",
   "公园不收门票；峡湾和潮水冰川只能坐船看，游船票才是主要花费": "No entrance fee. The fjords and tidewater glaciers can be seen only by boat, so the cruise ticket is the main cost",
   "公园不收门票；去 Kennecott 的私营接驳车、选矿厂导览和观光飞行另付": "No entrance fee. The private shuttle to Kennecott, mill tours, and flightseeing cost extra",
-  "夏洛特阿马利亚": "Charlotte Amalie",
   "纽约": "New York",
   "檀香山": "Honolulu",
   "埃尔帕索": "El Paso",

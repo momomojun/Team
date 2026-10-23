@@ -14,6 +14,7 @@
     "data:gallery-nps": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-gallery-nps.mjs",
     "data:travel": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-travel.mjs",
     "data:trails": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-trails.mjs",
+    "data:alltrails": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-alltrails.mjs",
     "data:map": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-map.mjs",
     "data:services": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-services.mjs",
     "data:climate": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-climate.mjs",

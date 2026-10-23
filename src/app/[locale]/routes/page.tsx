@@ -4,6 +4,7 @@ import { CelebritySpots } from "@/components/routes/celebrity-spots";
 import { CreatorRoutes } from "@/components/routes/creator-routes";
 import { RoutesTabs } from "@/components/routes/routes-tabs";
 import { attractions } from "@/data/attractions";
+import { gallery } from "@/data/attractions/gallery";
 import { celebrityShots } from "@/data/celebrities";
 import { filmSpots } from "@/data/film-spots";
 import { creatorRoutes, creatorsUpdated, type CreatorRoute } from "@/data/creators";
@@ -50,6 +51,9 @@ export default async function RoutesPage({ params }: PageProps<"/[locale]/routes
   const stopNames = Object.fromEntries(
     attractions.filter((a) => used.has(a.id)).map((a) => [a.id, { nameZh: localize(a.nameZh, locale), park: a.park }]),
   );
+  const stopPhotos = Object.fromEntries(
+    [...used].filter((id) => gallery[id]?.[0]).map((id) => [id, gallery[id][0].url]),
+  );
   const routeParks = parks
     .filter((park) => creatorRoutes.some((route) => route.parks.includes(park.code)))
     .map((park) => ({ code: park.code, nameZh: localize(park.nameZh, locale) }));
@@ -57,6 +61,9 @@ export default async function RoutesPage({ params }: PageProps<"/[locale]/routes
   // 明星同款：新发的在前；公园按网站的公园顺序
   const shots = celebrityShots.map((shot) => localizeCelebrity(shot, locale)).sort((a, b) => b.date.localeCompare(a.date));
   const films = filmSpots.map((shot) => localizeFilm(shot, locale)).sort((a, b) => b.year - a.year);
+  const celebPhotos = Object.fromEntries(
+    shots.filter((s) => s.attraction && gallery[s.attraction]?.[0]).map((s) => [s.attraction!, gallery[s.attraction!][0]]),
+  );
   const parksWith = (list: { park: string }[]) =>
     parks.filter((park) => list.some((item) => item.park === park.code)).map((park) => ({ code: park.code, nameZh: localize(park.nameZh, locale) }));
   const stopsOf = (list: { attraction?: string }[]) =>
@@ -78,6 +85,7 @@ export default async function RoutesPage({ params }: PageProps<"/[locale]/routes
                   routes={creatorRoutes.map((route) => localizeRoute(route, locale))}
                   parks={routeParks}
                   stopNames={stopNames}
+                  stopPhotos={stopPhotos}
                   locale={locale}
                   text={{ ...t, colon: dict.units.colon }}
                 />
@@ -87,7 +95,17 @@ export default async function RoutesPage({ params }: PageProps<"/[locale]/routes
               id: "celebs",
               label: t.tabs.celebs,
               count: shots.length,
-              panel: <CelebritySpots kind="celebs" shots={shots} parks={parksWith(shots)} stopNames={stopsOf(shots)} locale={locale} text={dict} />,
+              panel: (
+                <CelebritySpots
+                  kind="celebs"
+                  shots={shots}
+                  parks={parksWith(shots)}
+                  stopNames={stopsOf(shots)}
+                  photos={celebPhotos}
+                  locale={locale}
+                  text={dict}
+                />
+              ),
             },
             ...(films.length > 0
               ? [
@@ -95,7 +113,16 @@ export default async function RoutesPage({ params }: PageProps<"/[locale]/routes
                     id: "films",
                     label: t.tabs.films,
                     count: films.length,
-                    panel: <CelebritySpots kind="films" shots={films} parks={parksWith(films)} stopNames={stopsOf(films)} locale={locale} text={dict} />,
+                    panel: (
+                      <CelebritySpots
+                        kind="films"
+                        shots={films}
+                        parks={parksWith(films)}
+                        stopNames={stopsOf(films)}
+                        locale={locale}
+                        text={dict}
+                      />
+                    ),
                   },
                 ]
               : []),

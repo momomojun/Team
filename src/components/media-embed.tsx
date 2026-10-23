@@ -31,6 +31,33 @@ export function MediaEmbed({
 }) {
   const [open, setOpen] = useState(false);
   if (!open) {
+    if (kind === "youtube") {
+      return (
+        <div className="mt-3">
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="group relative block aspect-video w-full max-w-[480px] overflow-hidden border border-line bg-ink text-left"
+          >
+            <img
+              src={`https://i.ytimg.com/vi/${encodeURIComponent(src)}/hqdefault.jpg`}
+              alt={title}
+              className="h-full w-full object-cover opacity-90 transition-transform duration-300 group-hover:scale-105 group-hover:opacity-100"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 flex items-center justify-center bg-black/30 transition-colors group-hover:bg-black/15">
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-clay-700/90 text-white shadow-lg transition-transform group-hover:scale-110">
+                <span className="ml-0.5 text-base leading-none" aria-hidden>▶</span>
+              </span>
+            </div>
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-2.5 text-white">
+              <p className="text-xs font-medium leading-tight">{label}</p>
+              <p className="mt-0.5 text-[10px] text-white/70">{note}</p>
+            </div>
+          </button>
+        </div>
+      );
+    }
     return (
       <div className="mt-3">
         <button
@@ -51,7 +78,7 @@ export function MediaEmbed({
       : `https://www.youtube-nocookie.com/embed/${encodeURIComponent(src)}?rel=0${start ? `&start=${start}` : ""}`;
   return (
     <div className="mt-3">
-      <div className={kind === "instagram" ? "max-w-[400px]" : "aspect-video w-full"}>
+      <div className={kind === "instagram" ? "max-w-[400px]" : "aspect-video w-full max-w-[640px]"}>
         <iframe
           src={url}
           title={title}

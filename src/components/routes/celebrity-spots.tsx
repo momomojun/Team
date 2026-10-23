@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useSyncExternalStore } from "react";
 import { CelebrityShotItem } from "@/components/attractions/celebrity-shots";
 import { FilmShotItem } from "@/components/attractions/film-shots";
+import type { Photo } from "@/data/attractions/types";
 import type { CelebrityShot } from "@/data/celebrities";
 import type { FilmSpot } from "@/data/film-spots";
 import type { Dictionary } from "@/i18n/dictionaries";
@@ -21,6 +22,7 @@ export function CelebritySpots({
   shots,
   parks,
   stopNames,
+  photos,
   locale,
   text,
 }: {
@@ -30,6 +32,8 @@ export function CelebritySpots({
   parks: { code: string; nameZh: string }[];
   /** 景点 id → 名字 */
   stopNames: Record<string, string>;
+  /** 景点 id → 景点首张照片（带署名协议） */
+  photos?: Record<string, Photo>;
   locale: string;
   text: Pick<Dictionary, "attraction" | "routes" | "units">;
 }) {
@@ -70,7 +74,11 @@ export function CelebritySpots({
               {parkName(shot.park)}
               {shot.attraction && stopNames[shot.attraction] ? ` · ${stopNames[shot.attraction]}` : ""}
             </Link>
-            {"titleEn" in shot ? <FilmShotItem shot={shot} text={text} /> : <CelebrityShotItem shot={shot} text={text} />}
+            {"titleEn" in shot ? (
+              <FilmShotItem shot={shot} text={text} />
+            ) : (
+              <CelebrityShotItem shot={shot} text={text} photo={shot.attraction ? photos?.[shot.attraction] : undefined} />
+            )}
           </li>
         ))}
       </ul>
