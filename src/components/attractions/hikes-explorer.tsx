@@ -6,6 +6,9 @@ import { IconArrowRight, IconTrail } from "@/components/icons";
 import type { Imagery } from "@/components/map/sources";
 import { ParkMap, type MapPoint, type MapTrail } from "@/components/map/park-map";
 import { AddToTripButton } from "@/components/trip/add-to-trip-button";
+import { buttonAdded, buttonPrimary } from "@/components/ui";
+import { makeCustomStop, customStopId } from "@/lib/custom-stops";
+import { addCustomStop, removeFromTrip, tripIds, useTrip } from "@/lib/trip-store";
 import type { AllTrailsParkTrail, AttractionWithPhoto } from "@/data/attractions";
 import { alltrailsPhotoUrl, alltrailsTrailUrl } from "@/data/alltrails";
 import { fill, formatCount, formatKm, formatMeters } from "@/i18n/format";
@@ -93,12 +96,43 @@ export interface HikesText extends AttractionText {
  * 直接基于 AllTrails 国家公园步道数据集展示该公园的热门 Trail，按 AllTrails 综合热度（popularity）与评价数排名，
  * 标注全程距离、累计爬升、难度分级、路线形态（环线 / 往返 / 点对点）、客流强度、步道标签，并直达 AllTrails 详情页。
  */
+/** 网站没收录的 AllTrails 步道：加进行程时把步道资料一起存进去（custom-stops.ts），排行程时按估算的时间和借用的车程算 */
+function AddTrailButton({ park, trail, anchors, text }: { park: string; trail: AllTrailsParkTrail; anchors: TrailAnchor[]; text: { add: string; added: string } }) {
+  const trip = useTrip();
+  const id = customStopId(park, trail.slug);
+  const added = tripIds(trip).includes(id);
+  if (anchors.length === 0) return null;
+  return (
+    <button
+      type="button"
+      aria-pressed={added}
+      onClick={() => (added ? removeFromTrip(id) : addCustomStop(makeCustomStop(park, trail, anchors)))}
+      className={added ? buttonAdded : buttonPrimary}
+    >
+      {added ? text.added : text.add}
+    </button>
+  );
+}
+
+/** 同一座公园里已收录的景点：借车程、片区用 */
+export interface TrailAnchor {
+  id: string;
+  area: string;
+  lat: number;
+  lon: number;
+  start?: { lat: number; lon: number };
+}
+
 export function HikesExplorer({
+  park,
+  anchors = [],
   hikes,
   topTrails = [],
   imagery,
   text,
 }: {
+  park: string;
+  anchors?: TrailAnchor[];
   hikes: AttractionWithPhoto[];
   topTrails?: AllTrailsParkTrail[];
   totalTrails?: number;
@@ -397,7 +431,11 @@ export function HikesExplorer({
                         >
                           {text.attraction.navigate}
                         </a>
-                        {matched && <AddToTripButton id={matched.id} text={text.trip} />}
+                        {matched ? (
+                          <AddToTripButton id={matched.id} text={text.trip} />
+                        ) : (
+                          <AddTrailButton park={park} trail={trail} anchors={anchors} text={text.trip} />
+                        )}
                       </div>
                     </div>
                   </div>

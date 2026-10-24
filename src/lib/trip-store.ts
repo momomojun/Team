@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { isCustomStop, type CustomStop } from "./custom-stops";
 import type { GuideInfo } from "./generate-trip";
 
 export type ItemStatus = "planned" | "done" | "skipped";
@@ -40,6 +41,8 @@ export interface Trip {
   nights: (TripLodging | null)[];
   /** 自动生成攻略时记下的说明（哪些景点没排进去、为什么） */
   guide?: GuideInfo;
+  /** 网站没收录、从徒步页加进来的 AllTrails 步道（custom-stops.ts）：id → 排行程要用的资料。days、pool 里照样只存 id */
+  customStops?: Record<string, CustomStop>;
 }
 
 export const MAX_DAYS = 14;
@@ -132,7 +135,17 @@ export function normalizeTrip(value: unknown): Trip | null {
     pool: raw.pool.filter(isString),
     nights: fitNights(nights, days.length),
     ...(raw.guide && typeof raw.guide === "object" ? { guide: raw.guide as Trip["guide"] } : {}),
+    ...customStopsOf(raw.customStops),
   };
+}
+
+/** 分享、导入来的行程里的自定义步道：字段不对的丢掉 */
+function customStopsOf(value: unknown): { customStops?: Record<string, CustomStop> } {
+  if (!value || typeof value !== "object") return {};
+  const entries = Object.entries(value as Record<string, unknown>).filter(
+    (entry): entry is [string, CustomStop] => isCustomStop(entry[1]) && entry[1].id === entry[0],
+  );
+  return entries.length ? { customStops: Object.fromEntries(entries) } : {};
 }
 
 function parse(raw: string | null): Trip {
@@ -202,10 +215,24 @@ export function addToTrip(ids: string | string[]) {
 }
 
 export function removeFromTrip(id: string) {
+  updateTrip((trip) => {
+    const customStops = { ...trip.customStops };
+    delete customStops[id];
+    return {
+      ...trip,
+      days: trip.days.map((day) => day.filter((item) => item.id !== id)),
+      pool: trip.pool.filter((poolId) => poolId !== id),
+      ...(trip.customStops ? { customStops } : {}),
+    };
+  });
+}
+
+/** 把一条网站没收录的步道加进行程（放进待安排） */
+export function addCustomStop(stop: CustomStop) {
   updateTrip((trip) => ({
     ...trip,
-    days: trip.days.map((day) => day.filter((item) => item.id !== id)),
-    pool: trip.pool.filter((poolId) => poolId !== id),
+    pool: tripIds(trip).includes(stop.id) ? trip.pool : [...trip.pool, stop.id],
+    customStops: { ...trip.customStops, [stop.id]: stop },
   }));
 }
 

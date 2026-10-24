@@ -14,6 +14,7 @@ import type { ParkActivity } from "@/data/activities";
 import type { Airport } from "@/data/airports";
 import type { AttractionWithPhoto } from "@/data/attractions";
 import { googleMapsUrl } from "@/data/attractions/google";
+import { customStopAttraction } from "@/lib/custom-stops";
 import type { Photo } from "@/data/attractions/types";
 import { climate } from "@/data/climate.generated";
 import type { LodgingOption } from "@/data/lodging";
@@ -169,7 +170,20 @@ export function Planner({
   const todayDate = useToday();
   const now = useNow();
 
-  const byId = useMemo(() => new Map(attractions.map((a) => [a.id, a])), [attractions]);
+  // 行程里从徒步页加进来的 AllTrails 步道（网站没收录）也当成景点排；做成景点时顺便登记借用的车程（custom-stops.ts）
+  const customStops = trip.customStops;
+  const byId = useMemo(() => {
+    const map = new Map(attractions.map((a) => [a.id, a]));
+    for (const stop of Object.values(customStops ?? {})) {
+      if (!map.has(stop.id)) {
+        map.set(
+          stop.id,
+          customStopAttraction(stop, { summary: text.attraction.customTrailSummary, tip: text.attraction.customTrailTip }, text.units),
+        );
+      }
+    }
+    return map;
+  }, [attractions, customStops, text.attraction.customTrailSummary, text.attraction.customTrailTip, text.units]);
   const parkByCode = useMemo(() => new Map(parks.map((p) => [p.code, p])), [parks]);
   const optionById = useMemo(() => new Map(lodgingOptions.map((o) => [o.id, o])), [lodgingOptions]);
   const dateFormat = useMemo(
@@ -716,7 +730,10 @@ export function Planner({
     const stop = byId.get(id);
     if (opening && stop) loadGallery(stop.park);
   };
-  const parkHref = (stop: AttractionWithPhoto) => `/${locale}/parks/${stop.park}/attractions#attraction-${stop.id}`;
+  const parkHref = (stop: AttractionWithPhoto) =>
+    trip.customStops?.[stop.id]
+      ? `/${locale}/parks/${stop.park}/hikes`
+      : `/${locale}/parks/${stop.park}/attractions#attraction-${stop.id}`;
   const detailsFor = (stop: AttractionWithPhoto, month: number | null, onClose: () => void, actions?: ReactNode) => (
     <StopDetails
       stop={stop}

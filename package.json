@@ -29,6 +29,7 @@
     "copilot:plan": "node --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/plan-trip.mjs",
     "copilot:lookup": "node --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/lookup.mjs",
     "copilot:contracts": "node --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/build-copilot-contracts.mjs",
+    "check:hikes": "node --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/check-hikes.mjs",
     "check:closures": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/check-closures.mjs",
     "check:campgrounds": "node scripts/check-campgrounds.mjs",
     "alerts:fetch": "node --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/fetch-alerts.mjs",

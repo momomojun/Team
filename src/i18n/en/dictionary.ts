@@ -572,6 +572,11 @@ export const en: Dictionary = {
     googleRating: "Google ★{rating} · {reviews} reviews",
     googleSource: "Google Maps listing “{name}”, snapshot from {date}",
     alltrailsRating: "AllTrails ★{rating} · {reviews} reviews",
+    customTrailSummary:
+      "A trail from AllTrails (★{rating} · {reviews} reviews): {length}, {gain}. This site doesn't cover it, so its season, permits and suitability for kids or older travelers are unknown. Check AllTrails and the park's website before you go.",
+    customTrailTip:
+      "Time is an estimate: 2 miles an hour on the flat plus an hour per 1,000 feet of climbing, with 15 minutes for breaks and photos. Drive times are estimated from nearby sights the site covers and may be off.",
+    addTrail: "Add to trip",
     alltrailsSource: "AllTrails trail “{name}” · popularity {popularity}",
     sortByRank: "By popularity",
     sortByArea: "By area",

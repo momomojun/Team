@@ -61,6 +61,8 @@ export default async function HikesPage({ params }: PageProps<"/[locale]/parks/[
         )}
       </div>
       <HikesExplorer
+        park={park.code}
+        anchors={attractions.map((a) => ({ id: a.id, area: a.area, lat: a.lat, lon: a.lon, ...(a.start ? { start: { lat: a.start.lat, lon: a.start.lon } } : {}) }))}
         hikes={hikes}
         topTrails={topTrails}
         totalTrails={totalTrails}
