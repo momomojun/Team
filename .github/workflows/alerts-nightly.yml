@@ -4,7 +4,8 @@
 # 新的关闭公告是模型没见过的数据，可以标好答案做下一版提示词的评测。
 # 10-20 补上闭环（仓库主人定的“模型提议、人来批”）：
 #   1. 抽查：读完再让同一串模型读 26 条标好答案的旧公告，分数掉到门槛以下就开 alerts-quality issue（模型换了、NPS 改了写法都能发现）；
-#      每晚多约 26 次调用，仓库变量 ALERTS_CANARY 设成 0 就不抽查
+#      每周一（加州）跑一次、手动触发也跑，多约 26 次调用（10-26 仓库主人定的：MiniMax 免费档一天约 50 次，每晚抽查会挤掉读新公告的额度）；
+#      仓库变量 ALERTS_CANARY 设成 0 就不抽查
 #   2. 提议：模型和规则都认、closures.ts 里还没有的关闭写进 closures.ts，推到 bot/closures-<日期> 分支，issue 里给开 PR 的链接；
 #      GitHub 不让工作流自己开 PR（仓库设置里没开），而且机器人开的 PR 不会跑 CI，所以由人点链接开 PR
 #   3. 发布：当晚的关闭清单推到 data/alerts-live 分支，网站行程页按它排两周内出发的行程（src/lib/alerts-live.ts）
@@ -96,7 +97,9 @@ jobs:
           cd copilot && python -m nps_copilot alerts --snapshot data/alerts/latest.json | tee ../extract.log
       - name: Check the model on 26 labelled alerts (canary)
         id: canary
-        if: steps.extract.outcome == 'success' && vars.ALERTS_CANARY != '0'
+        # 不能直接写 vars.ALERTS_CANARY != '0'：变量没设时是空字符串，GitHub 比较时把 '' 和 '0' 都转成数字 0，
+        # 结果一直是“关掉”（10-20 到 10-26 一次都没跑过）。拼上一个字母再比，就按字符串比
+        if: steps.extract.outcome == 'success' && format('x{0}', vars.ALERTS_CANARY) != 'x0'
         continue-on-error: true
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -104,6 +107,7 @@ jobs:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: |
           if [ -z "$OPENROUTER_API_KEY$GEMINI_API_KEY$GROQ_API_KEY" ]; then echo "没有模型的 key，不抽查"; exit 0; fi
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "$(date +%u)" != "1" ]; then echo "抽查每周一跑（今天是星期 $(date +%u)）"; exit 0; fi
           cd copilot && python eval/alerts.py --chain --sample 26 --gate eval/baseline-alerts-canary.json 2>&1 | tee ../canary.log
           exit "${PIPESTATUS[0]}"
       - name: Report a quality drop
@@ -138,7 +142,7 @@ jobs:
         run: |
           gh label create nps-alerts --color a04c2e --description "每晚读 NPS 公告发现的新关闭" 2>/dev/null || true
           gh issue list --label nps-alerts --state all --limit 500 --json body --jq '.[].body' > known.txt
-          python copilot/scripts/alerts_report.py copilot/data/alerts/latest.json --known known.txt --closures copilot/data/alerts/closures-latest.json --out report.md | tee report.log
+          python copilot/scripts/alerts_report.py copilot/data/alerts/latest.json --known known.txt --closures copilot/data/alerts/closures-latest.json --cache copilot/data/alerts/extracted.json --out report.md | tee report.log
           grep -m1 '^NEW=' report.log >> "$GITHUB_OUTPUT"
       - name: Propose changes to closures.ts
         id: propose
