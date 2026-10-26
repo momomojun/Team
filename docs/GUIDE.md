@@ -60,6 +60,23 @@ Windows 上建议先运行一次 `git config --global core.autocrlf true`。`.gi
 
 ## 4. 跑起来
 
+### 一键启动（Windows）
+
+在仓库根目录双击 **`start.cmd`**：它开两个窗口，一个跑 Copilot 服务、一个跑网站，都起来以后自动打开行程页 http://localhost:3000/zh-Hans/plan （最上面就是 Copilot 对话框）。关掉：双击 **`stop.cmd`**，或者直接关掉那两个窗口。
+
+- 第一次运行会自己装依赖（`npm install`、`python -m pip install -e copilot[api]`），要几分钟。
+- 模型：平常是免费的云端模型优先、本机模型兜底（`.env.local` 里有哪家的 key 用哪家）。只想用本机 Qwen3.5 4B、一次云端都不调（测试时省额度），在 PowerShell 里跑：
+
+```bash
+powershell -ExecutionPolicy Bypass -File D:/LLM/Team/scripts/start-local.ps1 -LocalModel
+```
+
+- 本机模型：11434 或 11435 端口已经有 Ollama 就直接用；没有的话，仓库主人电脑上的便携版（`experiments/local-model-validation/`）会被自动打开。
+- Copilot 默认用 8765 端口，被别的程序占了就换 8766，并让这次开的网站连过去；网站或 Copilot 已经开着就直接用，不重复开。
+- 脚本在 `scripts/start-local.ps1`，开过的进程号记在 `.local-run/`（不提交）。
+
+下面是分开、手动跑的办法。
+
 ### 网站
 
 ```bash
