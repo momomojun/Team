@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { PlaceCheckButtons } from "@/components/park/place-check";
 import { Section } from "@/components/section";
 import type { Park } from "@/data/parks";
@@ -29,14 +30,15 @@ const flagStyles: Record<StationFlag, string> = {
 
 const statusClass = "inline-flex items-center gap-1.5 text-xs whitespace-nowrap before:size-1.5 before:rounded-full before:content-['']";
 
-export async function ChargersSection({ park, dict }: { park: Park; dict: Dictionary }) {
+/** teslaHref：这座公园有“Tesla 充电”页时，链过去（超充、目的地充电的地图和两份资料对照在那边） */
+export async function ChargersSection({ park, dict, teslaHref }: { park: Park; dict: Dictionary; teslaHref?: string }) {
   const t = dict.park.chargers;
   const result = await settle(getChargersNear(park.gateway.lat, park.gateway.lon, RADIUS_MILES));
 
   return (
     <Section title={t.title} source={t.source}>
       {result.ok ? (
-        <ChargerReport stations={result.data} t={t} />
+        <ChargerReport stations={result.data} t={t} teslaHref={teslaHref} />
       ) : (
         <ApiUnavailable error={result.error} dict={dict} />
       )}
@@ -44,7 +46,7 @@ export async function ChargersSection({ park, dict }: { park: Park; dict: Dictio
   );
 }
 
-function ChargerReport({ stations, t }: { stations: ChargingStation[]; t: ChargerText }) {
+function ChargerReport({ stations, t, teslaHref }: { stations: ChargingStation[]; t: ChargerText; teslaHref?: string }) {
   if (stations.length === 0) {
     return <p className="text-sm text-mute">{fill(t.empty, { radius: RADIUS_MILES })}</p>;
   }
@@ -60,7 +62,17 @@ function ChargerReport({ stations, t }: { stations: ChargingStation[]; t: Charge
 
   return (
     <div className="space-y-8">
-      <p className="text-sm text-mute">{fill(t.scope, { radius: RADIUS_MILES })}</p>
+      <p className="text-sm text-mute">
+        {fill(t.scope, { radius: RADIUS_MILES })}
+        {teslaHref && (
+          <>
+            {" "}
+            <Link href={teslaHref} className="link-line text-ink">
+              {t.teslaLink}
+            </Link>
+          </>
+        )}
+      </p>
 
       <dl className="grid grid-cols-2 gap-y-8 sm:grid-cols-4">
         {stats.map(([label, value]) => (
