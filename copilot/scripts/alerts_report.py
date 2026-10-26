@@ -18,6 +18,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from nps_copilot import alerts  # noqa: E402
+from nps_copilot.alerts_live import _cache_key  # noqa: E402
 
 CLOSURE_TITLE = re.compile(r"\bclos(ed|ure|ures|ing)\b", re.I)
 MARK = re.compile(r"<!-- alert:([^ ]+) -->")
@@ -34,15 +35,21 @@ def closure_alerts(snapshot: dict) -> list[dict]:
     return [a for a in snapshot["alerts"] if a.get("category") == "Park Closure" or CLOSURE_TITLE.search(a["title"])]
 
 
-def report(snapshot: dict, known: set[str], closures: dict | None = None) -> tuple[list[dict], str]:
-    """closures：模型读出来的关闭清单（closures-latest.json）；有就多一列“模型和规则找到的景点”"""
+def readers(new: list[dict], cache: dict | None) -> list[str]:
+    """这几条公告是哪几个模型读的（读过的记在 extracted.json 里，每条记着模型）。缓存里的可能是前几晚别的模型读的，所以按条查"""
+    return sorted({m for a in new if (m := ((cache or {}).get(_cache_key(a)) or {}).get("model"))})
+
+
+def report(snapshot: dict, known: set[str], closures: dict | None = None, cache: dict | None = None) -> tuple[list[dict], str]:
+    """closures：模型读出来的关闭清单（closures-latest.json）；有就多一列“模型和规则找到的景点”。cache：extracted.json，用来写是哪个模型读的"""
     new = [a for a in closure_alerts(snapshot) if a["id"] not in known]
+    who = "、".join(readers(new, cache))
     names = {row["id"]: row["nameZh"] for rows in alerts.attractions().values() for row in rows}
     found = {c["alert"]: c for c in (closures or {}).get("closures", [])}
     lines = [
         f"NPS 公告快照 {snapshot['fetched']}（{len(snapshot['alerts'])} 条）里有 {len(new)} 条以前没报过的关闭公告。",
         "",
-        ("模型（Gemini）读了全文，“模型和规则找到的”一列是排行程时会用的结果：标题里写着的（规则也找到）不排，只有模型找到的照排、提醒确认。"
+        (f"模型{f'（{who}）' if who else ''}读了全文，“模型和规则找到的”一列是排行程时会用的结果：标题里写着的（规则也找到）不排，只有模型找到的照排、提醒确认。"
          if closures else "这次只用规则看了一眼（规则只读标题，召回只有一半左右）。"),
         "要不要写进人工核对的 `src/data/closures.ts`，看完公告再定。这些公告模型没见过，也可以标好答案，做下一版提示词（alerts_v2）的评测。",
         "",
@@ -68,13 +75,15 @@ def main() -> int:
     parser.add_argument("snapshot", type=Path)
     parser.add_argument("--known", type=Path, help="以前报过的 issue 正文（gh issue list 的输出），从里面读 alert id")
     parser.add_argument("--closures", type=Path, help="模型读出来的关闭清单（closures-latest.json），有就一起列出来")
+    parser.add_argument("--cache", type=Path, help="读过的公告（extracted.json），用来写是哪个模型读的")
     parser.add_argument("--out", type=Path, default=Path("alerts-report.md"))
     args = parser.parse_args()
     sys.stdout.reconfigure(encoding="utf-8")
     snapshot = json.loads(args.snapshot.read_text(encoding="utf-8"))
     known = labelled() | (set(MARK.findall(args.known.read_text(encoding="utf-8"))) if args.known and args.known.exists() else set())
     closures = json.loads(args.closures.read_text(encoding="utf-8")) if args.closures and args.closures.exists() else None
-    new, text = report(snapshot, known, closures)
+    cache = json.loads(args.cache.read_text(encoding="utf-8")) if args.cache and args.cache.exists() else None
+    new, text = report(snapshot, known, closures, cache)
     if new:
         args.out.write_text(text, encoding="utf-8")
     print(f"NEW={len(new)}")

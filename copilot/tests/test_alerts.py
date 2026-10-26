@@ -127,4 +127,8 @@ def test_nightly_report_shows_what_the_model_found():
     spec.loader.exec_module(module)
     closures = {"closures": [{"alert": "a1", "attractions": ["yose-glacier-point"], "found_by": ["model", "rules"], "reopen": "2026-10-25"}]}
     _, text = module.report({"fetched": "2026-10-20", "alerts": [ALERT]}, set(), closures)
-    assert "冰川点（model+rules） | 2026-10-25 |" in text and "模型（Gemini）读了全文" in text
+    assert "冰川点（model+rules） | 2026-10-25 |" in text and "模型读了全文" in text
+    # 写的是实际读这条的模型（记在 extracted.json 里），不是写死的名字
+    cache = {module._cache_key(ALERT): {"model": "minimax/minimax-m3.1-flash:free"}}
+    _, text = module.report({"fetched": "2026-10-20", "alerts": [ALERT]}, set(), closures, cache)
+    assert "模型（minimax/minimax-m3.1-flash:free）读了全文" in text and "Gemini" not in text
