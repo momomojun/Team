@@ -62,3 +62,6 @@ copilot/data/tts/
 copilot/mlruns/
 copilot/data/sessions.sqlite*
 copilot/data/chroma/
+
+# 本机一键启动（start.cmd）记下的进程号
+.local-run/
