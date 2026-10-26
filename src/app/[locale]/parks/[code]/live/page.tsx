@@ -9,7 +9,8 @@ import { SignalSection } from "@/components/park/signal-section";
 import { SectionSkeleton } from "@/components/section";
 import { npsCodeOf } from "@/data/parks";
 import { isUsingDemoKey } from "@/lib/datagov";
-import { loadParkPage, parkContainer } from "@/lib/park-page";
+import { teslaChargers } from "@/data/tesla.generated";
+import { loadParkPage, parkContainer, parkPath } from "@/lib/park-page";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/parks/[code]/live">): Promise<Metadata> {
   const { locale, code } = await params;
@@ -52,7 +53,11 @@ export default async function LivePage({ params }: PageProps<"/[locale]/parks/[c
       </div>
       <div className="mt-16">
         <Suspense fallback={<SectionSkeleton title={t.chargers.title} />}>
-          <ChargersSection park={park} dict={dict} />
+          <ChargersSection
+            park={park}
+            dict={dict}
+            teslaHref={teslaChargers[park.code]?.stations.length ? parkPath(locale, code, "tesla") : undefined}
+          />
         </Suspense>
       </div>
       </div>

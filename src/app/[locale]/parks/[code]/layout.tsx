@@ -8,6 +8,7 @@ import { ParkChrome } from "@/components/park/park-chrome";
 import { SectionNav } from "@/components/site/section-nav";
 import { fill } from "@/i18n/format";
 import { loadParkPage, parkPath } from "@/lib/park-page";
+import { teslaChargers } from "@/data/tesla.generated";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/parks/[code]">): Promise<Metadata> {
   const { locale, code } = await params;
@@ -23,6 +24,7 @@ export default async function ParkLayout({ children, params }: LayoutProps<"/[lo
   const { park, dict, t, heroPhoto, facts, site, canada, hasSeasonInfo, hasBookings, parkCreators, parkCelebs, parkFilms } = view;
   const overview = parkPath(locale, code);
   const hasHikes = view.attractions.some((a) => a.hike);
+  const hasTesla = (teslaChargers[code]?.stations.length ?? 0) > 0;
 
   const hero = (
     <section className="relative h-[88svh] min-h-[620px] overflow-hidden bg-ink text-white">
@@ -86,6 +88,7 @@ export default async function ParkLayout({ children, params }: LayoutProps<"/[lo
         ...(hasBookings ? [{ id: "bookings", label: t.nav.bookings, href: parkPath(locale, code, "bookings") }] : []),
         { id: "attractions", label: t.nav.attractions, href: parkPath(locale, code, "attractions") },
         ...(hasHikes ? [{ id: "hikes", label: t.nav.hikes, href: parkPath(locale, code, "hikes") }] : []),
+        ...(hasTesla ? [{ id: "tesla", label: t.nav.tesla, href: parkPath(locale, code, "tesla") }] : []),
         ...(parkCreators.length > 0 ? [{ id: "creators", label: t.nav.creators, href: `/${locale}/routes?park=${code}` }] : []),
         { id: "guides", label: t.nav.guides, href: parkPath(locale, code, "guides") },
         ...(parkCelebs.length > 0 ? [{ id: "celebs", label: t.nav.celebs, href: `/${locale}/routes?park=${code}#celebs` }] : []),
