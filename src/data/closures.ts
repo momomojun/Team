@@ -273,4 +273,40 @@ export const tempClosures: TempClosure[] = [
     source: "https://www.nps.gov/cuva/planyourvisit/conditions.htm",
     checked: "2026-10-20",
   },
+  {
+    // 2026-10-27 每晚读公告自动提议（公告 96A00261-453A-467D-A1D5-24D68A59AB50）：核对公告原文，把 reasonZh 改成中文说明再合并
+    attractions: ["acad-schoodic-point","acad-schoodic-loop"],
+    from: "2026-08-31",
+    reopen: null,
+    reasonZh: "NPS 公告：Schoodic Mountain Road Closed for Repairs（每晚读公告自动提议，机器读取；合并前改成中文说明、写上替代办法）",
+    source: "",
+    checked: "2026-10-27",
+  },
+  {
+    // 2026-10-27 每晚读公告自动提议（公告 95C687BB-074D-4A53-B12E-CA1739FA6FC7）：核对公告原文，把 reasonZh 改成中文说明再合并
+    attractions: ["mora-skyline-trail","mora-myrtle-falls","mora-reflection-lakes","mora-narada-falls","mora-paradise-visitor-center","mora-nisqually-vista","mora-christine-falls","mora-comet-falls","mora-trail-of-the-shadows","mora-longmire"],
+    from: "2026-10-27",
+    reopen: null,
+    reasonZh: "NPS 公告：Paradise Road Status: Gate closed at Longmire, projected to open tomorrow（每晚读公告自动提议，机器读取；合并前改成中文说明、写上替代办法）",
+    source: "https://www.nps.gov/mora/planyourvisit/winter-travel.htm",
+    checked: "2026-10-27",
+  },
+  {
+    // 2026-10-27 每晚读公告自动提议（公告 9D047BC4-DC86-4A9D-AF1E-8299D40C6A71）：核对公告原文，把 reasonZh 改成中文说明再合并
+    attractions: ["noca-cascade-pass"],
+    from: "2026-10-26",
+    reopen: null,
+    reasonZh: "NPS 公告：Cascade River Road Closure October 26（每晚读公告自动提议，机器读取；合并前改成中文说明、写上替代办法）",
+    source: "https://www.nps.gov/noca/planyourvisit/road-conditions.htm",
+    checked: "2026-10-27",
+  },
+  {
+    // 2026-10-27 每晚读公告自动提议（公告 DCE69B37-3B86-4DD7-8813-F227461EB69A）：核对公告原文，把 reasonZh 改成中文说明再合并
+    attractions: ["redw-stout-grove","redw-howland-hill-road","redw-grove-of-titans","redw-boy-scout-tree","redw-enderts-beach"],
+    from: "2026-10-27",
+    reopen: "2026-10-28",
+    reasonZh: "NPS 公告：Closure: Crescent City Information Center Closed 10/27/2026（每晚读公告自动提议，机器读取；合并前改成中文说明、写上替代办法）",
+    source: "",
+    checked: "2026-10-27",
+  },
 ];
