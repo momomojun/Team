@@ -37,7 +37,7 @@
 
 ### 网站
 - [ ] 国家公园可能遇到的危险：棕熊、野牛、美洲狮等野生动物伤人，以及其他常见的危险和怎么防（Tianyue Chen / JadenChen10 提议，10-19 仓库主人转述，之后做）（O63）
-- [ ] 营地开放季节：冬天选“露营”别排进关门的营地（10-19 审 #26 发现，交给 Huiling，任务说明 [archive/agent-briefs/10-campground-seasons.md](archive/agent-briefs/10-campground-seasons.md)）
+- [x] 营地开放季节：冬天选“露营”别排进关门的营地（10-19 审 #26 发现，交给 Huiling；10-27 写入 `lodging-seasons.ts`，任务说明 [archive/agent-briefs/10-campground-seasons.md](archive/agent-briefs/10-campground-seasons.md)）
 - [x] 22 座公园新景点的 Google 评分（W72；10-21 用 Chrome 逐个打开 Google 地图补了 254 个，新加的 11 座公园 80 个；对不上的导览团、观光飞行没收）
 - [x] 每天核对临时封路的定时任务改成查 Team（W68；10-20 改了，先把本机 main 更新到最新再核对）
 - [x] 剩下的国家公园（W69；10-21 加了 11 座：原来列的 9 座，加上漏掉的圣路易斯拱门和 10-20 签字升格的奇里卡瓦，美国 64 座全有了）
