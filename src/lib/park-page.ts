@@ -14,6 +14,7 @@ import { localizeActivity, localizeAttraction, localizeCelebrity, localizeFilm, 
 import { localize } from "@/i18n/convert";
 import { getDictionary } from "@/i18n/dictionaries";
 import { fill, formatCount, formatMonths, formatWeekdays, otherName } from "@/i18n/format";
+import { byPopularity } from "@/lib/popularity";
 import { roadsOf } from "@/lib/roads";
 import { parkVisits } from "@/lib/visits";
 
@@ -52,10 +53,8 @@ export function loadParkPage(locale: string, code: string) {
     .filter((a) => a.photo && a.kind !== "visitor" && a.id !== park.hero)
     .map((a, i) => ({ a, i }))
     .sort(
-      (x, y) =>
-        (y.a.google?.reviews ?? 0) - (x.a.google?.reviews ?? 0) ||
-        Number(Boolean(y.a.mustSee)) - Number(Boolean(x.a.mustSee)) ||
-        x.i - y.i,
+      // 和景点页“按热度”一样：景点看 Google、步道看 AllTrails，名次交替（lib/popularity.ts）
+      (x, y) => byPopularity(x.a, y.a) || x.i - y.i,
     )
     .slice(0, 5)
     .map(({ a }) => a);

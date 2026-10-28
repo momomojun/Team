@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { closedIn } from "@/components/attractions/attraction-card";
 import type { AttractionWithPhoto } from "@/data/attractions";
 import { fill, formatDuration, joinAnd } from "@/i18n/format";
+import { popularRank } from "@/lib/popularity";
 import { formatClock } from "@/lib/sun";
 import { recordYears, ROAD_LIKELY, roadStatus } from "@/lib/roads";
 import { dayColor } from "./day-colors";
@@ -24,9 +25,9 @@ function samePlace(a: { id: string; name: string; lat: number; lon: number }, b:
   return a.id === b.id || a.name === b.name || (Math.abs(a.lat - b.lat) < 0.001 && Math.abs(a.lon - b.lon) < 0.001);
 }
 
-/** 必去优先，其次按热度名次 */
+/** 必去优先，其次按热度名次（徒步按 AllTrails 的） */
 function importance(stop: AttractionWithPhoto) {
-  return (stop.mustSee ? 0 : 1000) + (stop.hotRank ?? 500);
+  return (stop.mustSee ? 0 : 1000) + (popularRank(stop) ?? 500);
 }
 
 /** 这天主要在哪个公园：景点最多的那个 */

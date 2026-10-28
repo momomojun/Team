@@ -36,7 +36,7 @@ export function StopSources({ stop, officialUrl, text }: { stop: AttractionWithP
                   {when}
                   {item.url && (
                     <a href={item.url} target="_blank" rel="noreferrer" className="link-line inline-flex items-center gap-1 text-ink">
-                      {item.kind === "audit" ? text.record : text.open}
+                      {item.kind === "audit" ? text.record : item.kind === "alltrails" ? "AllTrails" : text.open}
                       <IconArrowRight className="-rotate-45 text-[10px]" />
                     </a>
                   )}

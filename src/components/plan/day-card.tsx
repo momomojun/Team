@@ -21,6 +21,7 @@ import { fill, formatDuration, formatMonths, formatWeekdays, otherName } from "@
 import { closureOn } from "@/lib/closures";
 import { monthOf } from "@/lib/dates";
 import { moonNight } from "@/lib/moon";
+import { popularRank } from "@/lib/popularity";
 import { entryWindow, lodgingLeg, onlyAt, parkingOn, type TimelineEntry } from "@/lib/planner";
 import type { Party } from "@/lib/suitability";
 import { formatClock } from "@/lib/sun";
@@ -564,10 +565,17 @@ export function DayCard({
                         {entry.end - entry.start !== stop.durationMin && !finished && (
                           <span>{fill(text.units.paren, { x: fill(t.pacedFrom, { d: duration(stop.durationMin) }) })}</span>
                         )}
-                        {stop.hotRank !== undefined && (
-                          <span className="text-clay-700"> · {fill(text.attraction.hotRank, { n: stop.hotRank })}</span>
+                        {/* 徒步的名次和评分看 AllTrails，别的景点看 Google（lib/popularity.ts） */}
+                        {popularRank(stop) !== undefined && (
+                          <span className="text-clay-700">
+                            {" · "}
+                            {fill(stop.kind === "hike" ? text.attraction.hikeRank : text.attraction.hotRank, { n: popularRank(stop)! })}
+                          </span>
                         )}
-                        {stop.google && <span> · ★{stop.google.rating.toFixed(1)}</span>}
+                        {(() => {
+                          const rating = stop.kind === "hike" ? stop.alltrails?.rating : stop.google?.rating;
+                          return rating ? <span> · ★{rating.toFixed(1)}</span> : null;
+                        })()}
                         {stop.mustSee && <span className="text-clay-700"> · {text.attraction.mustSee}</span>}
                         {finished && ` · ${t.status[item.status as "done" | "skipped"]}`}
                         <span className="ml-2 inline-flex items-center gap-0.5 text-ink-soft group-hover/stop:text-clay-700">

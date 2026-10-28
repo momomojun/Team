@@ -1,5 +1,6 @@
 import type { AttractionWithPhoto } from "../data/attractions";
 import { googleSnapshotDate } from "../data/attractions/google";
+import { alltrailsTrailUrl } from "../data/alltrails";
 import { auditDates } from "../data/audit-index.generated";
 import { bookingRules } from "../data/bookings";
 import { tempClosures } from "../data/closures";
@@ -13,7 +14,7 @@ import { staleness, type Staleness } from "./staleness";
  * 行程里每一站的“资料出处”：这一站的信息各是从哪来的、哪天核对的，让用户自己判断信不信、出发前该再看哪一页。
  * 过期的规则和 npm run check:freshness 一样（staleness.ts）。只引用浏览器里本来就有的数据（排行程也要用）
  */
-export type SourceKind = "audit" | "official" | "closure" | "shuttle" | "tour" | "booking" | "parking" | "road" | "family" | "rating" | "drive";
+export type SourceKind = "audit" | "official" | "closure" | "shuttle" | "tour" | "booking" | "parking" | "road" | "family" | "rating" | "alltrails" | "drive";
 
 export interface SourceItem {
   kind: SourceKind;
@@ -48,7 +49,9 @@ export function stopSources(stop: AttractionWithPhoto, options: { officialUrl?: 
     if (r.attractions.includes(stop.id) || r.afterRoad?.includes(stop.id)) items.push({ kind: "road", url: r.source, date: r.checked });
   }
   if (stop.family?.source) items.push({ kind: "family", url: stop.family.source });
-  if (stop.google) items.push({ kind: "rating", date: googleSnapshotDate });
+  // 徒步的评分、热度只看 AllTrails（景点数据里徒步不挂 Google 的）
+  if (stop.kind === "hike" && stop.alltrails) items.push({ kind: "alltrails", url: alltrailsTrailUrl(stop.alltrails.slug) });
+  else if (stop.google) items.push({ kind: "rating", date: googleSnapshotDate });
   items.push({ kind: "drive" });
   return items.map((item) => ({ ...item, stale: staleness(item, options.today) }));
 }

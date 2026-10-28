@@ -18,6 +18,7 @@ import { closedAllDays } from "./closures";
 import { lodgingOpenOn } from "./lodging-season";
 import { addDays } from "./dates";
 import { moonNight } from "./moon";
+import { popularRank } from "./popularity";
 import { acrossClosedRoad, bestRoadDay, openChance, ROAD_LIKELY, roadDecides, roadFor, roadStatus } from "./roads";
 import { datedSchedule, runsOn, tourScheduleOf } from "./tours";
 import { fitFor, hasParty, type Party } from "./suitability";
@@ -55,7 +56,10 @@ export interface GenerateInput {
 /** 参与挑选的景点：排行程需要的字段 + 热度、季节、许可证 */
 export interface GuideStop extends PlanStop {
   mustSee?: boolean;
+  /** Google 热度名次（徒步没有，lib/popularity.ts） */
   hotRank?: number;
+  /** AllTrails 步道热度名次（徒步看它） */
+  hikeRank?: number;
   openMonths?: number[];
   bestMonths?: number[];
   permit?: string;
@@ -197,9 +201,15 @@ const RENTAL_BONUS = 20;
  * （优胜美地的雾径 AllTrails 上 2.7 万条评价、园内第一，Google 上只有 320 条、排第 16；两边都有的徒步，AllTrails 的评价数一般是 Google 的 20 倍）。
  * 按园内有 AllTrails 数据的徒步的评价数排名，分量和 Google 名次一样；评分 4.5 以上的再加一点、4.2 以下的减一点。
  * 用评价数不用 AllTrails 自己的热度分数：那个分数大多挤在 99 以上，Watchman Trail 两万多条评价却只有 20。
- * 别的景点、没对上 AllTrails（或者对错了路线）的徒步照旧看 Google 名次
+ * 别的景点看 Google 名次。步道完全不看 Google（景点数据里徒步就没挂 Google 的评分、评论数）
  */
 const TRAIL_RANK_WEIGHT = 40;
+
+/**
+ * 没对上 AllTrails、或者对上的多半不是同一条路线的徒步：不知道热不热门，按园内步道的中间名次算（权重的一半），
+ * 不拿 Google 补、也不当成最冷门的。必去、当月最佳这些照样加分（大沙丘的沙丘、卡尔斯巴德的大房间都是必去）
+ */
+const UNKNOWN_TRAIL_SHARE = 0.5;
 
 /** 对上的 AllTrails 步道多半不是同一条路线的（scripts/check-hikes.mjs 查出来的），不拿它的热度 */
 const DOUBTFUL = new Set(alltrailsDoubtful);
@@ -222,10 +232,12 @@ function trailRanks(stops: GuideStop[]): Map<string, { rank: number; count: numb
 function score(stop: GuideStop, month: number, parkSize: number, trail?: { rank: number; count: number }): number {
   let value = 0;
   if (stop.mustSee) value += 50;
-  // 徒步看 AllTrails（真正走步道的人在那边打卡、写评价），别的景点和没对上 AllTrails 的徒步看 Google
-  if (trail && stop.alltrails && !DOUBTFUL.has(stop.id)) {
-    const share = 1 - (trail.rank - 1) / Math.max(trail.count, 1);
-    value += TRAIL_RANK_WEIGHT * share + Math.max(-6, Math.min(8, (stop.alltrails.rating - 4.5) * 20));
+  // 徒步只看 AllTrails（真正走步道的人在那边打卡、写评价），别的景点看 Google
+  if (stop.kind === "hike") {
+    if (trail && stop.alltrails && !DOUBTFUL.has(stop.id)) {
+      const share = 1 - (trail.rank - 1) / Math.max(trail.count, 1);
+      value += TRAIL_RANK_WEIGHT * share + Math.max(-6, Math.min(8, (stop.alltrails.rating - 4.5) * 20));
+    } else value += TRAIL_RANK_WEIGHT * UNKNOWN_TRAIL_SHARE;
   } else if (stop.hotRank !== undefined) value += 40 * (1 - (stop.hotRank - 1) / Math.max(parkSize, 1));
   if (stop.bestMonths?.includes(month)) value += 12;
   // 瀑布过了最佳月份水量小，有的会断流
@@ -339,7 +351,7 @@ export function generateTrip(input: GenerateInput, original: GenerateContext): {
     if (stop.durationMin <= budget) {
       chosen.push(stop);
       budget -= stop.durationMin + 15;
-    } else if (stop.mustSee || (stop.hotRank ?? 99) <= 5) {
+    } else if (stop.mustSee || (popularRank(stop) ?? 99) <= 5) {
       skipped.noTime.push(stop.id);
     }
   }
