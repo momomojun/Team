@@ -1,0 +1,1471 @@
+[
+  {
+    "id": "nps-yose-1day-summer-valley",
+    "park": "yose",
+    "parks": [
+      "yose"
+    ],
+    "title": "One Day in Yosemite (Summer)",
+    "source": "https://www.nps.gov/media/video/view.htm?id=3A8D1C4B-9CAC-4CB8-96D5-A4F974797C62",
+    "checked": "2026-10-27",
+    "season": "summer (Glacier Point Road and Tioga Road open, roughly late May/June to November)",
+    "days": [
+      {
+        "label": "One day in Yosemite Valley (video order)",
+        "stops": [
+          "yose-valley-visitor-center",
+          "?Yosemite Museum / Indian Village",
+          "yose-yosemite-falls",
+          "yose-cooks-meadow",
+          "?Happy Isles Art and Nature Center",
+          "yose-mist-trail",
+          "yose-mirror-lake"
+        ]
+      }
+    ],
+    "evidence": "You may only have one day to see this place",
+    "kind": "route"
+  },
+  {
+    "id": "nps-yose-1day-summer-glacier-point",
+    "park": "yose",
+    "parks": [
+      "yose"
+    ],
+    "title": "One Day in Yosemite (Summer)",
+    "source": "https://www.nps.gov/media/video/view.htm?id=3A8D1C4B-9CAC-4CB8-96D5-A4F974797C62",
+    "checked": "2026-10-27",
+    "season": "summer (Glacier Point Road and Tioga Road open, roughly late May/June to November)",
+    "days": [
+      {
+        "label": "Outside the Valley, suggestion 1",
+        "stops": [
+          "yose-glacier-point"
+        ]
+      }
+    ],
+    "evidence": "You may only have one day to see this place",
+    "kind": "options"
+  },
+  {
+    "id": "nps-yose-1day-summer-mariposa-grove",
+    "park": "yose",
+    "parks": [
+      "yose"
+    ],
+    "title": "One Day in Yosemite (Summer)",
+    "source": "https://www.nps.gov/media/video/view.htm?id=3A8D1C4B-9CAC-4CB8-96D5-A4F974797C62",
+    "checked": "2026-10-27",
+    "season": "summer (Glacier Point Road and Tioga Road open, roughly late May/June to November)",
+    "days": [
+      {
+        "label": "Outside the Valley, suggestion 2",
+        "stops": [
+          "yose-mariposa-grove",
+          "yose-pioneer-history-center"
+        ]
+      }
+    ],
+    "evidence": "You may only have one day to see this place",
+    "kind": "options"
+  },
+  {
+    "id": "nps-yose-1day-summer-tuolumne",
+    "park": "yose",
+    "parks": [
+      "yose"
+    ],
+    "title": "One Day in Yosemite (Summer)",
+    "source": "https://www.nps.gov/media/video/view.htm?id=3A8D1C4B-9CAC-4CB8-96D5-A4F974797C62",
+    "checked": "2026-10-27",
+    "season": "summer (Glacier Point Road and Tioga Road open, roughly late May/June to November)",
+    "days": [
+      {
+        "label": "Outside the Valley, suggestion 3",
+        "stops": [
+          "yose-tuolumne-meadows"
+        ]
+      }
+    ],
+    "evidence": "You may only have one day to see this place",
+    "kind": "options"
+  },
+  {
+    "id": "nps-grca-tour-1-2h-south-rim",
+    "park": "grca",
+    "parks": [
+      "grca"
+    ],
+    "title": "South Rim; The 1–2 hour visit.",
+    "source": "https://www.nps.gov/tours/view.htm?id=216AB34D-CB1C-47F5-85E8D69694F4EDD0",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "Tour (single visit)",
+        "stops": [
+          "?Grand Canyon Visitor Center (South Rim)",
+          "grca-mather-point",
+          "grca-yavapai",
+          "?Yaki Point"
+        ]
+      }
+    ],
+    "evidence": "Ranger Recommended 1–2 visit for the South Rim",
+    "kind": "short"
+  },
+  {
+    "id": "nps-glac-tour-going-to-the-sun-road",
+    "park": "glac",
+    "parks": [
+      "glac"
+    ],
+    "title": "Going-to-the-Sun Road Tour",
+    "source": "https://www.nps.gov/tours/view.htm?id=9798BB3C-CE97-421F-2BDB0EDEB0F698D4",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "Tour (single visit)",
+        "stops": [
+          "glac-apgar-visitor-center",
+          "glac-lake-mcdonald",
+          "?Apgar Campground",
+          "?North Lake McDonald View",
+          "?Lake McDonald Lodge",
+          "?McDonald Creek Overlook",
+          "glac-trail-of-the-cedars",
+          "?West Tunnel",
+          "?The Loop",
+          "?Bird Woman Falls Overlook",
+          "?The Weeping Wall",
+          "?Big Bend (Going-to-the-Sun Road)",
+          "?Triple Arches",
+          "?Oberlin Bend",
+          "glac-logan-pass",
+          "?Lunch Creek",
+          "?East Tunnel",
+          "?Siyeh Bend",
+          "glac-jackson-glacier-overlook",
+          "glac-st-mary-virginia-falls",
+          "?Sunrift Gorge",
+          "glac-sun-point-baring-falls",
+          "glac-wild-goose-island",
+          "?Rising Sun",
+          "?Two Dog Flats",
+          "glac-st-mary-visitor-center"
+        ]
+      }
+    ],
+    "evidence": "A self-guided audio tour of Going-to-the-Sun Road.",
+    "kind": "route"
+  },
+  {
+    "id": "nps-acad-halfday-options",
+    "park": "acad",
+    "parks": [
+      "acad"
+    ],
+    "title": "A Half-Day at Acadia",
+    "source": "https://www.nps.gov/tripideas/a-half-day-at-acadia.htm",
+    "checked": "2026-10-27",
+    "season": "mostly all seasons; Sieur de Monts birding and Bar Island tidepooling spring–fall",
+    "days": [
+      {
+        "label": "Half day (activity list in page order)",
+        "stops": [
+          "?Park Loop Road (drive)",
+          "?Sieur de Monts Springs (birding)",
+          "?Jesup Path and Hemlock Path Loop",
+          "?Ocean Path Trail",
+          "acad-jordan-pond",
+          "acad-carriage-roads",
+          "?Otter Point (birding)",
+          "acad-bar-island"
+        ]
+      }
+    ],
+    "evidence": "A Half-Day at Acadia",
+    "kind": "options"
+  },
+  {
+    "id": "nps-grsm-svc-cataract-falls",
+    "park": "grsm",
+    "parks": [
+      "grsm"
+    ],
+    "title": "Itinerary Beginning at Sugarlands Visitor Center",
+    "source": "https://www.nps.gov/grsm/planyourvisit/svc-itinerary.htm",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "One outing from Sugarlands: main item + suggested combinations (combination order not specified)",
+        "stops": [
+          "grsm-sugarlands-vc",
+          "?Cataract Falls",
+          "grsm-laurel-falls",
+          "grsm-roaring-fork",
+          "?Chimneys Picnic Area"
+        ]
+      }
+    ],
+    "evidence": "Suggested combinations",
+    "kind": "options"
+  },
+  {
+    "id": "nps-grsm-svc-grotto-falls",
+    "park": "grsm",
+    "parks": [
+      "grsm"
+    ],
+    "title": "Itinerary Beginning at Sugarlands Visitor Center",
+    "source": "https://www.nps.gov/grsm/planyourvisit/svc-itinerary.htm",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "One outing from Sugarlands: main item + suggested combinations (combination order not specified)",
+        "stops": [
+          "grsm-sugarlands-vc",
+          "grsm-grotto-falls",
+          "grsm-roaring-fork"
+        ]
+      }
+    ],
+    "evidence": "Suggested combinations",
+    "kind": "options"
+  },
+  {
+    "id": "nps-grsm-svc-hen-wallow-falls",
+    "park": "grsm",
+    "parks": [
+      "grsm"
+    ],
+    "title": "Itinerary Beginning at Sugarlands Visitor Center",
+    "source": "https://www.nps.gov/grsm/planyourvisit/svc-itinerary.htm",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "One outing from Sugarlands: main item + suggested combinations (combination order not specified)",
+        "stops": [
+          "grsm-sugarlands-vc",
+          "?Hen Wallow Falls (Gabes Mountain Trail)",
+          "grsm-roaring-fork",
+          "?Cosby Picnic Area"
+        ]
+      }
+    ],
+    "evidence": "Suggested combinations",
+    "kind": "options"
+  },
+  {
+    "id": "nps-grsm-svc-roaring-fork",
+    "park": "grsm",
+    "parks": [
+      "grsm"
+    ],
+    "title": "Itinerary Beginning at Sugarlands Visitor Center",
+    "source": "https://www.nps.gov/grsm/planyourvisit/svc-itinerary.htm",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "One outing from Sugarlands: main item + suggested combinations (combination order not specified)",
+        "stops": [
+          "grsm-sugarlands-vc",
+          "grsm-roaring-fork",
+          "grsm-grotto-falls"
+        ]
+      }
+    ],
+    "evidence": "Suggested combinations",
+    "kind": "options"
+  },
+  {
+    "id": "nps-grsm-svc-kuwohi",
+    "park": "grsm",
+    "parks": [
+      "grsm"
+    ],
+    "title": "Itinerary Beginning at Sugarlands Visitor Center",
+    "source": "https://www.nps.gov/grsm/planyourvisit/svc-itinerary.htm",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "One outing from Sugarlands: main item + suggested combinations (combination order not specified)",
+        "stops": [
+          "grsm-sugarlands-vc",
+          "grsm-kuwohi",
+          "?Chimneys Picnic Area",
+          "grsm-newfound-gap"
+        ]
+      }
+    ],
+    "evidence": "Suggested combinations",
+    "kind": "options"
+  },
+  {
+    "id": "nps-grsm-svc-cades-cove",
+    "park": "grsm",
+    "parks": [
+      "grsm"
+    ],
+    "title": "Itinerary Beginning at Sugarlands Visitor Center",
+    "source": "https://www.nps.gov/grsm/planyourvisit/svc-itinerary.htm",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "One outing from Sugarlands: main item + suggested combinations (combination order not specified)",
+        "stops": [
+          "grsm-sugarlands-vc",
+          "grsm-cades-cove",
+          "grsm-laurel-falls",
+          "?Metcalf Bottoms Picnic Area"
+        ]
+      }
+    ],
+    "evidence": "Suggested combinations",
+    "kind": "options"
+  },
+  {
+    "id": "nps-grsm-svc-chimney-tops",
+    "park": "grsm",
+    "parks": [
+      "grsm"
+    ],
+    "title": "Itinerary Beginning at Sugarlands Visitor Center",
+    "source": "https://www.nps.gov/grsm/planyourvisit/svc-itinerary.htm",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "One outing from Sugarlands: main item + suggested combinations (combination order not specified)",
+        "stops": [
+          "grsm-sugarlands-vc",
+          "grsm-chimney-tops",
+          "?Chimneys Picnic Area",
+          "grsm-newfound-gap",
+          "grsm-kuwohi"
+        ]
+      }
+    ],
+    "evidence": "Suggested combinations",
+    "kind": "options"
+  },
+  {
+    "id": "nps-grsm-svc-charlies-bunion",
+    "park": "grsm",
+    "parks": [
+      "grsm"
+    ],
+    "title": "Itinerary Beginning at Sugarlands Visitor Center",
+    "source": "https://www.nps.gov/grsm/planyourvisit/svc-itinerary.htm",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "One outing from Sugarlands: main item + suggested combinations (combination order not specified)",
+        "stops": [
+          "grsm-sugarlands-vc",
+          "grsm-charlies-bunion",
+          "?Chimneys Picnic Area",
+          "grsm-newfound-gap",
+          "grsm-kuwohi"
+        ]
+      }
+    ],
+    "evidence": "Suggested combinations",
+    "kind": "options"
+  },
+  {
+    "id": "nps-grsm-svc-alum-cave",
+    "park": "grsm",
+    "parks": [
+      "grsm"
+    ],
+    "title": "Itinerary Beginning at Sugarlands Visitor Center",
+    "source": "https://www.nps.gov/grsm/planyourvisit/svc-itinerary.htm",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "One outing from Sugarlands: main item + suggested combinations (combination order not specified)",
+        "stops": [
+          "grsm-sugarlands-vc",
+          "grsm-alum-cave",
+          "?Chimneys Picnic Area",
+          "grsm-newfound-gap",
+          "grsm-kuwohi"
+        ]
+      }
+    ],
+    "evidence": "Suggested combinations",
+    "kind": "options"
+  },
+  {
+    "id": "nps-grsm-svc-chimneys-picnic",
+    "park": "grsm",
+    "parks": [
+      "grsm"
+    ],
+    "title": "Itinerary Beginning at Sugarlands Visitor Center",
+    "source": "https://www.nps.gov/grsm/planyourvisit/svc-itinerary.htm",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "One outing from Sugarlands: main item + suggested combinations (combination order not specified)",
+        "stops": [
+          "grsm-sugarlands-vc",
+          "?Chimneys Picnic Area (Cove Hardwood Nature Trail)",
+          "grsm-newfound-gap",
+          "grsm-kuwohi"
+        ]
+      }
+    ],
+    "evidence": "Suggested combinations",
+    "kind": "options"
+  },
+  {
+    "id": "nps-grsm-svc-metcalf-bottoms",
+    "park": "grsm",
+    "parks": [
+      "grsm"
+    ],
+    "title": "Itinerary Beginning at Sugarlands Visitor Center",
+    "source": "https://www.nps.gov/grsm/planyourvisit/svc-itinerary.htm",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "One outing from Sugarlands: main item + suggested combinations (combination order not specified)",
+        "stops": [
+          "grsm-sugarlands-vc",
+          "?Metcalf Bottoms Picnic Area",
+          "grsm-laurel-falls"
+        ]
+      }
+    ],
+    "evidence": "Suggested combinations",
+    "kind": "options"
+  },
+  {
+    "id": "nps-grsm-svc-cosby-picnic",
+    "park": "grsm",
+    "parks": [
+      "grsm"
+    ],
+    "title": "Itinerary Beginning at Sugarlands Visitor Center",
+    "source": "https://www.nps.gov/grsm/planyourvisit/svc-itinerary.htm",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "One outing from Sugarlands: main item + suggested combinations (combination order not specified)",
+        "stops": [
+          "grsm-sugarlands-vc",
+          "?Cosby Picnic Area (Cosby Nature Trail)",
+          "grsm-roaring-fork",
+          "?Hen Wallow Falls (Gabes Mountain Trail)"
+        ]
+      }
+    ],
+    "evidence": "Suggested combinations",
+    "kind": "options"
+  },
+  {
+    "id": "nps-arch-drive-90min-windows",
+    "park": "arch",
+    "parks": [
+      "arch"
+    ],
+    "title": "Trip Ideas - Arches National Park",
+    "source": "https://home.nps.gov/arch/planyourvisit/itineraries.htm",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "Touring by car, in 1½ hours (option 1)",
+        "stops": [
+          "arch-windows"
+        ]
+      }
+    ],
+    "evidence": "Drive the whole park road, spending 10 minutes at each viewpoint",
+    "kind": "short"
+  },
+  {
+    "id": "nps-arch-drive-90min-delicate",
+    "park": "arch",
+    "parks": [
+      "arch"
+    ],
+    "title": "Trip Ideas - Arches National Park",
+    "source": "https://home.nps.gov/arch/planyourvisit/itineraries.htm",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "Touring by car, in 1½ hours (option 2)",
+        "stops": [
+          "arch-delicate-arch-viewpoint",
+          "?Wolfe Ranch"
+        ]
+      }
+    ],
+    "evidence": "Drive the whole park road, spending 10 minutes at each viewpoint",
+    "kind": "short"
+  },
+  {
+    "id": "nps-arch-hike-2h-windows",
+    "park": "arch",
+    "parks": [
+      "arch"
+    ],
+    "title": "Trip Ideas - Arches National Park",
+    "source": "https://home.nps.gov/arch/planyourvisit/itineraries.htm",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "Hiking, in two hours (option 1)",
+        "stops": [
+          "arch-windows",
+          "arch-double-arch",
+          "arch-balanced-rock"
+        ]
+      }
+    ],
+    "evidence": "Drive the whole park road, spending 10 minutes at each viewpoint",
+    "kind": "short"
+  },
+  {
+    "id": "nps-arch-hike-2h-delicate",
+    "park": "arch",
+    "parks": [
+      "arch"
+    ],
+    "title": "Trip Ideas - Arches National Park",
+    "source": "https://home.nps.gov/arch/planyourvisit/itineraries.htm",
+    "checked": "2026-10-27",
+    "season": "avoid midday summer heat",
+    "days": [
+      {
+        "label": "Hiking, in two hours (option 2)",
+        "stops": [
+          "arch-delicate-arch"
+        ]
+      }
+    ],
+    "evidence": "Drive the whole park road, spending 10 minutes at each viewpoint",
+    "kind": "short"
+  },
+  {
+    "id": "nps-arch-hike-2h-devils-garden",
+    "park": "arch",
+    "parks": [
+      "arch"
+    ],
+    "title": "Trip Ideas - Arches National Park",
+    "source": "https://home.nps.gov/arch/planyourvisit/itineraries.htm",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "Hiking, in two hours (option 3)",
+        "stops": [
+          "arch-landscape-arch"
+        ]
+      }
+    ],
+    "evidence": "Drive the whole park road, spending 10 minutes at each viewpoint",
+    "kind": "short"
+  },
+  {
+    "id": "nps-arch-hike-2h-sand-dune",
+    "park": "arch",
+    "parks": [
+      "arch"
+    ],
+    "title": "Trip Ideas - Arches National Park",
+    "source": "https://home.nps.gov/arch/planyourvisit/itineraries.htm",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "Hiking, in two hours (option 4)",
+        "stops": [
+          "arch-sand-dune-arch",
+          "arch-broken-arch",
+          "?Tapestry Arch"
+        ]
+      }
+    ],
+    "evidence": "Drive the whole park road, spending 10 minutes at each viewpoint",
+    "kind": "short"
+  },
+  {
+    "id": "nps-arch-hike-halfday-dark-angel",
+    "park": "arch",
+    "parks": [
+      "arch"
+    ],
+    "title": "Trip Ideas - Arches National Park",
+    "source": "https://home.nps.gov/arch/planyourvisit/itineraries.htm",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "Hiking, in half a day (option 1)",
+        "stops": [
+          "?Dark Angel (end of Devils Garden Trail, past Double O Arch)"
+        ]
+      }
+    ],
+    "evidence": "Drive the whole park road, spending 10 minutes at each viewpoint",
+    "kind": "short"
+  },
+  {
+    "id": "nps-arch-hike-halfday-klondike",
+    "park": "arch",
+    "parks": [
+      "arch"
+    ],
+    "title": "Trip Ideas - Arches National Park",
+    "source": "https://home.nps.gov/arch/planyourvisit/itineraries.htm",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "Hiking, in half a day (option 2)",
+        "stops": [
+          "arch-tower-arch"
+        ]
+      }
+    ],
+    "evidence": "Drive the whole park road, spending 10 minutes at each viewpoint",
+    "kind": "short"
+  },
+  {
+    "id": "nps-arch-tour-geology-tour",
+    "park": "arch",
+    "parks": [
+      "arch"
+    ],
+    "title": "Geology",
+    "source": "https://www.nps.gov/tours/view.htm?id=1F3F39F7-90B3-1F5D-8895E7A16B25A885",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "Tour (single visit)",
+        "stops": [
+          "?Moab Fault Viewpoint",
+          "arch-park-avenue",
+          "arch-balanced-rock",
+          "arch-double-arch",
+          "arch-panorama-point",
+          "arch-delicate-arch-viewpoint",
+          "arch-fiery-furnace",
+          "arch-skyline-arch"
+        ]
+      }
+    ],
+    "evidence": "Explore just a few of these features on a geologic tour of Arches.",
+    "kind": "short"
+  },
+  {
+    "id": "nps-arch-tour-human-history-tour",
+    "park": "arch",
+    "parks": [
+      "arch"
+    ],
+    "title": "Human History",
+    "source": "https://www.nps.gov/tours/view.htm?id=4B806231-95E9-02C6-ECF5509B861642A9",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "Tour (single visit)",
+        "stops": [
+          "arch-visitor-center",
+          "?Wolfe Ranch",
+          "?Courthouse Wash Panel Trail"
+        ]
+      }
+    ],
+    "evidence": "Explore the depth of human history in Arches National Park.",
+    "kind": "short"
+  },
+  {
+    "id": "nps-olym-halfday",
+    "park": "olym",
+    "parks": [
+      "olym"
+    ],
+    "title": "Trip Ideas - Olympic National Park",
+    "source": "https://www.nps.gov/olym/planyourvisit/tripideas.htm",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "Half Day (from Port Angeles)",
+        "stops": [
+          "olym-hurricane-ridge",
+          "olym-lake-crescent",
+          "olym-marymere-falls",
+          "olym-spruce-railroad",
+          "olym-sol-duc-falls",
+          "olym-sol-duc-hot-springs",
+          "?Ancient Groves Trail"
+        ]
+      }
+    ],
+    "evidence": "Check the suggested itineraries below for some ideas",
+    "kind": "short"
+  },
+  {
+    "id": "nps-olym-fullday",
+    "park": "olym",
+    "parks": [
+      "olym"
+    ],
+    "title": "Trip Ideas - Olympic National Park",
+    "source": "https://www.nps.gov/olym/planyourvisit/tripideas.htm",
+    "checked": "2026-10-27",
+    "season": "Hoh Rain Forest very busy May–September",
+    "days": [
+      {
+        "label": "Full Day (from Port Angeles)",
+        "stops": [
+          "olym-hurricane-ridge",
+          "olym-lake-crescent",
+          "olym-marymere-falls",
+          "olym-rialto-beach",
+          "?First Beach",
+          "olym-second-beach",
+          "?Third Beach",
+          "olym-hall-of-mosses",
+          "olym-spruce-nature-trail"
+        ]
+      }
+    ],
+    "evidence": "Check the suggested itineraries below for some ideas",
+    "kind": "route"
+  },
+  {
+    "id": "nps-olym-multiday",
+    "park": "olym",
+    "parks": [
+      "olym"
+    ],
+    "title": "Trip Ideas - Olympic National Park",
+    "source": "https://www.nps.gov/olym/planyourvisit/tripideas.htm",
+    "checked": "2026-10-27",
+    "season": "Hoh busy May–September; beaches best near low tide",
+    "days": [
+      {
+        "label": "Multiple Days (2-3 days; page does not split by day)",
+        "stops": [
+          "olym-hurricane-ridge",
+          "olym-lake-crescent",
+          "olym-marymere-falls",
+          "olym-sol-duc-falls",
+          "olym-sol-duc-hot-springs",
+          "?Ancient Groves Trail",
+          "olym-rialto-beach",
+          "?First Beach",
+          "olym-second-beach",
+          "?Third Beach",
+          "olym-hall-of-mosses",
+          "olym-spruce-nature-trail",
+          "olym-ruby-beach",
+          "?Beach 4",
+          "olym-tree-of-life",
+          "olym-lake-quinault"
+        ]
+      }
+    ],
+    "evidence": "Check the suggested itineraries below for some ideas",
+    "kind": "options"
+  },
+  {
+    "id": "nps-mora-tour-journey-to-paradise",
+    "park": "mora",
+    "parks": [
+      "mora"
+    ],
+    "title": "Journey to Paradise",
+    "source": "https://www.nps.gov/tours/view.htm?id=85089A3C-A854-E01E-8F9F3F618A419FC5",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "Tour (single visit)",
+        "stops": [
+          "?Nisqually Entrance",
+          "?Kautz Creek",
+          "?Twin Firs Trailhead",
+          "mora-longmire",
+          "mora-christine-falls",
+          "?Ricksecker Point",
+          "mora-narada-falls",
+          "mora-paradise-visitor-center"
+        ]
+      }
+    ],
+    "evidence": "Drive along a historic winding road through old-growth forest",
+    "kind": "short"
+  },
+  {
+    "id": "nps-brca-tour-1-3h-must-see",
+    "park": "brca",
+    "parks": [
+      "brca"
+    ],
+    "title": "\"Must See\" Views and an Easy Walk",
+    "source": "https://www.nps.gov/tours/view.htm?id=8AD41B8F-FABD-4048-F1EC7EEA132C6998",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "Tour (single visit)",
+        "stops": [
+          "brca-bryce-point",
+          "brca-inspiration-point",
+          "brca-sunset-point",
+          "brca-sunrise-point"
+        ]
+      }
+    ],
+    "evidence": "For visitors with 1-3 Hours who want to see the most popular viewpoints",
+    "kind": "short"
+  },
+  {
+    "id": "nps-brca-tour-3-6h-driving-tour",
+    "park": "brca",
+    "parks": [
+      "brca"
+    ],
+    "title": "A Driving Tour of the Park",
+    "source": "https://www.nps.gov/tours/view.htm?id=B51CC502-B892-25D3-4AECFEA16B008FC0",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "Tour (single visit)",
+        "stops": [
+          "brca-rainbow-point",
+          "?Yovimpa Point",
+          "?Black Birch Canyon",
+          "?Ponderosa Canyon",
+          "brca-agua-canyon",
+          "brca-natural-bridge",
+          "?Farview Point",
+          "?Piracy Point",
+          "?Swamp Canyon",
+          "brca-bryce-point",
+          "brca-inspiration-point",
+          "brca-sunset-point",
+          "brca-sunrise-point"
+        ]
+      }
+    ],
+    "evidence": "take a drive along the Southern Scenic Drive",
+    "kind": "short"
+  },
+  {
+    "id": "nps-seki-1day-options",
+    "park": "seki",
+    "parks": [
+      "seki"
+    ],
+    "title": "Help! I only have one day at Sequoia and Kings Canyon!",
+    "source": "https://www.nps.gov/tripideas/only-have-one-day.htm",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "One day (options list in page order, not a timed route)",
+        "stops": [
+          "?Foothills Visitor Center",
+          "?Kings Canyon Visitor Center",
+          "seki-giant-forest-museum",
+          "?Lodgepole Visitor Center",
+          "?Lodgepole-Sherman Tree Trail",
+          "seki-tunnel-log",
+          "?Muir Grove",
+          "seki-general-sherman",
+          "seki-congress-trail"
+        ]
+      }
+    ],
+    "evidence": "Help! I only have one day at Sequoia and Kings Canyon!",
+    "kind": "options"
+  },
+  {
+    "id": "nps-deva-tour-3h-highlights-drive",
+    "park": "deva",
+    "parks": [
+      "deva"
+    ],
+    "title": "Highlights: 3 Hour Driving Tour",
+    "source": "https://www.nps.gov/tours/view.htm?id=2ACEFF55-0D9F-5149-404642CCF408EC74",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "Tour (single visit)",
+        "stops": [
+          "deva-visitor-center",
+          "deva-badwater",
+          "deva-artists-palette",
+          "deva-zabriskie",
+          "deva-mesquite-dunes"
+        ]
+      }
+    ],
+    "evidence": "This is a self-guided driving tour starting from Furnace Creek Visitor Center.",
+    "kind": "short"
+  },
+  {
+    "id": "nps-deva-tour-star-wars-drive",
+    "park": "deva",
+    "parks": [
+      "deva"
+    ],
+    "title": "Star Wars Film Locations Tour of Death Valley",
+    "source": "https://www.nps.gov/tours/view.htm?id=335EEE75-E2C7-3F33-A4F62F5FCF55B370",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "Tour (single visit)",
+        "stops": [
+          "deva-visitor-center",
+          "?Twenty Mule Team Canyon",
+          "deva-dantes-view",
+          "deva-golden-canyon",
+          "deva-artists-palette",
+          "?Desolation Canyon",
+          "deva-mesquite-dunes"
+        ]
+      }
+    ],
+    "evidence": "Check out the film locations on this tour",
+    "kind": "short"
+  },
+  {
+    "id": "nps-deva-1day-video-couple-hours",
+    "park": "deva",
+    "parks": [
+      "deva"
+    ],
+    "title": "One Day Visit Highlights",
+    "source": "https://www.nps.gov/media/video/view.htm?id=4F5C3CB5-82BE-4C03-B2C9-71E1C19300A5",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "If you only have a couple of hours",
+        "stops": [
+          "deva-visitor-center",
+          "deva-badwater",
+          "deva-artists-palette",
+          "deva-zabriskie"
+        ]
+      }
+    ],
+    "evidence": "Only have one day to see the park?",
+    "kind": "short"
+  },
+  {
+    "id": "nps-deva-1day-video-one-day",
+    "park": "deva",
+    "parks": [
+      "deva"
+    ],
+    "title": "One Day Visit Highlights",
+    "source": "https://www.nps.gov/media/video/view.htm?id=4F5C3CB5-82BE-4C03-B2C9-71E1C19300A5",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "One day (core + Mesquite Flat Sand Dunes)",
+        "stops": [
+          "deva-visitor-center",
+          "deva-badwater",
+          "deva-artists-palette",
+          "deva-zabriskie",
+          "deva-mesquite-dunes"
+        ]
+      }
+    ],
+    "evidence": "Only have one day to see the park?",
+    "kind": "route"
+  },
+  {
+    "id": "nps-deva-1day-video-add-ons",
+    "park": "deva",
+    "parks": [
+      "deva"
+    ],
+    "title": "One Day Visit Highlights",
+    "source": "https://www.nps.gov/media/video/view.htm?id=4F5C3CB5-82BE-4C03-B2C9-71E1C19300A5",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "Depending on your interests (add-on options)",
+        "stops": [
+          "deva-salt-creek",
+          "deva-harmony-borax",
+          "deva-dantes-view"
+        ]
+      }
+    ],
+    "evidence": "Only have one day to see the park?",
+    "kind": "options"
+  },
+  {
+    "id": "nps-jotr-tour-joshua-tree-to-cottonwood",
+    "park": "jotr",
+    "parks": [
+      "jotr"
+    ],
+    "title": "Joshua Tree to Cottonwood Audio Tour",
+    "source": "https://www.nps.gov/tours/view.htm?id=A757672D-A6E0-1513-BB5D40A4CB7D0703",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "Tour (single visit)",
+        "stops": [
+          "jotr-joshua-tree-visitor-center",
+          "?West Entrance",
+          "?Quail Springs",
+          "?Hemingway",
+          "jotr-hidden-valley",
+          "?Intersection Rock",
+          "jotr-barker-dam",
+          "?Minerva Hoyt Trail",
+          "jotr-cap-rock",
+          "?Juniper Flats",
+          "jotr-keys-view",
+          "?Ryan Ranch",
+          "?Geology Tour Road",
+          "jotr-skull-rock",
+          "?Live Oak Picnic Area",
+          "jotr-arch-rock",
+          "?Silver Bell",
+          "jotr-cholla-garden",
+          "?Ocotillo Patch",
+          "?Turkey Flats",
+          "?Pinto Basin Pullout",
+          "?Porcupine Wash",
+          "jotr-cottonwood-visitor-center",
+          "jotr-cottonwood-spring",
+          "?Bajada Nature Trail",
+          "?Joshua Tree sign (South Entrance)"
+        ]
+      }
+    ],
+    "evidence": "This tour is designed to help visitors explore and learn about Joshua Tree",
+    "kind": "route"
+  },
+  {
+    "id": "nps-grte-4day",
+    "park": "grte",
+    "parks": [
+      "grte"
+    ],
+    "title": "Trip Ideas - Grand Teton National Park",
+    "source": "https://home.nps.gov/grte/planyourvisit/tripideas.htm",
+    "checked": "2026-10-27",
+    "season": "summer (page tips are for summer 2027)",
+    "days": [
+      {
+        "label": "Day 1",
+        "stops": [
+          "?Grand Teton National Park entrance sign",
+          "grte-craig-thomas-vc",
+          "?Murie Ranch",
+          "?Snake River float trip (Moose Landing)",
+          "grte-mormon-row",
+          "?Gros Ventre Campground evening ranger program"
+        ]
+      },
+      {
+        "label": "Day 2",
+        "stops": [
+          "?Wildlife tour with an authorized tour operator",
+          "?Jackson Lake Lodge / Lunch Tree Hill",
+          "grte-colter-bay",
+          "?Lakeshore Trail (Colter Bay)",
+          "?Leeks Marina"
+        ]
+      },
+      {
+        "label": "Day 3",
+        "stops": [
+          "?Grand Teton Pathway (Moose to Jenny Lake)",
+          "?Dornan's",
+          "grte-cunningham-cabin",
+          "?Elk Ranch Flats",
+          "grte-jackson-lake-dam",
+          "?Snake River below Jackson Lake Dam",
+          "grte-signal-mountain",
+          "?Signal Mountain Lodge"
+        ]
+      },
+      {
+        "label": "Day 4",
+        "stops": [
+          "?Hike at Jackson Hole Mountain Resort / Granite Canyon / Colter Bay",
+          "?Colter Bay Marina (scenic cruise, kayak, horseback)",
+          "?Grand Teton Association store",
+          "?Snow King Resort views (Jackson)"
+        ]
+      }
+    ],
+    "evidence": "Use the suggested intineraries below to help you plan",
+    "kind": "route"
+  },
+  {
+    "id": "nps-grte-tour-photo-spots",
+    "park": "grte",
+    "parks": [
+      "grte"
+    ],
+    "title": "Behind the Lens: Photo Spots",
+    "source": "https://www.nps.gov/tours/view.htm?id=4A2D7076-E51E-7BAC-2A624D3E051422E5",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "Tour (single visit)",
+        "stops": [
+          "grte-mormon-row",
+          "grte-schwabacher-landing",
+          "grte-snake-river-overlook",
+          "grte-oxbow-bend",
+          "?Jackson Lake Overlook",
+          "grte-jenny-lake",
+          "grte-hidden-falls",
+          "grte-chapel-transfiguration"
+        ]
+      }
+    ],
+    "evidence": "the enormity of places to capture that perfect photo exist throughout the park",
+    "kind": "short"
+  },
+  {
+    "id": "nps-dena-tour-entrance-to-savage-river",
+    "park": "dena",
+    "parks": [
+      "dena"
+    ],
+    "title": "Denali Highlights: From the Park Entrance to Savage River",
+    "source": "https://www.nps.gov/tours/view.htm?id=6A076A49-BA7F-8B68-9FFFC4ECC5F4F2BF",
+    "checked": "2026-10-27",
+    "season": "summer (roughly May 20 to mid-September)",
+    "days": [
+      {
+        "label": "Tour (single visit)",
+        "stops": [
+          "dena-visitor-center",
+          "?Denali's Historic Headquarters",
+          "dena-sled-dogs",
+          "dena-mountain-vista",
+          "dena-savage-river",
+          "?Riley Creek Picnic Area"
+        ]
+      }
+    ],
+    "evidence": "calls out the main sights to see within the first 15 miles",
+    "kind": "short"
+  },
+  {
+    "id": "pc-banf-in-town",
+    "park": "banf",
+    "parks": [
+      "banf"
+    ],
+    "title": "Suggested itineraries - Banff National Park",
+    "source": "https://parks.canada.ca/pn-np/ab/banff/visit/les10-top10/itineraries",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "Hit the spots in town",
+        "stops": [
+          "banf-upper-hot-springs",
+          "banf-cave-and-basin",
+          "?Cascades of Time Garden",
+          "banf-bow-falls"
+        ]
+      }
+    ],
+    "evidence": "Start your day with a relaxing soak in the warm mineral waters",
+    "kind": "short"
+  },
+  {
+    "id": "pc-banf-four-afternoons",
+    "park": "banf",
+    "parks": [
+      "banf"
+    ],
+    "title": "Suggested itineraries - Banff National Park",
+    "source": "https://parks.canada.ca/pn-np/ab/banff/visit/les10-top10/itineraries",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "Afternoon 1",
+        "stops": [
+          "banf-vermilion-lakes"
+        ]
+      },
+      {
+        "label": "Afternoon 2",
+        "stops": [
+          "banf-tunnel-mountain"
+        ]
+      },
+      {
+        "label": "Afternoon 3",
+        "stops": [
+          "?Fenland Trail"
+        ]
+      },
+      {
+        "label": "Afternoon 4",
+        "stops": [
+          "?Banff Legacy Trail"
+        ]
+      }
+    ],
+    "evidence": "Enjoy an easy walk to discover Fenland Trail",
+    "kind": "short"
+  },
+  {
+    "id": "pc-banf-minnewanka-loop",
+    "park": "banf",
+    "parks": [
+      "banf"
+    ],
+    "title": "Suggested itineraries - Banff National Park",
+    "source": "https://parks.canada.ca/pn-np/ab/banff/visit/les10-top10/itineraries",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "Family time on Minnewanka Loop",
+        "stops": [
+          "banf-lake-minnewanka",
+          "?Stewart Canyon",
+          "?Lower Bankhead Trail"
+        ]
+      }
+    ],
+    "evidence": "Picnic with the kids by Lake Minnewanka reservoir",
+    "kind": "short"
+  },
+  {
+    "id": "pc-banf-scenic-route",
+    "park": "banf",
+    "parks": [
+      "banf"
+    ],
+    "title": "Suggested itineraries - Banff National Park",
+    "source": "https://parks.canada.ca/pn-np/ab/banff/visit/les10-top10/itineraries",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "Take the scenic route",
+        "stops": [
+          "jasp-icefields-parkway",
+          "?Parker Ridge",
+          "?Bow Glacier Falls",
+          "?Crowfoot Glacier",
+          "banf-bow-lake",
+          "?Herbert Lake",
+          "?David Thompson Highway (Hwy 11)",
+          "?Rocky Mountain House National Historic Site"
+        ]
+      }
+    ],
+    "evidence": "Drive the 230 km Icefields Parkway (93N) past glaciers, sparkling waterfalls",
+    "kind": "options"
+  },
+  {
+    "id": "pc-banf-iconic-landscapes",
+    "park": "banf",
+    "parks": [
+      "banf"
+    ],
+    "title": "Suggested itineraries - Banff National Park",
+    "source": "https://parks.canada.ca/pn-np/ab/banff/visit/les10-top10/itineraries",
+    "checked": "2026-10-27",
+    "season": "summer and winter variants (Johnston Canyon ice walk, Lake Louise skating in winter)",
+    "days": [
+      {
+        "label": "Banff’s iconic landscapes",
+        "stops": [
+          "banf-bow-valley-parkway",
+          "?Castle Mountain",
+          "banf-johnston-canyon",
+          "banf-lake-louise"
+        ]
+      }
+    ],
+    "evidence": "A slow, scenic drive along the Bow Valley Parkway",
+    "kind": "route"
+  },
+  {
+    "id": "pc-banf-jasp-7day",
+    "park": "banf",
+    "parks": [
+      "banf",
+      "jasp"
+    ],
+    "title": "Banff and Jasper: the ultimate duo",
+    "source": "https://parks.canada.ca/voyage-travel/region/ouest-west/itin/itin1",
+    "checked": "2026-10-27",
+    "season": null,
+    "days": [
+      {
+        "label": "Day 1: Banff",
+        "stops": [
+          "banf-cave-and-basin",
+          "?Banff Park Museum National Historic Site"
+        ]
+      },
+      {
+        "label": "Day 2: Banff National Park",
+        "stops": [
+          "banf-lake-minnewanka",
+          "?Johnson Lake trail",
+          "banf-upper-hot-springs"
+        ]
+      },
+      {
+        "label": "Day 3: Lake Louise",
+        "stops": [
+          "banf-lake-louise",
+          "banf-moraine-lake"
+        ]
+      },
+      {
+        "label": "Day 4: Icefields Parkway to Jasper",
+        "stops": [
+          "jasp-icefields-parkway",
+          "banf-bow-lake",
+          "banf-peyto-lake",
+          "jasp-athabasca-glacier",
+          "jasp-athabasca-falls"
+        ]
+      },
+      {
+        "label": "Day 5: Maligne Valley",
+        "stops": [
+          "?Maligne Valley",
+          "jasp-maligne-lake",
+          "?Bald Hills Trail",
+          "?Mary Schäffer Loop"
+        ]
+      },
+      {
+        "label": "Day 6: Eastern Jasper",
+        "stops": [
+          "?Jasper House National Historic Site",
+          "?Source of the Springs trail",
+          "?Sulphur Skyline Trail",
+          "jasp-miette-hot-springs"
+        ]
+      },
+      {
+        "label": "Day 7: Jasper Athabasca Valley",
+        "stops": [
+          "?Pyramid Bench",
+          "jasp-valley-of-five-lakes",
+          "jasp-jasper-town"
+        ]
+      }
+    ],
+    "evidence": "Embark on this 7-day trip through the Canadian Rockies in Alberta!",
+    "kind": "route"
+  },
+  {
+    "id": "pc-banf-yoho-kootenay-7day",
+    "park": "banf",
+    "parks": [
+      "banf",
+      "yoho"
+    ],
+    "title": "Rocky mountain retreat",
+    "source": "https://parks.canada.ca/voyage-travel/region/ouest-west/itin/itin7",
+    "checked": "2026-10-27",
+    "season": "Lake Louise shuttle note applies to summer",
+    "days": [
+      {
+        "label": "Day 1: Banff National Park, Lake Louise",
+        "stops": [
+          "banf-lake-louise"
+        ]
+      },
+      {
+        "label": "Day 2: Yoho National Park",
+        "stops": [
+          "yoho-spiral-tunnels",
+          "yoho-field-visitor-centre",
+          "yoho-wapta-falls"
+        ]
+      },
+      {
+        "label": "Day 3: Yoho National Park",
+        "stops": [
+          "yoho-natural-bridge",
+          "yoho-emerald-lake",
+          "yoho-takakkaw-falls"
+        ]
+      },
+      {
+        "label": "Day 4: Yoho National Park",
+        "stops": [
+          "?Guided hike with a Parks Canada interpreter (Yoho)"
+        ]
+      },
+      {
+        "label": "Day 5: Kootenay National Park",
+        "stops": [
+          "?Continental Divide (Kootenay)",
+          "?Kootenay Valley Viewpoint",
+          "?Sinclair Canyon"
+        ]
+      },
+      {
+        "label": "Day 6: Kootenay National Park",
+        "stops": [
+          "?Radium Hot Springs",
+          "?Sinclair Canyon",
+          "?Letwilc7úl̓ecw interpretive trail"
+        ]
+      },
+      {
+        "label": "Day 7: Kootenay National Park",
+        "stops": [
+          "?Paint Pots",
+          "?Marble Canyon"
+        ]
+      }
+    ],
+    "evidence": "Head for a road trip in the Rockies with this 7-day itinerary.",
+    "kind": "route"
+  }
+]

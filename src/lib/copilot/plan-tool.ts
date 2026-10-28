@@ -217,6 +217,25 @@ export function planTrip(input: unknown, options: PlanOptions) {
 
 export type TripResult = ReturnType<typeof planTrip>;
 
+/**
+ * 把一个现成的行程（博主、NPS 官方推荐的真实行程）按网站的规则排时间线，看在我们的规则下有没有“去不了、赶不上”。
+ * 评测用（scripts/eval-real-routes.mjs）：只定了月份，住处不知道（每天从第一站开始算），出发地、回程地按第一座公园的常用机场
+ */
+export function describeGivenTrip(trip: Trip, options: { parks: string[]; month: number; referenceDate: string }) {
+  const firstDate = nominalDate(options.month, new Date(`${options.referenceDate}T12:00:00Z`));
+  const stops = attractions.filter((a) => options.parks.includes(a.park));
+  const airport = parkByCode.get(options.parks[0])?.airports[0];
+  const place = airport ? { airport } : { name: "", lat: 0, lon: 0 };
+  return describeDays(
+    trip,
+    (day) => addDays(firstDate, day),
+    false,
+    { origin: endpoint(place, "origin", stops), destination: endpoint(place, "destination", stops) },
+    undefined,
+    new Map(),
+  );
+}
+
 function alertInfo(alert: ExtractedClosure) {
   return { title: alert.title, ...(alert.url ? { url: alert.url } : {}), ...(alert.reopen ? { reopen: alert.reopen } : {}) };
 }

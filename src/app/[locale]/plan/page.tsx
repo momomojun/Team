@@ -8,7 +8,7 @@ import { bookingRules } from "@/data/bookings";
 import { darkSky } from "@/data/honors";
 import { campgrounds } from "@/data/campgrounds";
 import { lodgingOptions } from "@/data/lodging";
-import { isSite, parks } from "@/data/parks";
+import { isSite, npsCodeOf, parks } from "@/data/parks";
 import { seasonalRoads } from "@/data/roads";
 import { timeNotes } from "@/data/time-notes";
 import { servicesUpdated } from "@/data/services.generated";
@@ -28,6 +28,12 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/plan">):
 }
 
 // 行程存在浏览器里，页面本身只提供景点、公园、住宿和机场数据
+/** 公园官网：写了 officialUrl 的（加拿大、部落公园、BLM……）用它，NPS 管的用 nps.gov 上的公园首页 */
+const officialUrlOf = (park: (typeof parks)[number]) => {
+  const nps = npsCodeOf(park);
+  return park.officialUrl ?? (nps ? `https://www.nps.gov/${nps}/index.htm` : undefined);
+};
+
 export default async function PlanPage({ params }: PageProps<"/[locale]/plan">) {
   const { locale } = await params;
   if (!hasLocale(locale)) notFound();
@@ -71,6 +77,7 @@ export default async function PlanPage({ params }: PageProps<"/[locale]/plan">) 
             nonresidentSurcharge: park.nonresidentSurcharge,
             site: isSite(park),
             country: park.country ?? "US",
+            ...(officialUrlOf(park) ? { officialUrl: officialUrlOf(park) } : {}),
             ...(daily ? { daily } : {}),
             ...(sky ? { darkSky: { year: sky.year, rasc: sky.program === "rasc" } } : {}),
             photo: headerPhoto(park.hero, locale),

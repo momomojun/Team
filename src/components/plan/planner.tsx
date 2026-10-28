@@ -743,6 +743,7 @@ export function Planner({
       parkHref={parkHref(stop)}
       routesHref={`/${locale}/routes?park=${stop.park}`}
       party={trip.guide?.party}
+      officialUrl={parkByCode.get(stop.park)?.officialUrl}
       text={text}
       actions={actions}
       onClose={onClose}
