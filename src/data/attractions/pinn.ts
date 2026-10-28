@@ -255,7 +255,7 @@ export const pinnacles: Attraction[] = [
       ],
       loop: true,
     },
-    hike: { distanceMi: 2.4, gainFt: 100, difficulty: "moderate", loop: true },
+    hike: { distanceMi: 2.4, gainFt: 410, difficulty: "moderate", loop: true },
     hours: WEST_GATE,
     bestTime: ["morning", "afternoon"],
     bestMonths: [3, 4, 5, 10, 11],
