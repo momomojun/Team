@@ -9,7 +9,7 @@ import type { Dictionary } from "@/i18n/dictionaries";
 import { fill, formatDuration } from "@/i18n/format";
 import { addDays } from "@/lib/dates";
 import { flightKey, saveFlight, useFlightStore, type FlightStore } from "@/lib/flight-store";
-import { LDW_PER_DAY, pickupNotes, SLI_PER_DAY } from "@/lib/prices/car-cover";
+import { LDW_PER_DAY, SLI_PER_DAY } from "@/lib/prices/car-cover";
 import { carRates, carRatesDate, carRatesSource, DEFAULT_CAR_RATE } from "@/lib/prices/car-rates";
 import { flexTripQueries } from "@/lib/prices/flex-dates";
 import {

@@ -1,5 +1,5 @@
-// 住处的营业季节：只收季节性营业的（园内酒店、帐篷木屋、阿拉斯加和加拿大落基山的夏季旅馆……），全年营业的不写。
-// 按官方页面（NPS、特许经营商、旅馆自己的网站）整理，写明是哪一年公布的日期；之后的年份按同样的月日估。
+// 住处和营地的营业季节：只收季节性营业的（园内酒店、帐篷木屋、阿拉斯加和加拿大落基山的夏季旅馆、季节性营地……），全年营业的不写。
+// 按官方页面（NPS、特许经营商、旅馆自己的网站、Recreation.gov）整理，写明是哪一年公布的日期；之后的年份按同样的月日估。
 // 排行程时这晚不营业的住处不推荐、不自动选；用户自己选了的，行程页那晚提醒。
 // 公布的关门日期有的是最后一晚、有的是退房那天，看得出来的按最后一晚写，看不出来的照抄（可能多算一晚）。
 
@@ -138,4 +138,152 @@ export const lodgingSeasons: Record<string, LodgingSeason> = {
   "isro-stay-windigo-cabins": { open: [{ from: "06-06", to: "09-05" }], year: 2025, source: "https://www.rockharborlodge.com/lodging/washington-harbor-camper-cabins/", checked: "2026-10-20" },
   // Hotel site gives no operating dates (summer by boat or floatplane, winter by snowmobile); Recreation.gov's Kettle Falls cruise note says the hotel kitchen is closed for October 2026 tours. | APPROXIMATE: common mid-May (fishing opener) to end of September, not an official date
   "voya-stay-kettle-falls-hotel": { open: [{ from: "05-15", to: "09-30" }], year: 2026, source: "https://www.kettlefallshotel.com/faq", checked: "2026-10-20" },
+
+  // —— 营地（Recreation.gov / NPS）。全年开的不写；只开一部分营位或冬天步行进的算开着。关门日期优胜美地写明是“关闭当天”，最后一晚按前一天；黄石 / 大提顿表上的结束日按最后一晚照抄。
+
+  // Yellowstone NPS campgrounds table 2026 Dates (https://www.nps.gov/yell/planyourvisit/campgrounds.htm, checked 2026-10-26). Mammoth is year-round → omitted.
+  "yell-camp-indian-creek": { open: [{ from: "06-12", to: "09-14" }], year: 2026, source: "https://www.nps.gov/yell/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  "yell-camp-lewis-lake": { open: [{ from: "06-15", to: "10-11" }], year: 2026, source: "https://www.nps.gov/yell/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  "yell-camp-slough-creek": { open: [{ from: "06-15", to: "10-12" }], year: 2026, source: "https://www.nps.gov/yell/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  "yell-camp-tower-fall": { open: [{ from: "05-22", to: "09-27" }], year: 2026, source: "https://www.nps.gov/yell/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+
+  // Mount Rainier NPS campgrounds page (https://www.nps.gov/mora/planyourvisit/campgrounds.htm, 2026-10-13 status / season table). Exact day for “late May / late Sept” not published → estimated. Ohanapecosh rehab closed all of 2026.
+  // Typical season late May–late Sept | Approximate MM-DD
+  "mora-camp-cougar-rock": { open: [{ from: "05-25", to: "09-30" }], year: 2026, source: "https://www.nps.gov/mora/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  // CLOSED for 2026 rehab through November; typical season late May–early Oct | Keep typical open window for later years; 2026 nights all closed
+  "mora-camp-ohanapecosh": {
+    open: [{ from: "05-25", to: "10-05" }],
+    closed: [{ from: "2026-01-01", to: "2026-12-31" }],
+    year: 2026,
+    source: "https://www.nps.gov/mora/planyourvisit/campgrounds.htm",
+    checked: "2026-10-26",
+  },
+  // Typical season late June–late Sept | Approximate MM-DD
+  "mora-camp-white-river": { open: [{ from: "06-25", to: "09-30" }], year: 2026, source: "https://www.nps.gov/mora/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+
+  // Rocky Mountain NPS camping page: winter camping Oct 19–mid-May only at Moraine Park (year-round → omit). Summer 2027 dates TBD; other campgrounds closed in winter. Longs Peak typically early July–early September.
+  // Summer only; winter season starts Oct 19 at Moraine Park only | Approximate late May–Oct 18 until 2027 dates posted
+  "romo-camp-rocky-mountain-national-park-aspenglen": { open: [{ from: "05-25", to: "10-18" }], year: 2026, source: "https://www.nps.gov/romo/planyourvisit/camping.htm", checked: "2026-10-26" },
+  "romo-camp-rocky-mountain-national-park-glacier-basin": { open: [{ from: "05-25", to: "10-18" }], year: 2026, source: "https://www.nps.gov/romo/planyourvisit/camping.htm", checked: "2026-10-26" },
+  "romo-camp-rocky-mountain-national-park-timber-creek": { open: [{ from: "05-25", to: "10-18" }], year: 2026, source: "https://www.nps.gov/romo/planyourvisit/camping.htm", checked: "2026-10-26" },
+  // Typically early July–early September | Approximate
+  "romo-camp-rocky-mountain-national-park-longs-peak": { open: [{ from: "07-01", to: "09-07" }], year: 2026, source: "https://www.nps.gov/romo/planyourvisit/camping.htm", checked: "2026-10-26" },
+
+  // Yosemite NPS campgrounds table 2026. “Closing dates refer to the day the campground closes; the night before that is the last night to camp.” Year-round Upper Pines / Camp 4 / Wawona / Hodgdon Meadow omitted.
+  "yose-camp-lower-pines": { open: [{ from: "04-21", to: "10-18" }], year: 2026, source: "https://www.nps.gov/yose/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  "yose-camp-north-pines": { open: [{ from: "04-21", to: "10-25" }], year: 2026, source: "https://www.nps.gov/yose/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  // 2026 early close Aug 14 after lightning (originally Sep 7); last night Aug 13
+  "yose-camp-bridalveil-creek": { open: [{ from: "07-03", to: "08-13" }], year: 2026, source: "https://www.nps.gov/yose/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  "yose-camp-crane-flat": { open: [{ from: "05-21", to: "10-11" }], year: 2026, source: "https://www.nps.gov/yose/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  "yose-camp-tamarack-flat": { open: [{ from: "06-22", to: "10-11" }], year: 2026, source: "https://www.nps.gov/yose/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  "yose-camp-white-wolf": { open: [{ from: "07-02", to: "09-13" }], year: 2026, source: "https://www.nps.gov/yose/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  "yose-camp-yosemite-creek": { open: [{ from: "07-01", to: "09-06" }], year: 2026, source: "https://www.nps.gov/yose/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  "yose-camp-porcupine-flat": { open: [{ from: "06-23", to: "10-10" }], year: 2026, source: "https://www.nps.gov/yose/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  "yose-camp-tuolumne-meadows": { open: [{ from: "07-01", to: "09-26" }], year: 2026, source: "https://www.nps.gov/yose/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+
+  // Grand Teton NPS Operating Hours lodging/camping 2026 (https://www.nps.gov/grte/planyourvisit/hours.htm). Closing column treated as last night (same as other GRTE lodging rows). Marina end-ties omitted (no season text).
+  "grte-camp-gros-ventre": { open: [{ from: "04-27", to: "10-10" }], year: 2026, source: "https://www.nps.gov/grte/planyourvisit/hours.htm", checked: "2026-10-26" },
+  "grte-camp-jenny-lake": { open: [{ from: "05-02", to: "09-27" }], year: 2026, source: "https://www.nps.gov/grte/planyourvisit/hours.htm", checked: "2026-10-26" },
+  "grte-camp-signal-mountain": { open: [{ from: "05-08", to: "10-11" }], year: 2026, source: "https://www.nps.gov/grte/planyourvisit/hours.htm", checked: "2026-10-26" },
+  "grte-camp-colter-bay": { open: [{ from: "05-21", to: "09-27" }], year: 2026, source: "https://www.nps.gov/grte/planyourvisit/hours.htm", checked: "2026-10-26" },
+  "grte-camp-colter-bay-rv-park": { open: [{ from: "05-04", to: "10-10" }], year: 2026, source: "https://www.nps.gov/grte/planyourvisit/hours.htm", checked: "2026-10-26" },
+  "grte-camp-colter-bay-tent-village": { open: [{ from: "05-22", to: "09-07" }], year: 2026, source: "https://www.nps.gov/grte/planyourvisit/hours.htm", checked: "2026-10-26" },
+  "grte-camp-lizard-creek": { open: [{ from: "06-12", to: "09-13" }], year: 2026, source: "https://www.nps.gov/grte/planyourvisit/hours.htm", checked: "2026-10-26" },
+  "grte-camp-headwaters-at-flagg-ranch": { open: [{ from: "06-07", to: "10-04" }], year: 2026, source: "https://www.nps.gov/grte/planyourvisit/hours.htm", checked: "2026-10-26" },
+
+  // Crater Lake: Mazama Village Campground summer-only (NPS listing + Explore Crater Lake cabins May 8–Oct 4). Lost Creek not in Recreation.gov pull / no dates found → omitted for now.
+  // Summer; exact 2026 open/close for the campground not on NPS HTML (JS). Cabins at same village: May 8–Oct 4; use that window for the campground
+  "crla-camp-mazama-village": { open: [{ from: "05-08", to: "10-04" }], year: 2026, source: "https://explorecraterlake.com/stay-at-crater-lake/the-cabins-at-mazama-village/", checked: "2026-10-26" },
+
+  // Olympic NPS camping.htm 2026. Year-round Hoh / Kalaloch / Staircase (weather) omitted. Deer Park / Fairholme / Sol Duc seasonal.
+  // June–mid October, snow/road dependent | Approximate
+  "olym-camp-deer-park": { open: [{ from: "06-01", to: "10-15" }], year: 2026, source: "https://www.nps.gov/olym/planyourvisit/camping.htm", checked: "2026-10-26" },
+  "olym-camp-fairholme": { open: [{ from: "04-25", to: "09-29" }], year: 2026, source: "https://www.nps.gov/olym/planyourvisit/camping.htm", checked: "2026-10-26" },
+  // Reservations Mar 20–Nov 1; primitive until road closes. Treat reservation window as the reliable season
+  "olym-camp-sol-duc-hot-springs-resort": { open: [{ from: "03-20", to: "11-01" }], year: 2026, source: "https://www.nps.gov/olym/planyourvisit/camping.htm", checked: "2026-10-26" },
+
+  // North Cascades NPS camping.htm: operational season mid-May–early Sept; open Monday before Memorial Day. Colonial Creek North / Newhalem C close mid–late Sept 2026. Goodell / Gorge Lake / Colonial South walk-ins year-round → omit those three. Harlequin / Hozomeen seasonal remote.
+  "noca-camp-colonial-creek-north": { open: [{ from: "05-18", to: "09-13" }], year: 2026, source: "https://www.nps.gov/noca/planyourvisit/camping.htm", checked: "2026-10-26" },
+  // Closes Sep 14 2026 with Colonial Creek North / Newhalem loop C; some walk-in sites stay open year-round — treat whole campground as seasonal for auto-pick
+  "noca-camp-colonial-creek-south": { open: [{ from: "05-18", to: "09-13" }], year: 2026, source: "https://www.nps.gov/noca/planyourvisit/camping.htm", checked: "2026-10-26" },
+  "noca-camp-newhalem-creek": { open: [{ from: "05-18", to: "09-26" }], year: 2026, source: "https://www.nps.gov/noca/planyourvisit/camping.htm", checked: "2026-10-26" },
+  // Stehekin; summer boat/shuttle season. Exact days not on camping.htm | Approximate mid-May–late Sep
+  "noca-camp-harlequin": { open: [{ from: "05-18", to: "09-30" }], year: 2026, source: "https://www.nps.gov/noca/planyourvisit/camping.htm", checked: "2026-10-26" },
+  // Remote Ross Lake; summer access | Approximate mid-May–late Sep
+  "noca-camp-hozomeen": { open: [{ from: "05-18", to: "09-30" }], year: 2026, source: "https://www.nps.gov/noca/planyourvisit/camping.htm", checked: "2026-10-26" },
+
+  // Grand Canyon NPS camping.htm: Mather year-round omitted. Desert View Apr 11–Oct 18 2026. North Rim historically May 15–Oct 15 (Dragon Bravo impacts 2026 — still use historical season for winter exclusion).
+  "grca-camp-desert-view": { open: [{ from: "04-11", to: "10-18" }], year: 2026, source: "https://www.nps.gov/grca/planyourvisit/camping.htm", checked: "2026-10-26" },
+  "grca-camp-north-rim": { open: [{ from: "05-15", to: "10-15" }], year: 2026, source: "https://www.nps.gov/grca/planyourvisit/camping.htm", checked: "2026-10-26" },
+
+  // Bryce Canyon NPS: North year-round omitted. Sunset closed in winter; 2026 Loop A from Mar 25, usual non-peak from Apr 15, peak through Oct 11.
+  "brca-camp-sunset": { open: [{ from: "03-25", to: "10-11" }], year: 2026, source: "https://www.nps.gov/brca/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+
+  // Indiana Dunes NPS: Dunewood Apr 1–Nov 1
+  "indu-camp-dunewood": { open: [{ from: "04-01", to: "11-01" }], year: 2026, source: "https://www.nps.gov/indu/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+
+  // Mesa Verde Morefield campground / lodging season Apr 24–Oct 18 (same operator page as meve-stay-morefield)
+  "meve-camp-morefield": { open: [{ from: "04-24", to: "10-18" }], year: 2026, source: "https://www.visitmesaverde.com/stay/morefield-campground", checked: "2026-10-26" },
+
+  // Black Canyon: North Rim seasonal; South Rim often longer. Exact 2026 days not on camping.htm HTML | Approximate North Rim late May–Oct
+  "blca-camp-black-canyon-of-the-gunnison-north-rim": { open: [{ from: "05-20", to: "10-15" }], year: 2026, source: "https://www.nps.gov/blca/planyourvisit/camping.htm", checked: "2026-10-26" },
+
+  // Shenandoah: all campgrounds seasonal early spring–late fall (NPS campgrounds.htm). Exact 2026 open/close not in static HTML | Approximate Apr–Nov
+  "shen-camp-big-meadows-shenandoah-va": { open: [{ from: "04-01", to: "11-15" }], year: 2026, source: "https://www.nps.gov/shen/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  "shen-camp-lewis-mountain": { open: [{ from: "04-01", to: "11-15" }], year: 2026, source: "https://www.nps.gov/shen/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  "shen-camp-loft-mountain": { open: [{ from: "04-01", to: "11-15" }], year: 2026, source: "https://www.nps.gov/shen/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  "shen-camp-mathews-arm": { open: [{ from: "04-01", to: "11-15" }], year: 2026, source: "https://www.nps.gov/shen/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+
+  // Glacier frontcountry: most campgrounds summer-only; Apgar can take limited winter use. Exact 2026 matrix not in static camping.htm | Approximate late May–mid Sep for listed sites
+  "glac-camp-avalanche": { open: [{ from: "05-25", to: "09-15" }], year: 2026, source: "https://www.nps.gov/glac/planyourvisit/camping.htm", checked: "2026-10-26" },
+  "glac-camp-fish-creek": { open: [{ from: "05-25", to: "09-15" }], year: 2026, source: "https://www.nps.gov/glac/planyourvisit/camping.htm", checked: "2026-10-26" },
+  "glac-camp-many-glacier": { open: [{ from: "05-25", to: "09-15" }], year: 2026, source: "https://www.nps.gov/glac/planyourvisit/camping.htm", checked: "2026-10-26" },
+  "glac-camp-rising-sun": { open: [{ from: "05-25", to: "09-15" }], year: 2026, source: "https://www.nps.gov/glac/planyourvisit/camping.htm", checked: "2026-10-26" },
+  "glac-camp-sprague-creek": { open: [{ from: "05-25", to: "09-15" }], year: 2026, source: "https://www.nps.gov/glac/planyourvisit/camping.htm", checked: "2026-10-26" },
+  "glac-camp-st-mary": { open: [{ from: "05-25", to: "09-15" }], year: 2026, source: "https://www.nps.gov/glac/planyourvisit/camping.htm", checked: "2026-10-26" },
+  "glac-camp-two-medicine": { open: [{ from: "05-25", to: "09-15" }], year: 2026, source: "https://www.nps.gov/glac/planyourvisit/camping.htm", checked: "2026-10-26" },
+  // Apgar often has a short winter window; still closed much of mid-winter for auto-pick | Approximate May–Oct
+  "glac-camp-apgar": { open: [{ from: "05-01", to: "10-15" }], year: 2026, source: "https://www.nps.gov/glac/planyourvisit/camping.htm", checked: "2026-10-26" },
+
+  // Lassen: Summit Lake / Manzanita / Butte / Warner summer. Southwest walk-in + winter parking camping year-round → omit southwest* ids. Exact days not in camping-in-campgrounds table | Approximate late May–Sep
+  "lavo-camp-manzanita-lake": { open: [{ from: "05-25", to: "09-30" }], year: 2026, source: "https://www.nps.gov/lavo/planyourvisit/camping-in-campgrounds.htm", checked: "2026-10-26" },
+  "lavo-camp-butte-lake": { open: [{ from: "05-25", to: "09-30" }], year: 2026, source: "https://www.nps.gov/lavo/planyourvisit/camping-in-campgrounds.htm", checked: "2026-10-26" },
+  "lavo-camp-summit-lake-north": { open: [{ from: "06-15", to: "09-15" }], year: 2026, source: "https://www.nps.gov/lavo/planyourvisit/camping-in-campgrounds.htm", checked: "2026-10-26" },
+  "lavo-camp-summit-lake-south": { open: [{ from: "06-15", to: "09-15" }], year: 2026, source: "https://www.nps.gov/lavo/planyourvisit/camping-in-campgrounds.htm", checked: "2026-10-26" },
+  "lavo-camp-warner-valley": { open: [{ from: "05-25", to: "09-30" }], year: 2026, source: "https://www.nps.gov/lavo/planyourvisit/camping-in-campgrounds.htm", checked: "2026-10-26" },
+
+  // Sequoia & Kings Canyon: Potwisha / Azalea often year-round → omit. Higher and Mineral King / Cedar Grove seasonal. Exact 2026 days sparse on hours.htm | Approximate
+  "seki-camp-lodgepole-sequoia-and-kings-canyon-nationa": { open: [{ from: "05-15", to: "10-15" }], year: 2026, source: "https://www.nps.gov/seki/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  "seki-camp-dorst-creek-sequoia-and-kings-canyon-natio": { open: [{ from: "06-01", to: "09-15" }], year: 2026, source: "https://www.nps.gov/seki/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  "seki-camp-atwell-mill": { open: [{ from: "05-25", to: "10-15" }], year: 2026, source: "https://www.nps.gov/seki/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  "seki-camp-cold-springs": { open: [{ from: "05-25", to: "10-15" }], year: 2026, source: "https://www.nps.gov/seki/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  "seki-camp-buckeye-flat": { open: [{ from: "04-15", to: "09-30" }], year: 2026, source: "https://www.nps.gov/seki/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  "seki-camp-moraine": { open: [{ from: "05-15", to: "10-15" }], year: 2026, source: "https://www.nps.gov/seki/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  "seki-camp-sentinel": { open: [{ from: "05-15", to: "10-15" }], year: 2026, source: "https://www.nps.gov/seki/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  "seki-camp-sheep-creek": { open: [{ from: "05-15", to: "10-15" }], year: 2026, source: "https://www.nps.gov/seki/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  "seki-camp-sunset": { open: [{ from: "05-15", to: "10-15" }], year: 2026, source: "https://www.nps.gov/seki/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  "seki-camp-crystal-springs": { open: [{ from: "05-15", to: "10-15" }], year: 2026, source: "https://www.nps.gov/seki/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+
+  // Zion: Watchman year-round omitted. South / Lava Point close seasonally; exact days JS-loaded | Approximate Mar–Nov and May–Oct
+  "zion-camp-south": { open: [{ from: "03-01", to: "11-30" }], year: 2026, source: "https://www.nps.gov/zion/planyourvisit/campgrounds-in-zion.htm", checked: "2026-10-26" },
+  "zion-camp-lava-point": { open: [{ from: "05-01", to: "10-15" }], year: 2026, source: "https://www.nps.gov/zion/planyourvisit/campgrounds-in-zion.htm", checked: "2026-10-26" },
+
+  // Channel Islands boat-access camps seasonal; exact 2026 days not scraped | Approximate mid-Apr–early Nov
+  "chis-camp-anacapa-island": { open: [{ from: "04-15", to: "11-05" }], year: 2026, source: "https://www.nps.gov/chis/planyourvisit/camping.htm", checked: "2026-10-26" },
+  "chis-camp-san-miguel-island": { open: [{ from: "04-15", to: "11-05" }], year: 2026, source: "https://www.nps.gov/chis/planyourvisit/camping.htm", checked: "2026-10-26" },
+  "chis-camp-santa-barbara-island": { open: [{ from: "04-15", to: "11-05" }], year: 2026, source: "https://www.nps.gov/chis/planyourvisit/camping.htm", checked: "2026-10-26" },
+  "chis-camp-santa-cruz-island-prisoners-harbor": { open: [{ from: "04-15", to: "11-05" }], year: 2026, source: "https://www.nps.gov/chis/planyourvisit/camping.htm", checked: "2026-10-26" },
+  "chis-camp-santa-cruz-island-scorpion": { open: [{ from: "04-15", to: "11-05" }], year: 2026, source: "https://www.nps.gov/chis/planyourvisit/camping.htm", checked: "2026-10-26" },
+  "chis-camp-santa-rosa-island": { open: [{ from: "04-15", to: "11-05" }], year: 2026, source: "https://www.nps.gov/chis/planyourvisit/camping.htm", checked: "2026-10-26" },
+
+  // Great Basin high camps summer; Lower Lehman often longer. Exact days not in static HTML | Approximate
+  "grba-camp-baker-creek": { open: [{ from: "05-15", to: "09-30" }], year: 2026, source: "https://www.nps.gov/grba/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  "grba-camp-grey-cliffs": { open: [{ from: "05-15", to: "09-30" }], year: 2026, source: "https://www.nps.gov/grba/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  "grba-camp-upper-lehman-creek": { open: [{ from: "05-15", to: "09-30" }], year: 2026, source: "https://www.nps.gov/grba/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  "grba-camp-wheeler-peak": { open: [{ from: "06-15", to: "09-15" }], year: 2026, source: "https://www.nps.gov/grba/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+
+  // Great Smoky Mountains higher camps seasonal. Exact matrix not fetched | Approximate May–Oct for mountain camps
+  "grsm-camp-balsam-mountain": { open: [{ from: "05-15", to: "10-15" }], year: 2026, source: "https://www.nps.gov/grsm/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  "grsm-camp-cataloochee": { open: [{ from: "04-01", to: "10-31" }], year: 2026, source: "https://www.nps.gov/grsm/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
+  "grsm-camp-look-rock": { open: [{ from: "05-15", to: "10-15" }], year: 2026, source: "https://www.nps.gov/grsm/planyourvisit/campgrounds.htm", checked: "2026-10-26" },
 };

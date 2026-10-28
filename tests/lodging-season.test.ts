@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { campgrounds } from "../src/data/campgrounds";
 import { lodgingOptions } from "../src/data/lodging";
 import { lodgingSeasons } from "../src/data/lodging-seasons";
 import { planTrip } from "../src/lib/copilot/plan-tool";
@@ -29,10 +30,10 @@ test("没有日期、全年营业、自定义住处都当能住", () => {
   assert.ok(lodgingOpenOn("custom-123", "2026-01-15"));
 });
 
-test("季节数据：住处都存在，日期格式对，有来源和核对日期", () => {
-  const ids = new Set(lodgingOptions.map((option) => option.id));
+test("季节数据：住处或营地都存在，日期格式对，有来源和核对日期", () => {
+  const ids = new Set([...lodgingOptions, ...campgrounds].map((option) => option.id));
   for (const [id, season] of Object.entries(lodgingSeasons)) {
-    assert.ok(ids.has(id), `${id} 不在 lodging.ts 里`);
+    assert.ok(ids.has(id), `${id} 不在 lodging.ts / campgrounds.ts 里`);
     assert.ok((season.open?.length ?? 0) + (season.closed?.length ?? 0) > 0, id);
     for (const { from, to } of season.open ?? []) assert.ok(MD.test(from) && MD.test(to), `${id} ${from}–${to}`);
     for (const { from, to } of season.closed ?? []) assert.ok(DATE.test(from) && (to === null || DATE.test(to)), `${id} ${from}–${to}`);
