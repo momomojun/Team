@@ -6,6 +6,9 @@
 
 import { readingMs, sentences } from "./narration";
 
+/** 叫浏览器念了以后多久还没开口，就当这台设备念不出来 */
+const SILENT_CHECK_MS = 1200;
+
 export const canSpeak = () => typeof window !== "undefined" && "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
 
 /** 本机配音能不能用：问一次就记住（Copilot 中途开、关的，刷新页面再问） */
@@ -67,6 +70,8 @@ export class Narrator {
   private neural = false;
   /** 开口、停下（配乐跟着压低、抬回来） */
   onVoice: ((speaking: boolean) => void) | null = null;
+  /** 这一句真的念出声了（配音放起来了、浏览器的声音开口了）：没念出来、只按阅读时间出字幕的是 false（量朗读快慢时不算） */
+  voiced = false;
 
   constructor(lang: string, onSentence: (sentence: string | null) => void, muted = false) {
     this.lang = lang;
@@ -122,6 +127,7 @@ export class Narrator {
       return;
     }
     const sentence = this.queue[this.index];
+    this.voiced = false;
     this.onSentence(sentence);
     const advance = () => {
       if (token !== this.token || this.paused) return;
@@ -145,6 +151,9 @@ export class Narrator {
       audio.preservesPitch = true;
       this.audio = audio;
       audio.onended = advance;
+      audio.onplaying = () => {
+        this.voiced = true;
+      };
       audio.onerror = () => {
         if (token !== this.token) return;
         this.stopAudio();
@@ -173,9 +182,19 @@ export class Narrator {
     utterance.rate = this.rate;
     utterance.onend = advance;
     utterance.onerror = advance;
+    utterance.onstart = () => {
+      this.voiced = true;
+    };
     window.speechSynthesis.speak(utterance);
     // 兜底：语音一直不回 onend（Chrome 的老毛病）也按时往下走
     this.timer = setTimeout(advance, budget * 2.5 + 2000);
+    // 说了念却一直没开口（没有声音设备、浏览器不让出声）：当没有声音，按阅读时间只出字幕，不干等上面那么久
+    const token = this.token;
+    setTimeout(() => {
+      if (token !== this.token || this.voiced || this.paused || window.speechSynthesis.speaking) return;
+      if (this.timer) clearTimeout(this.timer);
+      this.timer = setTimeout(advance, Math.max(0, budget - SILENT_CHECK_MS));
+    }, SILENT_CHECK_MS);
   }
 
   pause() {

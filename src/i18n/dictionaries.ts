@@ -1504,6 +1504,7 @@ const zhHans = {
         lodging: "今晚住在{name}",
         end: "最后回到{name}",
         day: "第 {n} 天{date}。今天去 {k} 个地方，开车大约 {drive}",
+        dayDrive: "第 {n} 天{date}。今天不安排景点，开车去{to}，大约 {drive}",
         introTitle: "怎么看这段讲解",
         intro: "这是一趟 {days} 天的行程，去{parks}，从{origin}出发",
         introNoOrigin: "这是一趟 {days} 天的行程，去{parks}",

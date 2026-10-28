@@ -1537,6 +1537,7 @@ export const en: Dictionary = {
         lodging: "Tonight you stay at {name}",
         end: "Finally, back to {name}",
         day: "Day {n}{date}. Today you visit {k} {k|place|places}, with about {drive} of driving",
+        dayDrive: "Day {n}{date}. No stops today, just about {drive} of driving to {to}",
         introTitle: "How to follow this tour",
         intro: "This is a {days}-day trip to {parks}, starting from {origin}",
         introNoOrigin: "This is a {days}-day trip to {parks}",

@@ -939,11 +939,13 @@ export function Planner({
       });
     }
     const firstLeg = view.rows[0] ? longLeg(view.timeline.entries[0]?.driveMin, view.rows[0].stop.nameZh) : undefined;
-    const dayWords = fill(say.day, {
+    // 没有景点、只是开车换住处的一天不说“今天去 0 个地方”
+    const dayWords = fill(view.rows.length === 0 && view.to ? say.dayDrive : say.day, {
       n: route.day + 1,
       date: view.date ? (english ? `, ${formatDate(view.date)}` : `，${formatDate(view.date)}`) : "",
       k: view.rows.length,
       drive: duration(view.timeline.driveMin),
+      to: view.to?.name ?? "",
     });
     const last = view.timeline.entries.at(-1);
     return [

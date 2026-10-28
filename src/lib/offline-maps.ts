@@ -72,10 +72,35 @@ export function tilesFor(areas: OfflineArea[]): { base: string[]; terrain: strin
   return { base: [...base], terrain: [...terrain] };
 }
 
-const fill = (template: string, tile: string) => {
+/** 瓦片地址：模板里的 {z}/{x}/{y} 换成这一块（tile 是 "z/x/y"） */
+export const tileUrl = (template: string, tile: string) => {
   const [z, x, y] = tile.split("/");
   return template.replace("{z}", z).replace("{x}", x).replace("{y}", y);
 };
+const fill = tileUrl;
+
+/**
+ * 播放路线时提前下载的瓦片：路线上每个点所在的那块和四周 radius 块（跟车镜头看得到车前后左右）。
+ * zoomsAt 给每个点要哪几级（跟车镜头进站时近、长途时远，远处画面用低一两级的）；整数级，重复的只算一次
+ */
+export function tilesAlongPath(path: [number, number][], zoomsAt: (index: number) => number[], radius = 1): string[] {
+  const out = new Set<string>();
+  path.forEach(([lon, lat], index) => {
+    for (const zoom of zoomsAt(index)) {
+      const size = 2 ** zoom;
+      const x = tileX(lon, zoom);
+      const y = tileY(lat, zoom);
+      for (let dx = -radius; dx <= radius; dx++) {
+        for (let dy = -radius; dy <= radius; dy++) {
+          const tx = (((x + dx) % size) + size) % size;
+          const ty = y + dy;
+          if (ty >= 0 && ty < size) out.add(`${zoom}/${tx}/${ty}`);
+        }
+      }
+    }
+  });
+  return [...out];
+}
 
 /**
  * 要下载的所有地址：底图样式、图标、Latin 字体（中文标注在手机本地渲染，不用下载）、瓦片索引和瓦片、地形瓦片、照片。
