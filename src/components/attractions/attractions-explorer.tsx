@@ -10,6 +10,7 @@ import { AddToTripButton } from "@/components/trip/add-to-trip-button";
 import type { AttractionKind, AttractionWithPhoto } from "@/data/attractions";
 import { googleMapsUrl, googleSnapshotDate } from "@/data/attractions/google";
 import { fill, formatDuration, otherName } from "@/i18n/format";
+import { byPopularity } from "@/lib/popularity";
 import { AttractionCard, linkButton, PopularityBadge, type AttractionText } from "./attraction-card";
 import { KIND_COLORS } from "./kinds";
 
@@ -24,19 +25,6 @@ const FAMILY_FILTERS: Record<FamilyFilter, (a: AttractionWithPhoto) => boolean> 
 };
 const isFamilyFilter = (filter: Filter): filter is FamilyFilter => filter in FAMILY_FILTERS;
 type Sort = "rank" | "area";
-
-/**
- * 按热度名次；不排名的游客中心按评论数接在后面，没有 Google 数据的放最后。
- * 还没有 Google 快照的公园（新加的）：必去的排前面，游客中心排最后
- */
-function byPopularity(a: AttractionWithPhoto, b: AttractionWithPhoto) {
-  return (
-    (a.hotRank ?? Infinity) - (b.hotRank ?? Infinity) ||
-    (b.google?.reviews ?? 0) - (a.google?.reviews ?? 0) ||
-    Number(Boolean(b.mustSee)) - Number(Boolean(a.mustSee)) ||
-    Number(a.kind === "visitor") - Number(b.kind === "visitor")
-  );
-}
 
 export function AttractionsExplorer({
   attractions,
@@ -248,7 +236,9 @@ export function AttractionsExplorer({
           </div>
           {sort === "rank" && (
             <p className="text-[11px] leading-5 text-mute">
-              {attractions.some((a) => a.google) ? fill(t.popularityNote, { date: googleSnapshotDate }) : t.popularityPending}
+              {attractions.some((a) => a.google || a.hikeRank !== undefined)
+                ? fill(t.popularityNote, { date: googleSnapshotDate })
+                : t.popularityPending}
             </p>
           )}
         </div>

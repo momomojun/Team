@@ -612,6 +612,7 @@ export const en: Dictionary = {
         road: "Seasonal road opening and closing dates over the years",
         family: "Kids, seniors and wheelchair access",
         rating: "Google rating and review count (manual snapshot)",
+        alltrails: "AllTrails rating, review count and popularity for this trail",
         drive: "Drive times: OSRM road routing adjusted for typical speeds; parking and traffic not included",
       },
       checked: "checked {date}",
@@ -665,6 +666,9 @@ export const en: Dictionary = {
     googleRating: "Google ★{rating} · {reviews} reviews",
     googleSource: "Google Maps listing “{name}”, snapshot from {date}",
     alltrailsRating: "AllTrails ★{rating} · {reviews} reviews",
+    alltrails: "AllTrails",
+    alltrailsHint: "Open this trail on AllTrails (ratings, conditions, recent reviews)",
+    alltrailsSearchHint: "Search AllTrails for this trail (we haven't matched it to the same route there yet)",
     customTrailSummary:
       "A trail from AllTrails (★{rating} · {reviews} reviews): {length}, {gain}. This site doesn't cover it, so its season, permits and suitability for kids or older travelers are unknown. Check AllTrails and the park's website before you go.",
     customTrailTip:
@@ -674,7 +678,7 @@ export const en: Dictionary = {
     sortByRank: "By popularity",
     sortByArea: "By area",
     popularityNote:
-      "Popularity ranks each park's sights by Google Maps review count (snapshot from {date}; not updated automatically). Google often splits one place into several listings, such as the sight, the trailhead, and the overlook, so we use the one with the most reviews. Visitor centers and sights outside the park aren't ranked.",
+      "Popularity is ranked within each park: trails by AllTrails popularity and reviews, everything else by Google Maps review count (snapshot from {date}; not updated automatically), with the two rankings alternating. Google often splits one place into several listings, such as the sight, the trailhead, and the overlook, so we use the one with the most reviews. Visitor centers, sights outside the park, and trails we couldn't match to the same route on AllTrails aren't ranked.",
     popularityPending:
       "We don't have a Google Maps review snapshot for this park yet, so must-sees are listed first and visitor centers last.",
     trailLength: "Trail about {mi} mi ({type})",
