@@ -8,18 +8,19 @@ import {
   bounds,
   chapterStep,
   clockText,
-  distanceAt,
+  driveDistance,
   drawnGradient,
   fade,
   flyMs,
   followZoom,
   lineFraction,
+  locate,
   planDay,
   pointAt,
-  progressAt,
   seekTarget,
-  segmentOf,
   segmentStarts,
+  sentenceAt,
+  slotStarts,
   slowness,
   TOUR_SPEEDS,
   tourTimeline,
@@ -29,12 +30,12 @@ import {
   type TourNarration,
   type TourSegment,
   type TourStop,
-  type TourWhere,
 } from "./route-tour";
 import { fill } from "@/i18n/format";
 import { readingMs, sentences } from "@/lib/narration";
 import { Score } from "@/lib/score";
 import { Narrator, warmVoices } from "@/lib/speech";
+import { tilesAlongPath, tileUrl } from "@/lib/offline-maps";
 import { holdClock } from "@/lib/use-now";
 import { PhotoReel, preloadPhotos } from "./stop-montage";
 import { EOX_ATTRIBUTION, EOX_IMAGERY_TILES, IMAGERY_TILES, STYLE_URL, TERRAIN_TILES, type Imagery } from "./sources";
@@ -157,44 +158,68 @@ const SPEED_KEY = "nps-tour-speed";
 const MAX_FRAME_MS = 64;
 /** 讲解版铺满全屏时画面的清晰度最多是屏幕的 1.5 倍：高分屏、4K 屏上 3D 地形要画的像素少一半以上，帧率稳得多，看不出区别 */
 const NARRATED_PIXEL_RATIO = 1.5;
+/** 提前下载这一天的地图瓦片时同时发几个请求（浏览器对同一个网站最多也就同时 6 个） */
+const PREFETCH_PARALLEL = 6;
+/** 开车时地图瓦片跟不上：车慢到原来的三成，等瓦片到了再用半秒左右加速回去 */
+const TILE_SLOW = 0.3;
+const FLOW_EASE_MS = 500;
+/** 一段开车最多为等地图慢这么久（真实的毫秒）：网太慢的，等够了就照常开，不让看的人干等 */
+const TILE_WAIT_MAX = 4000;
+/** 镜头压低时远处少下载一些瓦片（MapLibre 的 setSourceTileLodParams）：默认倾斜时最多下载平视的 3 倍，播放时 2 倍 */
+const DEFAULT_LOD_LEVELS = 9.314;
+const DEFAULT_LOD_RATIO = 3;
+const TOUR_LOD_RATIO = 2;
+/**
+ * 朗读的快慢：实际念一句的时间 ÷ 按阅读时间估的（浏览器自带的中文声音大约 1.4 倍）。
+ * 边念边量，和排时间线用的差一成以上就按量到的重排进度条；量到的记在这台设备上，下次一开始就准
+ */
+const PACE_KEY = "nps-tour-pace";
+const PACE_SAMPLES = 8;
+const PACE_REBUILD = 0.1;
 
 interface TourState {
   days: TourDay[];
+  /** 正在播的是第几天（画面上的路线、牌子是这一天的） */
   index: number;
-  phase: "intro" | "fly" | "draw" | "hold" | "finale";
-  phaseStart: number;
-  /** 动画自己的钟（毫秒）：每帧按倍速往前走，暂停时不走；phaseStart、arriveUntil 都按这个钟 */
-  clock: number;
-  /** 上一帧的时间：到站停一下时把这段时间从画线的进度里扣掉 */
-  last: number;
-  arriveUntil: number;
   calm: boolean;
-  /** 讲解版：到站停下来念完才走；念的时候 speaking 是 true */
+  /** 讲解版：每一站念讲解词 */
   narrated: boolean;
-  speaking: boolean;
-  /** 第几次开始念：念完要做的事只给最后一次（被新的一段顶掉、拖了进度条的不做） */
-  voice: number;
-  /** 这一站的卡片还开着（开出这一站就收起来） */
-  carded: boolean;
-  /** 每天怎么播、进度条上的各段和每段从第几毫秒开始、现在播到第几毫秒、车开到这一天的第几公里 */
+  /** 每天怎么播、进度条上的各段和每段从第几毫秒开始 */
   plans: DayPlan[];
   timeline: TourSegment[];
   starts: number[];
+  /** 播到第几毫秒（一倍速下）：一切都按它摆出来，进度条也只看它 */
   position: number;
-  distance: number;
-  /** 跟车：每个路线点的累计播放量、这一天播多久、镜头现在的位置、缩放和方向 */
-  cost: number[];
-  dayMs: number;
+  /** 现在在第几段（换了段才重新摆这一段的开头） */
+  segment: number;
+  /** 动画自己的钟（毫秒）：每帧按倍速往前走，暂停时不走；钟等念完一句的时候它照样走（镜头接着转） */
+  clock: number;
+  /** 上一帧的时间（浏览器的） */
+  last: number;
+  /** 这一段要念的每一句、每一句从这一段的第几毫秒开始念；spoken 是下一句念第几句，talking 是正在念 */
+  speech: { lines: string[]; starts: number[] } | null;
+  spoken: number;
+  talking: boolean;
+  /** 第几次开始念：念完的回调只认最后一次（被拖进度条、退出顶掉的不算） */
+  voice: number;
+  /** 朗读的快慢（见 PACE_KEY）：时间线按它排；samples 是最近几句量到的，sampleOk 是这一句中间没暂停过（暂停过的不算） */
+  pace: number;
+  paceSamples: number[];
+  sampleOk: boolean;
+  /** 车走得多快（1 是正常）：地图瓦片跟不上时慢下来等；waited 是这一段开车已经为等地图慢了多久；loading 是要不要写“地图加载中” */
+  flow: number;
+  waited: number;
+  loading: boolean;
+  /** 正在拖进度条：preview 是下一帧要摆到第几毫秒，paused 是开始拖以前是不是暂停着 */
+  scrub: { preview: number | null; paused: boolean } | null;
   camera: { center: [number, number]; zoom: number; bearing: number; pitch?: number } | null;
   /** 讲解版自己打开的 3D 地形：结束时关回去 */
   terrainAdded: boolean;
-  /** 视线检查的结果：最多能倾斜到几度才不被山挡住（at 是上次查的时间） */
+  /** 视线检查的结果：最多能倾斜到几度才不被山挡住（at 是上次查的时间，按 clock） */
   sight: { at: number; cap: number } | null;
   pausedAt: number | null;
   raf: number;
-  cum: number[];
-  total: number;
-  stopKm: number[];
+  /** 这一天到过了几站（牌子已经弹出来的） */
   shown: number;
   done: GeoJSON.Feature[];
   markers: Marker[];
@@ -202,7 +227,7 @@ interface TourState {
   car: Marker | null;
   /** 线在地图上画到百分之几（上一帧的）：没变就不重算渐变 */
   fraction: number;
-  /** 这一天开场的卡片收起来了、天色暗下来了：帧循环里只改一次 */
+  /** 这一天开场的卡片收起来了、天色暗下来了：只改一次 */
   cardHidden: boolean;
   dusk: boolean;
   /** 预热：等地图把路线、3D 地形第一次画完（要编译显卡程序，会卡一下）再开始讲、开始走；afterWarm 是等完了要做的事 */
@@ -215,6 +240,9 @@ interface TourState {
   /** 进度条上次写的时间文字、百分比：没变就不改，省得每帧重排 */
   clockShown: string;
   percentShown: number;
+  /** 提前下载地图瓦片：退出时取消；下载过的天不再下载 */
+  prefetch: AbortController;
+  prefetched: Set<number>;
 }
 
 const reducedMotion = () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -523,6 +551,8 @@ export function ParkMap({
   const clockRef = useRef<HTMLSpanElement>(null);
   const [speed, setSpeed] = useState(1);
   const speedRef = useRef(1);
+  // 开车时地图瓦片跟不上、车慢下来等的时候，控制条上写“地图加载中”
+  const [tilesLoading, setTilesLoading] = useState(false);
   // 悬停拉近以前的视角，移开以后回到这里
   const beforeHover = useRef<{ center: [number, number]; zoom: number; bearing: number; pitch: number } | null>(null);
   const selectedRef = useRef(selectedId);
@@ -587,6 +617,9 @@ export function ParkMap({
         };
         instance.addSource("hillshade-dem", dem);
         instance.addSource("terrain-dem", dem);
+        // 讲解版的 3D 地形：同样的高程瓦片当成 512 像素的用（地图第 z 级用第 z 级的，不是 z+1 级），
+        // 同样的画面只下载四分之一的地形瓦片，跟车、航拍的距离上看不出粗细（10-28 仓库主人：车开过去了地图还没出来）
+        instance.addSource("tour-dem", { ...dem, tileSize: 512 });
         instance.addLayer(
           {
             id: "hillshade",
@@ -941,10 +974,13 @@ export function ParkMap({
     const map = mapRef.current;
     if (!state || !map) return;
     cancelAnimationFrame(state.raf);
+    state.prefetch.abort();
     clearMarkers(state);
     removeCar(state);
     tourRef.current = null;
     holdClock(false);
+    setTilesLoading(false);
+    map.setSourceTileLodParams(DEFAULT_LOD_LEVELS, DEFAULT_LOD_RATIO);
     ["tour-done", "tour-line"].forEach((id) => setLine(id, []));
     // 预热时开过的路线是淡到看不见的，预热没完就停了也要改回来
     map.setPaintProperty("tour-done", "line-opacity", 0.55);
@@ -975,56 +1011,46 @@ export function ParkMap({
     fitToPoints(map, pointsRef.current, true);
   };
 
-  /** 最后一天画完：所有天的路线都留着，镜头拉远看全程，停一会儿再回到平常的地图 */
-  const beginFinale = (state: TourState, now: number) => {
-    const map = mapRef.current;
-    if (!map) return;
-    clearMarkers(state);
-    removeCar(state);
-    map.setPadding(NO_PADDING);
-    state.phase = "finale";
-    state.phaseStart = now;
-    focusOn(null);
-    const all = state.days.flatMap((day) => [...day.path, ...day.stops.map((stop) => [stop.lon, stop.lat] as [number, number])]);
-    if (all.length > 1) {
-      const lons = all.map((p) => p[0]);
-      const lats = all.map((p) => p[1]);
-      map.fitBounds(
-        [
-          [Math.min(...lons), Math.min(...lats)],
-          [Math.max(...lons), Math.max(...lats)],
-        ],
-        {
-          padding: { top: 64, bottom: 64 + (state.narrated ? 72 : 0), left: 64 + sidePanel.current, right: 64 },
-          maxZoom: 12,
-          duration: 1100 / speedRef.current,
-          pitch: 0,
-          bearing: 0,
-        },
-      );
-    }
-    setTourUi((ui) => (ui ? { ...ui, card: false, finale: true, dusk: false } : ui));
-    if (state.narrated) setBeat({ kind: "outro" });
-    speak(state, narration?.outro.speech);
+  // ---------- 一个钟说了算（10-28 仓库主人：进度条要像 YouTube 那样跟着走、拖到哪就从哪播） ----------
+  // 整段动画是一条时间线（tourTimeline：开头、每天开场、开车、各站讲解、一天的结尾、结尾），state.position 是播到第几毫秒（一倍速下）。
+  // 每一帧只做一件事：钟往前走，再按“现在是第几毫秒”把画面摆出来（车在哪、线画到哪、哪张卡片、念哪一句）。
+  // 进度条只看这个钟，所以拖到任何地方都能从那里接着播。讲解词按每句的阅读时间排在这一段里，到点了念下一句；
+  // 一句念得比估计的慢，钟在下一句开始前等它念完（像视频缓冲时进度条停一下），不会两句叠在一起
+
+  /** 这一段要念的话（讲解版才有）：开头、某一天的开场、某一站、结尾 */
+  const speechOf = (state: TourState, segment: TourSegment): string[] => {
+    if (!state.narrated) return [];
+    if (segment.kind === "intro") return narration?.intro.speech ?? [];
+    if (segment.kind === "outro") return narration?.outro.speech ?? [];
+    if (segment.kind === "day") return state.days[segment.day].narration ?? [];
+    if (segment.kind === "stop") return state.days[segment.day].stops[segment.stop]?.narration?.speech ?? [];
+    return [];
   };
 
-  /** 讲解版念一段话：念完时 speaking 放下，then 里的事接着做；被新的一段顶掉、拖了进度条的，then 不再做 */
-  const speak = (state: TourState, lines: string[] | undefined, then?: () => void) => {
-    if (!state.narrated || !lines?.length) {
-      then?.();
-      return;
-    }
+  /** 念一句：念完 talking 放下；被拖进度条、退出顶掉的不管 */
+  const sayLine = (state: TourState, sentence: string) => {
     narratorRef.current ??= new Narrator(narration?.lang ?? "zh-CN", setCaption, muted);
     narratorRef.current.rate = speedRef.current;
     // 开口时配乐压低，停下抬回来
     narratorRef.current.onVoice = (speaking) => scoreRef.current?.duck(speaking);
-    state.speaking = true;
+    state.talking = true;
+    state.sampleOk = true;
     const voice = ++state.voice;
-    narratorRef.current.play(lines).then(() => {
+    // 动画的钟按倍速走、暂停时不走：念了多久直接按它量，就是一倍速下的毫秒数
+    const started = state.clock;
+    const narrator = narratorRef.current;
+    narrator.play([sentence]).then(() => {
       if (tourRef.current !== state || state.voice !== voice) return;
-      state.speaking = false;
-      then?.();
+      state.talking = false;
+      // 关了声音、没念出声（按阅读时间只出字幕）的不算；中间暂停过的也不算
+      if (state.sampleOk && narrator.voiced && !narrator.muted) calibrate(state, (state.clock - started) / readingMs(sentence));
     });
+  };
+  /** 正在念的停掉（拖进度条、跳段） */
+  const hush = (state: TourState) => {
+    state.voice += 1;
+    state.talking = false;
+    narratorRef.current?.stop();
   };
 
   /** 跟车时看车前方多远的路定方向（公里）：拉得越远看得越前 */
@@ -1047,20 +1073,18 @@ export function ParkMap({
       bearing: 0,
     });
   };
-
-  /** 一天开完：镜头拉回来看这一天的全程 */
-  const reviewDay = (state: TourState) => {
-    const map = mapRef.current;
-    if (!map || state.calm) return;
+  /** 整趟的范围（开头讲怎么看地图、最后拉远看全程） */
+  const fitAll = (state: TourState, map: MapLibreMap, duration: number, bottom: number) => {
+    const all = state.days.flatMap((day) => [...day.path, ...day.stops.map((stop) => [stop.lon, stop.lat] as [number, number])]);
+    if (all.length < 2) return;
     map.setPadding(NO_PADDING);
-    const height = map.getContainer().clientHeight;
-    map.fitBounds(bounds(state.days[state.index]), {
-      padding: { top: Math.round(height * 0.12), bottom: Math.round(height * Math.max(0.2, bottomPanel.current)), left: 56 + sidePanel.current, right: 56 },
-      maxZoom: 12.5,
-      duration: 1200 / speedRef.current,
-      pitch: TOUR_PITCH,
-      bearing: 0,
-    });
+    map.fitBounds(
+      [
+        [Math.min(...all.map((p) => p[0])), Math.min(...all.map((p) => p[1]))],
+        [Math.max(...all.map((p) => p[0])), Math.max(...all.map((p) => p[1]))],
+      ],
+      { padding: { top: 64, bottom, left: 64 + sidePanel.current, right: 64 }, maxZoom: 12, duration, pitch: 0, bearing: 0 },
+    );
   };
 
   /** 车开到第 k 站：弹出小牌子（一天最多同时留三个，免得挤成一团；旧的先淡下去） */
@@ -1080,35 +1104,73 @@ export function ParkMap({
     if (state.markers.length > 3) state.markers.shift()?.remove();
     state.markers.slice(0, -1).forEach((old) => (old.getElement().style.opacity = "0.55"));
   };
+  /** 开到第几公里了：到过的站补上牌子（拖进度条跳过来的，只留最近的三个，不一个个弹出来） */
+  const reachStops = (state: TourState, distance: number, jumped: boolean) => {
+    const day = state.days[state.index];
+    const plan = state.plans[state.index];
+    let reached = state.shown;
+    while (reached < day.stops.length && (plan.stopKm[reached] ?? 0) <= distance + 1e-6) reached += 1;
+    if (reached === state.shown) return;
+    const from = jumped ? Math.max(state.shown, reached - 3) : state.shown;
+    for (let k = from; k < reached; k++) addMarker(state, day, k);
+    state.shown = reached;
+  };
 
-  /** 开始播第 index 天；quiet 是拖进度条跳到这一天的路上：不飞、不出开场卡片、不念开场的话 */
-  const beginDay = (state: TourState, index: number, now: number, quiet = false) => {
+  /**
+   * 提前下载这一天跟车时要用的地图瓦片（底图、地形、开着卫星图时的卫星图）：沿路线按跟车镜头的缩放取瓦片，
+   * 浏览器缓存下来，车开到时地图直接从缓存里拿。每天只下载一次，同时最多 6 个请求，退出时全部取消
+   */
+  const prefetchDay = (state: TourState, index: number) => {
+    const map = mapRef.current;
+    const day = state.days[index];
+    const plan = state.plans[index];
+    if (!map || !day || !plan || state.prefetched.has(index) || state.calm) return;
+    state.prefetched.add(index);
+    // 底图是 512 像素的矢量瓦片（地图第 z 级用第 z 级的），地形、卫星图是 256 像素的（用第 z+1 级）；远处画面用低两级的
+    const zoomAt = (i: number) => Math.floor(followZoom(slowness(plan.cum[i] ?? 0, plan.stopKm, plan.total)));
+    // 路线点很密（几千个），隔几个取一个就够了：同一块瓦片里的点算出来是同一块
+    const path = day.path.filter((_, i) => i % 4 === 0 || i === day.path.length - 1);
+    const pick = (i: number) => day.path.indexOf(path[i]);
+    const groups: { template: string; tiles: string[] }[] = [];
+    const vector = (map.getSource("openmaptiles") as { tiles?: string[] } | undefined)?.tiles?.[0];
+    if (vector) groups.push({ template: vector, tiles: tilesAlongPath(path, (i) => [zoomAt(pick(i)), zoomAt(pick(i)) - 2]) });
+    const raster = tilesAlongPath(path, (i) => [zoomAt(pick(i)) + 1, zoomAt(pick(i)) - 1]);
+    groups.push({ template: TERRAIN_TILES, tiles: raster });
+    if (satelliteRef.current) groups.push({ template: imagery === "eox" ? EOX_IMAGERY_TILES : IMAGERY_TILES, tiles: raster });
+    // 讲解版的 3D 地形用 512 像素的地形源（tour-dem），第 z 级用第 z 级的
+    if (state.terrainAdded) groups.push({ template: TERRAIN_TILES, tiles: tilesAlongPath(path, (i) => [zoomAt(pick(i))]) });
+    const urls = [...new Set(groups.flatMap((group) => group.tiles.map((tile) => tileUrl(group.template, tile))))];
+    const controller = state.prefetch;
+    let next = 0;
+    const worker = async () => {
+      while (next < urls.length && !controller.signal.aborted) {
+        const url = urls[next++];
+        await fetch(url, { signal: controller.signal }).then((response) => response.blob()).catch(() => undefined);
+      }
+    };
+    for (let i = 0; i < PREFETCH_PARALLEL; i++) void worker();
+  };
+
+  /** 换到第 index 天：这一天的整条路线先放进地图（渐变全透明），之前几天的留成“开过的路线”，别的天的景点淡下去 */
+  const setupDay = (state: TourState, index: number, card: boolean, jumped: boolean) => {
     const map = mapRef.current;
     if (!map) return;
     const day = state.days[index];
     const plan = state.plans[index];
     clearMarkers(state);
     state.index = index;
-    state.phase = "fly";
-    state.phaseStart = now;
-    state.cum = plan.cum;
-    state.total = plan.total;
-    state.stopKm = plan.stopKm;
-    state.cost = plan.cost;
-    state.dayMs = plan.dayMs;
     state.shown = 0;
-    state.distance = 0;
-    state.arriveUntil = 0;
-    state.camera = null;
-    state.carded = false;
-    state.cardHidden = false;
+    state.cardHidden = !card;
     state.dusk = false;
-    // 这一天的整条路线先放进地图（看不见：渐变还是全透明），之后每帧只往前推渐变
     state.fraction = -1;
+    state.done = state.days.slice(0, index).map((item) => lineFeature(item.path, item.color));
+    setLine("tour-done", state.done);
     setLine("tour-line", day.path.length > 1 ? [lineFeature(day.path, day.color)] : []);
     state.car?.getElement().style.setProperty("--car", day.color);
     drawTo(state, day, plan, 0);
     focusOn(day.stops.map((stop) => stop.id));
+    map.setLayoutProperty("legs", "visibility", "none");
+    map.setLayoutProperty("legs-straight", "visibility", "none");
     setTourUi({
       index,
       days: state.days.map(({ day: n, color }) => ({ day: n, color })),
@@ -1117,87 +1179,164 @@ export function ParkMap({
       date: day.date,
       subtitle: day.subtitle,
       color: day.color,
-      card: !quiet,
+      card,
       finale: false,
-      paused: false,
+      paused: state.pausedAt !== null,
       dusk: false,
     });
-    if (quiet) return;
-    if (state.calm) calmView(map, day, flyMs(state.days.length) / speedRef.current);
-    else {
-      // 跟车：飞到起点，从车后上方朝车要开的方向看
-      const zoom = followZoom(slowness(0, state.stopKm, state.total));
-      const from = pointAt(day.path, state.cum, 0);
-      const to = pointAt(day.path, state.cum, Math.max(0.8, lookAhead(zoom) * 3));
-      map.flyTo({
-        center: from,
-        zoom,
-        pitch: state.narrated ? NARRATED_PITCH : FOLLOW_PITCH,
-        bearing: bearingOf(from, to),
-        padding: followPadding(map),
-        duration: FOLLOW_FLY_MS / speedRef.current,
-      });
-    }
-    if (state.narrated) {
-      setBeat({ kind: "day", day });
-      scoreRef.current?.swell();
-      // 这一天每一站的头两张先下载，到站时卡片上的照片不会先空一下
-      for (const stop of day.stops) preloadPhotos(stop.photos, 2);
-    }
-    speak(state, day.narration);
+    if (state.calm) calmView(map, day, jumped ? 0 : flyMs(state.days.length) / speedRef.current);
+    // 这一天每一站的头两张先下载，到站时卡片上的照片不会先空一下；地图瓦片今天的、明天的都先下载
+    if (state.narrated) for (const stop of day.stops) preloadPhotos(stop.photos, 2);
+    prefetchDay(state, index);
+    prefetchDay(state, index + 1);
   };
 
-  /** 进度条、时间跟着动画走：帧循环里的状态换成进度条上的第几段、这一段走了百分之几（每帧直接改样式，不经过 React） */
-  const showProgress = (state: TourState) => {
-    if (tourRef.current !== state) return;
-    const clamp = (value: number) => Math.min(1, Math.max(0, value));
-    const talking = state.speaking && narratorRef.current ? narratorRef.current.progress : null;
-    const elapsed = state.clock - state.phaseStart;
+  /** 跟车的镜头放到第 distance 公里，朝车要开的方向（拖进度条跳过来、每天开头飞到起点） */
+  const followAt = (state: TourState, distance: number) => {
+    const map = mapRef.current;
     const day = state.days[state.index];
-    let where: TourWhere;
-    let fraction = 0;
-    if (state.phase === "intro") {
-      where = { kind: "intro" };
-      fraction = talking ?? clamp(elapsed / 1500);
-    } else if (state.phase === "fly") {
-      where = { kind: "day", day: state.index };
-      fraction = talking ?? clamp(elapsed / (state.calm ? flyMs(state.days.length) : FOLLOW_FLY_MS));
-    } else if (state.phase === "draw" && state.clock < state.arriveUntil && state.shown > 0) {
-      where = { kind: "stop", day: state.index, stop: state.shown - 1 };
-      const talked = state.narrated && day.stops[state.shown - 1]?.narration;
-      fraction = talking ?? (talked ? 1 : clamp(1 - (state.arriveUntil - state.clock) / ARRIVE_MS));
-    } else if (state.phase === "draw") {
-      where = { kind: "drive", day: state.index, distance: state.distance };
-    } else if (state.phase === "hold") {
-      where = { kind: "end", day: state.index };
-      fraction = clamp(elapsed / HOLD_MS);
-    } else {
-      where = { kind: "outro" };
-      fraction = talking ?? clamp(elapsed / FINALE_MS);
-    }
-    let index = segmentOf(state.timeline, where);
-    if (index < 0 && where.kind === "stop") index = segmentOf(state.timeline, { kind: "drive", day: state.index, distance: state.distance });
-    if (index < 0) return;
+    const plan = state.plans[state.index];
+    if (!map) return null;
+    const zoom = followZoom(slowness(distance, plan.stopKm, plan.total));
+    const head = pointAt(day.path, plan.cum, distance);
+    const further = pointAt(day.path, plan.cum, distance + Math.max(0.8, lookAhead(zoom) * 3));
+    const bearing = further[0] !== head[0] || further[1] !== head[1] ? bearingOf(head, further) : map.getBearing();
+    return { center: head, zoom, bearing, pitch: state.narrated ? NARRATED_PITCH : FOLLOW_PITCH };
+  };
+
+  /**
+   * 进到第 index 段（offset 是进了这一段多少毫秒）。jumped：拖进度条、跳段过来的，镜头直接摆好、不飞，
+   * 到过的站的牌子一次补上；正常播过来的，镜头飞过去、牌子一个个弹出来
+   */
+  const enter = (state: TourState, index: number, offset: number, jumped: boolean) => {
+    const map = mapRef.current;
     const segment = state.timeline[index];
-    if (segment.kind === "drive") fraction = segment.to > segment.from ? clamp((state.distance - segment.from) / (segment.to - segment.from)) : 1;
-    state.position = state.starts[index] + segment.ms * fraction;
-    const total = state.starts[state.starts.length - 1] || 1;
-    const percent = Math.min(100, (state.position / total) * 100);
-    // 只改 transform、clip-path（不改宽度、left），浏览器不用每帧重新排版；时间文字、百分比变了才改
-    if (progressRef.current) progressRef.current.style.transform = `scaleX(${percent / 100})`;
-    if (!scrubbing.current) {
-      if (seekFillRef.current) seekFillRef.current.style.clipPath = `inset(0 ${100 - percent}% 0 0)`;
-      if (seekKnobRef.current) seekKnobRef.current.style.transform = `translate3d(${percent}%,0,0)`;
+    if (!map || !segment) return;
+    state.segment = index;
+    state.flow = 1;
+    state.waited = 0;
+    // 这一段要念的话，按每句的阅读时间排好；跳到一段讲解的中间，从正在念的那一句开始
+    const lines = speechOf(state, segment).flatMap((line) => sentences(line));
+    state.speech = lines.length ? { lines, starts: slotStarts(lines.map((line) => readingMs(line) * state.pace)) } : null;
+    state.spoken = state.speech && jumped ? sentenceAt(state.speech.starts, offset) : 0;
+    const day = "day" in segment ? state.days[segment.day] : undefined;
+    if (segment.kind === "intro") {
+      // 开头：先看整趟的全貌，讲怎么看这张地图（彩色的线是每天的路线）
+      clearMarkers(state);
+      removeCar(state);
+      state.index = 0;
+      state.done = [];
+      setLine("tour-done", []);
+      setLine("tour-line", []);
+      focusOn(null);
+      map.setLayoutProperty("legs", "visibility", "visible");
+      map.setLayoutProperty("legs-straight", "visibility", "visible");
+      setBeat({ kind: "intro" });
+      setTourUi({
+        index: 0,
+        days: state.days.map(({ day: n, color }) => ({ day: n, color })),
+        title: narration?.intro.title ?? "",
+        color: "#1c1b18",
+        card: false,
+        finale: false,
+        paused: state.pausedAt !== null,
+        dusk: false,
+      });
+      const bottom = () => Math.max(150, Math.round(map.getContainer().clientHeight * bottomPanel.current));
+      // 刚铺满全屏时要等地图量好新尺寸
+      if (jumped) fitAll(state, map, 0, bottom());
+      else
+        setTimeout(() => {
+          map.resize();
+          fitAll(state, map, 900, bottom());
+        }, 120);
+      return;
     }
-    const rounded = Math.round(percent);
-    if (rounded !== state.percentShown) {
-      state.percentShown = rounded;
-      seekTrackRef.current?.setAttribute("aria-valuenow", String(rounded));
+    if (segment.kind === "outro") {
+      // 最后一天画完：所有天的路线都留着，镜头拉远看全程
+      clearMarkers(state);
+      removeCar(state);
+      state.index = state.days.length - 1;
+      state.done = state.days.map((item) => lineFeature(item.path, item.color));
+      setLine("tour-done", state.done);
+      setLine("tour-line", []);
+      focusOn(null);
+      fitAll(state, map, jumped ? 0 : 1100 / speedRef.current, 64 + (state.narrated ? 72 : 0));
+      setTourUi((ui) => (ui ? { ...ui, card: false, finale: true, dusk: false } : ui));
+      setBeat(state.narrated ? { kind: "outro" } : null);
+      return;
     }
-    const clock = `${clockText(state.position, speedRef.current)} / ${clockText(total, speedRef.current)}`;
-    if (clock !== state.clockShown) {
-      state.clockShown = clock;
-      if (clockRef.current) clockRef.current.textContent = clock;
+    if (!day) return;
+    if (segment.day !== state.index || jumped || !state.car) setupDay(state, segment.day, segment.kind === "day", jumped);
+    if (segment.kind === "day") {
+      setTourUi((ui) => (ui ? { ...ui, card: true } : ui));
+      state.cardHidden = false;
+      if (state.narrated) {
+        setBeat({ kind: "day", day });
+        if (!jumped) scoreRef.current?.swell();
+      }
+      if (!state.calm) {
+        // 跟车：飞到起点，从车后上方朝车要开的方向看；跳过来的直接摆好
+        const start = followAt(state, 0);
+        if (start) {
+          state.camera = { ...start };
+          if (jumped) map.jumpTo({ ...start, padding: followPadding(map) });
+          else map.flyTo({ ...start, padding: followPadding(map), duration: FOLLOW_FLY_MS / speedRef.current });
+        }
+      }
+      return;
+    }
+    if (segment.kind === "drive") {
+      if (state.narrated) setBeat(null);
+      if (!state.cardHidden) {
+        state.cardHidden = true;
+        setTourUi((ui) => (ui && ui.card ? { ...ui, card: false } : ui));
+      }
+      if (jumped && !state.calm) {
+        const plan = state.plans[segment.day];
+        const at = followAt(state, driveDistance(plan, segment, offset / Math.max(1, segment.ms), state.calm));
+        if (at) {
+          state.camera = { ...at };
+          map.jumpTo({ ...at, padding: followPadding(map) });
+        }
+      }
+      return;
+    }
+    if (segment.kind === "stop") {
+      const plan = state.plans[segment.day];
+      const at = plan.stopKm[segment.stop] ?? 0;
+      drawTo(state, day, plan, at);
+      reachStops(state, at, jumped);
+      const stop = day.stops[segment.stop];
+      if (state.narrated && stop?.narration) {
+        preloadPhotos(stop.photos);
+        setBeat({ kind: "stop", stop, index: segment.stop + 1, color: day.color });
+      }
+      if (jumped && !state.calm) {
+        const near = followAt(state, at);
+        if (near) {
+          state.camera = { ...near };
+          map.jumpTo({ ...near, padding: followPadding(map) });
+        }
+      }
+      return;
+    }
+    // 一天开完：镜头拉回来看这一天的全程
+    const plan = state.plans[segment.day];
+    drawTo(state, day, plan, plan.total);
+    reachStops(state, plan.total, jumped);
+    if (state.narrated) setBeat(null);
+    if (!state.calm) {
+      map.setPadding(NO_PADDING);
+      const height = map.getContainer().clientHeight;
+      map.fitBounds(bounds(day), {
+        padding: { top: Math.round(height * 0.12), bottom: Math.round(height * Math.max(0.2, bottomPanel.current)), left: 56 + sidePanel.current, right: 56 },
+        maxZoom: 12.5,
+        duration: jumped ? 0 : 1200 / speedRef.current,
+        pitch: TOUR_PITCH,
+        bearing: 0,
+      });
+      state.camera = null;
     }
   };
 
@@ -1232,9 +1371,9 @@ export function ParkMap({
     return Math.min(want, cap);
   };
 
-  /** 环绕镜头的一帧：绕着镜头现在对着的地方（这一站）慢慢转，拉近、压低 */
+  /** 环绕镜头的一帧：绕着镜头现在对着的地方（这一站、这一天的起点）慢慢转，拉近、压低（航拍的环绕镜头） */
   const orbit = (state: TourState, map: MapLibreMap, delta: number) => {
-    const prev = state.camera!;
+    const prev = state.camera ?? { center: map.getCenter().toArray() as [number, number], zoom: map.getZoom(), bearing: map.getBearing() };
     const zoom = prev.zoom + (Math.min(ORBIT_MAX_ZOOM, followZoom(1.2) + ORBIT_ZOOM_IN) - prev.zoom) * (1 - Math.exp(-delta / 2400));
     const prevPitch = prev.pitch ?? map.getPitch();
     const bearing = prev.bearing + delta * ORBIT_DEG_PER_MS;
@@ -1245,121 +1384,98 @@ export function ParkMap({
     map.jumpTo({ center: prev.center, zoom, bearing, pitch, padding: followPadding(map) });
   };
 
-  /** 动画往前走一帧：now 是动画自己的钟（倍速就是这个钟走得快慢），delta 是这一帧钟走了多久 */
-  const advance = (state: TourState, map: MapLibreMap, now: number, delta: number) => {
+  /** 跟车的一帧：位置、缩放、方向都慢慢跟过去（按这一帧过了多久算，帧率不同也一样快） */
+  const follow = (state: TourState, map: MapLibreMap, distance: number, delta: number) => {
     const day = state.days[state.index];
-    if (state.phase === "draw" && now < state.arriveUntil) {
-      // 到站停一下（讲解版念完才走）：这段时间不算进画线的进度
-      state.phaseStart += delta;
-      // 讲解版停在一站讲话时：镜头拉近、压低，绕着这一站慢慢转（航拍的环绕镜头）；讲完接着跟车，方向慢慢转回车开的方向
-      if (state.narrated && !state.calm && state.camera && state.arriveUntil === Infinity) orbit(state, map, delta);
-      return;
-    }
-    if (state.carded) {
-      state.carded = false;
-      setBeat(null);
-    }
-    const elapsed = now - state.phaseStart;
-    if (state.phase === "intro") {
-      // 讲解版开头：讲完怎么看这张地图再开始第一天
-      if (elapsed >= 1500 && !state.speaking) {
-        map.setLayoutProperty("legs", "visibility", "none");
-        map.setLayoutProperty("legs-straight", "visibility", "none");
-        beginDay(state, state.index, now);
-      }
-      return;
-    }
-    if (state.phase === "fly") {
-      // 卡片显示到镜头快到位，再收起来开始画；讲解版要等这一天开头的话念完
-      const fly = state.calm ? flyMs(state.days.length) : FOLLOW_FLY_MS;
-      if (elapsed >= fly * 0.85 && !state.speaking && !state.cardHidden) {
+    const plan = state.plans[state.index];
+    const head = pointAt(day.path, plan.cum, distance);
+    const prev = state.camera ?? { center: map.getCenter().toArray() as [number, number], zoom: map.getZoom(), bearing: map.getBearing() };
+    const zoom = prev.zoom + (followZoom(slowness(distance, plan.stopKm, plan.total)) - prev.zoom) * (1 - Math.exp(-delta / 700));
+    const k = 1 - Math.exp(-delta / 140);
+    const center: [number, number] = [prev.center[0] + (head[0] - prev.center[0]) * k, prev.center[1] + (head[1] - prev.center[1]) * k];
+    // 方向看车前面一段路，免得山路上来回打转；开到终点、前面没有路了就不再转
+    const further = pointAt(day.path, plan.cum, distance + Math.max(0.8, lookAhead(zoom) * 3));
+    const moving = further[0] !== head[0] || further[1] !== head[1];
+    const bearing = moving ? turnToward(prev.bearing, bearingOf(head, further), 1 - Math.exp(-delta / 900)) : prev.bearing;
+    // 从环绕镜头出来时慢慢抬回跟车的角度
+    const pitchTarget = state.narrated ? sightCap(state, map, head, bearing, zoom, NARRATED_PITCH) : FOLLOW_PITCH;
+    const prevPitch = prev.pitch ?? map.getPitch();
+    const pitch = prevPitch + (pitchTarget - prevPitch) * (1 - Math.exp(-delta / 900));
+    state.camera = { center, zoom, bearing, pitch };
+    map.jumpTo({ center, zoom, bearing, pitch, padding: followPadding(map) });
+  };
+
+  /** 第 index 段走到 offset 毫秒时的画面（每一帧、拖进度条时都调） */
+  const update = (state: TourState, index: number, offset: number, delta: number, jumped: boolean) => {
+    const map = mapRef.current;
+    const segment = state.timeline[index];
+    if (!map || !segment || !("day" in segment)) return;
+    const day = state.days[segment.day];
+    const plan = state.plans[segment.day];
+    if (segment.kind === "day") {
+      // 平常版：卡片显示到镜头快到位就收起来；讲解版：飞到起点以后话还没念完，镜头绕着起点慢慢转（像片头的航拍）
+      if (!state.narrated && !state.cardHidden && offset >= segment.ms * 0.85) {
         state.cardHidden = true;
         setTourUi((ui) => (ui && ui.card ? { ...ui, card: false } : ui));
       }
-      // 讲解版：飞到起点以后这一天开头的话还没念完，镜头就绕着起点慢慢转、压低一点（像片头的航拍）；开车时从这里接着跟
-      if (state.narrated && !state.calm && elapsed >= fly && state.speaking) {
-        const prevPitch = map.getPitch();
-        const bearing = map.getBearing() + delta * ORBIT_DEG_PER_MS;
-        const center = map.getCenter().toArray() as [number, number];
-        const pitch = prevPitch + (sightCap(state, map, center, bearing, map.getZoom(), ORBIT_PITCH) - prevPitch) * (1 - Math.exp(-delta / 900));
-        map.jumpTo({ bearing, pitch });
-        state.camera = { center: map.getCenter().toArray() as [number, number], zoom: map.getZoom(), bearing, pitch };
-      }
-      if (elapsed >= fly && !state.speaking) {
-        if (state.narrated) setBeat(null);
-        state.phase = "draw";
-        state.phaseStart = now;
-      }
+      if (state.narrated && !state.calm && !jumped && offset >= FOLLOW_FLY_MS) orbit(state, map, delta);
       return;
     }
-    if (state.phase === "draw") {
-      const plan = state.plans[state.index];
-      const progress = Math.min(1, elapsed / state.dayMs);
-      // 不跟车：整天慢慢起步、慢慢停下；跟车：按播放量匀速走，进站前自然减速、长途时加速
-      const distance = distanceAt(plan, progress, state.calm);
-      state.distance = distance;
-      const head = pointAt(day.path, state.cum, distance);
-      if (!state.calm) {
-        // 镜头跟着车：位置、缩放、方向都慢慢跟过去（按这一帧过了多久算，帧率不同也一样快）
-        const prev = state.camera ?? { center: map.getCenter().toArray() as [number, number], zoom: map.getZoom(), bearing: map.getBearing() };
-        const zoom = prev.zoom + (followZoom(slowness(distance, state.stopKm, state.total)) - prev.zoom) * (1 - Math.exp(-delta / 700));
-        const ahead = lookAhead(zoom);
-        const k = 1 - Math.exp(-delta / 140);
-        const center: [number, number] = [prev.center[0] + (head[0] - prev.center[0]) * k, prev.center[1] + (head[1] - prev.center[1]) * k];
-        // 方向看车前面一段路，免得山路上来回打转；开到终点、前面没有路了就不再转
-        const further = pointAt(day.path, state.cum, distance + Math.max(0.8, ahead * 3));
-        const moving = further[0] !== head[0] || further[1] !== head[1];
-        const bearing = moving ? turnToward(prev.bearing, bearingOf(head, further), 1 - Math.exp(-delta / 900)) : prev.bearing;
-        // 从环绕镜头出来时慢慢抬回跟车的角度
-        const pitchTarget = state.narrated ? sightCap(state, map, head, bearing, zoom, NARRATED_PITCH) : FOLLOW_PITCH;
-        const prevPitch = prev.pitch ?? map.getPitch();
-        const pitch = prevPitch + (pitchTarget - prevPitch) * (1 - Math.exp(-delta / 900));
-        state.camera = { center, zoom, bearing, pitch };
-        map.jumpTo({ center, zoom, bearing, pitch, padding: followPadding(map) });
-      }
+    let distance = plan.total;
+    if (segment.kind === "drive") {
+      distance = driveDistance(plan, segment, offset / Math.max(1, segment.ms), state.calm);
+      if (!state.calm && !jumped) follow(state, map, distance, delta);
       drawTo(state, day, plan, distance);
-      while (state.shown < day.stops.length && state.stopKm[state.shown] <= distance + 1e-6) {
-        const stop = day.stops[state.shown];
-        addMarker(state, day, state.shown);
-        state.shown += 1;
-        // 起点那一站（前一晚的住处）不停
-        if (state.stopKm[state.shown - 1] > 0.05) state.arriveUntil = now + ARRIVE_MS;
-        // 讲解版：停下来，旁边出这一站的卡片，念完再停 0.6 秒才走；同一个地方的下一站等这一站讲完再讲
-        if (state.narrated && stop.narration) {
-          state.arriveUntil = Infinity;
-          state.carded = true;
-          preloadPhotos(stop.photos);
-          setBeat({ kind: "stop", stop, index: state.shown, color: day.color });
-          speak(state, stop.narration.speech, () => {
-            state.arriveUntil = state.clock + 600;
-          });
-          break;
-        }
+      reachStops(state, distance, jumped);
+    } else if (segment.kind === "stop") {
+      distance = plan.stopKm[segment.stop] ?? 0;
+      // 讲解版停在一站讲话：镜头拉近、压低，绕着这一站慢慢转；平常版停一下，镜头跟着车停住
+      if (!state.calm && !jumped) {
+        if (state.narrated && day.stops[segment.stop]?.narration) orbit(state, map, delta);
+        else follow(state, map, distance, delta);
       }
-      if (day.dusk && progress > 0.75 && !state.dusk) {
-        state.dusk = true;
-        setTourUi((ui) => (ui && !ui.dusk ? { ...ui, dusk: true } : ui));
-      }
-      // 最后一站（当晚住处）讲完才算这一天开完
-      if (progress >= 1 && state.shown >= day.stops.length && now >= state.arriveUntil) {
-        state.phase = "hold";
-        state.phaseStart = now;
-        reviewDay(state);
-      }
-      return;
     }
-    if (state.phase === "hold") {
-      if (elapsed >= HOLD_MS && !state.speaking) {
-        state.done.push(lineFeature(day.path, day.color));
-        setLine("tour-done", state.done);
-        setLine("tour-line", []);
-        if (state.index + 1 < state.days.length) beginDay(state, state.index + 1, now);
-        else beginFinale(state, now);
-      }
-      return;
+    // 画到最后天色暗下来（这一天最后看日落、星空的）
+    const dusk = Boolean(day.dusk) && plan.total > 0 && distance / plan.total > 0.75;
+    if (dusk !== state.dusk) {
+      state.dusk = dusk;
+      setTourUi((ui) => (ui && ui.dusk !== dusk ? { ...ui, dusk } : ui));
     }
-    if (elapsed >= FINALE_MS && !state.speaking) finishTour();
   };
+
+  /** 摆出第 position 毫秒的画面：换了段先进到那一段 */
+  const step = (state: TourState, position: number, delta: number, jumped: boolean) => {
+    const { segment, offset } = locate(state.starts, position);
+    if (segment !== state.segment || jumped) enter(state, segment, offset, jumped);
+    update(state, segment, offset, delta, jumped);
+  };
+
+  /** 进度条、时间跟着钟走：每帧直接改样式，不经过 React */
+  const showProgress = (state: TourState) => {
+    if (tourRef.current !== state) return;
+    const total = state.starts[state.starts.length - 1] || 1;
+    const percent = Math.min(100, (state.position / total) * 100);
+    // 只改 transform、clip-path（不改宽度、left），浏览器不用每帧重新排版；时间文字、百分比变了才改
+    if (progressRef.current) progressRef.current.style.transform = `scaleX(${percent / 100})`;
+    if (!scrubbing.current) {
+      if (seekFillRef.current) seekFillRef.current.style.clipPath = `inset(0 ${100 - percent}% 0 0)`;
+      if (seekKnobRef.current) seekKnobRef.current.style.transform = `translate3d(${percent}%,0,0)`;
+    }
+    const rounded = Math.round(percent);
+    if (rounded !== state.percentShown) {
+      state.percentShown = rounded;
+      seekTrackRef.current?.setAttribute("aria-valuenow", String(rounded));
+    }
+    const clock = `${clockText(state.position, speedRef.current)} / ${clockText(total, speedRef.current)}`;
+    if (clock !== state.clockShown) {
+      state.clockShown = clock;
+      if (clockRef.current) clockRef.current.textContent = clock;
+    }
+  };
+
+  /** 底图（OpenFreeMap 的矢量瓦片）和讲解版的 3D 地形，画面里要的都到了没有 */
+  const basemapReady = (map: MapLibreMap, state: TourState) =>
+    ["openmaptiles", ...(state.terrainAdded ? ["tour-dem"] : [])].every((id) => !map.getSource(id) || map.isSourceLoaded(id));
 
   const frame = (stamp: number) => {
     const state = tourRef.current;
@@ -1368,70 +1484,101 @@ export function ParkMap({
     state.raf = requestAnimationFrame(frame);
     const real = Math.min(MAX_FRAME_MS, Math.max(0, stamp - state.last));
     state.last = stamp;
+    // 拖进度条时：画面跟着手走（一帧最多摆一次），钟不走、不念
+    if (state.scrub) {
+      if (state.scrub.preview !== null) {
+        seekTo(state.scrub.preview, false);
+        state.scrub.preview = null;
+      }
+      return;
+    }
     if (state.pausedAt !== null || state.warming) return;
-    // 倍速：动画按自己的钟走，钟走得快慢就是倍速；暂停时钟不走
+    // 倍速：钟走得快慢就是倍速；暂停时钟不走
     const delta = real * speedRef.current;
     state.clock += delta;
-    advance(state, map, state.clock, delta);
+    const total = state.starts[state.starts.length - 1] ?? 0;
+    const current = state.timeline[state.segment];
+    // 开车时底图跟不上（车开过去了地图还是空白）：车慢下来等一等（最慢三成），底图到了再慢慢加速回去。
+    // 只看底图和讲解版的 3D 地形：地形阴影、远处地平线那边的瓦片总有几块在下载，看所有瓦片的话车一直在慢
+    const behind = current?.kind === "drive" && !state.calm && state.waited < TILE_WAIT_MAX && !basemapReady(map, state);
+    if (behind) state.waited += real;
+    state.flow += ((behind ? TILE_SLOW : 1) - state.flow) * (1 - Math.exp(-real / FLOW_EASE_MS));
+    const loading = state.flow < 0.6;
+    if (loading !== state.loading) {
+      state.loading = loading;
+      setTilesLoading(loading);
+    }
+    let position = Math.min(total, state.position + delta * state.flow);
+    // 一句还没念完：钟在下一句开始前（或这一段结束前）等它
+    if (state.talking && state.speech) {
+      const start = state.starts[state.segment];
+      const boundary = state.spoken < state.speech.starts.length ? start + state.speech.starts[state.spoken] : state.starts[state.segment + 1];
+      if (position > boundary - 1) position = Math.max(state.position, boundary - 1);
+    }
+    state.position = position;
+    step(state, position, delta, false);
+    // 到点了念下一句
+    const speech = state.speech;
+    if (speech && !state.talking && state.spoken < speech.lines.length && state.starts[state.segment] + speech.starts[state.spoken] <= position) {
+      sayLine(state, speech.lines[state.spoken]);
+      state.spoken += 1;
+    }
+    showProgress(state);
+    if (position >= total && !state.talking) finishTour();
+  };
+
+  /** 跳到第 ms 毫秒（拖进度条、点进度条、上一段 / 下一段）：画面直接摆好；speak 时从那里接着念、接着走，拖动中预览的不念 */
+  const seekTo = (ms: number, speak = true) => {
+    const state = tourRef.current;
+    const map = mapRef.current;
+    if (!state || !map) return;
+    hush(state);
+    setCaption(null);
+    const total = state.starts[state.starts.length - 1] ?? 0;
+    state.position = Math.min(Math.max(0, ms), Math.max(0, total - 1));
+    state.camera = null;
+    state.sight = null;
+    step(state, state.position, 0, true);
+    if (!speak) state.spoken = state.speech?.lines.length ?? 0;
+    state.last = performance.now();
     showProgress(state);
   };
 
-  /** 拖进度条、上一段 / 下一段：跳到第 segment 段（开车的段跳到 fraction 的位置），从那里接着播 */
-  const seekTo = (segment: number, fraction = 0) => {
-    const state = tourRef.current;
-    const map = mapRef.current;
-    const target = state?.timeline[segment];
-    if (!state || !map || !target) return;
-    if (target.kind === "intro") {
-      startTour(state.days, 0, state.narrated);
-      return;
-    }
-    // 正在念的停掉，它念完以后要做的事也不做了
-    state.voice += 1;
-    narratorRef.current?.stop();
-    state.speaking = false;
-    state.carded = false;
-    state.pausedAt = null;
-    setBeat(null);
-    map.setLayoutProperty("legs", "visibility", "none");
-    map.setLayoutProperty("legs-straight", "visibility", "none");
-    const through = target.kind === "outro" ? state.days.length : target.day;
-    state.done = state.days.slice(0, through).map((day) => lineFeature(day.path, day.color));
-    setLine("tour-done", state.done);
-    if (target.kind === "outro") {
-      state.index = state.days.length - 1;
-      setLine("tour-line", []);
-      beginFinale(state, state.clock);
-      return;
-    }
-    beginDay(state, target.day, state.clock, target.kind !== "day");
-    if (target.kind === "day") return;
-    const day = state.days[target.day];
-    const plan = state.plans[target.day];
-    const distance =
-      target.kind === "drive"
-        ? target.from + (target.to - target.from) * Math.min(1, Math.max(0, fraction))
-        : target.kind === "stop"
-          ? (plan.stopKm[target.stop] ?? 0)
-          : plan.total;
-    // 这一站以前的都算到过了（牌子补上最近的三个）；跳到某一站的，下一帧车一到就停下来讲这一站
-    state.shown = target.kind === "end" ? day.stops.length : target.stop;
-    for (let k = Math.max(0, state.shown - 3); k < state.shown; k++) addMarker(state, day, k);
-    state.phase = "draw";
-    state.phaseStart = state.clock - progressAt(plan, distance, state.calm) * plan.dayMs;
-    state.distance = distance;
-    const head = pointAt(day.path, plan.cum, distance);
-    drawTo(state, day, plan, distance);
-    if (state.calm) calmView(map, day, 0);
-    else {
-      // 镜头直接跳到车的位置，不从别处飞过来
-      const zoom = followZoom(slowness(distance, plan.stopKm, plan.total));
-      const further = pointAt(day.path, plan.cum, distance + Math.max(0.8, lookAhead(zoom) * 3));
-      const bearing = further[0] !== head[0] || further[1] !== head[1] ? bearingOf(head, further) : map.getBearing();
-      state.camera = { center: head, zoom, bearing };
-      map.jumpTo({ center: head, zoom, bearing, pitch: FOLLOW_PITCH, padding: followPadding(map) });
-    }
-    showProgress(state);
+  /** 整段时间线：念的部分按每句的阅读时间 × 朗读的快慢排 */
+  const buildTimeline = (days: TourDay[], plans: DayPlan[], narrated: boolean, calm: boolean, pace: number) =>
+    tourTimeline(days, plans, {
+      narrated,
+      calm,
+      fly: calm ? flyMs(days.length) : FOLLOW_FLY_MS,
+      hold: HOLD_MS,
+      arrive: ARRIVE_MS,
+      finale: FINALE_MS,
+      speech: (lines) => lines.flatMap((line) => sentences(line)).reduce((sum, sentence) => sum + readingMs(sentence) * pace, 0),
+      intro: narration?.intro.speech,
+      outro: narration?.outro.speech,
+    });
+
+  /**
+   * 念完一句，量一下实际念了多久：最近几句的中位数和时间线用的差一成以上，就按它重排时间线。
+   * 各段的先后不变，只是念的段变长、变短；现在播到的地方按在这一段里的比例挪过去，进度条接着走
+   */
+  const calibrate = (state: TourState, ratio: number) => {
+    if (!Number.isFinite(ratio) || ratio < 0.4 || ratio > 3) return;
+    state.paceSamples = [...state.paceSamples, ratio].slice(-PACE_SAMPLES);
+    const sorted = [...state.paceSamples].sort((a, b) => a - b);
+    const pace = Math.min(2, Math.max(0.6, sorted[sorted.length >> 1]));
+    if (state.paceSamples.length < 2 || Math.abs(pace - state.pace) / state.pace < PACE_REBUILD) return;
+    const before = locate(state.starts, state.position);
+    const oldMs = state.timeline[before.segment]?.ms || 1;
+    state.pace = pace;
+    state.timeline = buildTimeline(state.days, state.plans, state.narrated, state.calm, pace);
+    state.starts = segmentStarts(state.timeline);
+    state.position = state.starts[before.segment] + (before.offset / oldMs) * (state.timeline[before.segment]?.ms ?? 0);
+    if (state.speech) state.speech.starts = slotStarts(state.speech.lines.map((line) => readingMs(line) * pace));
+    setTrack({ days: state.days, timeline: state.timeline, starts: state.starts });
+    try {
+      localStorage.setItem(PACE_KEY, pace.toFixed(2));
+    } catch {}
   };
 
   const startTour = (days: TourDay[], from = 0, narrated = false) => {
@@ -1439,6 +1586,7 @@ export function ParkMap({
     if (!map || days.length === 0) return;
     if (tourRef.current) {
       cancelAnimationFrame(tourRef.current.raf);
+      tourRef.current.prefetch.abort();
       clearMarkers(tourRef.current);
       removeCar(tourRef.current);
       if (tourRef.current.pixelRatio !== null) map.setPixelRatio(tourRef.current.pixelRatio);
@@ -1473,50 +1621,43 @@ export function ParkMap({
     }
     // 底图压下去（卫星图上蒙得淡一点，免得照片发灰）
     map.setPaintProperty("tour-veil", "fill-opacity", satelliteRef.current ? 0.22 : 0.45);
-    // 平常的彩色路线先藏起来，跟着车一段段画出来；讲解版开头讲“彩色的线是每天的路线”时先留着，进到第一天再藏
-    const keepLegs = narrated && from === 0 && Boolean(narration?.intro.speech.length);
-    map.setLayoutProperty("legs", "visibility", keepLegs ? "visible" : "none");
-    map.setLayoutProperty("legs-straight", "visibility", keepLegs ? "visible" : "none");
     const calm = reducedMotion();
     const plans = days.map((day) => planDay(day, days.length, calm));
-    const timeline = tourTimeline(days, plans, {
-      narrated,
-      calm,
-      fly: calm ? flyMs(days.length) : FOLLOW_FLY_MS,
-      hold: HOLD_MS,
-      arrive: ARRIVE_MS,
-      finale: FINALE_MS,
-      speech: (lines) => lines.flatMap((line) => sentences(line)).reduce((sum, sentence) => sum + readingMs(sentence), 0),
-      intro: narration?.intro.speech,
-      outro: narration?.outro.speech,
-    });
+    let pace = 1;
+    try {
+      const saved = Number(localStorage.getItem(PACE_KEY));
+      if (saved >= 0.6 && saved <= 2) pace = saved;
+    } catch {}
+    const timeline = buildTimeline(days, plans, narrated, calm, pace);
     const starts = segmentStarts(timeline);
+    // 从第 from 天开始的：钟放到那一天开场的地方
+    const firstDay = timeline.findIndex((segment) => segment.kind === "day" && segment.day === from);
     const state: TourState = {
       days,
-      index: from,
-      phase: "fly",
-      phaseStart: 0,
-      clock: 0,
-      last: performance.now(),
-      arriveUntil: 0,
+      index: Math.min(from, days.length - 1),
       calm,
       narrated,
-      speaking: false,
-      voice: 0,
-      carded: false,
       plans,
       timeline,
       starts,
-      position: 0,
-      distance: 0,
-      cost: [],
-      dayMs: 0,
+      position: from > 0 && firstDay >= 0 ? starts[firstDay] : 0,
+      segment: -1,
+      clock: 0,
+      last: performance.now(),
+      speech: null,
+      spoken: 0,
+      talking: false,
+      voice: 0,
+      pace,
+      paceSamples: [],
+      sampleOk: false,
+      flow: 1,
+      waited: 0,
+      loading: false,
+      scrub: null,
       camera: null,
       pausedAt: null,
       raf: 0,
-      cum: [],
-      total: 0,
-      stopKm: [],
       shown: 0,
       done: days.slice(0, from).map((day) => lineFeature(day.path, day.color)),
       markers: [],
@@ -1532,13 +1673,19 @@ export function ParkMap({
       hidden: [],
       clockShown: "",
       percentShown: -1,
+      prefetch: new AbortController(),
+      prefetched: new Set(),
     };
     tourRef.current = state;
     holdClock(true);
-    // 讲解版：打开 3D 地形和天空（远处的山带一点雾），镜头压低时像航拍；平常已经开着地形的不动它
-    if (narrated && !reducedMotion()) {
+    setTilesLoading(false);
+    // 远处（镜头压低时地平线那边）少下载一些瓦片：同样的画面，倾斜时最多下载平视时的 2 倍（默认 3 倍），结束时改回来
+    map.setSourceTileLodParams(DEFAULT_LOD_LEVELS, TOUR_LOD_RATIO);
+    // 讲解版：打开 3D 地形和天空（远处的山带一点雾），镜头压低时像航拍；平常已经开着地形的不动它。
+    // 地形用 512 像素的地形源（tour-dem）：同样的画面下载的地形瓦片是原来的四分之一，跟车时看不出差别
+    if (narrated && !calm) {
       if (!map.getTerrain()) {
-        map.setTerrain({ source: "terrain-dem", exaggeration: TERRAIN_EXAGGERATION });
+        map.setTerrain({ source: "tour-dem", exaggeration: TERRAIN_EXAGGERATION });
         state.terrainAdded = true;
       }
       map.setSky({
@@ -1551,10 +1698,12 @@ export function ParkMap({
         "atmosphere-blend": 0.6,
       });
     }
+    // 先下载开头这一天的瓦片（讲开头、预热的时候就在下载了）
+    prefetchDay(state, state.index);
     // 预热：路线的两层线、“开过的路线”第一次画出来时要编译显卡程序（打开 3D 地形、天空后所有图层还要再编一遍），
     // 主线程会卡一会儿（慢的电脑上一秒多），要是赶在镜头飞、车开的时候就会顿一下、跳一截。
     // 所以先把第一天的路线放进去（渐变全透明，看不见）、开过的路线淡到几乎看不见，等地图把它们画出来一帧，再开始讲、开始动
-    const first = days[Math.min(from, days.length - 1)];
+    const first = days[state.index];
     for (const layer of ["tour-line", "tour-glow"]) map.setPaintProperty(layer, "line-gradient", drawnGradient(first.color, 0) as ExpressionSpecification, { validate: false });
     setLine("tour-line", first.path.length > 1 ? [lineFeature(first.path, first.color)] : []);
     setLine("tour-done", [...state.done, lineFeature(first.path, first.color)]);
@@ -1568,7 +1717,6 @@ export function ParkMap({
       if (tourRef.current !== state || !state.warming) return;
       map.setPaintProperty("tour-done", "line-opacity", 0.55);
       setLine("tour-done", state.done);
-      // 讲解版开头讲整趟的全貌：景点先都亮着，进到第一天再淡下去（beginDay）
       focusOn(null);
       state.warming = false;
       state.last = performance.now();
@@ -1604,62 +1752,28 @@ export function ParkMap({
         map.setPixelRatio(NARRATED_PIXEL_RATIO);
       }
     }
-    /** 等预热完再做（没在等就马上做） */
-    const whenWarm = (next: () => void) => {
-      if (state.warming) state.afterWarm = next;
-      else next();
-    };
     setTrack(narrated ? { days, timeline, starts } : null);
-    if (narrated && from === 0 && narration?.intro.speech.length) {
-      // 开头：先看整趟的全貌，讲怎么看这张地图
-      state.phase = "intro";
-      setBeat({ kind: "intro" });
-      setTourUi({
-        index: from,
-        days: days.map(({ day: n, color }) => ({ day: n, color })),
-        title: narration.intro.title,
-        color: "#1c1b18",
-        card: false,
-        finale: false,
-        paused: false,
-        dusk: false,
-      });
-      // 先看整趟的全貌（给左边的卡片让出位置；全屏铺开要一点时间，等地图量好新尺寸）
-      setTimeout(() => {
-        const all = days.flatMap((day) => [...day.path, ...day.stops.map((stop) => [stop.lon, stop.lat] as [number, number])]);
-        if (all.length < 2) return;
-        map.resize();
-        map.setPadding(NO_PADDING);
-        map.fitBounds(
-          [
-            [Math.min(...all.map((p) => p[0])), Math.min(...all.map((p) => p[1]))],
-            [Math.max(...all.map((p) => p[0])), Math.max(...all.map((p) => p[1]))],
-          ],
-          {
-            padding: { top: 64, bottom: Math.max(150, Math.round(map.getContainer().clientHeight * bottomPanel.current)), left: 64 + sidePanel.current, right: 64 },
-            maxZoom: 12,
-            duration: 900,
-            pitch: 0,
-            bearing: 0,
-          },
-        );
-      }, 120);
-      whenWarm(() => speak(state, narration.intro.speech));
-    } else whenWarm(() => beginDay(state, from, state.clock));
+    // 预热完从开头（或第 from 天）播起：开头那一段正常进（镜头飞过去），之后每帧按钟走
+    state.afterWarm = () => {
+      step(state, state.position, 0, false);
+      showProgress(state);
+    };
     state.raf = requestAnimationFrame(frame);
   };
 
   const togglePause = () => {
     const state = tourRef.current;
     if (!state) return;
-    // 暂停时动画的钟不走，继续时接着走，不用再补时间
+    // 暂停时钟不走，继续时接着走，不用再补时间；念到一半的那句从头再念
     if (state.pausedAt === null) {
       state.pausedAt = performance.now();
+      state.sampleOk = false;
       narratorRef.current?.pause();
       scoreRef.current?.pause();
     } else {
       state.pausedAt = null;
-      narratorRef.current?.resume();
+      state.last = performance.now();
+      if (state.talking) narratorRef.current?.resume();
       scoreRef.current?.resume();
     }
     setTourUi((ui) => (ui ? { ...ui, paused: state.pausedAt !== null } : ui));
@@ -1678,19 +1792,51 @@ export function ParkMap({
     if (state) showProgress(state);
   };
 
-  /** 进度条上第 ratio（0–1）的位置跳到哪 */
-  const seekRatio = (ratio: number) => {
+  /** 进度条上第 ratio（0–1）的位置是第几毫秒 */
+  const msAt = (ratio: number) => {
+    const state = tourRef.current;
+    return state ? ratio * (state.starts[state.starts.length - 1] ?? 0) : 0;
+  };
+  /** 按下进度条：开始拖，画面先停住（像视频播放器），拖到哪画面摆到哪 */
+  const beginScrub = (ratio: number) => {
     const state = tourRef.current;
     if (!state) return;
-    const target = seekTarget(state.timeline, state.starts, ratio * (state.starts[state.starts.length - 1] ?? 0));
-    seekTo(target.segment, target.fraction);
+    if (!state.scrub) {
+      state.scrub = { preview: null, paused: state.pausedAt !== null };
+      narratorRef.current?.pause();
+      scoreRef.current?.pause();
+    }
+    state.scrub.preview = msAt(ratio);
+  };
+  const moveScrub = (ratio: number) => {
+    const state = tourRef.current;
+    if (state?.scrub) state.scrub.preview = msAt(ratio);
+  };
+  /** 松手：跳过去，原来在播的接着播（原来暂停着的还是暂停，继续时从那里念） */
+  const endScrub = (ratio: number | null) => {
+    const state = tourRef.current;
+    if (!state?.scrub) return;
+    const { paused } = state.scrub;
+    state.scrub = null;
+    if (ratio !== null) seekTo(msAt(ratio));
+    if (!paused) {
+      state.pausedAt = null;
+      scoreRef.current?.resume();
+    }
+    state.last = performance.now();
+    showProgress(state);
+  };
+  /** 往前、往后跳几秒（键盘 J / L，像视频网站） */
+  const skipBy = (ms: number) => {
+    const state = tourRef.current;
+    if (state) seekTo(state.position + ms);
   };
   const stepChapter = (direction: 1 | -1) => {
     const state = tourRef.current;
-    if (state) seekTo(chapterStep(state.timeline, state.starts, state.position, direction));
+    if (state) seekTo(state.starts[chapterStep(state.timeline, state.starts, state.position, direction)] ?? 0);
   };
 
-  // 讲解版的键盘：空格（或 K）暂停 / 继续，左右键上一段 / 下一段；不是真全屏（iPhone 那种盖满窗口）时 Esc 退出
+  // 讲解版的键盘：空格（或 K）暂停 / 继续，左右键上一段 / 下一段，J / L 往回、往前 10 秒；不是真全屏（iPhone 那种盖满窗口）时 Esc 退出
   const onTourKey = useEffectEvent((event: KeyboardEvent) => {
     if (!tourRef.current?.narrated || event.altKey || event.ctrlKey || event.metaKey) return;
     const target = event.target as HTMLElement | null;
@@ -1702,6 +1848,10 @@ export function ParkMap({
     } else if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
       event.preventDefault();
       stepChapter(event.key === "ArrowRight" ? 1 : -1);
+    } else if (event.key === "j" || event.key === "l") {
+      // J / L：往回、往前跳 10 秒（YouTube 的快捷键）
+      event.preventDefault();
+      skipBy(event.key === "l" ? 10000 : -10000);
     } else if (event.key === "Escape" && !document.fullscreenElement) finishTour();
   });
   useEffect(() => {
@@ -1943,7 +2093,9 @@ export function ParkMap({
       tip.style.display = "none";
       return;
     }
-    const label = segmentLabel(track.timeline[seekTarget(track.timeline, track.starts, ratio * trackTotal).segment], track.days);
+    const ms = ratio * trackTotal;
+    // 提示里写这里是哪一段、第几分几秒（像视频网站拖进度条时那样）
+    const label = `${segmentLabel(track.timeline[seekTarget(track.timeline, track.starts, ms).segment], track.days)} · ${clockText(ms, speedRef.current)}`;
     if (label !== scrubText.current) {
       scrubText.current = label;
       tip.textContent = label;
@@ -2152,6 +2304,7 @@ export function ParkMap({
             <>
               {/* 章节字幕显示着的时候不重复标题 */}
               {!tourUi.card && !tourUi.finale && <span className="font-serif text-sm tracking-normal lining-nums">{tourUi.title}</span>}
+              {tilesLoading && <span className="text-ink-soft">{text.loading}</span>}
               <button type="button" className="link-line" onClick={togglePause}>
                 {tourUi.paused ? text.tourResume : text.tourPause}
               </button>
@@ -2167,7 +2320,8 @@ export function ParkMap({
                     aria-current={k === tourUi.index}
                     onClick={() => {
                       const current = tourRef.current;
-                      if (current) startTour(current.days, k, current.narrated);
+                      const at = current?.timeline.findIndex((segment) => segment.kind === "day" && segment.day === k) ?? -1;
+                      if (current && at >= 0) seekTo(current.starts[at]);
                     }}
                     className="flex size-6 items-center justify-center"
                   >
@@ -2213,21 +2367,32 @@ export function ParkMap({
               const ratio = ratioOf(event);
               showScrub(ratio);
               previewAt(ratio);
+              beginScrub(ratio);
             }}
             onPointerMove={(event) => {
               const ratio = ratioOf(event);
               showScrub(ratio);
-              if (scrubbing.current) previewAt(ratio);
+              if (!scrubbing.current) return;
+              previewAt(ratio);
+              moveScrub(ratio);
             }}
             onPointerUp={(event) => {
               if (!scrubbing.current) return;
               scrubbing.current = false;
               showScrub(null);
-              seekRatio(ratioOf(event));
+              endScrub(ratioOf(event));
             }}
             onPointerCancel={() => {
               scrubbing.current = false;
               showScrub(null);
+              endScrub(null);
+            }}
+            onKeyDown={(event) => {
+              // 进度条拿到焦点时，左右键像视频播放器一样前后跳 5 秒（全局的左右键是上一段、下一段）
+              if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+              event.preventDefault();
+              event.stopPropagation();
+              skipBy(event.key === "ArrowRight" ? 5000 : -5000);
             }}
             onPointerLeave={() => {
               if (!scrubbing.current) showScrub(null);
@@ -2288,6 +2453,7 @@ export function ParkMap({
             <button type="button" className="link-line" onClick={finishTour}>
               {text.tourExit}
             </button>
+            {tilesLoading && <span className="text-ink-soft">{text.loading}</span>}
             <span ref={clockRef} className="ml-auto h-4 w-full text-right text-ink-soft tabular-nums tracking-normal sm:w-auto" aria-hidden="true" />
           </div>
         </div>

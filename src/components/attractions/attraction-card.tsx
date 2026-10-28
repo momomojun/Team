@@ -4,6 +4,7 @@ import { IconTrail } from "@/components/icons";
 import { AddToTripButton } from "@/components/trip/add-to-trip-button";
 import type { AttractionWithPhoto } from "@/data/attractions";
 import { googleMapsUrl, googleSnapshotDate } from "@/data/attractions/google";
+import { alltrailsAttractionUrl } from "@/data/alltrails";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { fill, formatCount, formatDuration, formatKm, formatMeters, formatMonths, otherName } from "@/i18n/format";
 import { CelebrityShots } from "./celebrity-shots";
@@ -17,7 +18,10 @@ export type AttractionText = Pick<
   "attraction" | "kinds" | "difficulty" | "timeOfDay" | "units" | "trip" | "map"
 >;
 
-/** 景点页的热度名次（按 Google 评论数）+ Google 评分和评论数；与徒步页（AllTrails）完全独立 */
+/**
+ * 热度名次 + 评分和评价数：徒步只看 AllTrails（步道热度第几、AllTrails 评分），别的景点看 Google Maps 快照。
+ * 没对上 AllTrails（或者对上的不是同一条路线）的徒步什么都不显示，不拿 Google 补
+ */
 export function PopularityBadge({
   attraction,
   text,
@@ -25,9 +29,23 @@ export function PopularityBadge({
   attraction: AttractionWithPhoto;
   text: AttractionText;
 }) {
-  const { google, hotRank } = attraction;
-  if (!google) return null;
+  const { google, hotRank, alltrails, hikeRank } = attraction;
   const t = text.attraction;
+  if (attraction.kind === "hike") {
+    if (!alltrails) return null;
+    return (
+      <span
+        className="inline-flex flex-wrap items-baseline gap-x-3 text-xs"
+        title={fill(t.alltrailsSource, { name: alltrails.name, popularity: alltrails.popularity.toFixed(1) })}
+      >
+        {hikeRank !== undefined && <span className="text-clay-700">{fill(t.hikeRank, { n: hikeRank })}</span>}
+        <span className="text-mute">
+          {fill(t.alltrailsRating, { rating: alltrails.rating.toFixed(1), reviews: formatCount(alltrails.reviews) })}
+        </span>
+      </span>
+    );
+  }
+  if (!google) return null;
   return (
     <span
       className="inline-flex flex-wrap items-baseline gap-x-3 text-xs"
@@ -45,6 +63,23 @@ export function PopularityBadge({
 const tag = "border px-2 py-0.5 text-[11px] leading-5";
 
 export const linkButton = "link-line text-xs tracking-[0.1em] text-ink";
+
+/** 徒步的 AllTrails 链接：对上了直达那条步道，没对上（或者对上的不是同一条路线）就搜一下 */
+export function AllTrailsLink({ attraction: a, parkNameEn, text }: { attraction: AttractionWithPhoto; parkNameEn: string; text: AttractionText }) {
+  if (a.kind !== "hike") return null;
+  const t = text.attraction;
+  return (
+    <a
+      className={linkButton}
+      href={alltrailsAttractionUrl(a, parkNameEn)}
+      target="_blank"
+      rel="noreferrer"
+      title={a.alltrails ? t.alltrailsHint : t.alltrailsSearchHint}
+    >
+      {t.alltrails}
+    </a>
+  );
+}
 
 /** 停留时间、徒步距离 / 爬升 / 难度、最佳时间 */
 export function attractionMeta(a: AttractionWithPhoto, text: AttractionText): string[] {
@@ -254,6 +289,7 @@ export function AttractionCard({
           <button type="button" className={linkButton} onClick={onShowOnMap}>
             {t.showOnMap}
           </button>
+          <AllTrailsLink attraction={a} parkNameEn={parkNameEn} text={text} />
           <a className={linkButton} href={googleMapsUrl(a, parkNameEn)} target="_blank" rel="noreferrer" title={t.googleMapsHint}>
             {t.googleMaps}
           </a>

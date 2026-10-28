@@ -11,6 +11,7 @@
 import { attractions } from "../src/data/attractions/index.ts";
 import { parks } from "../src/data/parks.ts";
 import { closedKind, MAX_HIKE_MIN, MAX_STOPS } from "../src/lib/generate-trip.ts";
+import { popularRank } from "../src/lib/popularity.ts";
 import { buildTimeline, parkingOn } from "../src/lib/planner.ts";
 import { dayInputs, planTrip } from "../src/lib/copilot/plan-tool.ts";
 import { fitFor } from "../src/lib/suitability.ts";
@@ -32,7 +33,8 @@ const HARD_WARNINGS = new Set([...TIMING, "tempClosed", "farTransfer", "parkingF
 /** 一天最多几站才逐一试所有顺序（7! = 5040 种） */
 const MAX_PERMUTE = 7;
 
-const famousFirst = (a, b) => Number(Boolean(b.mustSee)) - Number(Boolean(a.mustSee)) || (a.hotRank ?? 99) - (b.hotRank ?? 99);
+/** 必去的在前，再按园内名次（徒步按 AllTrails 的，lib/popularity.ts） */
+const famousFirst = (a, b) => Number(Boolean(b.mustSee)) - Number(Boolean(a.mustSee)) || (popularRank(a) ?? 99) - (popularRank(b) ?? 99);
 /** 这个月能去、不用抽签、适合同行的人：点名要去的从这里挑（点了去不了的，引擎本来就不排，不算引擎的错） */
 const pickable = (stop, month, party) =>
   !stop.lottery && closedKind(stop, month, [], []) === null && fitFor(party, stop.family).level !== "no" && stop.kind !== "visitor";

@@ -6,7 +6,8 @@ import { alltrailsParkCounts, alltrailsParkTop, attractions, getParkAttractions 
 test("AllTrails 数据集：户外徒步景点均匹配直达步道链接，园内步道热度排名按 popularity 降序", () => {
   const hikes = attractions.filter((a) => a.hike);
   const matched = hikes.filter((a) => a.alltrails);
-  assert.ok(matched.length >= 415, `至少匹配 415 条徒步路线，实际 ${matched.length}`);
+  // 对上的多半不是同一条路线的（alltrails-doubtful，11 条）不挂 AllTrails
+  assert.ok(matched.length >= 404, `至少匹配 404 条徒步路线，实际 ${matched.length}`);
 
   for (const a of matched) {
     const info = a.alltrails!;

@@ -21,10 +21,13 @@ import {
   chapterStep,
   clockText,
   distanceAt,
+  driveDistance,
+  locate,
   planDay,
+  sentenceAt,
+  slotStarts,
   progressAt,
   seekTarget,
-  segmentOf,
   segmentStarts,
   tourTimeline,
   type TourDay,
@@ -168,18 +171,10 @@ test("开到第几公里和画到百分之几互相换算得回来（跟车和�
   }
 });
 
-test("动画现在在第几段；点进度条跳到哪；上一段、下一段只停在开场、各站、结尾", () => {
+test("点进度条跳到哪；上一段、下一段只停在开场、各站、结尾", () => {
   const plan = planDay(tourDay, 1, false);
   const timeline = tourTimeline([tourDay], [plan], timing);
   const starts = segmentStarts(timeline);
-  assert.equal(segmentOf(timeline, { kind: "intro" }), 0);
-  assert.equal(segmentOf(timeline, { kind: "day", day: 0 }), 1);
-  assert.equal(segmentOf(timeline, { kind: "drive", day: 0, distance: 0.5 }), 2);
-  assert.equal(segmentOf(timeline, { kind: "stop", day: 0, stop: 1 }), 3);
-  assert.equal(segmentOf(timeline, { kind: "drive", day: 0, distance: plan.stopKm[1] + 0.5 }), 4);
-  assert.equal(segmentOf(timeline, { kind: "drive", day: 0, distance: plan.total + 1 }), 6, "开过了最后一站算这一天的结尾");
-  assert.equal(segmentOf(timeline, { kind: "stop", day: 0, stop: 0 }), -1, "起点那一站没有自己的一段");
-  assert.equal(segmentOf(timeline, { kind: "outro" }), 7);
   // 点在开车那段的正中间：跳到那段的一半；点在讲解那段的中间：从这一站开头讲
   const drive = seekTarget(timeline, starts, starts[2] + timeline[2].ms / 2);
   assert.equal(drive.segment, 2);
@@ -196,4 +191,31 @@ test("进度条旁边的时间按倍速换算", () => {
   assert.equal(clockText(65_000, 1), "1:05");
   assert.equal(clockText(65_000, 2), "0:33");
   assert.equal(clockText(0, 1.5), "0:00");
+});
+
+test("一个钟说了算：第几毫秒在第几段、进了多少；开车那段走到一半车开到哪；讲解从哪一句接着念", () => {
+  const plan = planDay(tourDay, 1, false);
+  const timeline = tourTimeline([tourDay], [plan], timing);
+  const starts = segmentStarts(timeline);
+  assert.deepEqual(locate(starts, 0), { segment: 0, offset: 0 });
+  assert.deepEqual(locate(starts, starts[3] + 250), { segment: 3, offset: 250 });
+  assert.deepEqual(locate(starts, starts[2]), { segment: 2, offset: 0 }, "正好在两段交界时算后一段的开头");
+  assert.equal(locate(starts, starts.at(-1)! + 5000).segment, timeline.length - 1, "拖过了最后算在最后一段");
+  assert.equal(locate(starts, -100).offset, 0);
+  // 开车的段：开头在起点、末尾到站，中间按播放量（进站前减速），一直往前走
+  const drive = timeline[2] as Extract<(typeof timeline)[number], { kind: "drive" }>;
+  assert.equal(driveDistance(plan, drive, 0, false), drive.from);
+  assert.ok(Math.abs(driveDistance(plan, drive, 1, false) - drive.to) < 1e-6);
+  let last = -1;
+  for (const f of [0.1, 0.3, 0.5, 0.7, 0.9]) {
+    const d = driveDistance(plan, drive, f, false);
+    assert.ok(d > last && d < drive.to);
+    last = d;
+  }
+  // 三句话各念 1、2、1.5 秒：从 0、1、3 秒开始；第 2.5 秒跳进来从第二句念
+  const slots = slotStarts([1000, 2000, 1500]);
+  assert.deepEqual(slots, [0, 1000, 3000]);
+  assert.equal(sentenceAt(slots, 0), 0);
+  assert.equal(sentenceAt(slots, 2500), 1);
+  assert.equal(sentenceAt(slots, 9999), 2);
 });

@@ -5,6 +5,7 @@ import { campgrounds } from "../../data/campgrounds";
 import { lodgingOptions } from "../../data/lodging";
 import { parks } from "../../data/parks";
 import { closureOn } from "../closures";
+import { popularRank } from "../popularity";
 import { seasonalRoads, type SeasonalRoad } from "../../data/roads";
 import { roadDecides, roadFor, roadStatus } from "../roads";
 import { fitFor, type Party } from "../suitability";
@@ -241,7 +242,7 @@ export function driveTime(fromId: string, toId: string) {
   };
 }
 
-/** 按条件找景点，必去的、园内热度高的排前面 */
+/** 按条件找景点，必去的、园内热度高的排前面（徒步的热度看 AllTrails，lib/popularity.ts） */
 export function searchAttractions(request: Extract<LookupRequest, { tool: "search" }>) {
   const month = request.month ?? (request.date ? Number(request.date.slice(5, 7)) : undefined);
   const hits = attractions
@@ -257,7 +258,7 @@ export function searchAttractions(request: Extract<LookupRequest, { tool: "searc
       if (month !== undefined) return stop.openMonths === undefined || stop.openMonths.includes(month);
       return true;
     })
-    .sort((a, b) => Number(Boolean(b.stop.mustSee)) - Number(Boolean(a.stop.mustSee)) || (a.stop.hotRank ?? 99) - (b.stop.hotRank ?? 99));
+    .sort((a, b) => Number(Boolean(b.stop.mustSee)) - Number(Boolean(a.stop.mustSee)) || (popularRank(a.stop) ?? 99) - (popularRank(b.stop) ?? 99));
   const limit = request.limit ?? 8;
   return {
     tool: "search" as const,

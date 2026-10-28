@@ -6,6 +6,7 @@ import { alltrailsParkCounts, alltrailsParkTop } from "@/data/attractions";
 import { alltrailsParkUrls } from "@/data/alltrails";
 import { profiles } from "@/data/attractions/elevation.generated";
 import { fill, formatCount } from "@/i18n/format";
+import { hikeRows } from "@/lib/hike-rows";
 import { loadParkPage, parkContainer, parkPath } from "@/lib/park-page";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/parks/[code]/hikes">): Promise<Metadata> {
@@ -25,7 +26,8 @@ export default async function HikesPage({ params }: PageProps<"/[locale]/parks/[
   const topTrails = alltrailsParkTop[park.code] ?? [];
   if (hikes.length === 0 && topTrails.length === 0) notFound();
   const totalTrails = alltrailsParkCounts[park.code] ?? topTrails.length;
-  const displayCount = topTrails.length > 0 ? topTrails.length : hikes.length;
+  // AllTrails 榜单 + 网站收录、榜单里没有的徒步（lib/hike-rows.ts，和下面的列表一样）
+  const displayCount = hikeRows(hikes, topTrails).length;
   const parkPages = alltrailsParkUrls(park.code);
   const parkPageNames = park.code === "seki" ? ["Sequoia", "Kings Canyon"] : [];
 

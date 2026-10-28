@@ -30,6 +30,7 @@ import { bookingsForTrip } from "@/lib/booking";
 import { flightKey, useFlightStore } from "@/lib/flight-store";
 import { closedKind, generateTrip, guideParks } from "@/lib/generate-trip";
 import { moonNight } from "@/lib/moon";
+import { popularRank } from "@/lib/popularity";
 import { drivingMinutesFrom, drivingRoute, type DrivingRoute } from "@/lib/osrm-client";
 import { learnDrive, learnPace, NEUTRAL_PACE, paceAdjusts, pacedMinutes } from "@/lib/personal-pace";
 import {
@@ -287,7 +288,8 @@ export function Planner({
               : kind === "tour"
                 ? t.wizard.tourOff
                 : a.closedNote ?? fill(t.warnings.closed, { months: formatMonths(a.openMonths ?? [], text.units) });
-        return [{ id: a.id, name: a.nameZh, reason: reason ?? "", popular: Boolean(a.mustSee) || (a.hotRank ?? 99) <= 8, rank: a.hotRank ?? 99 }];
+        const rank = popularRank(a) ?? 99;
+        return [{ id: a.id, name: a.nameZh, reason: reason ?? "", popular: Boolean(a.mustSee) || rank <= 8, rank }];
       })
       .sort((x, y) => Number(y.popular) - Number(x.popular) || x.rank - y.rank);
   };
@@ -939,11 +941,13 @@ export function Planner({
       });
     }
     const firstLeg = view.rows[0] ? longLeg(view.timeline.entries[0]?.driveMin, view.rows[0].stop.nameZh) : undefined;
-    const dayWords = fill(say.day, {
+    // 没有景点、只是开车换住处的一天不说“今天去 0 个地方”
+    const dayWords = fill(view.rows.length === 0 && view.to ? say.dayDrive : say.day, {
       n: route.day + 1,
       date: view.date ? (english ? `, ${formatDate(view.date)}` : `，${formatDate(view.date)}`) : "",
       k: view.rows.length,
       drive: duration(view.timeline.driveMin),
+      to: view.to?.name ?? "",
     });
     const last = view.timeline.entries.at(-1);
     return [
@@ -1756,8 +1760,10 @@ export function Planner({
                         <span className="font-serif text-base group-hover/stop:text-clay-700">{a.nameZh}</span>
                         {a.mustSee && <span className="ml-1.5 text-[11px] text-clay-600">★</span>}
                         <span className="ml-2 text-xs text-mute">{duration(a.durationMin)}</span>
-                        {a.hotRank !== undefined && (
-                          <span className="ml-2 text-xs text-clay-700">{fill(text.attraction.hotRank, { n: a.hotRank })}</span>
+                        {popularRank(a) !== undefined && (
+                          <span className="ml-2 text-xs text-clay-700">
+                            {fill(a.kind === "hike" ? text.attraction.hikeRank : text.attraction.hotRank, { n: popularRank(a)! })}
+                          </span>
                         )}
                         <span className="ml-2 text-xs text-ink-soft group-hover/stop:text-clay-700">
                           {browseId === a.id ? t.hideDetails : t.showDetails}

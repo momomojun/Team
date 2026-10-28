@@ -12,9 +12,10 @@ import { makeCustomStop, customStopId } from "@/lib/custom-stops";
 import { addCustomStop, removeFromTrip, tripIds, useTrip } from "@/lib/trip-store";
 import type { AllTrailsParkTrail, AttractionWithPhoto } from "@/data/attractions";
 import type { TrailProfile } from "@/data/attractions/elevation.generated";
-import { alltrailsPhotoUrl, alltrailsTrailUrl } from "@/data/alltrails";
+import { alltrailsPhotoUrl, alltrailsSearchUrl, alltrailsTrailUrl } from "@/data/alltrails";
 import { fill, formatCount, formatKm, formatMeters } from "@/i18n/format";
 import { trailGpx } from "@/lib/elevation";
+import { hikeRows, type HikeRow } from "@/lib/hike-rows";
 import { linkButton, type AttractionText } from "./attraction-card";
 
 type Difficulty = "easy" | "moderate" | "hard";
@@ -57,7 +58,7 @@ const FEATURE_LABELS_EN: Record<string, string> = {
   "dogs-no": "No dogs",
 };
 
-const FILTERS: Record<Exclude<Filter, "all">, (t: AllTrailsParkTrail) => boolean> = {
+const FILTERS: Record<Exclude<Filter, "all">, (t: HikeRow) => boolean> = {
   easy: (t) => t.difficulty === "easy",
   moderate: (t) => t.difficulty === "moderate",
   hard: (t) => t.difficulty === "hard",
@@ -103,6 +104,9 @@ export interface HikesText extends AttractionText {
 
 /** 海拔剖面短于这么多米的不画（OSM 上只画出一小截的步道） */
 const MIN_PROFILE_METERS = 200;
+
+/** 没有 AllTrails 热度的排在有的后面 */
+const hotness = (item: HikeRow) => item.popularity ?? -1;
 
 /** 下载一条步道的 GPX：在浏览器里拼好文件，不经过服务器 */
 function downloadGpx(fileName: string, gpx: string) {
@@ -151,6 +155,7 @@ export function HikesExplorer({
   anchors = [],
   hikes,
   topTrails = [],
+  parkNameEn,
   imagery,
   profiles = {},
   text,
@@ -185,34 +190,18 @@ export function HikesExplorer({
   // 若某条 AllTrails 步道刚好在我们已算好的 OSM 步道几何（trailLine）或图集中，复用其路线轨迹与实拍图
   const hikeById = useMemo(() => new Map(hikes.map((a) => [a.id, a])), [hikes]);
 
-  // 组装纯 Trail 数据源：优先使用 AllTrails 公园步道库，若某座荒野公园无独立榜单则从已匹配步道构建
-  const allTrailsList = useMemo<AllTrailsParkTrail[]>(() => {
-    if (topTrails.length > 0) return topTrails;
-    return hikes
-      .filter((a) => a.hike)
-      .map((a) => ({
-        name: a.alltrails?.name ?? a.nameEn,
-        slug: a.alltrails?.slug ?? a.id,
-        lat: a.start?.lat ?? a.lat,
-        lon: a.start?.lon ?? a.lon,
-        rating: a.alltrails?.rating ?? 4.5,
-        reviews: a.alltrails?.reviews ?? 0,
-        popularity: a.alltrails?.popularity ?? 10,
-        usage: a.alltrails?.usage,
-        photo: a.alltrails?.photo,
-        lengthMi: a.hike!.distanceMi ?? 0,
-        gainFt: a.hike!.gainFt ?? 0,
-        difficulty: a.hike!.difficulty,
-        routeType: a.hike!.loop ? "loop" : "out",
-        attractionId: a.id,
-      }));
-  }, [topTrails, hikes]);
+  // AllTrails 榜单 + 网站收录、榜单里没有的徒步（lib/hike-rows.ts）；评分、热度只来自 AllTrails，没对上的不写
+  const allTrailsList = useMemo(() => hikeRows(hikes, topTrails), [topTrails, hikes]);
 
-  // 记录每条 Trail 在本公园内的 AllTrails 原始热度名次（1, 2, 3...）
-  const popularityRankBySlug = useMemo(() => {
-    const sorted = [...allTrailsList].sort((a, b) => b.popularity - a.popularity || b.reviews - a.reviews);
-    return new Map(sorted.map((item, idx) => [item.slug, idx + 1]));
+  // 每条在本公园内的 AllTrails 热度名次（1, 2, 3...）；没有 AllTrails 数据的不排
+  const popularityRankByKey = useMemo(() => {
+    const sorted = allTrailsList
+      .filter((item) => item.popularity !== undefined)
+      .sort((a, b) => b.popularity! - a.popularity! || (b.reviews ?? 0) - (a.reviews ?? 0));
+    return new Map(sorted.map((item, idx) => [item.key, idx + 1]));
   }, [allTrailsList]);
+  const trailLink = (item: HikeRow, nameEn: string) =>
+    item.slug ? alltrailsTrailUrl(item.slug) : alltrailsSearchUrl(nameEn, parkNameEn ?? "");
 
   const hover = (slug: string | null) => {
     if (slug === null || window.matchMedia("(hover: hover) and (pointer: fine)").matches) setHoverSlug(slug);
@@ -222,10 +211,10 @@ export function HikesExplorer({
     const list = allTrailsList.filter((item) => filter === "all" || FILTERS[filter](item));
     return [...list].sort((a, b) =>
       sort === "short"
-        ? (a.lengthMi || 99) - (b.lengthMi || 99) || b.popularity - a.popularity
+        ? (a.lengthMi || 99) - (b.lengthMi || 99) || hotness(b) - hotness(a)
         : sort === "easy"
           ? DIFFICULTY_ORDER[a.difficulty] - DIFFICULTY_ORDER[b.difficulty] || (a.gainFt || 0) - (b.gainFt || 0)
-          : b.popularity - a.popularity || b.reviews - a.reviews,
+          : hotness(b) - hotness(a) || (b.reviews ?? 0) - (a.reviews ?? 0),
     );
   }, [allTrailsList, filter, sort]);
 
@@ -235,12 +224,13 @@ export function HikesExplorer({
         const matched = trail.attractionId ? hikeById.get(trail.attractionId) : undefined;
         const start = matched?.trailLine?.path[0];
         const zhTitle = isZh && matched && matched.nameZh !== trail.name ? matched.nameZh : undefined;
+        const length = trail.lengthMi > 0 ? formatKm(trail.lengthMi, text.units) : "";
         return {
-          id: trail.slug,
+          id: trail.key,
           lat: start ? start[1] : trail.lat,
           lon: start ? start[0] : trail.lon,
           label: zhTitle ? `${trail.name} (${zhTitle})` : trail.name,
-          sublabel: `AllTrails ★${trail.rating.toFixed(1)} · ${formatKm(trail.lengthMi, text.units)}`,
+          sublabel: trail.rating !== undefined ? `AllTrails ★${trail.rating.toFixed(1)}${length && ` · ${length}`}` : length,
           color: DIFFICULTY_COLORS[trail.difficulty],
         };
       }),
@@ -251,7 +241,7 @@ export function HikesExplorer({
     () =>
       visible.flatMap((trail) => {
         const matched = trail.attractionId ? hikeById.get(trail.attractionId) : undefined;
-        return matched?.trailLine ? [{ id: trail.slug, path: matched.trailLine.path }] : [];
+        return matched?.trailLine ? [{ id: trail.key, path: matched.trailLine.path }] : [];
       }),
     [visible, hikeById],
   );
@@ -334,8 +324,9 @@ export function HikesExplorer({
           <ol className="mt-8 border-t border-line">
             {visible.map((trail, i) => {
               const matched = trail.attractionId ? hikeById.get(trail.attractionId) : undefined;
-              const picked = trail.slug === selectedSlug;
-              const rank = popularityRankBySlug.get(trail.slug) ?? i + 1;
+              const picked = trail.key === selectedSlug;
+              const rank = popularityRankByKey.get(trail.key);
+              const link = trailLink(trail, matched?.nameEn ?? trail.name);
               const zhSubtitle = isZh && matched && matched.nameZh !== trail.name ? matched.nameZh : null;
 
               const trailSpecs = [
@@ -355,9 +346,9 @@ export function HikesExplorer({
 
               return (
                 <li
-                  key={trail.slug}
-                  id={`trail-${trail.slug}`}
-                  onMouseEnter={() => hover(trail.slug)}
+                  key={trail.key}
+                  id={`trail-${trail.key}`}
+                  onMouseEnter={() => hover(trail.key)}
                   onMouseLeave={() => hover(null)}
                   className={`scroll-mt-40 border-b border-line py-6 transition-colors ${picked ? "bg-paper-deep/60" : ""}`}
                 >
@@ -365,7 +356,7 @@ export function HikesExplorer({
                     {photoSrc && (
                       <button
                         type="button"
-                        onClick={() => select(trail.slug)}
+                        onClick={() => select(trail.key)}
                         className="relative h-24 w-20 shrink-0 overflow-hidden bg-paper-deep"
                         aria-label={text.attraction.showOnMap}
                       >
@@ -380,7 +371,7 @@ export function HikesExplorer({
                         <h3 className="min-w-0 font-serif text-xl leading-tight">
                           <button
                             type="button"
-                            onClick={() => select(trail.slug)}
+                            onClick={() => select(trail.key)}
                             title={text.attraction.showOnMap}
                             className="text-left transition-colors hover:text-clay-700"
                           >
@@ -391,21 +382,25 @@ export function HikesExplorer({
                       {zhSubtitle && <p className="mt-1 text-xs text-ink-soft">{zhSubtitle}</p>}
 
                       <div className="mt-3 space-y-2.5">
-                        {/* AllTrails 专属热度排名 + 综合热度分 + 星级评分与打卡评价数 */}
-                        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-xs">
-                          <span className="font-medium text-clay-700">
-                            {fill(text.attraction.hikeRank, { n: rank })}
-                          </span>
-                          <span className="text-clay-700">
-                            {fill(t.topPopularity, { score: trail.popularity.toFixed(1) })}
-                          </span>
-                          <span className="text-mute">
-                            {fill(text.attraction.alltrailsRating, {
-                              rating: trail.rating.toFixed(1),
-                              reviews: formatCount(trail.reviews),
-                            })}
-                          </span>
-                        </div>
+                        {/* AllTrails 专属热度排名 + 综合热度分 + 星级评分与打卡评价数；没对上 AllTrails（或者对错路线）的不写 */}
+                        {trail.rating !== undefined && (
+                          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-xs">
+                            {rank !== undefined && (
+                              <span className="font-medium text-clay-700">{fill(text.attraction.hikeRank, { n: rank })}</span>
+                            )}
+                            {trail.popularity !== undefined && (
+                              <span className="text-clay-700">
+                                {fill(t.topPopularity, { score: trail.popularity.toFixed(1) })}
+                              </span>
+                            )}
+                            <span className="text-mute">
+                              {fill(text.attraction.alltrailsRating, {
+                                rating: trail.rating.toFixed(1),
+                                reviews: formatCount(trail.reviews ?? 0),
+                              })}
+                            </span>
+                          </div>
+                        )}
 
                         {/* 纯 Trail 参数：难度 + 里程 + 环线/往返/点对点 + 爬升 + 客流强度 */}
                         <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink-soft">
@@ -452,7 +447,7 @@ export function HikesExplorer({
                             text={t}
                             onCursor={(at) => {
                               // 地图上先高亮这条步道，小圆点才看得出在哪条路上
-                              if (at && hoverSlug !== trail.slug) setHoverSlug(trail.slug);
+                              if (at && hoverSlug !== trail.key) setHoverSlug(trail.key);
                               cursorRef.current?.(at);
                             }}
                           />
@@ -462,14 +457,14 @@ export function HikesExplorer({
                       <div className="mt-3.5 flex flex-wrap items-center gap-x-5 gap-y-2">
                         <a
                           className={`${linkButton} inline-flex items-center gap-1`}
-                          href={alltrailsTrailUrl(trail.slug)}
+                          href={link}
                           target="_blank"
                           rel="noreferrer"
-                          title={t.alltrailsHint}
+                          title={trail.slug ? t.alltrailsHint : text.attraction.alltrailsSearchHint}
                         >
                           {t.alltrails} <IconArrowRight className="-rotate-45 text-[10px]" />
                         </a>
-                        <button type="button" onClick={() => select(trail.slug)} className={linkButton}>
+                        <button type="button" onClick={() => select(trail.key)} className={linkButton}>
                           {text.attraction.showOnMap}
                         </button>
                         {line && matched && (
@@ -484,7 +479,7 @@ export function HikesExplorer({
                                   name: trail.name,
                                   path: line.path,
                                   profile: drawn,
-                                  link: alltrailsTrailUrl(trail.slug),
+                                  link,
                                   note: line.loop ? undefined : t.profileOneWay,
                                 }),
                               )
@@ -504,7 +499,7 @@ export function HikesExplorer({
                         {matched ? (
                           <AddToTripButton id={matched.id} text={text.trip} />
                         ) : (
-                          <AddTrailButton park={park} trail={trail} anchors={anchors} text={text.trip} />
+                          trail.source && <AddTrailButton park={park} trail={trail.source} anchors={anchors} text={text.trip} />
                         )}
                       </div>
                     </div>

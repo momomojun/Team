@@ -243,9 +243,13 @@ export function followMs(totalCost: number, days: number): number {
   return Math.round(Math.min(days > 6 ? 12000 : 18000, Math.max(9000, totalCost * 160)));
 }
 
-/** 跟车镜头的缩放：开得慢（进站、园区里）凑近看（12.6），开得快（长途）拉远一点（10.2）；再近底图来不及加载 */
+/**
+ * 跟车镜头的缩放：开得慢（进站、园区里）凑近看（12.4），开得快（长途）拉远（9.6）。
+ * 长途时车一秒开出几十公里，镜头拉得越近，一秒钟要换的地图瓦片越多，车开过去了地图还没出来（10-28 仓库主人）：
+ * 拉远一级，瓦片的边长翻倍，同样的车速一秒钟要下载的瓦片少一半多
+ */
 export function followZoom(slow: number): number {
-  return 10.2 + (Math.min(1.2, Math.max(0.2, slow)) - 0.2) * 2.4;
+  return 9.6 + (Math.min(1.2, Math.max(0.2, slow)) - 0.2) * 2.8;
 }
 
 /** 从 a 看 b 的方向（度，正北 0、顺时针） */
@@ -324,7 +328,7 @@ export function progressAt(plan: DayPlan, distance: number, calm: boolean): numb
 
 /**
  * 进度条上的一段：开头讲怎么看地图、某天的开场、开车去下一站、在某一站讲解、一天开完拉远看、结尾。
- * ms 是一倍速下大概多久（念的部分按阅读时间估，实际朗读快慢不一样，进度条只是大致的位置）
+ * ms 是一倍速下多久（念的部分按阅读时间排；朗读比估计的慢时，钟在下一句开始前等它念完）
  */
 export type TourSegment =
   | { kind: "intro"; ms: number }
@@ -349,7 +353,7 @@ export interface TimelineTiming {
   outro?: string[];
 }
 
-/** 整段动画分成哪几段：和 park-map.tsx 的帧循环一样，到站停的只有离起点 50 米以上的站和讲解版里有讲解词的站 */
+/** 整段动画分成哪几段（park-map.tsx 的钟按它摆画面）：到站停的只有离起点 50 米以上的站和讲解版里有讲解词的站 */
 export function tourTimeline(days: TourDay[], plans: DayPlan[], timing: TimelineTiming): TourSegment[] {
   const out: TourSegment[] = [];
   if (timing.narrated && timing.intro?.length) out.push({ kind: "intro", ms: Math.max(1500, timing.speech(timing.intro)) });
@@ -380,29 +384,48 @@ export function segmentStarts(timeline: TourSegment[]): number[] {
   return starts;
 }
 
-/** 动画现在在哪：帧循环里的状态换成进度条上的第几段 */
-export type TourWhere =
-  | { kind: "intro" }
-  | { kind: "day"; day: number }
-  | { kind: "stop"; day: number; stop: number }
-  | { kind: "drive"; day: number; distance: number }
-  | { kind: "end"; day: number }
-  | { kind: "outro" };
-
-/** 在第几段，找不到是 -1（比如起点那一站不停，没有它自己的一段） */
-export function segmentOf(timeline: TourSegment[], where: TourWhere): number {
-  return timeline.findIndex((segment) => {
-    if (segment.kind !== where.kind && !(where.kind === "drive" && segment.kind === "end")) return false;
-    if (segment.kind === "intro" || segment.kind === "outro") return true;
-    if (!("day" in where) || segment.day !== where.day) return false;
-    if (segment.kind === "stop") return where.kind === "stop" && segment.stop === where.stop;
-    // 开车：第一段终点还没到的；都过了（开完最后一站以后的零头）就算这一天的结尾
-    if (segment.kind === "drive") return where.kind === "drive" && where.distance < segment.to - 1e-6;
-    return true;
-  });
+/** 第 ms 毫秒（一倍速下）在第几段、进了这一段多少毫秒（拖到最后算在最后一段的末尾） */
+export function locate(starts: number[], ms: number): { segment: number; offset: number } {
+  const count = starts.length - 1;
+  if (count <= 0) return { segment: 0, offset: 0 };
+  const at = Math.min(Math.max(0, ms), starts[count]);
+  let lo = 0;
+  let hi = count - 1;
+  while (lo < hi) {
+    const mid = (lo + hi + 1) >> 1;
+    if (starts[mid] <= at) lo = mid;
+    else hi = mid - 1;
+  }
+  return { segment: lo, offset: at - starts[lo] };
 }
 
-/** 点进度条的第几毫秒跳到哪：开车的段跳到点的位置，其他的段（讲解、开场）从这一段开头讲起 */
+/** 开车那一段走了 fraction（0–1）时车开到第几公里：和画线用同一个播放量，进站前减速、长途时加速 */
+export function driveDistance(plan: DayPlan, segment: { from: number; to: number }, fraction: number, calm: boolean): number {
+  const a = progressAt(plan, segment.from, calm);
+  const b = progressAt(plan, segment.to, calm);
+  const f = Math.min(1, Math.max(0, fraction));
+  return Math.min(segment.to, Math.max(segment.from, distanceAt(plan, a + (b - a) * f, calm)));
+}
+
+/** 一段讲解里每一句从第几毫秒开始念（按每句的阅读时间排下去，从 0 开始） */
+export function slotStarts(durations: number[]): number[] {
+  const out: number[] = [];
+  let at = 0;
+  for (const ms of durations) {
+    out.push(at);
+    at += ms;
+  }
+  return out;
+}
+
+/** 第 offset 毫秒该念第几句：已经开始了的最后一句（拖进度条跳到一站讲解的中间，从这一句接着念） */
+export function sentenceAt(starts: number[], offset: number): number {
+  let index = 0;
+  while (index + 1 < starts.length && starts[index + 1] <= offset) index += 1;
+  return index;
+}
+
+/** 进度条上第几毫秒是哪一段（拖动、悬停时的提示用），开车的段另给走了百分之几 */
 export function seekTarget(timeline: TourSegment[], starts: number[], ms: number): { segment: number; fraction: number } {
   const total = starts[starts.length - 1] ?? 0;
   const at = Math.min(Math.max(0, ms), Math.max(0, total - 1));

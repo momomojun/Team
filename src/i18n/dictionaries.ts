@@ -595,6 +595,7 @@ const zhHans = {
         road: "季节性山路的历年开通、关闭日期",
         family: "带孩子、老人、轮椅能不能去",
         rating: "Google 评分和评论数（手动快照）",
+        alltrails: "AllTrails 步道的评分、评价数和热度",
         drive: "车程：OSRM 按道路估算、按平均车速校正过，停车、堵车没算",
       },
       checked: "{date} 核对",
@@ -643,6 +644,9 @@ const zhHans = {
     googleRating: "Google ★{rating} · {reviews} 条评价",
     googleSource: "Google Maps 条目「{name}」，{date} 快照",
     alltrailsRating: "AllTrails ★{rating} · {reviews} 条评价",
+    alltrails: "AllTrails",
+    alltrailsHint: "在 AllTrails 查看这条步道（评分、路况、最近的评价）",
+    alltrailsSearchHint: "在 AllTrails 上找这条步道（网站还没对上 AllTrails 上的同一条路线）",
     /** 从徒步页加进行程、网站没收录的 AllTrails 步道 */
     customTrailSummary:
       "AllTrails 上的步道（★{rating} · {reviews} 条评价）：{length}，{gain}。网站没收录这条步道，开放季节、许可证、带孩子老人行不行都不知道，出发前到 AllTrails 和公园官网确认。",
@@ -652,7 +656,7 @@ const zhHans = {
     sortByRank: "按热度",
     sortByArea: "按片区",
     popularityNote:
-      "热度按 Google Maps 评论数在每个公园内排名（{date} 快照，不会自动更新）。同一景点在 Google 上常分成景点、步道口、观景台几个条目，取评论最多的那个；游客中心和园外景点不参与排名。",
+      "热度在每个公园内排名：步道按 AllTrails 的热度和评价数，其他景点按 Google Maps 评论数（{date} 快照，不会自动更新），两边的名次交替排。同一景点在 Google 上常分成景点、步道口、观景台几个条目，取评论最多的那个；游客中心、园外景点和 AllTrails 上没对上同一条路线的步道不参与排名。",
     popularityPending: "这个公园还没有 Google Maps 评论数快照，暂时按必去在前、游客中心在后排。",
     trailLength: "步道约 {km} 公里（{type}）",
     oneWay: "单程",
@@ -1504,6 +1508,7 @@ const zhHans = {
         lodging: "今晚住在{name}",
         end: "最后回到{name}",
         day: "第 {n} 天{date}。今天去 {k} 个地方，开车大约 {drive}",
+        dayDrive: "第 {n} 天{date}。今天不安排景点，开车去{to}，大约 {drive}",
         introTitle: "怎么看这段讲解",
         intro: "这是一趟 {days} 天的行程，去{parks}，从{origin}出发",
         introNoOrigin: "这是一趟 {days} 天的行程，去{parks}",

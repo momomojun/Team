@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import {
+  AllTrailsLink,
   AttractionMeta,
   AttractionTags,
   attractionTips,
@@ -112,6 +113,7 @@ export function StopDetails({
           <a className={linkButton} href={parkHref}>
             {t.parkPage}
           </a>
+          <AllTrailsLink attraction={stop} parkNameEn={parkNameEn} text={text} />
           <a className={linkButton} href={googleMapsUrl(stop, parkNameEn)} target="_blank" rel="noreferrer" title={t.googleMapsHint}>
             {t.googleMaps}
           </a>

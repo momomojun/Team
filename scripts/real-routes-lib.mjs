@@ -10,6 +10,7 @@ import { attractions } from "../src/data/attractions/index.ts";
 import { creatorRoutes } from "../src/data/creators.ts";
 import { parks } from "../src/data/parks.ts";
 import { closedKind } from "../src/lib/generate-trip.ts";
+import { popularRank } from "../src/lib/popularity.ts";
 import { describeGivenTrip, planTrip } from "../src/lib/copilot/plan-tool.ts";
 import { reachable } from "../src/lib/trip-parks.ts";
 
@@ -101,8 +102,9 @@ function monthOf(visited, stops) {
   );
 }
 
+/** 有名的：必去，或者园内热度前 5（徒步按 AllTrails 的名次，别的景点按 Google 的，lib/popularity.ts） */
 const famous = (stop) =>
-  stop.mustSee || (stop.hotRank !== undefined && stop.hotRank <= 5);
+  stop.mustSee || (popularRank(stop) ?? 99) <= 5;
 const mean = (values) =>
   values.length ? values.reduce((a, b) => a + b, 0) / values.length : null;
 /** 一天之内景点之间开的车：第一站从住处、前一天开过来的不算（真人行程不知道住哪） */
