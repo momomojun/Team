@@ -20,9 +20,10 @@ export interface AuditIndex {
 const later = (a: string | undefined, b: string) => (a && a > b ? a : b);
 
 /**
- * 不是按官方资料核对我们数据的记录：和 AllTrails 的对照、明星同款的调研、收集 NPS 官方推荐行程和拿它们评测引擎的报告，出现了景点 id 也不算核对过
+ * 不是按官方资料核对我们数据的记录：和 AllTrails 的对照、明星同款的调研、收集 NPS 官方推荐行程和拿它们评测引擎的报告、
+ * 行程质量评测和 VROOM 裁判的报告、按高程模型查出爬升可能写错了的步道，出现了景点 id 也不算核对过
  */
-export const NOT_AUDIT = /^(hikes-vs-alltrails|celebrities-|nps-itineraries|real-routes-eval)/;
+export const NOT_AUDIT = /^(hikes-vs-alltrails|celebrities-|nps-itineraries|real-routes-eval|plan-quality|vroom-referee|elevation-check)/;
 
 export function auditIndex(files: AuditFile[], parkCodes: string[], attractionIds: string[]): AuditIndex {
   const parks: Record<string, string> = {};

@@ -4,6 +4,7 @@ import { HikesExplorer } from "@/components/attractions/hikes-explorer";
 import { IconArrowRight } from "@/components/icons";
 import { alltrailsParkCounts, alltrailsParkTop } from "@/data/attractions";
 import { alltrailsParkUrls } from "@/data/alltrails";
+import { profiles } from "@/data/attractions/elevation.generated";
 import { fill, formatCount } from "@/i18n/format";
 import { loadParkPage, parkContainer, parkPath } from "@/lib/park-page";
 
@@ -69,6 +70,8 @@ export default async function HikesPage({ params }: PageProps<"/[locale]/parks/[
         parkNameEn={park.nameEn}
         attractionsHref={parkPath(locale, code, "attractions")}
         imagery={canada ? "eox" : "usgs"}
+        // 这座公园有路线的步道的海拔剖面（每条一百多个数，整座公园几 KB）
+        profiles={Object.fromEntries(hikes.filter((a) => profiles[a.id]).map((a) => [a.id, profiles[a.id]]))}
         text={{
           attraction: dict.attraction,
           kinds: dict.kinds,

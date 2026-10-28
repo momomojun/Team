@@ -418,6 +418,16 @@ body {
   pointer-events: none;
   transition: background-color 500ms;
 }
+/* 海拔剖面上鼠标走到哪，地图上就在步道的那个位置放这个小圆点 */
+.map-cursor {
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  background: var(--color-ink);
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--color-ink) 18%, transparent);
+  pointer-events: none;
+}
 /* 到站的小牌子弹一下出来 */
 @keyframes tour-pop {
   from {

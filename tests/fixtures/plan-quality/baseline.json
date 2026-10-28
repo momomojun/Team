@@ -1,0 +1,10 @@
+{
+  "referenceDate": "2026-10-27",
+  "requests": 110,
+  "finalPassRate": 0.955,
+  "commonsenseMacro": 0.964,
+  "hardMacro": 0.991,
+  "temporal": 0.742,
+  "spatial": 0.998,
+  "ordering": 0.972
+}
