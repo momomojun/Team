@@ -129,6 +129,7 @@
     },
     "pace": {
       "enum": [
+        "leisurely",
         "relaxed",
         "normal",
         "packed"

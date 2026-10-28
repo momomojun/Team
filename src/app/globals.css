@@ -207,23 +207,26 @@ body {
   }
 }
 
-/* 中线：先向两边亮开，幕布分开时淡掉 */
+/* 中线：先向两边亮开，幕布分开时淡掉。用 scale 拉长（16rem 拉到整个屏幕宽，倍数 --seam-scale 在 intro.tsx 里按屏幕宽算），
+   不改 width：改宽度每一帧都要重新排版，scale 交给显卡 */
 @keyframes intro-seam-open {
   0% {
-    width: 16rem;
+    scale: 1 1;
     opacity: 1;
   }
   35% {
-    width: 100vw;
+    scale: var(--seam-scale, 6) 1;
     opacity: 1;
   }
   100% {
-    width: 100vw;
+    scale: var(--seam-scale, 6) 1;
     opacity: 0;
   }
 }
 
 .intro-wordmark {
+  /* 字距的动画每帧都要重新排这一行字：排版只在这一行里，不牵动整个开场画面 */
+  contain: layout;
   letter-spacing: 0.5em;
   /* 字距加在每个字后面，末尾多出来的一截用负边距抵掉，看起来才居中 */
   margin-right: -0.5em;
@@ -404,6 +407,17 @@ body {
 }
 
 /* ── 路线动画（src/components/map/park-map.tsx）── */
+/* 车头：这一天颜色的小圆点、白边，外面一圈淡淡的光晕（DOM 标记，每帧跟着镜头挪） */
+.tour-car {
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  background: var(--car, #a04c2e);
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 7px color-mix(in srgb, var(--car, #a04c2e) 22%, transparent);
+  pointer-events: none;
+  transition: background-color 500ms;
+}
 /* 到站的小牌子弹一下出来 */
 @keyframes tour-pop {
   from {

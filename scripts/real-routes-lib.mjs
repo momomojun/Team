@@ -174,10 +174,16 @@ export function evaluateRealRoutes() {
       });
       continue;
     }
-    // 同样的请求按“轻松”再排一遍：看真人的节奏更像引擎的哪一档
+    // 同样的请求按“轻松”“悠闲”再排一遍：看真人的节奏更像引擎的哪一档
     const relaxed = realDays(
       planTrip(
         { ...request, pace: "relaxed" },
+        { referenceDate: REFERENCE_DATE },
+      ).days,
+    );
+    const leisurely = realDays(
+      planTrip(
+        { ...request, pace: "leisurely" },
         { referenceDate: REFERENCE_DATE },
       ).days,
     );
@@ -268,11 +274,13 @@ export function evaluateRealRoutes() {
         real: mean(humanDays.map((d) => d.stops.length)),
         engine: mean(engineDays.map((d) => d.stops.length)),
         relaxed: mean(relaxed.map((d) => d.stops.length)),
+        leisurely: mean(leisurely.map((d) => d.stops.length)),
       },
       innerDriveMin: {
         real: mean(humanDays.map(innerDrive)),
         engine: mean(engineDays.map(innerDrive)),
         relaxed: mean(relaxed.map(innerDrive)),
+        leisurely: mean(leisurely.map(innerDrive)),
       },
       hard,
       closedThen: closedThen.map((id) => ({
@@ -341,9 +349,11 @@ export function evaluateRealRoutes() {
           stopsReal: mean(fullBySource(s).map((r) => r.stopsPerDay.real)),
           stopsEngine: mean(fullBySource(s).map((r) => r.stopsPerDay.engine)),
           stopsRelaxed: mean(fullBySource(s).map((r) => r.stopsPerDay.relaxed)),
+          stopsLeisurely: mean(fullBySource(s).map((r) => r.stopsPerDay.leisurely)),
           driveReal: mean(fullBySource(s).map((r) => r.innerDriveMin.real)),
           driveEngine: mean(fullBySource(s).map((r) => r.innerDriveMin.engine)),
           driveRelaxed: mean(fullBySource(s).map((r) => r.innerDriveMin.relaxed)),
+          driveLeisurely: mean(fullBySource(s).map((r) => r.innerDriveMin.leisurely)),
         },
       ]),
     ),
@@ -363,8 +373,8 @@ export function evaluateRealRoutes() {
     "|---|---|",
     `| 真人去了的景点，引擎也排了 | ${pct(summary.recall)}（博主 ${pct(summary.recallBySource.creator)}、NPS ${pct(summary.recallBySource.nps)}） |`,
     `| 其中有名的（必去或园内热度前 5） | ${pct(summary.famousRecall)}（${famousTotal - famousMissed} / ${famousTotal}） |`,
-    `| 每天几站：真人 / 引擎“正常” / 引擎“轻松” | 博主 ${round(summary.pace.creator.stopsReal, 1)} / ${round(summary.pace.creator.stopsEngine, 1)} / ${round(summary.pace.creator.stopsRelaxed, 1)}，NPS ${round(summary.pace.nps.stopsReal, 1)} / ${round(summary.pace.nps.stopsEngine, 1)} / ${round(summary.pace.nps.stopsRelaxed, 1)} |`,
-    `| 一天之内景点之间开车（分钟）：真人 / “正常” / “轻松” | 博主 ${round(summary.pace.creator.driveReal)} / ${round(summary.pace.creator.driveEngine)} / ${round(summary.pace.creator.driveRelaxed)}，NPS ${round(summary.pace.nps.driveReal)} / ${round(summary.pace.nps.driveEngine)} / ${round(summary.pace.nps.driveRelaxed)} |`,
+    `| 每天几站：真人 / 引擎“正常” / “轻松” / “悠闲” | 博主 ${round(summary.pace.creator.stopsReal, 1)} / ${round(summary.pace.creator.stopsEngine, 1)} / ${round(summary.pace.creator.stopsRelaxed, 1)} / ${round(summary.pace.creator.stopsLeisurely, 1)}，NPS ${round(summary.pace.nps.stopsReal, 1)} / ${round(summary.pace.nps.stopsEngine, 1)} / ${round(summary.pace.nps.stopsRelaxed, 1)} / ${round(summary.pace.nps.stopsLeisurely, 1)} |`,
+    `| 一天之内景点之间开车（分钟）：真人 / “正常” / “轻松” / “悠闲” | 博主 ${round(summary.pace.creator.driveReal)} / ${round(summary.pace.creator.driveEngine)} / ${round(summary.pace.creator.driveRelaxed)} / ${round(summary.pace.creator.driveLeisurely)}，NPS ${round(summary.pace.nps.driveReal)} / ${round(summary.pace.nps.driveEngine)} / ${round(summary.pace.nps.driveRelaxed)} / ${round(summary.pace.nps.driveLeisurely)} |`,
     `| 真人行程按我们的规则排，有“去不了、赶不上”的 | ${summary.realRoutesWithHard} / ${full.length} 条 |`,
     `| 真人去了、我们的数据说那个月关着的景点（开放月份、山路往年通车） | ${summary.realStopsClosedThen} 个 |`,
     `| 真人去了、现在临时关着的景点（施工、山洪，真人去的那年还开着） | ${summary.realStopsClosedNow} 个 |`,

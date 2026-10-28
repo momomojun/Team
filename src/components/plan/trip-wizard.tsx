@@ -42,7 +42,7 @@ export interface WizardInput {
   party?: Party;
 }
 
-const PACES: Pace[] = ["relaxed", "normal", "packed"];
+const PACES: Pace[] = ["leisurely", "relaxed", "normal", "packed"];
 /** 最小的孩子几岁：0 是不到 1 岁 */
 const KID_AGES = Array.from({ length: 18 }, (_, age) => age);
 
@@ -433,7 +433,7 @@ export function TripWizard({
 
       <div>
         <p className="eyebrow text-mute">{t.pace}</p>
-        <div className="mt-3 grid gap-3 sm:grid-cols-3">
+        <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-4">
           {PACES.map((option) => (
             <button
               key={option}

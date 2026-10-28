@@ -84,6 +84,71 @@ export function sliceTo(path: [number, number][], cum: number[], distance: numbe
   return { line: [...path.slice(0, lo + 1), head], head };
 }
 
+/** 车开到第几公里时车头在哪：和 sliceTo 的 head 一样，但不复制前面那段线（帧循环里每帧都要算，几千个点的路线不能每帧复制一遍） */
+export function pointAt(path: [number, number][], cum: number[], distance: number): [number, number] {
+  if (path.length === 0) return [0, 0];
+  const total = cum[cum.length - 1];
+  if (distance >= total) return path[path.length - 1];
+  if (distance <= 0) return path[0];
+  let lo = 0;
+  let hi = cum.length - 1;
+  while (hi - lo > 1) {
+    const mid = (lo + hi) >> 1;
+    if (cum[mid] <= distance) lo = mid;
+    else hi = mid;
+  }
+  const f = (distance - cum[lo]) / (cum[hi] - cum[lo] || 1);
+  return [path[lo][0] + (path[hi][0] - path[lo][0]) * f, path[lo][1] + (path[hi][1] - path[lo][1]) * f];
+}
+
+/**
+ * 折线每个点离起点有多长（墨卡托投影下，单位无所谓）：地图的 line-progress（线画到百分之几）是按投影以后的长度算的，
+ * 和按公里算的在南北方向上差一点（纬度高的地方投影以后长一些），线头会和车头错开
+ */
+export function mercatorCumulative(path: [number, number][]): number[] {
+  const project = ([lon, lat]: [number, number]): [number, number] => [lon / 360, Math.log(Math.tan(Math.PI / 4 + (lat * RAD) / 2)) / (2 * Math.PI)];
+  const out = [0];
+  let previous = path.length > 0 ? project(path[0]) : [0, 0];
+  for (let i = 1; i < path.length; i++) {
+    const next = project(path[i]);
+    out.push(out[i - 1] + Math.hypot(next[0] - previous[0], next[1] - previous[1]));
+    previous = next;
+  }
+  return out;
+}
+
+/** 车开到第几公里时，线在地图上画到了百分之几（line-progress，0–1）：按公里找到在哪一段，再按这一段投影以后的长度折算 */
+export function lineFraction(cum: number[], merc: number[], distance: number): number {
+  const total = merc[merc.length - 1] ?? 0;
+  if (total <= 0 || distance <= 0) return 0;
+  if (distance >= cum[cum.length - 1]) return 1;
+  let lo = 0;
+  let hi = cum.length - 1;
+  while (hi - lo > 1) {
+    const mid = (lo + hi) >> 1;
+    if (cum[mid] <= distance) lo = mid;
+    else hi = mid;
+  }
+  const f = (distance - cum[lo]) / (cum[hi] - cum[lo] || 1);
+  return (merc[lo] + (merc[hi] - merc[lo]) * f) / total;
+}
+
+const CLEAR = "rgba(0,0,0,0)";
+
+/**
+ * 只画到 fraction 的线（line-gradient 用）：从尾巴的淡到车头的浓，fraction 以后透明。
+ * 一整天的路线一次放进地图，每帧只换这个渐变（不再每帧把画到的那段线重新交给地图切图，那样又慢、线头又跟不上车）。
+ * 用 interpolate：MapLibre 给每块瓦片按这块瓦片里那一截线的范围画 256 格的渐变贴图，线头在屏幕上准到一两个像素，
+ * 每帧要算的也只有几块瓦片 × 256 格（用 step 的话它会按线的长度给到几千上万格，每帧多算几十倍）
+ */
+export function drawnGradient(color: string, fraction: number, tail = 0.35): unknown[] {
+  const f = Math.min(1, Math.max(0, fraction));
+  const EDGE = 1e-5;
+  if (f < EDGE) return ["interpolate", ["linear"], ["line-progress"], 0, CLEAR, 1, CLEAR];
+  if (f > 1 - EDGE) return ["interpolate", ["linear"], ["line-progress"], 0, fade(color, tail), 1, fade(color, 1)];
+  return ["interpolate", ["linear"], ["line-progress"], 0, fade(color, tail), f, fade(color, 1), f + EDGE, CLEAR, 1, CLEAR];
+}
+
 /**
  * 各站在路线上的位置（离起点多少公里）：按顺序往后找离这一站最近的点，不往回找
  * （同一条路来回走两遍时，回程的那站不会被算到去程上）
@@ -221,6 +286,8 @@ export function changedDays(before: string[] | null, after: string[]): number[] 
 /** 一天怎么播：各点的累计公里、各站在路线上的位置、播放量、这一天画多久（帧循环和进度条用同一份，两边对得上） */
 export interface DayPlan {
   cum: number[];
+  /** 每个点离起点多长（墨卡托投影下），算线在地图上画到百分之几用 */
+  merc: number[];
   total: number;
   stopKm: number[];
   cost: number[];
@@ -232,7 +299,7 @@ export function planDay(day: TourDay, days: number, calm: boolean): DayPlan {
   const total = cum[cum.length - 1] ?? 0;
   const stopKm = stopDistances(day.path, cum, day.stops);
   const cost = paceCost(cum, stopKm);
-  return { cum, total, stopKm, cost, dayMs: calm ? drawMs(days) : followMs(cost[cost.length - 1] ?? 0, days) };
+  return { cum, merc: mercatorCumulative(day.path), total, stopKm, cost, dayMs: calm ? drawMs(days) : followMs(cost[cost.length - 1] ?? 0, days) };
 }
 
 /** 画到这一天的百分之几（0–1）时车开到第几公里：不跟车时整天慢慢起步、慢慢停下，跟车时按播放量 */

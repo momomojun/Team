@@ -1596,8 +1596,9 @@ export const en: Dictionary = {
       days: "Days",
       dayOption: "{n} {n|day|days}",
       pace: "Pace",
-      paces: { relaxed: "Relaxed", normal: "Moderate", packed: "Packed" },
+      paces: { leisurely: "Leisurely", relaxed: "Relaxed", normal: "Moderate", packed: "Packed" },
       paceHints: {
+        leisurely: "At most four places and about seven hours out a day",
         relaxed: "Fewer stops each day, no strenuous hikes",
         normal: "Mostly popular sights, hikes up to moderate",
         packed: "See as much as possible, long hikes included",

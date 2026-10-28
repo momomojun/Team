@@ -101,6 +101,14 @@ export function PhotoReel({
     let last = performance.now();
     let raf = 0;
     let shownCredit = -1;
+    // 每张照片、每根细条上次写的样式：一样就不再写（看不见的几张每帧都写一遍 opacity 0，浏览器每帧都要重新算样式）
+    const written: Record<string, string>[] = [];
+    const write = (element: HTMLElement, index: number, key: "opacity" | "zIndex" | "transform", value: string) => {
+      const last = (written[index] ??= {});
+      if (last[key] === value) return;
+      last[key] = value;
+      element.style[key] = value;
+    };
     const tick = (now: number) => {
       raf = requestAnimationFrame(tick);
       const dt = now - last;
@@ -115,22 +123,25 @@ export function PhotoReel({
         const isCurrent = index === current;
         const isPrevious = index === previous && into < FADE && previous !== current;
         if (!isCurrent && !isPrevious) {
-          image.style.opacity = "0";
+          write(image, index, "opacity", "0");
           return;
         }
         // 上一张接着动完淡出的这一段，所以每张动的时间是放的时间加淡入的时间
         const local = isCurrent ? into : slideMs + into;
         const t = ease(Math.min(1, local / (slideMs + FADE)));
         const move = MOVES[(isCurrent ? step : step - 1) % MOVES.length];
-        image.style.zIndex = isCurrent ? "2" : "1";
-        image.style.opacity = isCurrent ? String(step === 0 ? 1 : Math.min(1, into / FADE)) : "1";
-        image.style.transform = calm
-          ? "none"
-          : `scale(${lerp(move.s[0], move.s[1], t)}) translate(${lerp(move.x[0], move.x[1], t)}%, ${lerp(move.y[0], move.y[1], t)}%)`;
+        write(image, index, "zIndex", isCurrent ? "2" : "1");
+        write(image, index, "opacity", isCurrent ? String(step === 0 ? 1 : Math.min(1, into / FADE)) : "1");
+        write(
+          image,
+          index,
+          "transform",
+          calm ? "none" : `scale(${lerp(move.s[0], move.s[1], t).toFixed(4)}) translate(${lerp(move.x[0], move.x[1], t).toFixed(3)}%, ${lerp(move.y[0], move.y[1], t).toFixed(3)}%)`,
+        );
       });
       barRefs.current.forEach((bar, index) => {
         if (!bar) return;
-        bar.style.transform = `scaleX(${index === current ? Math.min(1, into / slideMs) : index < current ? 1 : 0})`;
+        write(bar, count + index, "transform", `scaleX(${index === current ? Math.min(1, into / slideMs).toFixed(4) : index < current ? 1 : 0})`);
       });
       if (creditRef.current && shownCredit !== current) {
         shownCredit = current;

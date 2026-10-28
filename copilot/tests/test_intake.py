@@ -74,10 +74,18 @@ def test_year_is_kept_when_month_day_comes_later(make_intake, request_schema):
 
 def test_option_binding_understands_natural_choices(make_intake):
     """V3 的问题 3：“我选第二种”“第3个”“选轻松玩”都要能对上"""
-    for answer, pace in (("我选第二种", "normal"), ("第3个", "packed"), ("选轻松玩", "relaxed"), ("1", "relaxed"), ("the second one", "normal")):
+    for answer, pace in (
+        ("我选第二种", "normal"),
+        ("第3个", "packed"),
+        ("选轻松玩", "relaxed"),
+        ("1", "relaxed"),
+        ("the second one", "normal"),
+        ("4", "leisurely"),
+        ("更悠闲", "leisurely"),
+    ):
         intake = make_intake(extraction(parks=["拱门"], dates=["2027年4月20日"], duration="3天", origin="盐湖城"))
         turn = intake.step("2027年4月20日盐湖城出发去拱门3天")
-        assert turn.question["kind"] == "choose" and len(turn.question["options"]) == 4
+        assert turn.question["kind"] == "choose" and len(turn.question["options"]) == 5
         turn = intake.step(answer)
         assert turn.status == "ready", answer
         assert turn.request["pace"] == pace, answer
@@ -364,3 +372,16 @@ def test_long_multi_park_trips_are_one_trip():
     assert catalog.one_trip(["deva", "seki", "yose", "zion", "brca", "grca"])
     assert not catalog.one_trip(["zion", "acad"])
     assert catalog.max_trip_parks() == 6
+
+
+def test_slowest_pace_needs_clear_words(make_intake, request_schema):
+    """最慢的一档要说得很明白；“慢慢玩”“悠闲”还是轻松（regional-v1 的 R03、R12、R17 也这么期望）"""
+    for message, pace in (
+        ("2027年4月20日盐湖城出发去拱门3天，一天就去一两个地方", "leisurely"),
+        ("2027年4月20日盐湖城出发去拱门3天，越轻松越好", "leisurely"),
+        ("2027年4月20日盐湖城出发去拱门3天，慢慢玩", "relaxed"),
+        ("2027年4月20日盐湖城出发去拱门3天，悠闲一点", "relaxed"),
+    ):
+        intake = make_intake(extraction(parks=["拱门"], dates=["2027年4月20日"], duration="3天", origin="盐湖城", preferences=[message.split("，")[-1]]))
+        request = ready_request(intake.step(message), request_schema)
+        assert request["pace"] == pace, message

@@ -56,7 +56,7 @@ def critique(request: dict, result: dict) -> Critique:
     reason = None
     busy = any(f.code in DAY_HARD for f in findings)
     pace_source = request.get("provenance", {}).get("pace", {}).get("source", "default")
-    if busy and request.get("pace") != "relaxed" and pace_source == "default":
+    if busy and request.get("pace") not in ("relaxed", "leisurely") and pace_source == "default":
         revision = {**request, "pace": "relaxed", "provenance": {**request.get("provenance", {}), "pace": {"source": "inferred", "evidence": "Critic：默认节奏下有几天太满，改成轻松再排"}}}
         reason = "relaxed_pace"
     return Critique(findings, revision, reason)

@@ -193,6 +193,18 @@ test("轻松节奏不排很难、很长的徒步", () => {
   }
 });
 
+test("悠闲节奏：一天最多四站，整趟比轻松排得少，也不排很难的徒步", () => {
+  const options = { parks: ["yose"], start: "2027-06-01", days: 4, airport: "FAT" };
+  const leisurely = generate({ ...options, pace: "leisurely" }).trip;
+  const relaxed = generate({ ...options, pace: "relaxed" }).trip;
+  const count = (trip: Trip) => trip.days.flat().length;
+  assert.ok(leisurely.days.every((day) => day.length <= 4), "悠闲一天最多四站");
+  assert.ok(count(leisurely) < count(relaxed), `悠闲 ${count(leisurely)} 站，轻松 ${count(relaxed)} 站`);
+  const byId = new Map(attractions.map((a) => [a.id, a]));
+  const hard = planned(leisurely).filter((id) => byId.get(id)?.hike?.difficulty === "hard");
+  assert.deepEqual(hard, []);
+});
+
 test("约书亚树 3 月 2 天：星空排在第一天天黑以后，看星空的时间不算进每天的节奏上限", () => {
   const { trip, timelines } = generate({ parks: ["jotr"], start: "2027-03-01", days: 2, airport: "PSP" });
   const day = trip.days.findIndex((items) => items.some((item) => item.id === "jotr-night-sky"));
