@@ -1563,8 +1563,9 @@ const zhHans = {
       days: "天数",
       dayOption: "{n} 天",
       pace: "节奏",
-      paces: { relaxed: "轻松", normal: "适中", packed: "紧凑" },
+      paces: { leisurely: "悠闲", relaxed: "轻松", normal: "适中", packed: "紧凑" },
       paceHints: {
+        leisurely: "一天最多四个地方，出门七小时左右",
         relaxed: "每天少走几个地方，不排困难徒步",
         normal: "热门景点为主，中等以下的徒步",
         packed: "尽量多看，长距离徒步也排",

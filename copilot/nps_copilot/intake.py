@@ -46,6 +46,8 @@ PACE_OPTIONS = [
     {"value": "relaxed", "zh": "轻松玩", "en": "Take it easy", "zhNote": "每天少安排一些，多留休息时间", "enNote": "fewer stops, more downtime"},
     {"value": "normal", "zh": "适中", "en": "Balanced", "zhNote": "主要景点都看，也留一些空", "enNote": "the main sights with some breathing room"},
     {"value": "packed", "zh": "多看一些", "en": "See as much as possible", "zhNote": "多排景点，起得早一点", "enNote": "more stops and earlier starts"},
+    # 10-28 加的最慢一档（网站的“悠闲”）：放在“多看一些”后面，前三个的序号不变（试用的人回“3”就是多看一些）
+    {"value": "leisurely", "zh": "更悠闲", "en": "Even slower", "zhNote": "一天最多四个地方，每处多待一会儿", "enNote": "at most four places a day, more time at each"},
     {"value": "default", "zh": "还没想好", "en": "Not sure yet", "zhNote": "先按适中排一版，之后可以改", "enNote": "start balanced and adjust later"},
 ]
 ORDINALS = {"一": 1, "二": 2, "两": 2, "三": 3, "四": 4, "五": 5, "六": 6, "七": 7, "八": 8, "九": 9,
@@ -595,8 +597,13 @@ class Intake:
     def _read_preference(self, span: str) -> None:
         text = normalize(span)
         pace = None
+        # 最慢一档：要说得很明白（越轻松越好、一天就去一两个地方）；只说“慢慢玩”“悠闲”“chill”还是轻松
+        if re.search(r"越轻松越好|越悠闲越好|非常轻松|特别轻松|超级轻松|超轻松|最轻松|非常悠闲|特别悠闲|更悠闲|最悠闲|越慢越好|"
+                     r"一天(只|就)?(去|玩|看)?(一两|两三|一)个(地方|景点)|每天(只|就)?(去|玩|看)?(一两|两三|一)个(地方|景点)|"
+                     r"very (relaxed|slow|leisurely)|super (relaxed|chill|slow)|as slow as|slowest|one or two (places|stops|sights) a day", text, re.I):
+            pace = "leisurely"
         # 后面是台湾、香港（粤语）、新马的说法：不要太赶、唔好太赶、唔想太攰（累）、休闲
-        if re.search(r"轻松|不要太累|不想太累|别安排太满|别排太满|少安排|慢慢|悠闲|悠哉|休闲|不要太赶|别太赶|不想赶|唔好太赶|唔想太赶|唔使赶|唔好太攰|唔想太攰|relax|easy|leisurely|chill|laid[- ]back|not too (busy|packed)", text, re.I):
+        elif re.search(r"轻松|不要太累|不想太累|别安排太满|别排太满|少安排|慢慢|悠闲|悠哉|休闲|不要太赶|别太赶|不想赶|唔好太赶|唔想太赶|唔使赶|唔好太攰|唔想太攰|relax|easy|leisurely|chill|laid[- ]back|not too (busy|packed)", text, re.I):
             pace = "relaxed"
         elif re.search(r"适中|普通|一般就行|正常|中等|balanced|moderate|normal", text, re.I):
             pace = "normal"

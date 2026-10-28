@@ -24,7 +24,8 @@ import { fitFor, hasParty, type Party } from "./suitability";
 import { planTrip } from "./trip-plan";
 import type { Trip, TripItem, TripLodging } from "./trip-store";
 
-export type Pace = "relaxed" | "normal" | "packed";
+/** leisurely（悠闲）：10-28 仓库主人加的最慢一档，对照真实行程（npm run eval:routes）博主一天平均只去三站多，比“轻松”还少 */
+export type Pace = "leisurely" | "relaxed" | "normal" | "packed";
 /** 住宿偏好：不限 / 只住酒店和园内住宿 / 优先民宿（Airbnb 等整套房子） / 只住园内营地 */
 export type LodgingPref = "any" | "hotel" | "rental" | "camp";
 
@@ -134,9 +135,14 @@ export function guideParks(guide: GuideInfo): string[] {
 }
 
 /** 每天活动 + 园内开车的目标分钟数 */
-const DAILY_BUDGET: Record<Pace, number> = { relaxed: 390, normal: 480, packed: 570 };
+const DAILY_BUDGET: Record<Pace, number> = { leisurely: 300, relaxed: 390, normal: 480, packed: 570 };
 /** 一天从出发到回住处（含开车）的上限，超过就去掉景点；有空时也按这个往回加 */
-const DAY_LIMIT: Record<Pace, number> = { relaxed: 510, normal: 600, packed: 660 };
+const DAY_LIMIT: Record<Pace, number> = { leisurely: 420, relaxed: 510, normal: 600, packed: 660 };
+/**
+ * 一天最多几站（只有“悠闲”有）：短的观景点一天能塞进去很多，光靠时间上限挡不住；悠闲就是一天去三四个地方、每处多待一会儿。
+ * 对照真实行程（npm run eval:routes）：博主一天平均 3.3 站、站间开车 68 分钟；“悠闲”排出来 3.5 站、74 分钟（最多 3 站是 2.9、63）
+ */
+const MAX_STOPS: Partial<Record<Pace, number>> = { leisurely: 4 };
 /** 最后补景点时最多试几个 */
 const FILL_TRIES = 8;
 /** 补景点后重新分天，车程取整会差几分钟；超出不到这么多也算没变满 */
@@ -162,7 +168,7 @@ const MOVE_GAIN_MIN = 0.2;
 const MOON_GLARE_OK = 0.3;
 const MOON_GLARE_GAIN = 0.3;
 /** 超过这么久的徒步不自动排（可以手动加） */
-const MAX_HIKE_MIN: Record<Pace, number> = { relaxed: 240, normal: 420, packed: 600 };
+const MAX_HIKE_MIN: Record<Pace, number> = { leisurely: 180, relaxed: 240, normal: 420, packed: 600 };
 /** 园内景点之间平均每天开车的分钟数，估算时间预算用 */
 const PARK_DRIVING_PER_DAY = 45;
 /** 连住同一家：换一家只省不到这么多分钟车程就不换 */
@@ -289,7 +295,7 @@ export function generateTrip(input: GenerateInput, original: GenerateContext): {
     else if (
       !include.has(stop.id) &&
       stop.kind === "hike" &&
-      (stop.durationMin > MAX_HIKE_MIN[input.pace] || (input.pace === "relaxed" && stop.hike?.difficulty === "hard"))
+      (stop.durationMin > MAX_HIKE_MIN[input.pace] || ((input.pace === "relaxed" || input.pace === "leisurely") && stop.hike?.difficulty === "hard"))
     ) {
       skipped.tooHard.push(stop.id);
     } else available.push(stop);
@@ -417,8 +423,11 @@ export function generateTrip(input: GenerateInput, original: GenerateContext): {
    * 一天排得有多超：超出节奏上限的分钟数；太满、赶不上班次（或过了能进去的时间）各算 1000，
    * 回住处太晚算 1000 加晚了的分钟数（已经晚了的天再加景点也算更满）
    */
+  const overStops = (timeline: ReturnType<typeof buildTimeline>) =>
+    Math.max(0, timeline.entries.filter((entry) => entry.slot !== "night").length - (MAX_STOPS[input.pace] ?? Infinity));
   const dayExcess = (timeline: ReturnType<typeof buildTimeline>) =>
     Math.max(0, dayLoad(timeline) - DAY_LIMIT[input.pace]) +
+    overStops(timeline) * 1000 +
     (timeline.overloaded ? 1000 : 0) +
     missed(timeline) * 1000 +
     (timeline.lateReturn ? 1000 + (timeline.returnAt ?? LATE_RETURN) - LATE_RETURN : 0);
@@ -481,7 +490,7 @@ export function generateTrip(input: GenerateInput, original: GenerateContext): {
   };
   // 时间不对的（赶不上班次、日落活动赶不上日落）先不在这里去掉，后面先试着挪到别的天，挪不开再去掉
   const tooLong = (timeline: ReturnType<typeof buildTimeline>) =>
-    timeline.overloaded || timeline.lateReturn || dayLoad(timeline) > DAY_LIMIT[input.pace];
+    timeline.overloaded || timeline.lateReturn || dayLoad(timeline) > DAY_LIMIT[input.pace] || overStops(timeline) > 0;
 
   // 还有太满、回住处太晚的天：去掉那天分数最低的景点（尽量不动必去），重新排
   for (let round = 0; round < 12; round++) {

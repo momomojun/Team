@@ -40,8 +40,8 @@ SKIP_ZH = {"permit": "要抽签的许可证", "closed": "这几天不开放", "t
            "tooFar": "离其他景点太远", "across": "季节性山路封着、要绕很远", "unsuitable": "不适合同行的人"}
 SKIP_EN = {"permit": "lottery permit required", "closed": "closed on these dates", "tooHard": "too strenuous or long", "noTime": "no room",
            "tooFar": "too far from everything else", "across": "seasonal road closed, long detour", "unsuitable": "not suitable for your group"}
-PACE_ZH = {"relaxed": "轻松", "normal": "适中", "packed": "多看一些"}
-PACE_EN = {"relaxed": "relaxed", "normal": "balanced", "packed": "packed"}
+PACE_ZH = {"leisurely": "悠闲", "relaxed": "轻松", "normal": "适中", "packed": "多看一些"}
+PACE_EN = {"leisurely": "leisurely", "relaxed": "relaxed", "normal": "balanced", "packed": "packed"}
 
 
 def template(request: dict, result: dict, critique: Critique, language: str, preferences: dict | None = None) -> str:

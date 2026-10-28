@@ -18,13 +18,21 @@ const DUCKED = 0.08;
 
 const hz = (midi: number) => 440 * 2 ** ((midi - 69) / 12);
 
-/** 混响的冲激响应：两声道各一段按指数衰减的白噪声 */
+/**
+ * 混响的冲激响应：两声道各一段按指数衰减的白噪声。衰减每 32 个采样算一次（听不出区别）：
+ * 每个采样都算一次乘方的话，5.5 秒的双声道要算五十多万次，点开讲解版时主线程会卡 0.3 秒
+ */
 function impulse(context: BaseAudioContext, seconds: number, decay: number) {
   const length = Math.round(context.sampleRate * seconds);
   const buffer = context.createBuffer(2, length, context.sampleRate);
+  const STEP = 32;
   for (let channel = 0; channel < 2; channel++) {
     const data = buffer.getChannelData(channel);
-    for (let i = 0; i < length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / length) ** decay;
+    for (let start = 0; start < length; start += STEP) {
+      const envelope = (1 - start / length) ** decay;
+      const end = Math.min(length, start + STEP);
+      for (let i = start; i < end; i++) data[i] = (Math.random() * 2 - 1) * envelope;
+    }
   }
   return buffer;
 }
@@ -66,7 +74,10 @@ export class Score {
 
     // 长混响 + 一点回声：声音像在山谷里散开
     const wet = context.createConvolver();
-    wet.buffer = impulse(context, 5.5, 2.6);
+    // 混响的冲激响应等点击处理完再算（十几毫秒），点开讲解版的那一下不卡；开头 4 秒是淡入，混响晚这一点点听不出来
+    setTimeout(() => {
+      if (this.context === context) wet.buffer = impulse(context, 5.5, 2.6);
+    }, 0);
     const wetGain = context.createGain();
     wetGain.gain.value = 0.55;
     wet.connect(wetGain).connect(music);

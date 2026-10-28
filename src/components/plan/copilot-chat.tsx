@@ -329,19 +329,58 @@ const POSTS = [0.25, 0.5, 0.75];
  * 但不把步骤念出来，下面一句话跟着进度换；认出了公园、日期、天数先写出来
  */
 function ChatProgress({ progress, english, text }: { progress: Progress; english: boolean; text: PlannerText["plan"]["copilot"] }) {
-  const [now, setNow] = useState(() => Date.now());
-  useEffect(() => {
-    const timer = setInterval(() => setNow(Date.now()), 250);
-    return () => clearInterval(timer);
-  }, []);
   const t = text.progress;
-  const p = progressOf(progress, now);
-  const x = ROAD_FROM + p * (ROAD_TO - ROAD_FROM);
-  const y = roadY(x);
-  const tilt = (Math.atan((5 / 61) * Math.cos(x / 61 + 0.7)) * 180) / Math.PI;
   const answering = progress.steps.includes("answer") && !progress.steps.includes("plan");
   const lines = answering ? t.answer : t.plan;
-  const line = lines[Math.min(lines.length - 1, Math.floor(p * lines.length))];
+  // 车、路、太阳每帧直接改 SVG（不经过 React）：显示的进度每帧往真实进度靠一点（新的一步报上来时不会一下跳过去），
+  // 车每帧都按路的曲线算位置、跟着坡度转，不再是每 0.25 秒重画一次、靠 CSS 过渡走直线切弯。
+  // 下面那句话、路边的里程桩、终点的帐篷只在变了的时候才改（React 状态）
+  const progressRef = useRef(progress);
+  const carRef = useRef<SVGGElement>(null);
+  const sunRef = useRef<SVGGElement>(null);
+  const roadRef = useRef<SVGPathElement>(null);
+  const percentRef = useRef<HTMLParagraphElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [marks, setMarks] = useState({ line: 0, posts: 0, done: false });
+  useEffect(() => {
+    progressRef.current = progress;
+  }, [progress]);
+  const lineCount = lines.length;
+  useEffect(() => {
+    const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let shown = progressOf(progressRef.current, Date.now());
+    let last = performance.now();
+    let raf = 0;
+    let percent = -1;
+    const tick = (now: number) => {
+      raf = requestAnimationFrame(tick);
+      const dt = Math.min(64, now - last);
+      last = now;
+      const target = progressOf(progressRef.current, Date.now());
+      // 指数地追过去（回复到了追得快一点），只往前不往后
+      shown = calm ? target : Math.max(shown, shown + (target - shown) * (1 - Math.exp(-dt / (progressRef.current.done ? 160 : 420))));
+      const x = ROAD_FROM + shown * (ROAD_TO - ROAD_FROM);
+      const tilt = (Math.atan((5 / 61) * Math.cos(x / 61 + 0.7)) * 180) / Math.PI;
+      carRef.current?.setAttribute("transform", `translate(${x.toFixed(2)} ${roadY(x).toFixed(2)}) rotate(${tilt.toFixed(2)})`);
+      sunRef.current?.setAttribute("transform", `translate(0 ${((1 - shown) * 62).toFixed(2)})`);
+      if (roadRef.current) roadRef.current.style.strokeDasharray = `${shown.toFixed(4)} 1`;
+      const rounded = Math.round(shown * 100);
+      if (rounded !== percent) {
+        percent = rounded;
+        if (percentRef.current) percentRef.current.textContent = `${rounded}%`;
+        rootRef.current?.setAttribute("aria-valuenow", String(rounded));
+        const next = {
+          line: Math.min(lineCount - 1, Math.floor(shown * lineCount)),
+          posts: POSTS.filter((at) => shown >= at).length,
+          done: shown >= 0.999,
+        };
+        setMarks((current) => (current.line === next.line && current.posts === next.posts && current.done === next.done ? current : next));
+      }
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [lineCount]);
+  const line = lines[Math.min(lines.length - 1, marks.line)];
   const conditions = progress.conditions;
   const when = conditions?.startDate
     ? fill(t.from, { m: Number(conditions.startDate.slice(5, 7)), d: Number(conditions.startDate.slice(8, 10)) })
@@ -358,16 +397,17 @@ function ChatProgress({ progress, english, text }: { progress: Progress; english
         .filter(Boolean)
         .join(" · ")
     : null;
-  const move = "transition-transform duration-300 ease-linear motion-reduce:transition-none";
   return (
-    <div className="max-w-xl" role="progressbar" aria-label={t.label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(p * 100)}>
+    <div ref={rootRef} className="max-w-xl" role="progressbar" aria-label={t.label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={0}>
       <div className="flex items-baseline justify-between gap-4">
         <p className="eyebrow text-mute">{text.name}</p>
-        <p className="font-serif text-sm text-ink-soft tabular-nums lining-nums">{Math.round(p * 100)}%</p>
+        <p ref={percentRef} className="font-serif text-sm text-ink-soft tabular-nums lining-nums">
+          0%
+        </p>
       </div>
       <svg viewBox={`0 0 ${W} 150`} className="mt-2 block w-full" aria-hidden="true">
         {/* 太阳：画在山后面，进度越多升得越高 */}
-        <g className={move} style={{ transform: `translate(0px, ${(1 - p) * 62}px)` }}>
+        <g ref={sunRef} transform="translate(0 62)">
           <circle cx={462} cy={36} r={12} className="fill-clay-300" opacity={0.85} />
         </g>
         <path d={`${RIDGE} L600 150 L0 150 Z`} className="fill-paper-deep" />
@@ -382,30 +422,34 @@ function ChatProgress({ progress, english, text }: { progress: Progress; english
         {/* 路：还没开的是虚线，开过的是砂岩红 */}
         <path d={ROAD} fill="none" className="stroke-ink/12" strokeWidth={7} strokeLinecap="round" />
         <path d={ROAD} fill="none" pathLength={1} className="stroke-ink/40" strokeWidth={1.1} strokeDasharray="0.01 0.012" />
-        <path
-          d={ROAD}
-          fill="none"
-          pathLength={1}
-          className="stroke-clay-600 transition-[stroke-dasharray] duration-300 ease-linear motion-reduce:transition-none"
-          strokeWidth={2.4}
-          strokeLinecap="round"
-          strokeDasharray={`${p} 1`}
-        />
-        {POSTS.map((at) => {
+        <path ref={roadRef} d={ROAD} fill="none" pathLength={1} className="stroke-clay-600" strokeWidth={2.4} strokeLinecap="round" strokeDasharray="0 1" />
+        {POSTS.map((at, index) => {
           const px = ROAD_FROM + at * (ROAD_TO - ROAD_FROM);
           const py = roadY(px) + 7;
-          return <path key={at} d={`M${px} ${py} V${py + 7}`} className={p >= at ? "stroke-clay-600" : "stroke-ink/35"} strokeWidth={1.4} />;
+          return (
+            <path
+              key={at}
+              d={`M${px} ${py} V${py + 7}`}
+              className={`${index < marks.posts ? "stroke-clay-600" : "stroke-ink/35"} transition-colors duration-300`}
+              strokeWidth={1.4}
+            />
+          );
         })}
         {/* 起点的路牌、终点的帐篷（今晚住的地方） */}
         <path d={`M${ROAD_FROM - 6} ${roadY(ROAD_FROM) + 3} V${roadY(ROAD_FROM) - 16}`} className="stroke-ink" strokeWidth={1.4} />
         <rect x={ROAD_FROM - 13} y={roadY(ROAD_FROM) - 22} width={14} height={8} className="fill-clay-700" />
         <g transform={`translate(${ROAD_TO + 18} ${roadY(ROAD_TO) + 2})`}>
-          <path d="M-13 0 L-1 -15 L1 -15 L13 0 Z" className={`${p >= 1 ? "fill-clay-600" : "fill-paper"} stroke-ink transition-colors duration-500`} strokeWidth={1.2} strokeLinejoin="round" />
+          <path
+            d="M-13 0 L-1 -15 L1 -15 L13 0 Z"
+            className={`${marks.done ? "fill-clay-600" : "fill-paper"} stroke-ink transition-colors duration-500`}
+            strokeWidth={1.2}
+            strokeLinejoin="round"
+          />
           <path d="M-4 0 L0 -7 L4 0 Z" className="fill-ink" />
           <path d="M-1 -15 L-3 -18 M1 -15 L3 -18 M-17 0 H17" className="stroke-ink" strokeWidth={1} strokeLinecap="round" />
         </g>
         {/* 车 */}
-        <g className={move} style={{ transform: `translate(${x}px, ${y}px) rotate(${tilt}deg)` }}>
+        <g ref={carRef} transform={`translate(${ROAD_FROM} ${roadY(ROAD_FROM)})`}>
           <path d="M-9 -3.2 L-9 -7.6 Q-9 -8.6 -8 -8.6 L-5.4 -8.6 L-3 -12.4 L4.2 -12.4 L6.8 -8.6 L8.4 -8.6 Q9.4 -8.6 9.4 -7.6 L9.4 -3.2 Z" className="fill-ink" />
           <path d="M-2.2 -11.2 L-0.4 -11.2 L-0.4 -8.8 L-3.8 -8.8 Z M0.8 -11.2 L3.6 -11.2 L5.4 -8.8 L0.8 -8.8 Z" className="fill-paper/85" />
           <circle cx={-5} cy={-2.6} r={2.3} className="fill-ink stroke-paper" strokeWidth={0.9} />

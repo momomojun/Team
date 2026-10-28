@@ -61,6 +61,8 @@ export function Intro({
   const started = useRef(false);
   /** 整页打开时 layout 的脚本已经加了 intro-playing，公园名从首次绘制就开始滚了 */
   const fromBoot = useRef(false);
+  /** 中线：拉开时按屏幕宽算出要放大几倍（--seam-scale），用 scale 拉长，不改宽度 */
+  const seamRef = useRef<HTMLSpanElement>(null);
 
   useLayoutEffect(() => {
     const html = document.documentElement;
@@ -116,6 +118,11 @@ export function Intro({
       window.removeEventListener("nps:hero-ready", onHeroReady);
       skipEvents.forEach((type) => window.removeEventListener(type, lift));
     };
+  }, [phase]);
+
+  useLayoutEffect(() => {
+    const seam = seamRef.current;
+    if (phase === "lifting" && seam && seam.offsetWidth > 0) seam.style.setProperty("--seam-scale", String(window.innerWidth / seam.offsetWidth));
   }, [phase]);
 
   useEffect(() => {
@@ -181,7 +188,7 @@ export function Intro({
       </div>
 
       {/* 中线：播放时从中间画出来，拉开时先向两边亮开，再随着幕布分开淡掉 */}
-      <span className="intro-seam absolute top-1/2 left-1/2 block h-px w-64 -translate-x-1/2">
+      <span ref={seamRef} className="intro-seam absolute top-1/2 left-1/2 block h-px w-64 -translate-x-1/2">
         <span className="block h-full w-full origin-center bg-paper/35" style={{ animation: "grow-x 1.1s var(--ease-expo) 0.15s both" }} />
       </span>
     </div>

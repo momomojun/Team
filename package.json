@@ -35,6 +35,7 @@
     "check:closures": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/check-closures.mjs",
     "check:freshness": "node --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/check-freshness.mjs",
     "eval:routes": "node --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/eval-real-routes.mjs",
+    "perf:tour": "node scripts/perf-tour.mjs",
     "check:campgrounds": "node scripts/check-campgrounds.mjs",
     "alerts:fetch": "node --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/fetch-alerts.mjs",
     "alerts:propose": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/propose-closures.mjs"
