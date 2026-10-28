@@ -406,6 +406,7 @@ export function ParkMap({
   hoverId = null,
   focusTick = 0,
   narration,
+  onCursorReady,
   text,
   className = "",
   children,
@@ -441,6 +442,11 @@ export function ParkMap({
   focusTick?: number;
   /** 有就显示“讲解版”：全屏、逐站讲解、朗读（开头和结尾的话在这里，每一天、每一站的在 tour 里） */
   narration?: TourNarration & { onStart?: () => void };
+  /**
+   * 地图准备好以后把“放一个小圆点”的函数交给外面（地图换掉时交 null）：外面直接调它放圆点、传 null 拿掉
+   * （鼠标在海拔剖面上移动时，地图上同步显示走到了哪）。鼠标每动一下都要挪，不经过 React 重新渲染整个列表
+   */
+  onCursorReady?: (setCursor: ((at: [number, number] | null) => void) | null) => void;
   text: MapText;
   className?: string;
   /** 叠在地图上的内容，比如选中景点的卡片 */
@@ -456,6 +462,8 @@ export function ParkMap({
   const terrainRef = useRef(false);
   const satelliteRef = useRef(false);
   const markerClass = useRef<typeof Marker | null>(null);
+  // 海拔剖面联动的小圆点（onCursorReady）
+  const cursorMarker = useRef<Marker | null>(null);
   // 上次交给地图的内容（pointsKey / linesKey）：没变就不再交；地图重新建的时候清空
   const sentRef = useRef({ points: "", trails: "", legs: "", extras: "" });
   const tourRef = useRef<TourState | null>(null);
@@ -1817,6 +1825,30 @@ export function ParkMap({
     );
     return () => clearTimeout(timer);
   }, [ready, hoverId]);
+
+  useEffect(() => {
+    if (!onCursorReady || !ready) return;
+    onCursorReady((at) => {
+      const map = mapRef.current;
+      const MarkerClass = markerClass.current;
+      if (!at || !map || !MarkerClass) {
+        cursorMarker.current?.remove();
+        cursorMarker.current = null;
+        return;
+      }
+      if (cursorMarker.current) cursorMarker.current.setLngLat(at);
+      else {
+        const element = document.createElement("div");
+        element.className = "map-cursor";
+        cursorMarker.current = new MarkerClass({ element }).setLngLat(at).addTo(map);
+      }
+    });
+    return () => {
+      cursorMarker.current?.remove();
+      cursorMarker.current = null;
+      onCursorReady(null);
+    };
+  }, [onCursorReady, ready]);
 
   useEffect(() => {
     selectedRef.current = selectedId;

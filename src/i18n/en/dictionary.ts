@@ -192,6 +192,13 @@ export const en: Dictionary = {
         topUsage: { 1: "Light traffic", 2: "Moderate traffic", 3: "Heavy traffic", 4: "Very heavy traffic" },
         topInGuide: "Show on map above",
         topOpenAlltrails: "AllTrails",
+        geometry: "Full trail mapped",
+        profile: "Elevation",
+        profileOneWay: "one way, return the same way",
+        profileRange: "{min}–{max} ft",
+        profileAt: "{km} · {m} ft",
+        gpx: "Download GPX",
+        gpxHint: "The trail route (OpenStreetMap) with elevations, for an offline map app or a GPS watch",
       },
     },
     tesla: {

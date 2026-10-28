@@ -137,12 +137,12 @@ export function guideParks(guide: GuideInfo): string[] {
 /** 每天活动 + 园内开车的目标分钟数 */
 const DAILY_BUDGET: Record<Pace, number> = { leisurely: 300, relaxed: 390, normal: 480, packed: 570 };
 /** 一天从出发到回住处（含开车）的上限，超过就去掉景点；有空时也按这个往回加 */
-const DAY_LIMIT: Record<Pace, number> = { leisurely: 420, relaxed: 510, normal: 600, packed: 660 };
+export const DAY_LIMIT: Record<Pace, number> = { leisurely: 420, relaxed: 510, normal: 600, packed: 660 };
 /**
  * 一天最多几站（只有“悠闲”有）：短的观景点一天能塞进去很多，光靠时间上限挡不住；悠闲就是一天去三四个地方、每处多待一会儿。
  * 对照真实行程（npm run eval:routes）：博主一天平均 3.3 站、站间开车 68 分钟；“悠闲”排出来 3.5 站、74 分钟（最多 3 站是 2.9、63）
  */
-const MAX_STOPS: Partial<Record<Pace, number>> = { leisurely: 4 };
+export const MAX_STOPS: Partial<Record<Pace, number>> = { leisurely: 4 };
 /** 最后补景点时最多试几个 */
 const FILL_TRIES = 8;
 /** 补景点后重新分天，车程取整会差几分钟；超出不到这么多也算没变满 */
@@ -168,7 +168,7 @@ const MOVE_GAIN_MIN = 0.2;
 const MOON_GLARE_OK = 0.3;
 const MOON_GLARE_GAIN = 0.3;
 /** 超过这么久的徒步不自动排（可以手动加） */
-const MAX_HIKE_MIN: Record<Pace, number> = { leisurely: 180, relaxed: 240, normal: 420, packed: 600 };
+export const MAX_HIKE_MIN: Record<Pace, number> = { leisurely: 180, relaxed: 240, normal: 420, packed: 600 };
 /** 园内景点之间平均每天开车的分钟数，估算时间预算用 */
 const PARK_DRIVING_PER_DAY = 45;
 /** 连住同一家：换一家只省不到这么多分钟车程就不换 */

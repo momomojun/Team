@@ -183,6 +183,13 @@ const zhHans = {
         topUsage: { 1: "客流少", 2: "客流适中", 3: "客流多", 4: "客流极多" },
         topInGuide: "在上方地图查看",
         topOpenAlltrails: "AllTrails",
+        geometry: "地图已绘制完整步道轨迹",
+        profile: "海拔",
+        profileOneWay: "单程，原路返回",
+        profileRange: "{min}–{max} 米",
+        profileAt: "{km} · 海拔 {m} 米",
+        gpx: "下载 GPX",
+        gpxHint: "步道路线（OpenStreetMap）和海拔，导进手机上的离线地图 App 或运动手表",
       },
     },
     tesla: {

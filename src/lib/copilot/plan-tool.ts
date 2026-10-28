@@ -6,7 +6,7 @@ import { parks } from "../../data/parks";
 import { airbnbUrl } from "../airbnb";
 import { addDays, nominalDate } from "../dates";
 import { closedKind, generateTrip, type GuideSkipped, type LiveClosures } from "../generate-trip";
-import { buildTimeline, buildTransferTimeline, NOMINAL_SUN, type LodgingPoint, type PlanStop, type SunWindow } from "../planner";
+import { buildTimeline, buildTransferTimeline, NOMINAL_SUN, type DayContext, type LodgingPoint, type PlanStop, type SunWindow } from "../planner";
 import { formatClock, minutesOfDay, sunTimes } from "../sun";
 import { fitFor, type Party } from "../suitability";
 import { zoneOf } from "../time-zone";
@@ -248,15 +248,11 @@ const LIVE_NOTES = {
   future: "公告提取结果比“今天”还晚（评测固定了以前的日期），不用",
 } as const;
 
-/** 逐天的时间线：和行程页一样，早上从前一晚住处出发、晚上回当晚住处，按当天第一站的时区 */
-function describeDays(
-  trip: Trip,
-  dateFor: (day: number) => string,
-  exact: boolean,
-  endpoints: Record<"origin" | "destination", LodgingPoint & { name: string }>,
-  party: Party | undefined,
-  maybeAlert: Map<string, ExtractedClosure>,
-) {
+/**
+ * 每天排时间线要的东西：这天的景点、从哪个住处出发回哪个住处、日出日落（和行程页一样，早上从前一晚住处出发、
+ * 晚上回当晚住处，按当天第一站的时区）。describeDays 用它排时间线，评测（scripts/plan-quality-lib.mjs）拿它换顺序比
+ */
+function eachDay(trip: Trip, dateFor: (day: number) => string, endpoints: Record<"origin" | "destination", LodgingPoint & { name: string }>) {
   const resolve = (
     night: TripLodging | null | undefined,
   ): (LodgingPoint & { nameZh: string; nameEn: string; kind: "option" | "endpoint"; rental?: boolean; airbnb?: string }) | undefined => {
@@ -276,13 +272,37 @@ function describeDays(
     const to = resolve(trip.nights[d + 1]);
     const first = dayStops[0] ?? previous;
     const sun = first ? sunFor(date, first) : NOMINAL_SUN;
-    const context = { sun, from, to, previous, date };
+    const context: DayContext = { sun, from, to, previous, date };
     const nextPark = trip.days.slice(d + 1).flat().map((item) => stopById.get(item.id)?.park).find(Boolean);
     const near = new Set([previous?.park, nextPark].filter(Boolean));
+    previous = dayStops.at(-1) ?? previous;
+    return { stops: dayStops, date, to, sun, context, near };
+  });
+}
+
+/** plan_trip 排出的行程每天排时间线用的景点和上下文：评测换顺序、对照最优解用（scripts/plan-quality-lib.mjs、scripts/referee-lib.mjs） */
+export function dayInputs(result: TripResult): { stops: PlanStop[]; context: DayContext }[] {
+  const { request } = result;
+  const month = request.startDate ? Number(request.startDate.slice(5, 7)) : request.month!;
+  const firstDate = request.startDate || nominalDate(month, new Date(`${result.referenceDate}T12:00:00Z`));
+  const stops = attractions.filter((a) => request.parks.includes(a.park));
+  const endpoints = { origin: endpoint(request.origin, "origin", stops), destination: endpoint(request.destination ?? request.origin, "destination", stops) };
+  return eachDay(result.trip, (day) => addDays(firstDate, day), endpoints).map(({ stops: dayStops, context }) => ({ stops: dayStops, context }));
+}
+
+/** 逐天的时间线：和行程页一样，早上从前一晚住处出发、晚上回当晚住处，按当天第一站的时区 */
+function describeDays(
+  trip: Trip,
+  dateFor: (day: number) => string,
+  exact: boolean,
+  endpoints: Record<"origin" | "destination", LodgingPoint & { name: string }>,
+  party: Party | undefined,
+  maybeAlert: Map<string, ExtractedClosure>,
+) {
+  return eachDay(trip, dateFor, endpoints).map(({ stops: dayStops, date, to, sun, context, near }, d) => {
     const timeline =
       (dayStops.length === 0 && buildTransferTimeline(context, attractions.filter((a) => near.has(a.park)))) ||
       buildTimeline(dayStops, context);
-    previous = dayStops.at(-1) ?? previous;
     return {
       day: d + 1,
       date,

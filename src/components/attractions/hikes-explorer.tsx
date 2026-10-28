@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { ElevationProfile } from "@/components/attractions/elevation-profile";
 import { CommonsImage } from "@/components/commons-image";
 import { IconArrowRight, IconTrail } from "@/components/icons";
 import type { Imagery } from "@/components/map/sources";
@@ -10,8 +11,10 @@ import { buttonAdded, buttonPrimary } from "@/components/ui";
 import { makeCustomStop, customStopId } from "@/lib/custom-stops";
 import { addCustomStop, removeFromTrip, tripIds, useTrip } from "@/lib/trip-store";
 import type { AllTrailsParkTrail, AttractionWithPhoto } from "@/data/attractions";
+import type { TrailProfile } from "@/data/attractions/elevation.generated";
 import { alltrailsPhotoUrl, alltrailsTrailUrl } from "@/data/alltrails";
 import { fill, formatCount, formatKm, formatMeters } from "@/i18n/format";
+import { trailGpx } from "@/lib/elevation";
 import { linkButton, type AttractionText } from "./attraction-card";
 
 type Difficulty = "easy" | "moderate" | "hard";
@@ -88,7 +91,27 @@ export interface HikesText extends AttractionText {
     topUsage: Record<1 | 2 | 3 | 4, string>;
     topInGuide: string;
     topOpenAlltrails: string;
+    geometry: string;
+    profile: string;
+    profileOneWay: string;
+    profileRange: string;
+    profileAt: string;
+    gpx: string;
+    gpxHint: string;
   };
+}
+
+/** 海拔剖面短于这么多米的不画（OSM 上只画出一小截的步道） */
+const MIN_PROFILE_METERS = 200;
+
+/** 下载一条步道的 GPX：在浏览器里拼好文件，不经过服务器 */
+function downloadGpx(fileName: string, gpx: string) {
+  const url = URL.createObjectURL(new Blob([gpx], { type: "application/gpx+xml" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = fileName;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 /**
@@ -129,11 +152,14 @@ export function HikesExplorer({
   hikes,
   topTrails = [],
   imagery,
+  profiles = {},
   text,
 }: {
   park: string;
   anchors?: TrailAnchor[];
   hikes: AttractionWithPhoto[];
+  /** 这座公园各条步道的海拔剖面（景点 id → 剖面），页面按公园挑好传进来 */
+  profiles?: Record<string, TrailProfile>;
   topTrails?: AllTrailsParkTrail[];
   totalTrails?: number;
   parkNameEn?: string;
@@ -147,6 +173,11 @@ export function HikesExplorer({
   const [filter, setFilter] = useState<Filter>("all");
   const [sort, setSort] = useState<Sort>("rank");
   const mapRef = useRef<HTMLDivElement>(null);
+  // 海拔剖面上鼠标走到哪，地图上跟着挪一个小圆点（ParkMap 准备好以后交过来，直接调，不重新渲染列表）
+  const cursorRef = useRef<((at: [number, number] | null) => void) | null>(null);
+  const onCursorReady = useCallback((setCursor: ((at: [number, number] | null) => void) | null) => {
+    cursorRef.current = setCursor;
+  }, []);
   const t = text.hikes;
   const isZh = text.units.km.includes("公");
   const featureLabels = isZh ? FEATURE_LABELS_ZH : FEATURE_LABELS_EN;
@@ -262,6 +293,7 @@ export function HikesExplorer({
             hoverId={hoverSlug}
             focusTick={focusTick}
             onSelect={selectFromMap}
+            onCursorReady={onCursorReady}
             text={text.map}
             className="h-[26rem] lg:h-[calc(100vh-8rem)]"
           />
@@ -317,6 +349,9 @@ export function HikesExplorer({
                 .map((f) => featureLabels[f])
                 .filter((label): label is string => Boolean(label));
               const photoSrc = alltrailsPhotoUrl(trail.photo, 320, 320) ?? matched?.photo?.url;
+              const line = matched?.trailLine;
+              const profile = matched && line ? profiles[matched.id] : undefined;
+              const drawn = profile && profile.meters >= MIN_PROFILE_METERS ? profile : undefined;
 
               return (
                 <li
@@ -402,11 +437,25 @@ export function HikesExplorer({
                           </ul>
                         )}
 
-                        {matched?.trailLine && (
+                        {line && !drawn && (
                           <p className="inline-flex items-center gap-1.5 text-xs text-clay-700">
                             <IconTrail className="text-sm" />
-                            {isZh ? "地图已绘制完整步道轨迹" : "Full trail geometry mapped"}
+                            {t.geometry}
                           </p>
+                        )}
+                        {line && drawn && (
+                          <ElevationProfile
+                            profile={drawn}
+                            path={line.path}
+                            loop={line.loop}
+                            units={text.units}
+                            text={t}
+                            onCursor={(at) => {
+                              // 地图上先高亮这条步道，小圆点才看得出在哪条路上
+                              if (at && hoverSlug !== trail.slug) setHoverSlug(trail.slug);
+                              cursorRef.current?.(at);
+                            }}
+                          />
                         )}
                       </div>
 
@@ -423,6 +472,27 @@ export function HikesExplorer({
                         <button type="button" onClick={() => select(trail.slug)} className={linkButton}>
                           {text.attraction.showOnMap}
                         </button>
+                        {line && matched && (
+                          <button
+                            type="button"
+                            title={t.gpxHint}
+                            className={linkButton}
+                            onClick={() =>
+                              downloadGpx(
+                                `${matched.id}.gpx`,
+                                trailGpx({
+                                  name: trail.name,
+                                  path: line.path,
+                                  profile: drawn,
+                                  link: alltrailsTrailUrl(trail.slug),
+                                  note: line.loop ? undefined : t.profileOneWay,
+                                }),
+                              )
+                            }
+                          >
+                            {t.gpx}
+                          </button>
+                        )}
                         <a
                           className={linkButton}
                           href={`https://www.google.com/maps/dir/?api=1&destination=${trail.lat},${trail.lon}`}

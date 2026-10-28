@@ -115,6 +115,8 @@ python -m pytest -q copilot/tests
 - `npm run check:closures`：拿 NPS 最新公告和 `src/data/closures.ts` 对一遍，列出要人工看的临时关闭（联网）。
 - `npm run check:freshness`：手工整理的数据里超过半年没核对、写着去年时刻表的列出来（不联网；GitHub 每月 1 号自动跑、开 issue）。
 - `npm run eval:routes`：拿 73 条博主和 NPS 官方的真实行程评测排行程引擎（不联网，几秒；`npm test` 里有门禁），见 [TRUST.md](TRUST.md)。
+- `npm run eval:quality`：照 TravelPlanner、TripCraft 两篇论文的打分方法给引擎排的 110 条行程打分（逐条检查约束的通过率，时间、空间、顺序、同行的人的连续分；不联网，几秒；`npm test` 里有门禁），见 [TRUST.md](TRUST.md)。
+- `npm run eval:referee`：拿开源的路线优化器 VROOM 当裁判，看分天这一步还能少开多少车（要先装一次 `python -m pip install pyvroom`，约 2 MB；不在 `npm test` 里）。
 - `npm run perf:tour`：路线动画流畅不流畅：用本机的 Chrome（无窗口）放一段，打出每帧隔多久、掉帧几次、主线程每秒忙多久（开着 `npm run dev`；加 `--narrated` 测讲解版，`--profile` 看卡在哪）。无窗口的 Chrome 用软件画 3D，比真机慢，看改之前改之后的差别。
 - 让 Copilot 排行程时用上最新的 NPS 公告（两周内出发的行程不排公告说关了的景点；清单超过 3 天就不用了，所以出发前一天跑一次）：
 
