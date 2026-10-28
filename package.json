@@ -17,6 +17,7 @@
     "data:alltrails": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-alltrails.mjs",
     "data:map": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-map.mjs",
     "data:services": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-services.mjs",
+    "data:audit-index": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-audit-index.mjs",
     "data:tesla": "node scripts/build-tesla.mjs",
     "data:climate": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-climate.mjs",
     "data:fees": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/build-fees.mjs",
@@ -32,6 +33,8 @@
     "copilot:contracts": "node --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/build-copilot-contracts.mjs",
     "check:hikes": "node --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/check-hikes.mjs",
     "check:closures": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/check-closures.mjs",
+    "check:freshness": "node --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/check-freshness.mjs",
+    "eval:routes": "node --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/eval-real-routes.mjs",
     "check:campgrounds": "node scripts/check-campgrounds.mjs",
     "alerts:fetch": "node --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/fetch-alerts.mjs",
     "alerts:propose": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/propose-closures.mjs"

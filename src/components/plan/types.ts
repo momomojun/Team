@@ -35,6 +35,8 @@ export interface PlannerPark {
   nonresidentSurcharge: boolean;
   /** 园外名胜（不是国家公园） */
   site: boolean;
+  /** 官网（NPS 公园页、Parks Canada、部落公园……），景点详情的“资料出处”里列出来 */
+  officialUrl?: string;
   country: "US" | "CA";
   /** 每个月平均每天多少人次（NPS 近 3 年，下标 0 是 1 月）；加拿大的公园、园外名胜没有 */
   daily?: number[];

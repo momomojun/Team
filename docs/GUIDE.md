@@ -13,6 +13,7 @@
 | [PROJECT.md](PROJECT.md) | 项目现状：做到哪、下一步、待决定的事、做过的决定 |
 | [timeline/](timeline/) | 按时间的记录：每次改动（一个 PR）一个文件 |
 | [GOALS.md](GOALS.md) | 目标清单：仓库主人提过的所有要求、计划书和课程的承诺，每条做到哪了；还没完成的列在最前面 |
+| [TRUST.md](TRUST.md) | 行程靠不靠得住：怎么保证不编造、排得通、知道哪些可能过时，和真人行程对照的成绩 |
 | [DEVELOPMENT.md](DEVELOPMENT.md) | 网站的技术参考：代码结构、数据脚本、数据源和注意事项 |
 | [COPILOT.md](COPILOT.md) | Copilot 的技术参考：设计、契约、文件、提示词版本、评测方法、环境变量 |
 | [ENGLISH.md](ENGLISH.md) | 英文版怎么写 |
@@ -112,6 +113,8 @@ python -m pytest -q copilot/tests
 - `npm test`：网站的测试（约 130 个，几秒，不联网）。测试是怎么写的见 [DEVELOPMENT.md](DEVELOPMENT.md#测试是怎么写的)。
 - `pytest`：Copilot 的测试（约 100 个，不联网、不要模型）。
 - `npm run check:closures`：拿 NPS 最新公告和 `src/data/closures.ts` 对一遍，列出要人工看的临时关闭（联网）。
+- `npm run check:freshness`：手工整理的数据里超过半年没核对、写着去年时刻表的列出来（不联网；GitHub 每月 1 号自动跑、开 issue）。
+- `npm run eval:routes`：拿 73 条博主和 NPS 官方的真实行程评测排行程引擎（不联网，几秒；`npm test` 里有门禁），见 [TRUST.md](TRUST.md)。
 - 让 Copilot 排行程时用上最新的 NPS 公告（两周内出发的行程不排公告说关了的景点；清单超过 3 天就不用了，所以出发前一天跑一次）：
 
 ```bash

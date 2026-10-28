@@ -1,0 +1,43 @@
+# 每月一次的数据保质期检查（npm run check:freshness，src/lib/freshness.ts）：手工整理的数据里，超过半年没核对的、
+# 写着去年时刻表 / 营业季节的，列成一个 data-freshness 标签的 issue；已经有开着的就在下面评论，没有过期的就不开。
+# 只读仓库、不联网查别的东西、不调模型；重查要人去官网看，所以只提醒、不让 CI 变红。
+name: Data freshness (monthly)
+
+on:
+  schedule:
+    # 每月 1 号（UTC 15 点，加州早上）
+    - cron: "0 15 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: data-freshness
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      TZ: America/Los_Angeles
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci || npm install --no-audit --no-fund
+      - name: List stale data
+        id: report
+        run: npm run -s check:freshness -- --md report.md | tee report.log && grep -m1 '^STALE=' report.log >> "$GITHUB_OUTPUT"
+      - name: Open or update the issue
+        if: steps.report.outputs.STALE != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create data-freshness --color 8a6d3b --description "手工整理的数据超过半年没核对，或者写的是去年的时刻表" 2>/dev/null || true
+          open=$(gh issue list --label data-freshness --state open --json number --jq '.[0].number')
+          if [ -n "$open" ]; then gh issue comment "$open" --body-file report.md
+          else gh issue create --label data-freshness --title "数据要重查了（$(date +%F)）/ Data due for re-checking" --body-file report.md; fi

@@ -20,6 +20,7 @@ import { googleMapsUrl } from "@/data/attractions/google";
 import type { Photo } from "@/data/attractions/types";
 import { fill } from "@/i18n/format";
 import type { Party } from "@/lib/suitability";
+import { StopSources } from "./stop-sources";
 import type { PlannerText } from "./types";
 
 /**
@@ -34,6 +35,7 @@ export function StopDetails({
   parkHref,
   routesHref,
   party,
+  officialUrl,
   text,
   actions,
   onClose,
@@ -50,6 +52,8 @@ export function StopDetails({
   routesHref: string;
   /** 自动生成攻略时填的同行的人：先说这次要注意什么 */
   party?: Party;
+  /** 公园官网，“资料出处”里列出来 */
+  officialUrl?: string;
   text: PlannerText;
   /** 放在链接前面的按钮，比如加入行程 */
   actions?: ReactNode;
@@ -102,6 +106,7 @@ export function StopDetails({
             </ul>
           </div>
         )}
+        <StopSources stop={stop} officialUrl={officialUrl} text={t.sources} />
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3 pt-1">
           {actions}
           <a className={linkButton} href={parkHref}>
