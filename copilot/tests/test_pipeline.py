@@ -47,8 +47,9 @@ def test_template_mentions_every_stop_and_invents_nothing(yosemite):
 def test_faithfulness_check_catches_made_up_times_and_numbers(yosemite):
     review = critique(EXAMPLE, yosemite)
     base = template(EXAMPLE, yosemite, review, "zh")
-    assert "04:44" in faithful("第 1 天 04:44 出发，门票 $35", yosemite, base)
-    assert "35" in faithful("第 1 天 04:44 出发，门票 $35", yosemite, base)
+    # 编的数字要挑行程里一定没有的：$35 这种常见的数，行程里正好有一段 35 分钟的车程就查不出来了
+    assert "04:44" in faithful("第 1 天 04:44 出发，门票 $4321", yosemite, base)
+    assert "4321" in faithful("第 1 天 04:44 出发，门票 $4321", yosemite, base)
 
 
 def test_model_writer_falls_back_to_template_when_unfaithful(yosemite):

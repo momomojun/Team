@@ -564,10 +564,13 @@ export function Planner({
         endpoint: role,
       });
       const dateFor = (day: number) => addDays(input.startDate || nominalDate(input.month), day);
-      const sunFor = (day: number) => {
-        const sun = sunTimes(dateFor(day), park.lat, park.lon);
+      // 和下面显示的时间线一样，按当天第一站的公园和时区算（几座公园跨时区时，按主公园算的钟点会差一小时）
+      const sunFor = (day: number, stop?: { park: string; timeZone?: string }) => {
+        const at = (stop && parkByCode.get(stop.park)) ?? park;
+        const zone = stop?.timeZone ?? at.timeZone;
+        const sun = sunTimes(dateFor(day), at.lat, at.lon);
         return sun.kind === "normal"
-          ? { sunrise: minutesOfDay(sun.sunrise, park.timeZone), sunset: minutesOfDay(sun.sunset, park.timeZone), zone: park.timeZone }
+          ? { sunrise: minutesOfDay(sun.sunrise, zone), sunset: minutesOfDay(sun.sunset, zone), zone }
           : NOMINAL_SUN;
       };
       // 近期出发（两周内）：生成前读一次 NPS 实时公告，公告里说关了的景点先不排

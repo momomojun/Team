@@ -332,7 +332,7 @@ export const canyonlands: Attraction[] = [
     start: { lat: 38.14179, lon: -109.82721, nameZh: "Elephant Hill 步道口停车场" },
     durationMin: 210,
     trail: {},
-    hike: { distanceMi: 5.8, gainFt: 533, difficulty: "hard" },
+    hike: { distanceMi: 5.8, gainFt: 820, difficulty: "hard" },
     bestTime: ["morning"],
     bestMonths: [4, 5, 9, 10],
     summary: "针尖区最经典的徒步：翻过几道光滑岩坡、穿过象谷（Elephant Canyon），爬上垭口俯瞰切斯勒公园——一片被红白条纹石柱团团围住的沙漠草地。",

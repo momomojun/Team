@@ -302,7 +302,7 @@ export const arches: Attraction[] = [
     start: DEVILS_GARDEN_PARKING,
     durationMin: 180,
     trail: {},
-    hike: { distanceMi: 4, gainFt: 275, difficulty: "hard" },
+    hike: { distanceMi: 4, gainFt: 530, difficulty: "hard" },
     bestTime: ["morning"],
     summary: "过了风景拱门，步道爬上狭窄的岩鳍脊背，两侧是陡坡，走到上下叠在一起的两个圆拱。途中可以岔去隔墙拱门（Partition Arch）和纳瓦霍拱门（Navajo Arch）。",
     tips: [
@@ -330,7 +330,7 @@ export const arches: Attraction[] = [
       ],
       loop: true,
     },
-    hike: { distanceMi: 7.9, gainFt: 286, difficulty: "hard", loop: true },
+    hike: { distanceMi: 7.9, gainFt: 950, difficulty: "hard", loop: true },
     bestMonths: [4, 5, 9, 10],
     bestTime: ["morning"],
     summary: "把魔鬼花园走完整：经风景拱门、双 O 拱门到深色的“黑天使”石柱（Dark Angel），再沿原始步道穿过岩鳍和沙沟绕回来，途中能看到七八座拱门。",

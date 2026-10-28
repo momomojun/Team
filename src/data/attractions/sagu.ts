@@ -295,11 +295,12 @@ export const saguaro: Attraction[] = [
     nameEn: "Tanque Verde Ridge Trail (to the overlook)",
     kind: "hike",
     area: "east",
-    lat: 32.16135,
-    lon: -110.71423,
+    lat: 32.1586,
+    lon: -110.72088,
     start: { lat: 32.16556, lon: -110.72393, nameZh: "Javelina 野餐区的 Tanque Verde Ridge 步道口" },
     durationMin: 60,
-    trail: { via: [{ lat: 32.16135, lon: -110.71423 }] },
+    // 观景点在步道口往上约 0.6 英里（NPS 的步道页）；原来的点在 1.3 英里外的山脊上
+    trail: { via: [{ lat: 32.1586, lon: -110.72088 }] },
     hike: { distanceMi: 1.2, gainFt: 100, difficulty: "easy" },
     bestTime: ["sunset"],
     summary:

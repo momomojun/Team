@@ -186,8 +186,8 @@ export function planTrip(input: unknown, options: PlanOptions) {
     {
       stops,
       lodging,
-      // 生成时和行程页一样，日出日落按主公园、主公园的时区算
-      sunFor: (day) => sunFor(dateFor(day), { park: main.code }),
+      // 生成时和下面排时间线一样，日出日落按当天第一站的公园和时区算（不知道第一站时按主公园）
+      sunFor: (day, stop) => sunFor(dateFor(day), stop ?? { park: main.code }),
       dateFor,
       zoneFor: (code) => zoneOf({ park: code }),
       live,

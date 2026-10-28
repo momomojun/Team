@@ -87,8 +87,12 @@ export interface GenerateContext {
   stops: GuideStop[];
   /** 所选公园的推荐住宿（含民宿区） */
   lodging: GuideLodging[];
-  /** 第 day 天的日出日落 */
-  sunFor: (day: number) => SunWindow;
+  /**
+   * 第 day 天的日出日落：按 stop（当天第一站）所在的公园、时区算，不给就按主公园。
+   * 和行程页一样按当天第一站：几座公园跨时区时（皇家岛东部时间、航海家中部时间），按主公园算的钟点会差一小时，
+   * 排出来的顺序拿到行程页上就赶不上游船（10-28 评测：航海家 Kettle Falls 游船）
+   */
+  sunFor: (day: number, stop?: { park: string; timeZone?: string }) => SunWindow;
   /** 第 day 天的日期（班车季要坐班车）；只定了月份时是那个月 15 号左右 */
   dateFor?: (day: number) => string | null;
   /** 公园所在的时区（定了日期时，看星空的景点按月亮挑晚上）；不给就不挑 */
@@ -154,6 +158,9 @@ const REMOTE_GROUP_MAX = 2;
 /** 为它们当天多开的车超过它们停留时间的这么多倍（至少这么多分钟），就去掉 */
 const REMOTE_DETOUR_FACTOR = 1.5;
 const REMOTE_DETOUR_MIN = 60;
+/** 景点挪到同一座公园的别的天：整趟至少少开这么多分钟才挪（几分钟的差别是车程取整，不值得打乱原来的顺序），最多挪几轮 */
+const REGROUP_MIN = 20;
+const REGROUP_ROUNDS = 4;
 /** 为了让山路上的景点排到把握大的那天、两天整天对调时，整趟最多多开这么久的车 */
 const SWAP_DRIVE_MAX = 90;
 /**
@@ -167,6 +174,11 @@ const MOVE_GAIN_MIN = 0.2;
  */
 const MOON_GLARE_OK = 0.3;
 const MOON_GLARE_GAIN = 0.3;
+/**
+ * 当天最后一站是看星空：晚回是看星空本来就要的（夏天日落八点多，看完再开回住处常过十点），
+ * 回住处比平常的“太晚”再晚这么多分钟以内不算太晚，不为它去掉白天的景点（10-28 评测：奇里卡瓦点名要去的星空被说“没时间”）
+ */
+const NIGHT_LATE_GRACE = 90;
 /** 超过这么久的徒步不自动排（可以手动加） */
 export const MAX_HIKE_MIN: Record<Pace, number> = { leisurely: 180, relaxed: 240, normal: 420, packed: 600 };
 /** 园内景点之间平均每天开车的分钟数，估算时间预算用 */
@@ -351,10 +363,11 @@ export function generateTrip(input: GenerateInput, original: GenerateContext): {
   const resolve = (lodging: TripLodging | null | undefined): LodgingPoint | undefined =>
     !lodging ? undefined : lodging.kind === "custom" ? lodging : lodgingById.get(lodging.id);
   // 排行程时每天的日出日落、日期要查上百万次，每天算一次存起来
-  const suns = new Map<number, SunWindow>();
-  const sunFor = (day: number) => {
-    let sun = suns.get(day);
-    if (!sun) suns.set(day, (sun = context.sunFor(day)));
+  const suns = new Map<string, SunWindow>();
+  const sunFor = (day: number, stop?: { park: string; timeZone?: string }) => {
+    const key = `${day}|${stop?.park ?? ""}|${stop?.timeZone ?? ""}`;
+    let sun = suns.get(key);
+    if (!sun) suns.set(key, (sun = context.sunFor(day, stop)));
     return sun;
   };
   const dates = new Map<number, string | null>();
@@ -388,7 +401,7 @@ export function generateTrip(input: GenerateInput, original: GenerateContext): {
     return current.days.map((day, d) => {
       const stops = day.map((item) => stopById.get(item.id)).filter((stop): stop is PlanStop => stop !== undefined);
       const context = {
-        sun: sunFor(d),
+        sun: sunFor(d, stops[0] ?? previous),
         from: resolve(current.nights[d]),
         to: resolve(current.nights[d + 1]),
         previous,
@@ -425,12 +438,19 @@ export function generateTrip(input: GenerateInput, original: GenerateContext): {
    */
   const overStops = (timeline: ReturnType<typeof buildTimeline>) =>
     Math.max(0, timeline.entries.filter((entry) => entry.slot !== "night").length - (MAX_STOPS[input.pace] ?? Infinity));
+  /** 回住处太晚，晚了多少分钟（看星空那天按 NIGHT_LATE_GRACE 放宽）；不晚是 0 */
+  const lateBy = (timeline: ReturnType<typeof buildTimeline>) => {
+    if (!timeline.lateReturn) return 0;
+    const limit = timeline.entries.at(-1)?.slot === "night" ? LATE_RETURN + NIGHT_LATE_GRACE : LATE_RETURN;
+    return Math.max(0, (timeline.returnAt ?? LATE_RETURN) - limit);
+  };
+  const tooLate = (timeline: ReturnType<typeof buildTimeline>) => lateBy(timeline) > 0;
   const dayExcess = (timeline: ReturnType<typeof buildTimeline>) =>
     Math.max(0, dayLoad(timeline) - DAY_LIMIT[input.pace]) +
     overStops(timeline) * 1000 +
     (timeline.overloaded ? 1000 : 0) +
     missed(timeline) * 1000 +
-    (timeline.lateReturn ? 1000 + (timeline.returnAt ?? LATE_RETURN) - LATE_RETURN : 0);
+    (tooLate(timeline) ? 1000 + lateBy(timeline) : 0);
 
   // 每晚住哪：当天最后一站回去 + 第二天去第一站的车程最短；差不多时连住同一家。
   // 车程最省的几家里再看前后两天排出来的样子：省一点车程却让第二天赶不上游船、导览或者太满的不住
@@ -490,7 +510,7 @@ export function generateTrip(input: GenerateInput, original: GenerateContext): {
   };
   // 时间不对的（赶不上班次、日落活动赶不上日落）先不在这里去掉，后面先试着挪到别的天，挪不开再去掉
   const tooLong = (timeline: ReturnType<typeof buildTimeline>) =>
-    timeline.overloaded || timeline.lateReturn || dayLoad(timeline) > DAY_LIMIT[input.pace] || overStops(timeline) > 0;
+    timeline.overloaded || tooLate(timeline) || dayLoad(timeline) > DAY_LIMIT[input.pace] || overStops(timeline) > 0;
 
   // 还有太满、回住处太晚的天：去掉那天分数最低的景点（尽量不动必去），重新排
   for (let round = 0; round < 12; round++) {
@@ -652,6 +672,76 @@ export function generateTrip(input: GenerateInput, original: GenerateContext): {
     }
   }
 
+  /** 只写了上午、只写了下午最好的景点排到了另一半天的（日出日落、晚上这些卡了时段的不算） */
+  const offHalf = (current: Trip) =>
+    dayContexts(current).flatMap(({ stops, context: day }) =>
+      buildTimeline(stops, day).entries.flatMap((entry) => {
+        const wants = guideById.get(entry.id)?.bestTime ?? [];
+        if (wants.length !== 1 || entry.slot !== "any") return [];
+        const wrong =
+          (wants[0] === "morning" && entry.start >= 12 * 60) ||
+          (wants[0] === "afternoon" && (entry.start < 12 * 60 || entry.start >= day.sun.sunset));
+        return wrong ? [entry.id] : [];
+      }),
+    );
+  /**
+   * 时间排得好不好（越小越好）：写了最佳时段、却哪个时段都不在的，停车场已经停满的，各算一个。
+   * 时段和行程质量评测（scripts/plan-quality-lib.mjs）一样算：日出前后一个半小时、中午以前、中午到日落、日落前后一小时、天黑以后
+   */
+  const timingMiss = (current: Trip) =>
+    dayContexts(current).reduce((sum, { stops, context: day }) => {
+      const { sunrise, sunset } = day.sun;
+      const fits = (time: string, entry: TimelineEntry) =>
+        time === "sunrise"
+          ? entry.slot === "sunrise" || Math.abs(entry.start - sunrise) <= 90
+          : time === "morning"
+            ? entry.start < 12 * 60
+            : time === "afternoon"
+              ? entry.start >= 12 * 60 && entry.start < sunset
+              : time === "sunset"
+                ? entry.slot === "sunset" || entry.slot === "night" || Math.abs(entry.end - sunset) <= 60
+                : entry.slot === "night" || entry.start >= sunset;
+      return (
+        sum +
+        buildTimeline(stops, day).entries.filter((entry) => {
+          const wants = guideById.get(entry.id)?.bestTime ?? [];
+          return (wants.length > 0 && !wants.some((time) => fits(time, entry))) || entry.warnings.includes("parkingFull");
+        }).length
+      );
+    }, 0);
+
+  // 分天是按路线顺序切的，三个入口园内不通的公园会两天都从同一个住处往同一边跑（大沼泽地：第 1、2 天都从 Homestead 开去西边的
+  // Tamiami Trail 和 Gulf Coast）。一个一个景点试着挪到同一座公园的别的天，整趟少开 REGROUP_MIN 分钟以上、最累的一天不变长、
+  // 没有变得更满、没有别的景点因此排不开、时间没排得更差（看日落的没丢、没排到另一半天、没赶上停满）才挪
+  // （10-28 拿 VROOM 当裁判查出来的：大沼泽地能少开 151 分钟）
+  {
+    const heaviest = (current: Trip) => Math.max(0, ...timelines(current).map(({ timeline }) => dayLoad(timeline)));
+    for (let round = 0; round < REGROUP_ROUNDS; round++) {
+      const before = { drive: totalDrive(trip), excess: excess(trip), troubled: troubled(trip).length, heaviest: heaviest(trip), timing: timingMiss(trip) };
+      let best: { trip: Trip; drive: number } | null = null;
+      // 一天只剩一个景点的不挪走：空出来的一天还是要开车换住处，那段车程这里算不进去，看起来省了其实没省
+      for (let d = 0; d < trip.days.length; d++) {
+        if (trip.days[d].length < 2) continue;
+        for (const item of trip.days[d]) {
+          for (let target = 0; target < trip.days.length; target++) {
+            if (target === d || trip.days[target].length === 0 || !samePark(trip, target, item.id) || chanceOn(item.id, target) < ROAD_LIKELY) continue;
+            const days = trip.days.map((day, index) =>
+              index === d ? day.filter((other) => other.id !== item.id) : index === target ? [...day, item] : day,
+            );
+            const trial = rearrange({ ...trip, days }, [d, target]);
+            const drive = totalDrive(trial);
+            if (before.drive - drive < REGROUP_MIN || (best && drive >= best.drive)) continue;
+            if (excess(trial) > before.excess || troubled(trial).length > before.troubled) continue;
+            if (heaviest(trial) > before.heaviest + FILL_SLACK_MIN || timingMiss(trial) > before.timing) continue;
+            best = { trip: trial, drive };
+          }
+        }
+      }
+      if (!best) break;
+      trip = best.trip;
+    }
+  }
+
   // 季节性山路上的景点排到了往年通车不到一半的日子、这几天里又有把握大的一天（比如 6 月下旬去冰川，向阳大道排在第 2 天）：
   // 试着把这两天整天对调（每天里面的顺序、每晚住哪重新排），没有变得更满、多开的车不多才换。
   // 有固定班次的游船、导览团排到了不开的那天，也一样当成去不了，挪到开的日子
@@ -727,7 +817,7 @@ export function generateTrip(input: GenerateInput, original: GenerateContext): {
     const zoneFor = context.zoneFor;
     const glareOn = (stop: GuideStop, day: number) => {
       // 日落是按 sunFor 那个时区的钟点算的，月亮也按同一个时区算
-      const sun = sunFor(day);
+      const sun = sunFor(day, stop);
       const zone = sun.zone ?? zoneFor(stop.park);
       if (!zone) return 0;
       const sunset = sun.sunset;
@@ -762,6 +852,50 @@ export function generateTrip(input: GenerateInput, original: GenerateContext): {
     }
   }
 
+  // 只写了上午、只写了下午最好的（大棱镜温泉下午水汽少，颜色才出来）排到了另一半天：试着挪到同一座公园的别的天，
+  // 那天能排在对的半天、没有变得更满、别的景点没因此排不开、多开的车不超过它本身的停留才挪
+  // （10-28 评测：黄石第 3 天早上 8 点去大棱镜温泉，第 2 天下午两点就回了 15 分钟外 Old Faithful 的住处）
+  {
+    for (let round = 0; round < 4; round++) {
+      const wrong = offHalf(trip);
+      if (wrong.length === 0) break;
+      const before = { wrong: wrong.length, troubled: troubled(trip).length, excess: excess(trip), drive: totalDrive(trip) };
+      let best: { trip: Trip; drive: number } | null = null;
+      for (const id of wrong) {
+        const d = trip.days.findIndex((day) => day.some((item) => item.id === id));
+        const item = trip.days[d].find((other) => other.id === id)!;
+        const extraMax = Math.max(FILL_DETOUR_MIN, guideById.get(id)?.durationMin ?? 0);
+        for (let target = 0; target < trip.days.length; target++) {
+          if (target === d || trip.days[target].length === 0 || !samePark(trip, target, id) || chanceOn(id, target) < ROAD_LIKELY) continue;
+          const without = trip.days.map((day, index) => (index === d ? day.filter((other) => other.id !== id) : day));
+          const options = [{ days: without.map((day, index) => (index === target ? [...day, item] : day)), changed: [d, target] }];
+          // 那天放不下：把那天一个没写时段的景点挪去别的一天（黄石：上间歇泉盆地挪到第 3 天早上，就在住处旁边）
+          for (const swap of trip.days[target]) {
+            if (guideById.get(swap.id)?.bestTime?.length) continue;
+            for (let to = 0; to < trip.days.length; to++) {
+              if (to === target || chanceOn(swap.id, to) < ROAD_LIKELY || !samePark(trip, to, swap.id)) continue;
+              options.push({
+                days: without.map((day, index) =>
+                  index === target ? [...day.filter((other) => other.id !== swap.id), item] : index === to ? [...day, swap] : day,
+                ),
+                changed: [d, target, to],
+              });
+            }
+          }
+          for (const { days, changed } of options) {
+            const trial = rearrange({ ...trip, days }, changed);
+            const drive = totalDrive(trial);
+            if (offHalf(trial).length >= before.wrong || troubled(trial).length > before.troubled) continue;
+            if (excess(trial) > before.excess + FILL_SLACK_MIN || drive - before.drive > extraMax || (best && drive >= best.drive)) continue;
+            best = { trip: trial, drive };
+          }
+        }
+      }
+      if (!best) break;
+      trip = best.trip;
+    }
+  }
+
   if (tripDates.length > 0) {
     // 还排在不开那天的游船、导览团（开的那几天排不下）：去掉，攻略说明里列为没时间
     const stranded = trip.days.flatMap((day, d) =>
@@ -792,6 +926,61 @@ export function generateTrip(input: GenerateInput, original: GenerateContext): {
     const far = new Set(lateRemote.flat().map((stop) => stop.id));
     skipped.tooFar.push(...far);
     trip = arrangeAll(chooseLodging(arrangeAll({ ...trip, days: trip.days.map((day) => day.filter((item) => !far.has(item.id))) })));
+  }
+
+  // 补景点、挪景点、对调时只看整趟加起来有没有更满，太满的分钟可能从一天挪到了另一天（大烟山 + 仙纳度：补进 Blackrock Summit 后，
+  // 换公园那天开 6 小时车还塞三站，最后一站天黑才到）；坐船、坐小飞机一整天的一日游也会排在刚落地、换公园的那天
+  // （皇家岛的渡轮一日游排在落地当天、第二天却空着，德纳里的公园路巴士排在从安克雷奇开过去的那天）。
+  // 最后再查一遍还有没有太满的天：先试着和空着的前后一天、或者同一座公园的另一天整天对调；换不开就去掉那天分数最低的景点
+  // （点名要去的不动；只剩一个必去景点的，这座公园别的天还有景点才去掉）
+  {
+    // 补景点时本来就容许超出 FILL_SLACK_MIN 分钟，这里也一样：差两三分钟的不为它去掉看日落的景点（佩吉到纪念碑谷那天多 2 分钟）
+    const overDay = (timeline: ReturnType<typeof buildTimeline>) =>
+      timeline.overloaded || tooLate(timeline) || dayLoad(timeline) > DAY_LIMIT[input.pace] + FILL_SLACK_MIN || overStops(timeline) > 0;
+    const stuck = new Set<number>();
+    const moved = new Set<string>();
+    for (let round = 0; round < 8; round++) {
+      const busy = timelines(trip).findIndex(({ stops, timeline }, d) => !stuck.has(d) && stops.length > 0 && overDay(timeline));
+      if (busy < 0) break;
+      const before = { excess: excess(trip), troubled: troubled(trip).length, drive: totalDrive(trip) };
+      const busyParks = parksOn(trip, busy);
+      // 只有一个景点的一天（一整天的巴士、游船、小飞机）去掉景点就没了：换过去以后只剩几个景点的天太满也行，下一轮去掉那天分数最低的
+      // （德纳里：公园路巴士换到第二天，第一天开过去以后的五个短景点去掉一两个，比去掉巴士好）
+      // 几个景点的天直接去掉景点（换来换去会把太满的又换回来）；每个一整天的景点只换一次
+      const single = trip.days[busy].length === 1 && !moved.has(trip.days[busy][0].id) ? trip.days[busy][0].id : null;
+      let best: { trip: Trip; excess: number } | null = null;
+      for (let other = 0; single !== null && other < trip.days.length; other++) {
+        if (other === busy) continue;
+        const empty = trip.days[other].length === 0;
+        if (empty ? Math.abs(other - busy) !== 1 : ![...parksOn(trip, other)].some((park) => busyParks.has(park))) continue;
+        const days = [...trip.days];
+        [days[busy], days[other]] = [days[other], days[busy]];
+        const trial = rearrange({ ...trip, days }, [busy, other]);
+        const trialExcess = excess(trial);
+        const lighter = trialExcess <= before.excess - FILL_SLACK_MIN;
+        const trimmable = timelines(trial).every(({ stops, timeline }) => !overDay(timeline) || (stops.length > 1 && !stops.some((stop) => stop.id === single)));
+        if (!(lighter || trimmable) || troubled(trial).length > before.troubled) continue;
+        if (totalDrive(trial) - before.drive > SWAP_DRIVE_MAX || (best && trialExcess >= best.excess)) continue;
+        best = { trip: trial, excess: trialExcess };
+      }
+      if (best) {
+        trip = best.trip;
+        moved.add(single!);
+        continue;
+      }
+      const dayStops = trip.days[busy].map((item) => guideById.get(item.id)!);
+      const parkElsewhere = (stop: GuideStop) =>
+        trip.days.some((day, d) => d !== busy && day.some((item) => stopById.get(item.id)?.park === stop.park));
+      const victim = dayStops
+        .filter((stop) => !include.has(stop.id) && (dayStops.length > 1 || !stop.mustSee || parkElsewhere(stop)))
+        .sort((a, b) => Number(Boolean(a.mustSee)) - Number(Boolean(b.mustSee)) || scores.get(a.id)! - scores.get(b.id)!)[0];
+      if (!victim) {
+        stuck.add(busy);
+        continue;
+      }
+      skipped.noTime.push(victim.id);
+      trip = arrangeAll(chooseLodging(arrangeAll({ ...trip, days: trip.days.map((day) => day.filter((item) => item.id !== victim.id)) })));
+    }
   }
 
   // 去掉景点以后第一天空了（比如第一天排的 Anaktuvuk Pass 飞行后来去掉了）：第二天就得从住处折回去看路上的景点。
