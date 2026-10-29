@@ -75,8 +75,12 @@ def yes(text: str) -> bool:
     return bool(re.fullmatch(r"\s*" + words + r"(?:[\s,，、]*" + words + r")*[\s。.!！~呀啊吧呢]*", normalize(text), re.I))
 
 
+# 开头是否定才算：单独一个“不”要后面跟着标点或者到头（“不错”是夸），英文要是整个词（“nice”“now”“November”不是 no）
+NO_START = re.compile(r"\s*(?:不是|不对|错了|否|不(?=[，,。.!！\s]|$)|(?:no|nope|n|not really|wrong)\b)", re.I)
+
+
 def no(text: str) -> bool:
-    return bool(re.fullmatch(r"\s*(不是|不对|不|否|错了|no|nope|n|not really|wrong)[，,。.!！\s]*.*", text, re.I)) and not yes(text)
+    return bool(NO_START.match(text)) and not yes(text)
 
 
 def pick_option(text: str, options: list[dict]) -> dict | None:
@@ -86,6 +90,8 @@ def pick_option(text: str, options: list[dict]) -> dict | None:
     index = None
     if match:
         index = int(match.group(1))
+    elif re.search(r"最后(?:一|那)?(?:个|种|项|号)?", stripped):
+        index = -1
     else:
         for word, number in ORDINALS.items():
             if re.search(r"第" + word + r"(个|种|项|号)?", stripped) or re.search(r"\b" + word + r"\b", stripped) and word.isascii():
@@ -585,7 +591,8 @@ class Intake:
             self.party["youngestKid"] = 0
         elif re.search(r"toddler|幼儿", text, re.I) and not negated:
             self.party["youngestKid"] = min(2, self.party.get("youngestKid", 99))
-        age = bool(values)
+        # 说了年龄就不再问几岁（“18岁的儿子”成年了，不算孩子，也不用问）
+        age = bool(ages)
         if re.search(r"婴儿车|推车|bb车|stroller", text, re.I):
             self.party["stroller"] = not negated
         if re.search(r"轮椅|wheelchair", text, re.I):
