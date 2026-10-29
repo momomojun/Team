@@ -39,7 +39,8 @@ const TEXT = {
     stream: "每一步报给网站：进度条",
     llm: "模型",
     chatTitle: "聊天的四步按这个顺序调模型",
-    chatNote: "前一个出错、20 秒没回、没配 key 就换下一个；都不行用本机模型。前三家是免费档，免费的都用完才用付费的 DeepSeek",
+    chatNote: "前一个出错、20 秒没回、没配 key 就换下一个；都不行用本机模型。",
+    chatNote2: "前三家是免费档，免费的都用完才轮到付费的 DeepSeek。",
     live: "现在服务实际用的",
     liveDiffers: "（和默认的不一样：比如只开了本机模型，或者某一家没配 key）",
     colon: "：",
@@ -67,7 +68,8 @@ const TEXT = {
     stream: "Each step is streamed to the site's progress bar",
     llm: "LLM",
     chatTitle: "The four chat steps call models in this order",
-    chatNote: "On an error, a 20 s timeout or a missing key, the next one is tried; the local model is the last resort. The first three are free tiers; paid DeepSeek is used only once they are all exhausted",
+    chatNote: "On an error, a 20 s timeout or a missing key, the next one is tried; the local model is last.",
+    chatNote2: "The first three are free tiers; paid DeepSeek is used only after they all fail.",
     live: "The running service is using",
     liveDiffers: " (differs from the default, e.g. only the local model is on or a provider has no key)",
     colon: ": ",
@@ -139,18 +141,28 @@ function Chain({ x, y, models, width, lang }: { x: number; y: number; models: st
       {models.map((id, i) => {
         const known = MODEL_NAMES[id];
         const left = x + i * (w + gap);
+        // 五个模型时一格只有一百来宽：名字放不下就在中间的空格处折成两行（“Gemini 3.5 / Flash Lite”）
+        const name = known?.name ?? id;
+        const words = name.split(" ");
+        const cut = name.length * 6.2 + 16 > w && words.length > 1 ? Math.ceil(words.length / 2) : words.length;
+        const lines = [words.slice(0, cut).join(" "), words.slice(cut).join(" ")].filter(Boolean);
         return (
           <g key={`${id}-${i}`}>
-            <rect x={left} y={y} width={w} height={52} fill={i === models.length - 1 && known?.via === "Ollama" ? "var(--color-paper-deep)" : "#f7ece5"} stroke={CLAY} strokeWidth={1.2} />
-            <text x={left + 8} y={y + 22} fontSize={11.5} fill={INK}>
+            <rect x={left} y={y} width={w} height={60} fill={i === models.length - 1 && known?.via === "Ollama" ? "var(--color-paper-deep)" : "#f7ece5"} stroke={CLAY} strokeWidth={1.2} />
+            <text x={left + 8} y={y + 18} fontSize={11.5} fill={INK}>
               <tspan fill={CLAY} style={{ fontFamily: "var(--font-jost)" }}>{i + 1} </tspan>
-              {known?.name ?? id}
+              {lines[0]}
+              {lines[1] && (
+                <tspan x={left + 18} dy={14}>
+                  {lines[1]}
+                </tspan>
+              )}
             </text>
-            <text x={left + 10} y={y + 40} fontSize={11} fill={MUTE}>
+            <text x={left + 10} y={y + 50} fontSize={11} fill={MUTE}>
               {known?.via ?? ""}
               {known?.paid && <tspan fill={CLAY}>{lang === "zh" ? " · 付费" : " · paid"}</tspan>}
             </text>
-            {i < models.length - 1 && <Arrow d={`M${left + w + 3} ${y + 26} H${left + w + gap - 3}`} color={CLAY} />}
+            {i < models.length - 1 && <Arrow d={`M${left + w + 3} ${y + 30} H${left + w + gap - 3}`} color={CLAY} />}
           </g>
         );
       })}
@@ -231,15 +243,18 @@ export function ArchitectureDiagram({ lang, chain }: { lang: AdminLang; chain?: 
           <text x={36} y={630} fontSize={11.5} fill={MUTE}>
             {t.chatNote}
           </text>
+          <text x={36} y={647} fontSize={11.5} fill={MUTE}>
+            {t.chatNote2}
+          </text>
           {live && (
-            <text x={36} y={656} fontSize={11.5} fill={differs ? CLAY : PINE}>
+            <text x={36} y={666} fontSize={11.5} fill={differs ? CLAY : PINE}>
               ● {t.live}
               {t.colon}
               {live.map((id) => MODEL_NAMES[id]?.name ?? id).join(" → ")}
             </text>
           )}
           {differs && (
-            <text x={36} y={674} fontSize={11} fill={MUTE}>
+            <text x={36} y={682} fontSize={11} fill={MUTE}>
               {t.liveDiffers.trim()}
             </text>
           )}
