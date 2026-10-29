@@ -354,7 +354,7 @@ Space 里只跑 Copilot（免费的云端模型），不跑本机模型和配音
    - Variables 里加 `HF_SPACE` = `你的用户名/nps-guide-copilot`。
 5. **Space 的 Settings → Variables and secrets**，加 Secrets：
    - `COPILOT_TOKEN`：自己编一串长的随机字符（比如 `python -c "import secrets;print(secrets.token_urlsafe(32))"` 生成），Vercel 那边要填同一串；
-   - 模型的 key：`GEMINI_API_KEY`、`OPENROUTER_API_KEY`、`GROQ_API_KEY`（有哪个填哪个，都是免费档）；`DEEPSEEK_API_KEY` 是按量付费的，单独用 `COPILOT_PROVIDER=deepseek` 才会调用；
+   - 模型的 key：`GEMINI_API_KEY`、`OPENROUTER_API_KEY`、`GROQ_API_KEY`（有哪个填哪个，都是免费档）；想要免费的都用完时有付费的备用，再加 `DEEPSEEK_API_KEY`（按量付费，全套评测 268 次约 $0.08）；`DEEPSEEK_API_KEY` 是按量付费的，单独用 `COPILOT_PROVIDER=deepseek` 才会调用；
    - 要的话 `DATA_GOV_API_KEY`（聊天时现读 NPS 公告）。
    - 可选的限流变量：`COPILOT_RATE_MINUTE`、`COPILOT_RATE_DAY`、`COPILOT_RATE_GLOBAL_DAY`（默认见 [COPILOT.md](COPILOT.md#环境变量)）。
 6. **推上去**：GitHub → Actions → “Deploy Copilot to Hugging Face” → Run workflow。它把要用的文件拼好上传到 Space，Space 自己构建（第一次约 5–10 分钟），Space 页面的 Logs 里能看进度。以后每次发版（推 `copilot-v*` tag）也会自动推一次。
