@@ -10,10 +10,10 @@ import {
 } from "@/components/icons";
 import { fill } from "@/i18n/format";
 import type { PlannerText } from "./types";
+import type { Gear } from "./clothing";
+import { degrees, gearText } from "./weather-text";
 import { climateWarnings, conditionOf, fahrenheit, forecastWarnings, type Condition, type DayWeather } from "./weather";
 
-/** 负温度用减号（−），不用连字符 */
-const degrees = (value: number) => (value < 0 ? `−${Math.abs(value)}` : String(value));
 
 const ICONS: Record<Condition, ComponentType<SVGProps<SVGSVGElement>>> = {
   clear: IconSun,
@@ -86,5 +86,18 @@ export function weatherNotes(weather: DayWeather, text: PlannerText): string[] {
       lowF: degrees(fahrenheit(weather.climate.low)),
       n: Math.round(weather.climate.wetDays),
     }),
+  );
+}
+
+/** 穿衣、雨具一行（行程每天的卡片上，天气下面） */
+export function GearLine({ gear, text }: { gear: Gear; text: PlannerText }) {
+  const g = text.plan.weather.gear;
+  const { wear, rain } = gearText(gear, text);
+  return (
+    <span className="lining-nums">
+      <span className="text-mute">{g.wearLabel}</span> {wear}
+      <span className="mx-1.5 text-ink/25">·</span>
+      <span className="text-mute">{g.rainLabel}</span> {rain}
+    </span>
   );
 }
