@@ -88,7 +88,9 @@ import { CopilotChat } from "./copilot-chat";
 import { TripWizard, useRequestedPark, type WizardInput, type WizardPlace } from "./trip-wizard";
 import type { DayView, DragSpot, PlannerPark, PlannerText, ResolvedLodging, StargazingInfo, SunInfo } from "./types";
 import { alertCovers, type DayWeather } from "./weather";
+import { gearDayOf, gearFor } from "./clothing";
 import { weatherNotes } from "./weather-line";
+import { gearText, weatherSpeech, weatherSummary } from "./weather-text";
 import { PageHeader } from "@/components/site/page-header";
 import { closedAllDays } from "@/lib/closures";
 
@@ -957,7 +959,12 @@ export function Planner({
         title: view.date ? fill(t.tour.titleDate, { n: route.day + 1, date: formatDate(view.date) }) : fill(t.tour.title, { n: route.day + 1 }),
         heading: fill(t.tour.title, { n: route.day + 1 }),
         ...(view.date ? { date: formatDate(view.date) } : {}),
-        subtitle: fill(t.tour.subtitle, { n: view.rows.length, drive: duration(view.timeline.driveMin) }),
+        // 只开车换住处的一天不写“0 个景点”
+        subtitle: fill(view.rows.length === 0 && view.to ? t.tour.subtitleDrive : t.tour.subtitle, {
+          n: view.rows.length,
+          drive: duration(view.timeline.driveMin),
+          to: view.to?.name ?? "",
+        }),
         path: road?.path ?? route.points.map((point) => [point.lon, point.lat] as [number, number]),
         straight: !road,
         stops,
@@ -1122,6 +1129,19 @@ export function Planner({
     const area = areas?.[stop.area] ?? (areas ? Object.values(areas)[0] : undefined);
     const month = monthOf(view.date);
     return area ? { kind: "climate", month, climate: area.months[month - 1] } : undefined;
+  });
+
+  // 路线动画旁边的天气卡片、讲解版每天开头念的天气和穿衣：和每天卡片上写的一样（天气数据还没回来的天没有）
+  const tourWithWeather: TourDay[] = tourDays.map((tourDay) => {
+    const weather = dayWeather[tourDay.day];
+    const view = dayViews[tourDay.day];
+    if (!weather || !view) return tourDay;
+    const gear = gearFor(weather, gearDayOf(view));
+    return {
+      ...tourDay,
+      weather: { summary: weatherSummary(weather, text), ...gearText(gear, text) },
+      narration: [...(tourDay.narration ?? []), ...weatherSpeech(weather, gear, text).map(sentence)],
+    };
   });
 
   // 总览里“要注意”：预报按天说，往年同期按公园说一次，再加上提到行程景点的公告
@@ -1835,7 +1855,7 @@ export function Planner({
               hoverId={hoverId}
               legs={mapLegs}
               legend={mapLegend}
-              tour={campMap ? undefined : tourDays}
+              tour={campMap ? undefined : tourWithWeather}
               narration={campMap || tourDays.length === 0 ? undefined : tourNarration}
               tourSummary={fill(t.tour.summary, {
                 days: dayViews.length,

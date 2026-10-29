@@ -108,6 +108,10 @@ export interface MapText {
   tourExit: string;
   /** 进度条上开车那一段的提示：“开往{name}” */
   tourToward: string;
+  /** 播放时旁边的天气卡片：标题、穿衣、雨具 */
+  tourWeather: string;
+  tourWear: string;
+  tourRain: string;
 }
 
 /** 请地图自动播一次路线动画：key 变了才播；days 是要播的那几天（改了行程只播变了的） */
@@ -2111,6 +2115,9 @@ export function ParkMap({
   const beatDay = beat?.kind === "day" ? (tourDays.find((day) => day.day === beat.day.day) ?? beat.day) : undefined;
   const dayPhotos = beatDay ? beatDay.stops.flatMap((stop) => (!stop.lodging && stop.photos?.[0] ? [stop.photos[0]] : [])).slice(0, 6) : [];
   const beatSpeech = beat?.kind === "stop" ? beat.stop.narration?.speech : beat?.kind === "day" ? beat.day.narration : undefined;
+  // 正在播的这一天的天气（开头讲怎么看地图、最后拉远看全程时不放）：按最新的 tour 找，天气数据可能是开播以后才回来的
+  const tourWeather =
+    tourUi && tourUi.heading && !tourUi.finale ? tourDays.find((day) => day.day === tourUi.days[tourUi.index]?.day)?.weather : undefined;
   const beatMs = (beatSpeech ?? []).reduce((sum, line) => sum + readingMs(line), 0);
   const toggle = (active: boolean) =>
     `px-3 py-1.5 transition-colors ${active ? "bg-ink text-paper" : "text-ink hover:bg-paper-deep"}`;
@@ -2251,9 +2258,30 @@ export function ParkMap({
           )}
         </aside>
       )}
+      {/* 播放时旁边的天气卡片（10-28 仓库主人）：这一天的天气、穿什么、带不带伞。电脑上放在右上角（导航按钮左边）；
+          讲解版在手机上铺成顶上一条（字幕往下挪），平常版在手机上写进左下的章节字幕 */}
+      {tourWeather && (
+        <div
+          key={tourUi?.index}
+          className={`tour-pop pointer-events-none absolute z-20 bg-paper/95 px-3 py-2 text-[12px] leading-5 text-ink shadow-sm lining-nums ${
+            immersive ? "inset-x-3 top-3 sm:inset-x-auto sm:right-14 sm:w-[18rem]" : "top-3 right-12 hidden w-[15rem] sm:block"
+          }`}
+        >
+          <p className="eyebrow text-[10px] text-mute">{text.tourWeather}</p>
+          <p className="mt-0.5">{tourWeather.summary}</p>
+          <p className="mt-1">
+            <span className="text-mute">{text.tourWear}</span> {tourWeather.wear}
+          </p>
+          <p>
+            <span className="text-mute">{text.tourRain}</span> {tourWeather.rain}
+          </p>
+        </div>
+      )}
       {/* 字幕：念到哪句出哪句；手机上卡片在下面，字幕放到上面 */}
       {immersive && caption && (
-        <div className="pointer-events-none absolute inset-x-0 top-3 z-30 flex justify-center pr-14 pl-4 sm:top-auto sm:bottom-28 sm:pr-4 sm:pl-[28rem] lg:pl-[36rem]">
+        <div
+          className={`pointer-events-none absolute inset-x-0 z-30 flex justify-center pr-14 pl-4 sm:top-auto sm:bottom-28 sm:pr-4 sm:pl-[28rem] lg:pl-[36rem] ${tourWeather ? "top-[6.5rem]" : "top-3"}`}
+        >
           <p className="max-w-2xl bg-ink/85 px-4 py-2 text-center text-[15px] leading-7 text-paper lining-nums">{caption}</p>
         </div>
       )}
@@ -2282,6 +2310,12 @@ export function ParkMap({
                   <p className="mt-2 text-[13px] text-ink-soft lining-nums">
                     {tourUi.date && <span className="mr-3 text-ink">{tourUi.date}</span>}
                     {tourUi.subtitle}
+                  </p>
+                )}
+                {/* 手机上右上角放不下天气卡片（左上角是地图的开关），天气和穿衣写在章节字幕里 */}
+                {tourWeather && (
+                  <p className="mt-1 text-[12px] text-ink-soft lining-nums sm:hidden">
+                    {tourWeather.summary} · {text.tourWear} {tourWeather.wear} · {tourWeather.rain}
                   </p>
                 )}
               </>

@@ -33,7 +33,8 @@ import { ActionMenu } from "./action-menu";
 import { roadNoteFor, roadWarn } from "./road-note";
 import type { DayView, DragSpot, PlannerText } from "./types";
 import type { DayWeather } from "./weather";
-import { WeatherLine, weatherNotes } from "./weather-line";
+import { gearDayOf, gearFor } from "./clothing";
+import { GearLine, WeatherLine, weatherNotes } from "./weather-line";
 
 export interface DragHandlers {
   source: DragSpot | null;
@@ -367,6 +368,12 @@ export function DayCard({
           {weather && (
             <p className="text-ink-soft">
               <WeatherLine weather={weather} text={text} />
+            </p>
+          )}
+          {/* 穿衣、雨具：按这天的天气，再看要不要徒步、赶日出、晚上在外面 */}
+          {weather && rows.length > 0 && (
+            <p className="max-w-[22rem] text-ink-soft sm:ml-auto">
+              <GearLine gear={gearFor(weather, gearDayOf(view))} text={text} />
             </p>
           )}
           {sun.kind === "normal" && (

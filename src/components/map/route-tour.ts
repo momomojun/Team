@@ -28,8 +28,10 @@ export interface TourDay {
   stops: TourStop[];
   /** 这天最后看日落、星空：画到最后天色暗下来 */
   dusk?: boolean;
-  /** 讲解版：这一天开头念的句子（“第 2 天，今天去 6 个地方，开车大约 5 小时”） */
+  /** 讲解版：这一天开头念的句子（“第 2 天，今天去 6 个地方，开车大约 5 小时”，再念天气和穿衣） */
   narration?: string[];
+  /** 这一天的天气、穿衣和雨具（播放时放在地图旁边）：一行天气、穿什么、雨具；天气数据还没回来时没有 */
+  weather?: { summary: string; wear: string; rain: string };
 }
 
 export interface TourStop {
