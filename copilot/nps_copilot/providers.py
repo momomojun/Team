@@ -663,22 +663,26 @@ def cloud_chain(batch: bool = False) -> list:
     地区叫法 16/17；没充值的账户所有免费模型加起来每天约 50 次）→ Groq 上的 Qwen3.8 27B（没见过的单句 38/40，很快，但每分钟只有 8000 token）。
     10-28 OpenRouter 上的 MiniMax M3.1 Flash 免费推广期结束，换成 Nemotron（同一天试的 dots-3 只有 13/17）。
     10-21 仓库主人的 OpenAI key 没额度了，GPT-4.1 mini 从默认顺序里拿掉（设 COPILOT_PROVIDER=openai 还能单独用）。
-    没配 key 的跳过"""
+    免费的几家都出错（额度用完、服务忙）才轮到 DeepSeek Flash（按量付费，10-28 仓库主人定的“放在免费模型后面当备用”；
+    全套评测 268 次约 $0.08，单句不如 Gemini、多轮差不多，没有每天的次数上限）。没配 key 的跳过"""
     return _available([
         (GeminiProvider, {"model": "gemini-3.5-flash-lite"}),
         (OpenRouterProvider, {"model": "nvidia/nemotron-3.5-super-vl:free"}),
         (GroqProvider, {"model": "qwen/qwen3.8-27b"}),
+        (DeepSeekProvider, {"model": "deepseek-flash"}),
     ], batch)
 
 
 def alerts_chain(batch: bool = True) -> list:
     """读公告用的商业 API（同样的规矩，全是免费档）：Gemini 3.5 Flash Lite（26 条抽样上景点 F1 0.67，151 条上 0.54）→
     OpenRouter 上的 Nemotron 3.5 Super 推理开 high（还没在公告上测过，所以排在 Gemini 后面）→ Groq 上的 Qwen3.8 27B（0.44）。
-    原来排第一的 MiniMax M3.1 Flash（0.67）10-28 免费推广期结束。10-21 起不再用 GPT-4.1 mini（OpenAI 的 key 没额度了）。没配 key 的跳过"""
+    原来排第一的 MiniMax M3.1 Flash（0.67）10-28 免费推广期结束。10-21 起不再用 GPT-4.1 mini（OpenAI 的 key 没额度了）。
+    免费的都出错才轮到 DeepSeek Flash（付费备用，和聊天一样；还没在公告上测过）。没配 key 的跳过（GitHub 上每晚读公告要另加 DEEPSEEK_API_KEY 这个 secret 才会用）"""
     return _available([
         (GeminiProvider, {"model": "gemini-3.5-flash-lite"}),
         (OpenRouterProvider, {"model": "nvidia/nemotron-3.5-super-vl:free", "reasoning": {"effort": "high"}}),
         (GroqProvider, {"model": "qwen/qwen3.8-27b"}),
+        (DeepSeekProvider, {"model": "deepseek-flash"}),
     ], batch)
 
 
@@ -733,7 +737,7 @@ def step_models(default: Provider) -> Provider:
 
 
 def chat_provider() -> Provider:
-    """Copilot 聊天（serve、chat）用的模型：cloud_chain 的顺序（Gemini → Groq Qwen3.8 → GPT-4.1 mini）再加本机模型，没配 key 的那一家跳过
+    """Copilot 聊天（serve、chat）用的模型：cloud_chain 的顺序（Gemini → Nemotron → Groq Qwen3.8 → DeepSeek）再加本机模型，没配 key 的那一家跳过
     （组员什么 key 都没配就跟以前一样只用本机）。设了 COPILOT_PROVIDER 就按设的、不再按顺序退。
     COPILOT_STEP_MODELS 可以给某几步单独换模型（step_models）。
     评测脚本不走这里（用 from_env，默认本机，录音才对得上）"""

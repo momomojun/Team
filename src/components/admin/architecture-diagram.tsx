@@ -7,17 +7,18 @@
 export type AdminLang = "zh" | "en";
 
 /** 模型的叫法：/health 报的是型号 id */
-const MODEL_NAMES: Record<string, { name: string; via: string }> = {
+const MODEL_NAMES: Record<string, { name: string; via: string; paid?: boolean }> = {
   "gemini-3.5-flash-lite": { name: "Gemini 3.5 Flash Lite", via: "Google" },
   "minimax/minimax-m3.1-flash:free": { name: "MiniMax M3.1 Flash", via: "OpenRouter" },
   "nvidia/nemotron-3.5-super-vl:free": { name: "Nemotron 3.5 Super", via: "OpenRouter" },
-  "deepseek-flash": { name: "DeepSeek Flash", via: "DeepSeek" },
+  "deepseek-flash": { name: "DeepSeek Flash", via: "DeepSeek", paid: true },
   "qwen/qwen3.8-27b": { name: "Qwen3.8 27B", via: "Groq" },
   "qwen3.5:4b-q4_K_M": { name: "Qwen3.5 4B", via: "Ollama" },
   "gpt-4.1-mini": { name: "GPT-4.1 mini", via: "OpenAI" },
 };
-const CHAT_DEFAULT = ["gemini-3.5-flash-lite", "nvidia/nemotron-3.5-super-vl:free", "qwen/qwen3.8-27b", "qwen3.5:4b-q4_K_M"];
-const ALERTS_DEFAULT = ["gemini-3.5-flash-lite", "nvidia/nemotron-3.5-super-vl:free", "qwen/qwen3.8-27b", "qwen3.5:4b-q4_K_M"];
+// 免费的三家在前，付费的 DeepSeek 排在它们后面当备用（10-28 仓库主人定的），本机模型最后
+const CHAT_DEFAULT = ["gemini-3.5-flash-lite", "nvidia/nemotron-3.5-super-vl:free", "qwen/qwen3.8-27b", "deepseek-flash", "qwen3.5:4b-q4_K_M"];
+const ALERTS_DEFAULT = ["gemini-3.5-flash-lite", "nvidia/nemotron-3.5-super-vl:free", "qwen/qwen3.8-27b", "deepseek-flash", "qwen3.5:4b-q4_K_M"];
 
 const TEXT = {
   zh: {
@@ -38,7 +39,7 @@ const TEXT = {
     stream: "每一步报给网站：进度条",
     llm: "模型",
     chatTitle: "聊天的四步按这个顺序调模型",
-    chatNote: "前一个出错、20 秒没回、没配 key 就换下一个；都不行用本机模型。全是免费档，$0",
+    chatNote: "前一个出错、20 秒没回、没配 key 就换下一个；都不行用本机模型。前三家是免费档，免费的都用完才用付费的 DeepSeek",
     live: "现在服务实际用的",
     liveDiffers: "（和默认的不一样：比如只开了本机模型，或者某一家没配 key）",
     colon: "：",
@@ -66,7 +67,7 @@ const TEXT = {
     stream: "Each step is streamed to the site's progress bar",
     llm: "LLM",
     chatTitle: "The four chat steps call models in this order",
-    chatNote: "On an error, a 20 s timeout or a missing key, the next one is tried; the local model is the last resort. All free tiers, $0",
+    chatNote: "On an error, a 20 s timeout or a missing key, the next one is tried; the local model is the last resort. The first three are free tiers; paid DeepSeek is used only once they are all exhausted",
     live: "The running service is using",
     liveDiffers: " (differs from the default, e.g. only the local model is on or a provider has no key)",
     colon: ": ",
@@ -130,7 +131,7 @@ function Arrow({ d, dashed, color = INK }: { d: string; dashed?: boolean; color?
 }
 
 /** 一排模型：第一个最先试，后面的依次接着 */
-function Chain({ x, y, models, width }: { x: number; y: number; models: string[]; width: number }) {
+function Chain({ x, y, models, width, lang }: { x: number; y: number; models: string[]; width: number; lang: AdminLang }) {
   const gap = 22;
   const w = (width - gap * (models.length - 1)) / models.length;
   return (
@@ -147,6 +148,7 @@ function Chain({ x, y, models, width }: { x: number; y: number; models: string[]
             </text>
             <text x={left + 10} y={y + 40} fontSize={11} fill={MUTE}>
               {known?.via ?? ""}
+              {known?.paid && <tspan fill={CLAY}>{lang === "zh" ? " · 付费" : " · paid"}</tspan>}
             </text>
             {i < models.length - 1 && <Arrow d={`M${left + w + 3} ${y + 26} H${left + w + gap - 3}`} color={CLAY} />}
           </g>
@@ -225,7 +227,7 @@ export function ArchitectureDiagram({ lang, chain }: { lang: AdminLang; chain?: 
           <text x={36} y={530} fontSize={11} fill={MUTE}>
             {t.defaults}
           </text>
-          <Chain x={36} y={548} models={CHAT_DEFAULT} width={608} />
+          <Chain x={36} y={548} models={CHAT_DEFAULT} width={608} lang={lang} />
           <text x={36} y={630} fontSize={11.5} fill={MUTE}>
             {t.chatNote}
           </text>
