@@ -330,11 +330,11 @@ python copilot/scripts/smoke.py http://127.0.0.1:8765 --expect-version 0.2.0
 2. 合并以后打 tag 推上去：
 
 ```bash
-git -C D:/LLM/Team tag copilot-v0.3.0 origin/main
+git -C D:/LLM/Team tag copilot-v0.4.0 origin/main
 ```
 
 ```bash
-git -C D:/LLM/Team push origin copilot-v0.3.0
+git -C D:/LLM/Team push origin copilot-v0.4.0
 ```
 
 3. `Copilot release` workflow 会检查 tag 和代码里的版本一致，再跑一遍测试和八组门禁，构建镜像、冒烟测试、推到 `ghcr.io/momomojun/team-copilot:<tag>` 和 `:latest`，从 GHCR 拉回来再冒烟一次，最后建 GitHub Release（附评测报告、镜像 digest、默认提示词版本，后面接上 `docs/releases/` 里这一版的说明）。任何一步没过都不发。
