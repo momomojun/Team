@@ -143,6 +143,7 @@ flowchart LR
 |---|---:|---|---|
 | `copilot/eval/cases/intake-v1.jsonl` | 25 | 开发集：改代码时一直在看的 | `baseline.json` |
 | `copilot/eval/cases/holdout-v1.jsonl` | 40 | 复杂情况（改口、矛盾、节假日、繁体、注入、复杂同行人员……），冻结后才跑；看过失败、修了代码，所以现在也算回归集 | `baseline-holdout.json` |
+| `copilot/eval/cases/holdout-v2.jsonl` | 70 | 10-28 新写的没见过的一批（仓库主人：“测试案例过少，不够扎实”），先提交期望再跑：约四成故意刁难（不存在的日期、过去的日期、注入、不是排行程的话、否定、打错字、有好几个机场的城市、离得太远），其余是东部和海外新加的公园、相对日期、几晚、最慢一档节奏、露营和民宿、同行的人、多轮改条件 | `baseline-holdout-v2.json` |
 | `copilot/eval/cases/regional-v1.jsonl` | 17 | 香港、台湾、新马的写法，先提交期望再跑；同样修过，当回归集 | `baseline-regional.json` |
 | `copilot/eval/cases/conversation-v1.jsonl` | 20 组 52 轮 | 多轮对话（`eval/conversation.py` 用完整的 Copilot 一轮轮跑、每轮都查）：仓库主人两次试用的原话、指代、又改又问、加减景点、指定住处、排之前提问、闲聊、资料里没有的、英文；调度员改造的开发集 | `baseline-conversation.json` |
 | `copilot/eval/alerts/`（`eval/alerts.py`） | 151 条公告 | 2026-10-19 的 NPS 公告快照和模型跑之前标好的标准答案（21 条 ambiguous）；比较规则、模型、两者合并：类型准确率、整段关闭的精确和召回、景点的精确召回 F1、日期 | `baseline-alerts.json` |

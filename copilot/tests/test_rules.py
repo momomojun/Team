@@ -22,6 +22,7 @@ TODAY = dt.date(2026, 10, 16)  # 周五
     ("3晚", 4), ("四晚", 5), ("2 nights", 3),  # 只说几晚：多算一天
     ("5天4晚", 5), ("四日三夜", 4),  # 天和晚都说了：按天
     ("第二天", None), ("五月", None), ("3天或者5天", None), ("", None), (None, None),
+    ("3-7 days", None), ("三到五天", None), ("3 to 5 days", None), ("4或5天", None),  # 没说定
 ])
 def test_parse_days(span, days):
     assert parse_days(span) == days
@@ -227,3 +228,103 @@ def test_read_preferences_the_contract_does_not_have_yet(span, key):
 @pytest.mark.parametrize("text, english", [("Zion for 3 days", True), ("锡安 3 days", False), ("2027", False), ("你好", False)])
 def test_is_english(text, english):
     assert intake_module.is_english(text) == english
+
+
+def test_every_airport_has_an_english_city_name():
+    # 10-28 holdout-v2：10-20、10-21 新加公园时加的 18 个机场没有英文城市名，“flying into Cleveland”认不出
+    from nps_copilot import catalog
+    missing = [code for code in catalog.airports() if not catalog.english_city(code)]
+    assert missing == []
+
+
+@pytest.mark.parametrize("city, codes", [
+    ("Cleveland", ["CLE"]), ("St. Louis", ["STL"]), ("Pago Pago", ["PPG"]), ("Columbia, South Carolina", ["CAE"]),
+    ("Nashville", ["BNA"]), ("Chicago", ["MDW", "ORD"]), ("Charleston", ["CHS", "CRW"]), ("Charleston, West Virginia", ["CRW"]),
+])
+def test_english_city_names(city, codes):
+    from nps_copilot import catalog
+    assert sorted(code for code, _ in catalog.find_all(city, catalog.airports())) == codes
+
+
+# ---------- holdout-v2 第一次跑发现的问题（模型的输出照录音里的写） ----------
+
+def test_a_date_that_has_passed_is_asked_again(make_intake):
+    from conftest import extraction
+    intake = make_intake(extraction(parks=["优胜美地"], dates=["2026年10月1日"], duration="3天", origin="弗雷斯诺", preferences=["适中"]))
+    turn = intake.step("2026年10月1日从弗雷斯诺去优胜美地3天，适中")
+    assert turn.status == "needs_input" and turn.question["kind"] == "dates" and "已经过了" in turn.question["text"]
+
+
+def test_a_past_date_in_english(make_intake):
+    from conftest import extraction
+    intake = make_intake(extraction(parks=["Zion"], dates=["Oct 1 2026"], duration="3 days", origin="Las Vegas", preferences=["balanced"]))
+    turn = intake.step("Zion on Oct 1 2026 for 3 days from Las Vegas, balanced")
+    assert turn.question["kind"] == "dates" and "already passed" in turn.question["text"]
+
+
+@pytest.mark.parametrize("message, span, start, days", [
+    ("Rocky Mountain, June 3-7 2027, Denver in and out, packed", "June 3-7 2027", "2027-06-03", 5),
+    ("2027年6月3日到7日去落基山，丹佛进出，多看一些", "2027年6月3日到7日", "2027-06-03", 5),
+    ("Rocky Mountain, June 3-7, Denver in and out, packed", "June 3-7", "2027-06-03", 5),  # 没写年：按推断的年份
+])
+def test_a_range_within_one_month(make_intake, message, span, start, days):
+    from conftest import extraction
+    intake = make_intake(extraction(parks=["落基山" if "落基山" in message else "Rocky Mountain"], dates=[span], origin="丹佛" if "丹佛" in message else "Denver",
+                                    preferences=["多看一些" if "多看" in message else "packed"]))
+    turn = intake.step(message)
+    assert turn.status == "ready" and turn.request["startDate"] == start and turn.request["days"] == days
+
+
+def test_three_to_seven_days_is_not_a_date_range(make_intake):
+    from conftest import extraction
+    intake = make_intake(extraction(parks=["Zion"], dates=["June 3 2027"], duration="3-7 days", origin="Las Vegas", preferences=["balanced"]))
+    turn = intake.step("Zion from June 3 2027, 3-7 days, from Las Vegas, balanced")
+    assert turn.status == "needs_input" and turn.question["kind"] == "days"  # 3 到 7 天没说定，要问
+
+
+def test_a_city_the_model_put_into_parks_becomes_the_origin(make_intake):
+    from conftest import extraction
+    # 本机 4B 的原样输出：把“纳什维尔”放进了 parks、origin 是空的
+    intake = make_intake(extraction(parks=["纳什维尔"], dates=["2027年4月10日", "2天"], preferences=["轻松"]))
+    turn = intake.step("2027年4月10日纳什维尔进出，猛犸洞2天，轻松")
+    assert turn.status == "ready"
+    assert turn.request["parks"] == ["maca"] and turn.request["origin"] == {"airport": "BNA"}
+
+
+def test_origin_the_model_missed_is_filled_from_the_message(make_intake):
+    from conftest import extraction
+    intake = make_intake(extraction(parks=["Joshua Tree"], dates=["tomorrow"], preferences=["chill"]))
+    turn = intake.step("Joshua Tree tomorrow for 2 days, flying into Palm Springs, chill")
+    assert turn.status == "ready" and turn.request["origin"] == {"airport": "PSP"} and turn.request["startDate"] == "2026-10-17"
+    assert "origin" in turn.trace["rule_filled"]
+
+
+@pytest.mark.parametrize("message", [
+    "玩完锡安从盐湖城飞回去，2027年5月5日出发，4天，适中",  # 只说了回程：不能当成出发地
+    "2027年7月1日去黄石，从西黄石或者博兹曼进，5天，适中",  # 两个机场：不猜
+])
+def test_origin_is_not_guessed_when_it_is_unclear(make_intake, message):
+    from conftest import extraction
+    destination = "盐湖城" if "飞回去" in message else None
+    intake = make_intake(extraction(parks=["锡安" if "锡安" in message else "黄石"], dates=["2027年5月5日" if "5月5日" in message else "2027年7月1日"],
+                                    duration="4天" if "4天" in message else "5天", destination=destination, preferences=["适中"]))
+    turn = intake.step(message)
+    assert turn.status == "needs_input" and turn.question["kind"] == "choose" and "origin" not in turn.trace["rule_filled"]
+
+
+@pytest.mark.parametrize("spans, expected", [
+    (["kids aged 6 and 9"], {"youngestKid": 6}),
+    (["kids ages 4, 7 and 10"], {"youngestKid": 4}),
+    (["a daughter aged five"], {"youngestKid": 5}),
+])
+def test_read_party_aged(spans, expected):
+    assert party(*spans) == expected
+
+
+def test_pace_the_model_put_into_party_still_counts(make_intake):
+    from conftest import extraction
+    # 本机 4B 的原样输出：“packed”放进了 party
+    intake = make_intake(extraction(parks=["Rocky Mountain"], dates=["June 3-7 2027"], party=["packed"], origin="Denver"))
+    turn = intake.step("Rocky Mountain, June 3-7 2027, Denver in and out, packed")
+    assert turn.status == "ready" and turn.request["pace"] == "packed" and turn.request["days"] == 5
+    assert "party" not in turn.request

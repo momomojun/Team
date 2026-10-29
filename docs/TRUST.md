@@ -15,7 +15,7 @@
 
 - 开放季节和开放时间、班车季和末班车（`shuttles.ts`）、游船导览的班次（`tours.ts`）、停车场几点停满（`parking.ts`）、季节性山路近 20 年的开通关闭（`roads.ts`）、临时关闭（`closures.ts`）、住处那一晚开不开（`lodging-seasons.ts`）、带孩子老人能不能去（`suitability/`）。
 - Critic（`copilot/nps_copilot/critic.py`，纯代码）把“去不了、赶不上”和“要注意”分开，前一种一定写进说明。
-- 测试：网站 `npm test`（192 个，含下面的真实行程对照和行程质量门禁），Copilot 七组回放评测（含没见过的样例），不达标合不进 main。
+- 测试：网站 `npm test`（192 个，含下面的真实行程对照和行程质量门禁），Copilot 的 pytest（约 440 个）和八组回放评测（含没见过的样例），不达标合不进 main。
 
 ### 拿真人走过的行程对照（`npm run eval:routes`，10-27）
 

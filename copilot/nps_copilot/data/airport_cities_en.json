@@ -230,7 +230,9 @@
   "Charlottesville"
  ],
  "CRW": [
-  "Charleston, West Virginia"
+  "Charleston, West Virginia",
+  "Charleston WV",
+  "Charleston"
  ],
  "ROA": [
   "Roanoke"
@@ -275,5 +277,77 @@
  ],
  "ATL": [
   "Atlanta"
+ ],
+ "BNA": [
+  "Nashville"
+ ],
+ "SDF": [
+  "Louisville"
+ ],
+ "CAE": [
+  "Columbia, South Carolina",
+  "Columbia SC",
+  "Columbia"
+ ],
+ "CHS": [
+  "Charleston, South Carolina",
+  "Charleston SC",
+  "Charleston"
+ ],
+ "LIT": [
+  "Little Rock"
+ ],
+ "MEM": [
+  "Memphis"
+ ],
+ "CLE": [
+  "Cleveland"
+ ],
+ "CAK": [
+  "Akron-Canton",
+  "Akron",
+  "Canton"
+ ],
+ "ORD": [
+  "Chicago O'Hare",
+  "O'Hare",
+  "Chicago"
+ ],
+ "MDW": [
+  "Chicago Midway",
+  "Midway",
+  "Chicago"
+ ],
+ "STL": [
+  "St. Louis",
+  "Saint Louis",
+  "St Louis"
+ ],
+ "CMX": [
+  "Houghton",
+  "Hancock"
+ ],
+ "DLH": [
+  "Duluth"
+ ],
+ "MQT": [
+  "Marquette"
+ ],
+ "INL": [
+  "International Falls"
+ ],
+ "MSP": [
+  "Minneapolis",
+  "Minneapolis-Saint Paul",
+  "Saint Paul",
+  "St. Paul"
+ ],
+ "STT": [
+  "St. Thomas",
+  "Saint Thomas",
+  "Charlotte Amalie"
+ ],
+ "PPG": [
+  "Pago Pago"
  ]
 }

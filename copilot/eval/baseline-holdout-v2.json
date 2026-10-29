@@ -1,0 +1,6 @@
+{
+  "note": "held-out v2 的回归门禁（10-28）。70 组样例冻结后第一次跑（本机 Qwen3.5 4B、冻结时的代码）是 61/70；看过失败原因、改了规则（18 个机场补英文城市名、过去的日期要再问、同一个月的日期范围、模型放错格子的城市和节奏、kids aged 6 and 9）以后回放是 70/70，所以它现在也算开发集了。",
+  "recording": "recordings/qwen3.5_4b-q4_K_M-holdout-v2.jsonl",
+  "cases": "cases/holdout-v2.jsonl",
+  "min_passed": 70
+}

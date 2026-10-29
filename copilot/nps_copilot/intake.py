@@ -41,6 +41,9 @@ MAX_DAYS = 14
 # “我还要去红木”“顺便去一下红木”“also Redwood”：在已经说过的公园上再加一座，不是换成它
 ADD_PARK = re.compile(r"还要去|还想去|还去|也要去|也想去|也去|再去|再加|加上|加一座|顺便|顺路去|一起去|\balso\b|\btoo\b|\badd\b|\bplus\b|as well", re.I)
 REGION_ZH = {"PDX": "俄勒冈州", "PWM": "缅因州", "IAD": "杜勒斯", "DCA": "里根"}
+# 同一个月里的日期范围，后一个只写了日子：“June 3-7 2027”“6月3日到7日”（“到7月2日”“3-7 days”不算）
+SAME_MONTH_RANGE = re.compile(r"(?<!\d)(\d{1,2})\s*(?:日|号|st|nd|rd|th)?\s*(?:-|–|—|~|～|到|至|\bto\b|\bthrough\b|\buntil\b)\s*"
+                              r"(\d{1,2})(?!\d)(?!\s*(?:月|天|晚|夜|days?\b|nights?\b))", re.I)
 
 PACE_OPTIONS = [
     {"value": "relaxed", "zh": "轻松玩", "en": "Take it easy", "zhNote": "每天少安排一些，多留休息时间", "enNote": "fewer stops, more downtime"},
@@ -392,6 +395,10 @@ class Intake:
             self._read_party(span)
         for span in kept["preferences"]:
             self._read_preference(span)
+        if not self.pace.value:
+            # 模型把节奏放进了同行的人（“packed”进了 party，10-28 holdout-v2）：节奏的说法在哪个片段里都算
+            for span in kept["party"]:
+                self._read_preference(span)
 
     def _rule_fill(self, message: str, had_days) -> list[str]:
         """模型漏掉、但原话里写得毫不含糊的条件，用规则补上（小模型常漏“玩4天”）。
@@ -419,6 +426,15 @@ class Intake:
         if not self.start_date.value and not self.month.value and not (self.date and self.date.month) and self.pending is None:
             if not parse_date_spans([message])[0] and self._read_relative_date(message):
                 filled.append("date")
+        # 出发地：模型没摘、原话里只提到一个机场（叫法不在公园名里，“West Yellowstone”不算）。
+        # 刚问过出发地就交给追问那边，“进…出…”两个机场的不猜，只说了回程的（“玩完从盐湖城飞回去”）不猜
+        if self.origin.source is None and self.destination.source is None and self.pending is None:
+            parks_said = [normalize(alias).lower() for _, alias in catalog.find_all(message, catalog.parks())]
+            hits = [(code, alias) for code, alias in catalog.find_all(message, catalog.airports())
+                    if not any(normalize(alias).lower() in said for said in parks_said)]
+            if len({code for code, _ in hits}) == 1:
+                self.origin = Field({"airport": hits[0][0]}, "user", hits[0][1])
+                filled.append("origin")
         # 公园名：模型一个都没摘、而整句话里能按目录认出公园的（9B 常漏“黄石”“大峡谷”），按目录补
         if not self.parks.value and not self.unsupported:
             hits = self._park_hits(message, message)
@@ -458,6 +474,11 @@ class Intake:
             if catalog.leftover(span, table) and not found and not catalog.find_all(span, table):
                 unknown.append(span)
         for span in unknown:
+            if catalog.find_all(span, catalog.airports()):
+                # 模型把城市放进了公园（“2027年4月10日纳什维尔进出，猛犸洞2天”）：是机场城市，出发地还没有就当出发地
+                if self.origin.value is None:
+                    self._read_place("origin", span)
+                continue
             if not self._suggest(span, codes):
                 if codes:
                     self.notes.append(f"没认出“{span}”，先没算进去。" if self.language != "en" else f"I didn't recognize “{span}”, so I left it out.")
@@ -530,6 +551,15 @@ class Intake:
                 self.month = Field(month, "user", joined)
             return None
         range_days = None
+        if len(found) == 1 and found[0].month is not None and found[0].day is not None:
+            same = SAME_MONTH_RANGE.search(joined)
+            if same and int(same.group(1)) == found[0].day:
+                if found[0].year is None and found[0].relative_year is None:
+                    # “June 3-7 2027”：年份写在范围后面，日期片段里没读到（10-28 holdout-v2 发现的，以前按推断的年份碰巧对）
+                    years = set(re.findall(r"(?<!\d)(20\d{2})(?!\d)", joined))
+                    if len(years) == 1:
+                        found[0].year = int(years.pop())
+                found.append(DateParts(found[0].year, found[0].month, int(same.group(2)), found[0].relative_year))
         if len(found) >= 2 and found[0].month is not None:
             range_days = date_range_days(joined, found[0], found[1], self.reference)
         parts = merge(self.date, found[0])
@@ -551,6 +581,11 @@ class Intake:
                     # “6月15日到盐湖城，第二天开始玩”：从第二天算
                     if re.search(r"第二天开始|次日开始|第二天才开始|next day|the day after", normalize(message), re.I):
                         start += dt.timedelta(days=1)
+                    if start < self.reference:
+                        # “2026年10月1日”在 10 月 16 日说：已经过去了，排出来也没法去（10-28 holdout-v2 发现以前照排）
+                        self.pending = {"kind": "bad_date", "text": f"{start.year} 年 {start.month} 月 {start.day} 日已经过了",
+                                        "en": f"{calendar_name(start.month)} {start.day}, {start.year} has already passed."}
+                        return range_days
                     # 年份是按“今天”推断的（用户只说了月日）：记成 inferred
                     self.start_date = Field(start.isoformat(), "inferred" if assumed else "user", joined)
                 except ValueError:
@@ -581,6 +616,8 @@ class Intake:
         from .dates import EN_NUMBERS, zh_number
         words = "|".join(sorted(EN_NUMBERS, key=len, reverse=True))
         ages = re.findall(r"(\d{1,2}|[一二两三四五六七八九十]+|" + words + r")\s*(?:岁|周岁|-? ?years?-? ?olds?|yo\b)", text, re.I)
+        for group in re.finditer(r"\b(?:aged?|ages)\s+((?:\d{1,2}|" + words + r")(?:\s*(?:,|and|&|or)\s*(?:\d{1,2}|" + words + r"))*)", text, re.I):
+            ages += re.findall(r"\d{1,2}|" + words, group.group(1), re.I)
         values = [value for value in (zh_number(token) for token in ages) if value is not None and 0 <= value <= 17]
         if values:
             self.party["youngestKid"] = min(min(values), self.party.get("youngestKid", 99))
@@ -718,7 +755,8 @@ class Intake:
             return pending
         if pending["kind"] == "bad_date":
             self.pending = None
-            return {"kind": "dates", "text": pending["text"] + "，请再说一下出发日期。" if zh else "That date doesn't exist. What's your start date?"}
+            return {"kind": "dates", "text": pending["text"] + "，请再说一下出发日期。" if zh else
+                    pending.get("en", "That date doesn't exist.") + " What's your start date?"}
         return None
 
     def _date_question(self, zh: bool) -> dict:
