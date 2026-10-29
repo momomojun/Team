@@ -25,6 +25,8 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
+# 计费总账（nps_copilot/ledger.py）里记成“评测”调用的
+os.environ.setdefault("COPILOT_SOURCE", "eval")
 # 评测、测试不用本机的 NPS 公告关闭清单（每天会变），结果才能复现
 os.environ.setdefault("COPILOT_LIVE", "0")
 

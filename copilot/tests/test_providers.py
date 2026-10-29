@@ -21,7 +21,7 @@ def fake_api(monkeypatch, tmp_path):
     """把 _post 换成按顺序返回写好的回复（或抛写好的错误），记下每次发了什么；不真的等待。
     不读本机仓库的 .env.local（里面可能有真的 key），只有 Gemini、OpenAI 两把假 key"""
     monkeypatch.setattr(providers, "ROOT", tmp_path)
-    for name in ("GROQ_API_KEY", "OPENROUTER_API_KEY"):
+    for name in ("GROQ_API_KEY", "OPENROUTER_API_KEY", "DEEPSEEK_API_KEY"):
         monkeypatch.delenv(name, raising=False)
     monkeypatch.setenv("GEMINI_API_KEY", "test-gemini-key")
     monkeypatch.setenv("OPENAI_API_KEY", "test-openai-key")
@@ -146,14 +146,14 @@ def test_openrouter_uses_the_openai_style_api_and_stops_on_the_daily_free_limit(
     provider = OpenRouterProvider(rpm=0)
     assert provider.complete_json("intake", "s", "u", SCHEMA).data == {"park": "Zion"}
     assert sent[0]["url"] == "https://openrouter.ai/api/v1/chat/completions"
-    assert sent[0]["body"]["model"] == "minimax/minimax-m3.1-flash:free" and sent[0]["body"]["reasoning"] == {"effort": "low"}
+    assert sent[0]["body"]["model"] == "nvidia/nemotron-3.5-super-vl:free" and sent[0]["body"]["reasoning"] == {"effort": "low"}
     assert sent[0]["headers"]["Authorization"] == "Bearer test-openrouter-key"
     with pytest.raises(QuotaError):
         provider.complete_json("intake", "s", "u", SCHEMA)
     assert len(sent) == 2  # 每天的免费额度用完了：不重试
 
 
-def test_chat_falls_back_gemini_then_minimax_then_local(monkeypatch, tmp_path, fake_api):
+def test_chat_falls_back_gemini_then_openrouter_then_local(monkeypatch, tmp_path, fake_api):
     from nps_copilot.providers import OllamaProvider, ProviderChain, chat_provider
 
     monkeypatch.delenv("COPILOT_PROVIDER", raising=False)
@@ -162,8 +162,9 @@ def test_chat_falls_back_gemini_then_minimax_then_local(monkeypatch, tmp_path, f
     assert isinstance(chosen, ProviderChain) and chosen.model == "gemini-3.5-flash-lite"
     # 10-21 起 OpenAI（没额度了）不在默认顺序里，有 key 也不用
     assert [type(p).__name__ for p in chosen.providers] == ["GeminiProvider", "OpenRouterProvider", "OllamaProvider"]
-    assert chosen.providers[1].model == "minimax/minimax-m3.1-flash:free"
-    # 聊天不排队、只重试一次：Gemini 忙就很快换 MiniMax
+    # 10-28 MiniMax 的免费推广期结束，换成 Nemotron 3.5 Super（免费版）
+    assert chosen.providers[1].model == "nvidia/nemotron-3.5-super-vl:free"
+    # 聊天不排队、只重试一次：Gemini 忙就很快换 OpenRouter
     assert chosen.providers[0].pace.rpm == 0 and chosen.providers[0].pace.waits == (2,)
     minimax_ok = {"choices": [{"message": {"content": '{"park": "Zion"}'}}], "usage": {}}
     sent = fake_api(http_error(429, "PerDay quota"), minimax_ok)
@@ -263,12 +264,73 @@ def test_free_models_come_first_in_chat_and_alerts(fake_api, monkeypatch):
 
     monkeypatch.setenv("GROQ_API_KEY", "test-groq-key")
     monkeypatch.setenv("OPENROUTER_API_KEY", "test-openrouter-key")
-    assert [p.model for p in cloud_chain()] == ["gemini-3.5-flash-lite", "minimax/minimax-m3.1-flash:free", "qwen/qwen3.8-27b"]
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "test-deepseek-key")
+    # 免费的三家在前，付费的 DeepSeek 最后当备用（10-28 仓库主人定的）
+    free = ["gemini-3.5-flash-lite", "nvidia/nemotron-3.5-super-vl:free", "qwen/qwen3.8-27b"]
+    assert [p.model for p in cloud_chain()] == [*free, "deepseek-flash"]
     chain = alerts_chain()
-    assert [p.model for p in chain] == ["minimax/minimax-m3.1-flash:free", "gemini-3.5-flash-lite", "qwen/qwen3.8-27b"]
-    assert chain[0].reasoning == {"effort": "high"}
+    assert [p.model for p in chain] == [*free, "deepseek-flash"]
+    assert chain[1].reasoning == {"effort": "high"}
+    assert chain[-1].reasoning is None
     # 只有 Gemini 一把 key：两条链都只剩 Gemini
-    for name in ("GROQ_API_KEY", "OPENROUTER_API_KEY", "OPENAI_API_KEY"):
-        monkeypatch.delenv(name)
+    for name in ("GROQ_API_KEY", "OPENROUTER_API_KEY", "OPENAI_API_KEY", "DEEPSEEK_API_KEY"):
+        monkeypatch.delenv(name, raising=False)
     assert [p.model for p in cloud_chain()] == ["gemini-3.5-flash-lite"]
     assert [p.model for p in alerts_chain()] == ["gemini-3.5-flash-lite"]
+
+
+def test_paid_deepseek_only_answers_after_every_free_model_fails(fake_api, monkeypatch, tmp_path):
+    from nps_copilot.providers import chat_provider
+
+    monkeypatch.delenv("COPILOT_PROVIDER", raising=False)
+    monkeypatch.setattr(providers, "ROOT", tmp_path)
+    for name in ("GROQ_API_KEY", "OPENROUTER_API_KEY", "DEEPSEEK_API_KEY"):
+        monkeypatch.setenv(name, f"test-{name.lower()}")
+    chosen = chat_provider()
+    assert [type(p).__name__ for p in chosen.providers] == [
+        "GeminiProvider", "OpenRouterProvider", "GroqProvider", "DeepSeekProvider", "OllamaProvider"]
+    ok = {"choices": [{"message": {"content": '{"park": "Zion"}'}}], "usage": {"prompt_tokens": 10, "completion_tokens": 3}}
+    # 免费的有一家能答，就不碰付费的
+    sent = fake_api(gemini_reply('{"park": "Zion"}'))
+    chosen.complete_json("intake", "s", "u", SCHEMA)
+    assert "api.deepseek.com" not in [r["url"].split("/")[2] for r in sent]
+    # 免费的三家都说额度用完：才轮到 DeepSeek
+    sent = fake_api(*[http_error(429, "busy")] * 6, ok)  # 聊天时每家忙了只重试一次
+    completion = chosen.complete_json("intake", "s", "u", SCHEMA)
+    hosts = [r["url"].split("/")[2] for r in sent]
+    assert hosts[-1] == "api.deepseek.com" and completion.data == {"park": "Zion"}
+    assert [f["model"] for f in completion.meta["fallback_from"]] == [
+        "gemini-3.5-flash-lite", "nvidia/nemotron-3.5-super-vl:free", "qwen/qwen3.8-27b"]
+
+
+def test_deepseek_writes_the_schema_into_the_prompt_turns_thinking_off_and_treats_empty_replies_as_errors(fake_api, monkeypatch):
+    from nps_copilot.providers import DeepSeekProvider
+
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "test-deepseek-key")
+    monkeypatch.delenv("COPILOT_REASONING", raising=False)
+    ok = {"choices": [{"message": {"content": '{"park": "Arches"}'}}],
+          "usage": {"prompt_tokens": 50, "completion_tokens": 7, "prompt_cache_hit_tokens": 32}}
+    sent = fake_api(ok)
+    provider = DeepSeekProvider(rpm=0)
+    completion = provider.complete_json("intake", "system text", "去拱门", SCHEMA)
+    assert completion.data == {"park": "Arches"} and completion.meta["cache_hit_tokens"] == 32
+    request = sent[0]
+    assert request["url"] == "https://api.deepseek.com/chat/completions"
+    assert request["headers"]["Authorization"] == "Bearer test-deepseek-key"
+    body = request["body"]
+    assert body["model"] == "deepseek-flash" and body["response_format"] == {"type": "json_object"}
+    assert body["thinking"] == {"type": "disabled"} and body["temperature"] == 0 and "reasoning_effort" not in body
+    # 官方要求提示词里有 json 这个词、给出格式：schema 写进系统提示词
+    assert "json" in body["messages"][0]["content"] and '"park"' in body["messages"][0]["content"]
+    # 打开思考：不传 temperature，带上档位
+    monkeypatch.setenv("COPILOT_REASONING", "high")
+    sent.clear()
+    sent = fake_api(ok)
+    DeepSeekProvider(rpm=0).complete_json("intake", "s", "u", SCHEMA)
+    assert sent[0]["body"]["thinking"] == {"type": "enabled"} and sent[0]["body"]["reasoning_effort"] == "high"
+    assert "temperature" not in sent[0]["body"]
+    # 回了空内容：当出错，交给下一家
+    sent.clear()
+    fake_api({"choices": [{"message": {"content": ""}}]})
+    with pytest.raises(ProviderError):
+        provider.complete_json("intake", "s", "u", SCHEMA)

@@ -88,6 +88,37 @@ interface AlertsStatus {
   cache_entries: number;
 }
 
+/** 计费总账的一格（copilot/nps_copilot/monitor.py 的 billing）：某一天、谁调用的、哪个模型 */
+interface BillingRow {
+  day: string;
+  source: string;
+  model: string;
+  provider: string;
+  calls: number;
+  prompt_tokens: number;
+  output_tokens: number;
+  thinking_tokens: number;
+  estimated: number;
+  cost: number;
+  unpriced: number;
+  list_cost: number;
+  unlisted: number;
+}
+/** 免费档每天的上限（monitor.FREE_LIMITS） */
+interface FreeLimit {
+  id: string;
+  provider: string;
+  models?: string[];
+  free?: boolean;
+  requests: number | null;
+  tokens: number | null;
+  note: string;
+}
+interface Billing {
+  rows: BillingRow[];
+  limits: FreeLimit[];
+}
+
 interface AdminData {
   available: boolean;
   health: {
@@ -109,10 +140,14 @@ interface AdminData {
     daily: Day[];
     recent: Turn[];
     alerts: AlertsStatus;
+    /** 这台机器上的计费总账（旧版本的服务没有） */
+    billing?: Billing;
   } | null;
   nightly: {
     runs: { id: number; status: string; conclusion: string | null; created: string; url: string; event: string }[];
     issues: { number: number; title: string; created: string; url: string }[];
+    /** 每晚 GitHub 上调用模型的计费总账 */
+    billing?: Billing | null;
     error?: string;
   };
 }
@@ -173,6 +208,26 @@ const TEXT = {
     usageNote: "按真正回答的那个模型算；前一个模型出错、换到它的，算在“换来的”里",
     usageHead: ["模型", "调用", "换来的", "出错", "输入 token", "输出 token", "思考 token", "花费"],
     usageEmpty: "这段时间的日志里还没有记模型调用（10-19 以后的版本才记）。",
+    billing: {
+      title: "计费（所有模型）",
+      note: "自己记的账：每次调用模型都记一笔（聊天、每晚读公告、评测、裁判），免费档的 API 在各家后台看不到用了多少，在这里看",
+      calls: "调用",
+      callsSub: (estimated: number) => (estimated ? `其中 ${estimated} 次没回报 token、按字数估的` : "token 都是模型回报的"),
+      cost: "实际花费",
+      costSub: "付费的按官网价，免费档、本机按 $0",
+      list: "按付费标价算",
+      listSub: "要是免费档都换成付费档，大概要花这么多",
+      head: ["模型", "调用", "聊天", "读公告", "评测", "裁判", "输入 token", "输出 token", "实际花费", "按标价算"],
+      quota: "今天的免费额度",
+      quotaHead: ["哪一家", "今天的调用", "上限", "今天的 token", "上限", "说明"],
+      none: "—",
+      unknownLimit: "看说明",
+      empty: "这段时间计费总账里还没有调用：10-28 以后的版本才记，每晚读公告的那一份第一次跑完以后才有。",
+      parts: (local: boolean, nightly: boolean) =>
+        `这里加起来的是：${[local ? "本机 Copilot 服务的总账" : null, nightly ? "每晚 GitHub 上读公告的总账" : null].filter(Boolean).join("、") || "（都还没有）"}`,
+      noList: "没有付费版",
+      noListCalls: (n: number) => `其中 ${n} 次调用的模型没有付费版`,
+    },
     alertsRead: (n: number) => `聊天时现读了 ${n} 条 NPS 公告，那部分的 token 不在上表里。`,
     quality: "质量",
     qualityNote: "按 Copilot 版本和提示词版本分，最近用上的在上面；新版本上线后和上一版比，变差就回滚（docs/GUIDE.md）",
@@ -261,6 +316,26 @@ const TEXT = {
     usageNote: "Counted for the model that actually answered; calls it took over after an earlier model failed are under \"fallback\"",
     usageHead: ["Model", "Calls", "Fallback", "Errors", "Input tokens", "Output tokens", "Thinking tokens", "Cost"],
     usageEmpty: "No model calls logged in this period (versions from 10-19 on log them).",
+    billing: {
+      title: "Billing (all models)",
+      note: "Our own ledger: every model call is recorded (chat, nightly alert reading, evals, the judge), so free-tier APIs whose consoles don't show usage can be tracked here",
+      calls: "Calls",
+      callsSub: (estimated: number) => (estimated ? `${estimated} didn't report tokens and were estimated from length` : "all token counts reported by the models"),
+      cost: "Actual cost",
+      costSub: "paid models at list price; free tiers and the local model at $0",
+      list: "At paid list prices",
+      listSub: "roughly what it would cost if the free tiers were paid tiers",
+      head: ["Model", "Calls", "Chat", "Alerts", "Evals", "Judge", "Input tokens", "Output tokens", "Actual cost", "At list price"],
+      quota: "Today's free quota",
+      quotaHead: ["Provider", "Calls today", "Limit", "Tokens today", "Limit", "Notes"],
+      none: "—",
+      unknownLimit: "see notes",
+      empty: "No calls in the ledger for this period yet: versions from 10-28 on record them, and the nightly part appears after its first run.",
+      parts: (local: boolean, nightly: boolean) =>
+        `Combined here: ${[local ? "the local Copilot service's ledger" : null, nightly ? "the nightly GitHub alerts ledger" : null].filter(Boolean).join(" and ") || "(neither yet)"}`,
+      noList: "no paid version",
+      noListCalls: (n: number) => `${n} ${n === 1 ? "call" : "calls"} used a model with no paid version`,
+    },
     alertsRead: (n: number) => `${n} NPS alerts were read live during chats; those tokens aren't in the table above.`,
     quality: "Quality",
     qualityNote: "By Copilot and prompt version, newest first. Compare a new release with the previous one and roll back if it is worse (docs/GUIDE.md)",
@@ -414,6 +489,92 @@ function Table({ head, rows, align }: { head: string[]; rows: React.ReactNode[][
 }
 
 const flag = (value: number) => <span className={value ? "text-clay-700" : "text-mute"}>{value}</span>;
+
+/** 本地日期 YYYY-MM-DD（总账按机器当地的日子记） */
+const isoDay = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+type BillingKey = "calls" | "prompt_tokens" | "output_tokens" | "thinking_tokens" | "estimated" | "cost" | "unpriced" | "list_cost" | "unlisted";
+const BILLING_KEYS: BillingKey[] = ["calls", "prompt_tokens", "output_tokens", "thinking_tokens", "estimated", "cost", "unpriced", "list_cost", "unlisted"];
+
+/**
+ * 计费：本机 Copilot 服务的总账（stats.billing）和每晚 GitHub 上读公告的总账（nightly.billing）加起来，按模型列；
+ * 再按免费档每天的上限看今天用了多少。价格都是 Python 那边算好的，这里只加
+ */
+function BillingSection({ local, nightly, days, t }: { local?: Billing; nightly?: Billing | null; days: number; t: AdminText }) {
+  const b = t.billing;
+  const { money } = makeFormat(t);
+  const since = new Date();
+  since.setDate(since.getDate() - (days - 1));
+  const sinceDay = isoDay(since);
+  const today = isoDay(new Date());
+  const rows = [...(local?.rows ?? []), ...(nightly?.rows ?? [])].filter((row) => row.day >= sinceDay);
+  const limits = local?.limits ?? nightly?.limits ?? [];
+  const byModel = new Map<string, BillingRow & { sources: Record<string, number> }>();
+  for (const row of rows) {
+    const item = byModel.get(row.model) ?? { ...row, ...Object.fromEntries(BILLING_KEYS.map((key) => [key, 0])), sources: {} };
+    for (const key of BILLING_KEYS) item[key] += row[key];
+    item.sources[row.source] = (item.sources[row.source] ?? 0) + row.calls;
+    byModel.set(row.model, item);
+  }
+  const models = [...byModel.values()].sort((a, c) => c.calls - a.calls);
+  const sum = (key: BillingKey) => models.reduce((total, item) => total + item[key], 0);
+  const matches = (limit: FreeLimit, row: BillingRow) =>
+    row.provider === limit.provider && (!limit.models || limit.models.includes(row.model)) && (!limit.free || row.model.endsWith(":free"));
+  const quota = limits.map((limit) => {
+    const used = rows.filter((row) => row.day === today && matches(limit, row));
+    return {
+      limit,
+      calls: used.reduce((total, row) => total + row.calls, 0),
+      tokens: used.reduce((total, row) => total + row.prompt_tokens + row.output_tokens + row.thinking_tokens, 0),
+    };
+  });
+  const share = (used: number, cap: number | null) => (cap ? `${big(used)} (${percent(used, cap)})` : big(used));
+  return (
+    <Section title={b.title} note={b.note}>
+      {models.length ? (
+        <>
+          <div className="mt-6 grid gap-x-10 gap-y-6 sm:grid-cols-3">
+            <Figure label={b.calls} value={big(sum("calls"))} sub={b.callsSub(sum("estimated"))} />
+            <Figure label={b.cost} value={money(sum("cost"), sum("unpriced"))} sub={b.costSub} />
+            <Figure label={b.list} value={money(sum("list_cost"))} sub={sum("unlisted") ? `${b.listSub} · ${b.noListCalls(sum("unlisted"))}` : b.listSub} />
+          </div>
+          <Table
+            head={b.head}
+            align={["l", "r", "r", "r", "r", "r", "r", "r", "r", "r"]}
+            rows={models.map((item) => [
+              <span key="m" className="font-medium">{item.model}</span>,
+              big(item.calls),
+              big(item.sources.chat ?? 0),
+              big(item.sources.alerts ?? 0),
+              big(item.sources.eval ?? 0),
+              big(item.sources.judge ?? 0),
+              big(item.prompt_tokens),
+              big(item.output_tokens + item.thinking_tokens),
+              money(item.cost, item.unpriced),
+              item.unlisted === item.calls ? b.noList : money(item.list_cost),
+            ])}
+          />
+        </>
+      ) : (
+        <p className="mt-4 text-sm text-mute">{b.empty}</p>
+      )}
+      <h3 className="eyebrow mt-10 text-mute">{b.quota}</h3>
+      <Table
+        head={b.quotaHead}
+        align={["l", "r", "r", "r", "r", "l"]}
+        rows={quota.map(({ limit, calls, tokens }) => [
+          <span key="p" className="font-medium">{limit.models?.join(", ") ?? limit.provider}</span>,
+          share(calls, limit.requests),
+          limit.requests == null ? b.unknownLimit : big(limit.requests),
+          share(tokens, limit.tokens),
+          limit.tokens == null ? b.none : big(limit.tokens),
+          <span key="n" className="text-[12px] leading-5 text-ink-soft">{limit.note}</span>,
+        ])}
+      />
+      <p className="mt-3 text-[11px] text-mute">{b.parts(Boolean(local), Boolean(nightly))}</p>
+    </Section>
+  );
+}
 
 export function AdminDashboard({ lang = "zh" }: { lang?: AdminLang }) {
   const t = TEXT[lang];
@@ -616,6 +777,8 @@ export function AdminDashboard({ lang = "zh" }: { lang?: AdminLang }) {
           </Section>
         </>
       )}
+
+      <BillingSection local={stats?.billing} nightly={data?.nightly.billing} days={days} t={t} />
 
       <Section title={t.alerts} note={t.alertsNote}>
         <div className="mt-4 grid gap-x-10 gap-y-6 lg:grid-cols-2">

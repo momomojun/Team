@@ -147,6 +147,9 @@ def parse_days(span: str | None) -> int | None:
     if not span:
         return None
     text = normalize(span)
+    # “3-7天”“三到五天”“3 to 5 days”：没说定，不替用户挑
+    if re.search(r"(\d+|" + ZH_NUMBER + r")\s*(?:-|–|—|~|～|到|至|\bto\b|\bor\b|或)\s*(\d+|" + ZH_NUMBER + r")\s*(?:个)?\s*(?:天|日|晚|夜|days?\b|nights?\b)", text, re.I):
+        return None
     weeks = WEEK_RE.findall(text)
     if weeks and not DAYS_RE.search(text) and not DAYS_RI.search(text):
         token = weeks[0][0].lower()

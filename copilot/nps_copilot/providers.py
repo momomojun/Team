@@ -5,7 +5,7 @@
 - RecordingProvider：包一个真模型，把每次调用录下来，给 ReplayProvider 用
 - ScriptedProvider：单元测试用，按顺序返回写好的输出
 - GeminiProvider、OpenAIProvider、OpenRouterProvider、GroqProvider：商业 API（10-19 加的）。key 从环境变量或仓库根目录的
-  .env.local 读（GEMINI_API_KEY、OPENAI_API_KEY、OPENROUTER_API_KEY、GROQ_API_KEY），只放在请求头里，不写日志；
+  .env.local 读（GEMINI_API_KEY、OPENAI_API_KEY、OPENROUTER_API_KEY、GROQ_API_KEY、DEEPSEEK_API_KEY），只放在请求头里，不写日志；
   聊天按 chat_provider() 的顺序用，评测要明确设 COPILOT_PROVIDER
 - FallbackProvider：主模型出错（额度用完、服务忙）时退回本机模型，给 Copilot 服务用；评测不用它（要量的是主模型本身）
 - Metered：包一个模型，记下每次调用是哪个模型回答的、用了多少 token、多久、有没有退到备用的（每轮日志里的 calls，监控算花费用）
@@ -21,6 +21,8 @@ import urllib.request
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Protocol
+
+from . import ledger
 
 
 @dataclass
@@ -81,7 +83,7 @@ class OllamaProvider:
         except json.JSONDecodeError as error:
             raise ProviderError(f"模型没有返回 JSON：{content[:200]}") from error
         meta = {key: reply.get(key) for key in ("total_duration", "load_duration", "eval_count", "prompt_eval_count")}
-        return Completion(data=data, model=self.model, latency_ms=latency, raw=content, meta=meta)
+        return _billed(self, task, system, user, Completion(data=data, model=self.model, latency_ms=latency, raw=content, meta=meta))
 
 
 @dataclass
@@ -184,6 +186,12 @@ def _json_text(text: str) -> dict:
     return data
 
 
+def _billed(provider, task: str, system: str, user: str, completion: Completion) -> Completion:
+    """记进计费总账（ledger.py），原样返回：每一家真的调用了模型、拿到回答的地方都过这里（回放、假模型不过）"""
+    ledger.record(provider.name, completion.model, task, completion.meta, f"{system}\n{user}", completion.raw or "", completion.latency_ms or 0)
+    return completion
+
+
 class QuotaError(ProviderError):
     """今天的免费额度用完了：再试也没用"""
 
@@ -276,7 +284,7 @@ class GeminiProvider:
         usage = reply.get("usageMetadata", {})
         meta = {"prompt_tokens": usage.get("promptTokenCount"), "output_tokens": usage.get("candidatesTokenCount"),
                 "thinking_tokens": usage.get("thoughtsTokenCount")}
-        return Completion(data=_json_text(text), model=self.model, latency_ms=latency, raw=text, meta=meta)
+        return _billed(self, task, system, user, Completion(data=_json_text(text), model=self.model, latency_ms=latency, raw=text, meta=meta))
 
 
 @dataclass
@@ -329,7 +337,7 @@ class OpenAIProvider:
         usage = reply.get("usage", {})
         meta = {"prompt_tokens": usage.get("prompt_tokens"), "output_tokens": usage.get("completion_tokens"),
                 "thinking_tokens": (usage.get("completion_tokens_details") or {}).get("reasoning_tokens")}
-        return Completion(data=_json_text(text), model=self.model, latency_ms=latency, raw=text, meta=meta)
+        return _billed(self, task, system, user, Completion(data=_json_text(text), model=self.model, latency_ms=latency, raw=text, meta=meta))
 
 
 def _no_type_lists(schema):
@@ -355,7 +363,7 @@ class OpenRouterProvider:
     """OpenRouter（一个接口用很多家的模型，有免费模型，名字以 :free 结尾）。接口和 OpenAI 的 Chat Completions 一样；
     按 JSON Schema 输出，推理开到 low（推理模型关得太狠会乱答，10-19 的 GPT-5 nano 就是这样）。
     免费模型有每天的次数上限（没充值过的账户约 50 次 / 天），用完了 429 里写着 per-day，直接报错不再试"""
-    model: str = "minimax/minimax-m3.1-flash:free"
+    model: str = "nvidia/nemotron-3.5-super-vl:free"
     timeout: float = 120.0
     name: str = "openrouter"
     rpm: float = 18
@@ -397,7 +405,7 @@ class OpenRouterProvider:
         meta = {"prompt_tokens": usage.get("prompt_tokens"), "output_tokens": usage.get("completion_tokens"),
                 "thinking_tokens": (usage.get("completion_tokens_details") or {}).get("reasoning_tokens"),
                 "provider": reply.get("provider")}
-        return Completion(data=_json_text(text), model=self.model, latency_ms=self.pace.last_ms, raw=text, meta=meta)
+        return _billed(self, task, system, user, Completion(data=_json_text(text), model=self.model, latency_ms=self.pace.last_ms, raw=text, meta=meta))
 
 
 # Groq 免费档（Settings → Limits，10-19）：每个模型每分钟 30 次、8000 token，每天 1000 次、20 万 token。
@@ -459,7 +467,53 @@ class GroqProvider:
         meta = {"prompt_tokens": usage.get("prompt_tokens"), "output_tokens": usage.get("completion_tokens"),
                 "thinking_tokens": (usage.get("completion_tokens_details") or {}).get("reasoning_tokens"),
                 "json_mode": self.json_mode}
-        return Completion(data=_json_text(text), model=self.model, latency_ms=self.pace.last_ms, raw=text, meta=meta)
+        return _billed(self, task, system, user, Completion(data=_json_text(text), model=self.model, latency_ms=self.pace.last_ms, raw=text, meta=meta))
+
+
+@dataclass
+class DeepSeekProvider:
+    """DeepSeek 开放平台（10-28 仓库主人申请的 key；api.deepseek.com，接口和 OpenAI 的 Chat Completions 一样，按量付费）。
+    型号：deepseek-flash（V4.1 Flash，便宜）、deepseek-v4-pro（贵约 4 倍），价格在 monitor.PRICES。
+    只认 JSON 模式（json_object），不认 JSON Schema：schema 写进系统提示词（官方要求提示词里有“json”这个词、给出格式）。
+    思考模式默认是开的：聊天时关掉（快、还能 temperature 0）；COPILOT_REASONING=low / high / max 打开思考并选档位。
+    偶尔会回空内容（官方文档写的）：当成出错，交给下一家；余额用完是 402，不重试"""
+    model: str = "deepseek-flash"
+    timeout: float = 120.0
+    name: str = "deepseek"
+    rpm: float = 60
+    max_tokens: int = 1536
+    reasoning: str | None = field(default_factory=lambda: (
+        None if os.environ.get("COPILOT_REASONING") in (None, "", "none") else os.environ.get("COPILOT_REASONING")))
+
+    def __post_init__(self) -> None:
+        self.key = secret("DEEPSEEK_API_KEY")
+        self.pace = _Paced(self.rpm)
+
+    def complete_json(self, task: str, system: str, user: str, schema: dict) -> Completion:
+        prompt = f"{system}\n\n只输出一个 json 对象，符合这个 JSON Schema：\n{json.dumps(schema, ensure_ascii=False)}"
+        body: dict = {
+            "model": self.model, "messages": [{"role": "system", "content": prompt}, {"role": "user", "content": user}],
+            "response_format": {"type": "json_object"},
+            "max_tokens": self.max_tokens * (3 if task == "writer" else 1) * (4 if self.reasoning else 1),
+            "thinking": {"type": "enabled" if self.reasoning else "disabled"},
+        }
+        if self.reasoning:
+            body["reasoning_effort"] = self.reasoning
+        else:
+            body["temperature"] = 0
+        reply = self.pace.run(lambda: _post("https://api.deepseek.com/chat/completions", body,
+                                            {"Authorization": f"Bearer {self.key}"}, self.timeout))
+        try:
+            text = reply["choices"][0]["message"]["content"] or ""
+        except (KeyError, IndexError) as error:
+            raise ProviderError(f"DeepSeek 没有返回内容：{json.dumps(reply, ensure_ascii=False)[:200]}") from error
+        if not text.strip():
+            raise ProviderError("DeepSeek 回了空内容")
+        usage = reply.get("usage", {})
+        meta = {"prompt_tokens": usage.get("prompt_tokens"), "output_tokens": usage.get("completion_tokens"),
+                "thinking_tokens": (usage.get("completion_tokens_details") or {}).get("reasoning_tokens"),
+                "cache_hit_tokens": usage.get("prompt_cache_hit_tokens")}
+        return _billed(self, task, system, user, Completion(data=_json_text(text), model=self.model, latency_ms=self.pace.last_ms, raw=text, meta=meta))
 
 
 @dataclass
@@ -605,34 +659,40 @@ def _available(specs: list, batch: bool) -> list:
 
 def cloud_chain(batch: bool = False) -> list:
     """聊天用的商业 API，全是免费档（10-20 仓库主人定的“哪个稳哪个准用哪个，免费的能用就先用免费的”，按第四轮对照）：
-    Gemini 3.5 Flash Lite（单句三组最好，真实对话 15/15）→ OpenRouter 上的 MiniMax M3.1 Flash（真实对话 15/15，
-    一次约 3 秒，每天约 50 次）→ Groq 上的 Qwen3.8 27B（没见过的单句 38/40，很快，但每分钟只有 8000 token）。
+    Gemini 3.5 Flash Lite（单句三组最好，真实对话 15/15）→ OpenRouter 上的 Nemotron 3.5 Super（英伟达，免费版，
+    地区叫法 16/17；没充值的账户所有免费模型加起来每天约 50 次）→ Groq 上的 Qwen3.8 27B（没见过的单句 38/40，很快，但每分钟只有 8000 token）。
+    10-28 OpenRouter 上的 MiniMax M3.1 Flash 免费推广期结束，换成 Nemotron（同一天试的 dots-3 只有 13/17）。
     10-21 仓库主人的 OpenAI key 没额度了，GPT-4.1 mini 从默认顺序里拿掉（设 COPILOT_PROVIDER=openai 还能单独用）。
-    没配 key 的跳过"""
+    免费的几家都出错（额度用完、服务忙）才轮到 DeepSeek Flash（按量付费，10-28 仓库主人定的“放在免费模型后面当备用”；
+    全套评测 268 次约 $0.08，单句不如 Gemini、多轮差不多，没有每天的次数上限）。没配 key 的跳过"""
     return _available([
         (GeminiProvider, {"model": "gemini-3.5-flash-lite"}),
-        (OpenRouterProvider, {"model": "minimax/minimax-m3.1-flash:free"}),
+        (OpenRouterProvider, {"model": "nvidia/nemotron-3.5-super-vl:free"}),
         (GroqProvider, {"model": "qwen/qwen3.8-27b"}),
+        (DeepSeekProvider, {"model": "deepseek-flash"}),
     ], batch)
 
 
 def alerts_chain(batch: bool = True) -> list:
-    """读公告用的商业 API（同样的规矩，全是免费档）：OpenRouter 上的 MiniMax M3.1 Flash 推理开 high（26 条抽样上景点 F1 0.67；
-    每天约 50 次，每晚只读新的、改过的几条够用）→ Gemini 3.5 Flash Lite（26 条上同样 0.67，151 条上 0.54）→ Groq 上的
-    Qwen3.8 27B（0.44）。10-21 起不再用 GPT-4.1 mini（OpenAI 的 key 没额度了）。没配 key 的跳过"""
+    """读公告用的商业 API（同样的规矩，全是免费档）：Gemini 3.5 Flash Lite（26 条抽样上景点 F1 0.67，151 条上 0.54）→
+    OpenRouter 上的 Nemotron 3.5 Super 推理开 high（还没在公告上测过，所以排在 Gemini 后面）→ Groq 上的 Qwen3.8 27B（0.44）。
+    原来排第一的 MiniMax M3.1 Flash（0.67）10-28 免费推广期结束。10-21 起不再用 GPT-4.1 mini（OpenAI 的 key 没额度了）。
+    免费的都出错才轮到 DeepSeek Flash（付费备用，和聊天一样；还没在公告上测过）。没配 key 的跳过（GitHub 上每晚读公告要另加 DEEPSEEK_API_KEY 这个 secret 才会用）"""
     return _available([
-        (OpenRouterProvider, {"model": "minimax/minimax-m3.1-flash:free", "reasoning": {"effort": "high"}}),
         (GeminiProvider, {"model": "gemini-3.5-flash-lite"}),
+        (OpenRouterProvider, {"model": "nvidia/nemotron-3.5-super-vl:free", "reasoning": {"effort": "high"}}),
         (GroqProvider, {"model": "qwen/qwen3.8-27b"}),
+        (DeepSeekProvider, {"model": "deepseek-flash"}),
     ], batch)
 
 
 CHAT_STEPS = ("dispatch", "intake", "qa", "writer")
-KINDS = {"gemini": "GeminiProvider", "openai": "OpenAIProvider", "openrouter": "OpenRouterProvider", "groq": "GroqProvider", "ollama": "OllamaProvider"}
+KINDS = {"gemini": "GeminiProvider", "openai": "OpenAIProvider", "openrouter": "OpenRouterProvider", "groq": "GroqProvider",
+         "deepseek": "DeepSeekProvider", "ollama": "OllamaProvider"}
 
 
 def make_provider(spec: str, chat: bool = True) -> Provider:
-    """按“哪家:型号”造一个模型：gemini、openai:gpt-4.1-mini、openrouter:minimax/minimax-m3.1-flash:free、
+    """按“哪家:型号”造一个模型：gemini、openai:gpt-4.1-mini、openrouter:nvidia/nemotron-3.5-super-vl:free、
     groq:qwen/qwen3.8-27b、ollama:qwen3.5:4b-q4_K_M（型号里可以有冒号，只按第一个冒号分）。
     chat=True 时商业 API 不按免费档排队、服务忙只重试一次（和 cloud_chain 一样）"""
     kind, _, model = spec.strip().partition(":")
@@ -677,7 +737,7 @@ def step_models(default: Provider) -> Provider:
 
 
 def chat_provider() -> Provider:
-    """Copilot 聊天（serve、chat）用的模型：cloud_chain 的顺序（Gemini → Groq Qwen3.8 → GPT-4.1 mini）再加本机模型，没配 key 的那一家跳过
+    """Copilot 聊天（serve、chat）用的模型：cloud_chain 的顺序（Gemini → Nemotron → Groq Qwen3.8 → DeepSeek）再加本机模型，没配 key 的那一家跳过
     （组员什么 key 都没配就跟以前一样只用本机）。设了 COPILOT_PROVIDER 就按设的、不再按顺序退。
     COPILOT_STEP_MODELS 可以给某几步单独换模型（step_models）。
     评测脚本不走这里（用 from_env，默认本机，录音才对得上）"""
@@ -688,7 +748,7 @@ def chat_provider() -> Provider:
 
 
 def from_env() -> Provider:
-    """COPILOT_PROVIDER=ollama（默认）/ gemini / openai / openrouter / groq / replay；COPILOT_MODEL 选型号；
+    """COPILOT_PROVIDER=ollama（默认）/ gemini / openai / openrouter / groq / deepseek / replay；COPILOT_MODEL 选型号；
     COPILOT_FALLBACK=ollama 时商业 API 出错退回本机（Copilot 服务用，评测别开：要量的是主模型本身）"""
     kind = os.environ.get("COPILOT_PROVIDER", "ollama")
     model = os.environ.get("COPILOT_MODEL")
@@ -696,10 +756,11 @@ def from_env() -> Provider:
         return OllamaProvider(**({"model": model} if model else {}))
     if kind == "replay":
         return ReplayProvider(Path(os.environ["COPILOT_REPLAY"]))
-    if kind in ("gemini", "openai", "openrouter", "groq"):
-        cls = {"gemini": GeminiProvider, "openai": OpenAIProvider, "openrouter": OpenRouterProvider, "groq": GroqProvider}[kind]
+    if kind in ("gemini", "openai", "openrouter", "groq", "deepseek"):
+        cls = {"gemini": GeminiProvider, "openai": OpenAIProvider, "openrouter": OpenRouterProvider, "groq": GroqProvider,
+               "deepseek": DeepSeekProvider}[kind]
         provider: Provider = cls(**({"model": model} if model else {}))
         if os.environ.get("COPILOT_FALLBACK") == "ollama":
             provider = FallbackProvider(provider, OllamaProvider())
         return provider
-    raise ProviderError(f"不认识的 COPILOT_PROVIDER：{kind}（ollama / gemini / openai / openrouter / groq / replay）")
+    raise ProviderError(f"不认识的 COPILOT_PROVIDER：{kind}（ollama / gemini / openai / openrouter / groq / deepseek / replay）")

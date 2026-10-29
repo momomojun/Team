@@ -1,6 +1,7 @@
 /**
  * 后台（/admin）的数据：Copilot 服务的 /health 和 /stats（运行日志的统计、按模型的调用和花费、最近几轮、读公告的状态），
- * 加上 GitHub 上每晚读公告的 workflow 最近几次跑得怎么样、还开着的 nps-alerts issue。
+ * 加上 GitHub 上每晚读公告的 workflow 最近几次跑得怎么样、还开着的 nps-alerts issue，和每晚调用模型的计费总账
+ * （data/alerts-live 分支的 usage.json，copilot/scripts/publish_usage.py 写的；本机服务的那一份在 stats.billing 里，后台加起来）。
  *
  * GET ?days=7 → {available, health, stats, nightly}
  *
@@ -18,6 +19,8 @@ const GITHUB_TTL_MS = 5 * 60_000;
 interface Nightly {
   runs: { id: number; status: string; conclusion: string | null; created: string; url: string; event: string }[];
   issues: { number: number; title: string; created: string; url: string }[];
+  /** 每晚 GitHub 上调用模型的计费总账（还没发布过、读不到时是 null） */
+  billing: { rows: unknown[]; limits: unknown[] } | null;
   error?: string;
 }
 
@@ -33,9 +36,11 @@ async function nightly(): Promise<Nightly> {
   if (githubCache && Date.now() - githubCache.at < GITHUB_TTL_MS) return githubCache.data;
   const headers = { Accept: "application/vnd.github+json", "User-Agent": "nps-guide-admin" };
   try {
-    const [runs, issues] = await Promise.all([
+    const [runs, issues, billing] = await Promise.all([
       getJson(`https://api.github.com/repos/${REPO}/actions/workflows/${WORKFLOW}/runs?per_page=7`, 8_000, headers),
       getJson(`https://api.github.com/repos/${REPO}/issues?labels=nps-alerts&state=open&per_page=10`, 8_000, headers),
+      // raw 文件不算进 GitHub 接口每小时 60 次的额度；还没发布过是 404
+      getJson(`https://raw.githubusercontent.com/${REPO}/data/alerts-live/usage.json`, 8_000).catch(() => null),
     ]);
     const data: Nightly = {
       runs: (runs.workflow_runs ?? []).map((run: Record<string, unknown>) => ({
@@ -54,11 +59,12 @@ async function nightly(): Promise<Nightly> {
           created: issue.created_at,
           url: issue.html_url,
         })),
+      billing: billing && Array.isArray(billing.rows) ? billing : null,
     };
     githubCache = { at: Date.now(), data };
     return data;
   } catch (error) {
-    return { runs: [], issues: [], error: error instanceof Error ? error.message : "github" };
+    return { runs: [], issues: [], billing: null, error: error instanceof Error ? error.message : "github" };
   }
 }
 
