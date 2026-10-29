@@ -330,11 +330,11 @@ python copilot/scripts/smoke.py http://127.0.0.1:8765 --expect-version 0.2.0
 2. 合并以后打 tag 推上去：
 
 ```bash
-git -C D:/LLM/Team tag copilot-v0.3.0 origin/main
+git -C D:/LLM/Team tag copilot-v0.4.0 origin/main
 ```
 
 ```bash
-git -C D:/LLM/Team push origin copilot-v0.3.0
+git -C D:/LLM/Team push origin copilot-v0.4.0
 ```
 
 3. `Copilot release` workflow 会检查 tag 和代码里的版本一致，再跑一遍测试和八组门禁，构建镜像、冒烟测试、推到 `ghcr.io/momomojun/team-copilot:<tag>` 和 `:latest`，从 GHCR 拉回来再冒烟一次，最后建 GitHub Release（附评测报告、镜像 digest、默认提示词版本，后面接上 `docs/releases/` 里这一版的说明）。任何一步没过都不发。
@@ -354,7 +354,7 @@ Space 里只跑 Copilot（免费的云端模型），不跑本机模型和配音
    - Variables 里加 `HF_SPACE` = `你的用户名/nps-guide-copilot`。
 5. **Space 的 Settings → Variables and secrets**，加 Secrets：
    - `COPILOT_TOKEN`：自己编一串长的随机字符（比如 `python -c "import secrets;print(secrets.token_urlsafe(32))"` 生成），Vercel 那边要填同一串；
-   - 模型的 key：`GEMINI_API_KEY`、`OPENROUTER_API_KEY`、`GROQ_API_KEY`（有哪个填哪个，都是免费档）；`DEEPSEEK_API_KEY` 是按量付费的，单独用 `COPILOT_PROVIDER=deepseek` 才会调用；
+   - 模型的 key：`GEMINI_API_KEY`、`OPENROUTER_API_KEY`、`GROQ_API_KEY`（有哪个填哪个，都是免费档）；想要免费的都用完时有付费的备用，再加 `DEEPSEEK_API_KEY`（按量付费，全套评测 268 次约 $0.08）；`DEEPSEEK_API_KEY` 是按量付费的，单独用 `COPILOT_PROVIDER=deepseek` 才会调用；
    - 要的话 `DATA_GOV_API_KEY`（聊天时现读 NPS 公告）。
    - 可选的限流变量：`COPILOT_RATE_MINUTE`、`COPILOT_RATE_DAY`、`COPILOT_RATE_GLOBAL_DAY`（默认见 [COPILOT.md](COPILOT.md#环境变量)）。
 6. **推上去**：GitHub → Actions → “Deploy Copilot to Hugging Face” → Run workflow。它把要用的文件拼好上传到 Space，Space 自己构建（第一次约 5–10 分钟），Space 页面的 Logs 里能看进度。以后每次发版（推 `copilot-v*` tag）也会自动推一次。
