@@ -1,5 +1,5 @@
 # 每天读一次 NPS 公告（计划书的 fast-changing data）：抓所有公园的公告快照，以前没报过的关闭公告开一个 issue（标签 nps-alerts）。
-# 仓库设置里有模型的 secret（OPENROUTER_API_KEY、GEMINI_API_KEY、GROQ_API_KEY）时，用模型读公告提取关闭，只读新出现、
+# 仓库设置里有模型的 secret（OPENROUTER_API_KEY、GEMINI_API_KEY、GROQ_API_KEY、DEEPSEEK_API_KEY）时，用模型读公告提取关闭，只读新出现、
 # 改过的几条（读过的记在 actions/cache 里）；一把都没有就只用规则。关闭清单（closures-latest.json）和快照一起存成 artifact。
 # 新的关闭公告是模型没见过的数据，可以标好答案做下一版提示词的评测。
 # 10-20 补上闭环（仓库主人定的“模型提议、人来批”）：
@@ -87,14 +87,16 @@ jobs:
       - name: Read alerts with the model (only new or changed ones)
         id: extract
         continue-on-error: true
-        # 模型按 providers.alerts_chain 的顺序：Gemini → Nemotron 3.5 Super（OpenRouter 免费，推理开 high）→ Qwen（Groq），
-        # 前一个出错（额度用完、服务忙）换下一个；一把 key 都没有就只用规则（CI 上没有本机模型）
+        # 模型按 providers.alerts_chain 的顺序：Gemini → Nemotron 3.5 Super（OpenRouter 免费，推理开 high）→ Qwen（Groq）
+        # → DeepSeek Flash（付费备用，免费的都出错才用），前一个出错（额度用完、服务忙）换下一个；一把 key 都没有就只用规则（CI 上没有本机模型）。
+        # 每周的抽查（下一步）不给 DeepSeek 的 key：抽查只看免费模型，不花钱
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
         run: |
-          if [ -z "$OPENROUTER_API_KEY$GEMINI_API_KEY$GROQ_API_KEY" ]; then export COPILOT_ALERTS_PROVIDER=rules; fi
+          if [ -z "$OPENROUTER_API_KEY$GEMINI_API_KEY$GROQ_API_KEY$DEEPSEEK_API_KEY" ]; then export COPILOT_ALERTS_PROVIDER=rules; fi
           cd copilot && python -m nps_copilot alerts --snapshot data/alerts/latest.json | tee ../extract.log
       - name: Check the model on 26 labelled alerts (canary)
         id: canary

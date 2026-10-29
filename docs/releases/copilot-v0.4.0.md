@@ -12,7 +12,7 @@
 - **一趟去很多座公园**：最多 6 座，一段一段开车一天能连起来就行；“我还要去红木”“顺便去一下”是加一座，不是换掉。
 - **最慢一档节奏“更悠闲”**：一天最多四个地方（对照博主的真实行程定的）。
 - **测试扩到 439 个、门禁八组**：新的没见过的样例 held-out v2（70 组，约四成故意刁难）第一次 61/70，改了规则以后 70/70；规则那一层的逐条测试 216 个。测试找出并修了 10 处：18 个机场没英文城市名、过去的日期照排、“不错/nice”当成否定、“June 3-7”算不出天数、“3-7 天”当成 7 天、模型把城市当公园、漏了出发地、“kids aged 6 and 9”、“最后一个”选不到、“18岁的儿子”还问几岁。
-- **每晚读公告**：抽查模型分数改成每周一次、修好了一直没跑的开关；issue 写实际读公告的模型。
+- **每晚读公告**：抽查模型分数改成每周一次、修好了一直没跑的开关；issue 写实际读公告的模型；读公告这一步也带上仓库的 `DEEPSEEK_API_KEY`，免费的都出错时用 DeepSeek（每周的抽查不用它，不花钱）。
 
 ## 网站
 
@@ -48,7 +48,7 @@ The previous release, v0.3.0, shipped on Oct 21; since then PRs #49 through #74 
 - **Many parks in one trip**: up to 6, as long as each leg is within a day's drive; "我还要去红木" ("I also want Redwood") and "顺便去一下" add a park instead of replacing one.
 - **The slowest pace, "Even slower"**: at most four places a day, calibrated against creators' real itineraries.
 - **439 tests and eight eval gates**: the new unseen set held-out v2 (70 cases, about 40% adversarial) scored 61/70 on the first run and 70/70 after rule fixes; 216 rule-level tests were added. The tests found and fixed 10 problems: 18 airports without English city names, past dates being planned, "不错"/"nice" read as "no", "June 3-7" giving no day count, "3-7 days" read as 7, a city taken for a park, a missed origin, "kids aged 6 and 9", "the last one" not picking the last option, and an 18-year-old son still triggering the age question.
-- **Nightly alert reading**: the model spot-check now runs weekly, and the switch that had kept it from ever running is fixed; the issue names the model that actually read the alerts.
+- **Nightly alert reading**: the model spot-check now runs weekly, and the switch that had kept it from ever running is fixed; the issue names the model that actually read the alerts; the reading step also gets the repo's `DEEPSEEK_API_KEY`, so DeepSeek steps in when the free models fail (the weekly spot-check doesn't use it, so it stays free).
 
 ## Website
 
