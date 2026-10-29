@@ -1,0 +1,14 @@
+{
+ "frozen_at": "2026-10-29T04:58:58+00:00",
+ "commit": "8536f4be4803da0363c2c541c36fee83f317d6bb",
+ "note": "held-out v2（10-28 仓库主人：“测试案例过少，不够扎实”）：70 组，写好期望结果后、跑任何模型之前冻结，冻结时的代码 hash 一起记下。约四成是故意刁难的（不存在的日期、过去的日期、注入、不是排行程的话、否定、打错字、好几个机场的城市、离得太远）。第一次的分数按这一版代码报告；看过失败再改代码，之后的分数要另外标明，这一批就不再算没见过的。",
+ "sha256": {
+  "eval/cases/holdout-v2.jsonl": "b9b2eb523e8c54ad9047bb6a56afed717604cf30a6e228ec495efd69ef993d15",
+  "nps_copilot/intake.py": "5b7104dcc6f8bfb83abcb8b3e886652613f2e57f08ea392d225c1b71bbb7739d",
+  "nps_copilot/dates.py": "05295e1f8f8bdff271f21a1bb7091740001fb82cd20208f5737cac14df6c959c",
+  "nps_copilot/catalog.py": "e88a3f5b116c563d9f1436affe648e41f544faca032e2a9702e0ebedffff9b95",
+  "nps_copilot/text.py": "caca70f9347f53f5fb55974aa1c31f0ba66318571aec7d22a3d2cd9df3496a93",
+  "nps_copilot/knowledge.py": "bd5ff8e660c8228434de57acd9b5caf1a329e52ad0ba3c2fa3f7a9fceff24105",
+  "nps_copilot/prompts/intake_v1.txt": "79d3b5f861f097f04fb47c92326cb6f6bf46cf21e1af1f32e820636feff6fd08"
+ }
+}
