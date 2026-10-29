@@ -32,6 +32,9 @@ def main() -> None:
     serve.add_argument("--port", type=int, default=int(os.environ.get("PORT", 8765)))
     stats = sub.add_parser("stats")
     stats.add_argument("--days", type=int, default=7)
+    billing = sub.add_parser("billing", help="计费总账：每个模型调用了多少次、多少 token、花了多少钱、按付费标价折算多少")
+    billing.add_argument("--days", type=int, default=7)
+    billing.add_argument("--json", action="store_true", help="输出汇总的 JSON（每晚读公告以后发布给后台用）")
     sub.add_parser("version")
     sub.add_parser("graph", help="把一轮对话的 LangGraph 流程图打成 Mermaid")
     alerts_cmd = sub.add_parser("alerts")
@@ -40,6 +43,8 @@ def main() -> None:
     alerts_cmd.add_argument("--cache", default=str(DATA / "alerts" / "extracted.json"), help="读过的公告记在这里，下次只读新的、改过的")
     args = parser.parse_args()
     sys.stdout.reconfigure(encoding="utf-8")
+    # 计费总账（ledger.py）里记成谁调用的：读公告是 alerts，聊天和服务是 chat
+    os.environ.setdefault("COPILOT_SOURCE", "alerts" if args.command == "alerts" else "chat")
 
     if args.command == "serve":
         import uvicorn
@@ -74,6 +79,12 @@ def main() -> None:
         from .monitor import report
 
         print(report(args.days))
+        return
+    if args.command == "billing":
+        from . import ledger
+        from .monitor import billing, billing_report
+
+        print(json.dumps(billing(ledger.load(args.days)), ensure_ascii=False) if args.json else billing_report(args.days))
         return
 
     session = Session(chat_provider(), args.reference, writer_model=args.writer_model)

@@ -22,6 +22,7 @@ import statistics
 from collections import defaultdict
 from pathlib import Path
 
+from . import ledger
 from .pipeline import RUNS
 
 # 每百万 token 的价格（输入, 输出），美元。10-19 按第三方汇总的价格（没有官网核实）；免费档、本机按 0 算，
@@ -35,7 +36,49 @@ PRICES = {
     "openai/gpt-oss-120b": (0.0, 0.0),
     "qwen/qwen3.8-27b": (0.0, 0.0),
     "qwen3.5:4b-q4_K_M": (0.0, 0.0),
+    # DeepSeek 官网（10-28）按人民币标价、白天贵一倍：按高峰价、缓存未命中、1 美元约 7.1 元换算，算的是上限
+    "deepseek-flash": (0.28, 1.13),
+    "deepseek-v4-pro": (1.27, 3.80),
 }
+
+
+# 免费档的模型换成付费档要多少钱（每百万 token 的美元，各家官网 10-28 的标价）：后台的“按标价折算”用它，
+# 看免费额度到底省了多少、以后转付费大概要花多少。付费的模型标价就是 PRICES；本机模型不收钱，按 0 算
+LIST_PRICES = {
+    "gemini-3.5-flash-lite": (0.30, 2.50),  # ai.google.dev/gemini-api/docs/pricing，Standard 付费档
+    "minimax/minimax-m3.1-flash:free": (0.15, 0.60),  # openrouter.ai/minimax/minimax-m3.1-flash/pricing（免费推广期已结束）
+    "nvidia/nemotron-3.5-super-vl:free": (0.15, 0.50),  # OpenRouter 模型列表里付费版 nvidia/nemotron-3.5-super-vl 的价
+    "qwen/qwen3.8-27b": (0.80, 4.00),  # console.groq.com/docs/models（Preview，按量付费价）
+    "openai/gpt-oss-120b": (0.15, 0.60),
+    "openai/gpt-oss-20b": (0.075, 0.30),
+}
+
+# 免费档每天的上限：后台看今天用了几成。provider 是哪一家；models 写了的只算这几个型号，free 是只算型号名以 :free 结尾的；
+# requests / tokens 是每天的上限（不知道的是 None，只说在哪看）。数字是 10-19 在各家控制台看的，会变
+FREE_LIMITS = [
+    {"id": "openrouter-free", "provider": "openrouter", "free": True, "requests": 50, "tokens": None,
+     "note": "OpenRouter 没充值过的账户，所有免费模型加起来每天约 50 次（充值 10 美元以上是 1000 次）"},
+    {"id": "groq-qwen", "provider": "groq", "models": ["qwen/qwen3.8-27b"], "requests": 1000, "tokens": 200000,
+     "note": "Groq 免费档每个模型每天 1000 次、20 万 token，每分钟 8000 token（console.groq.com → Settings → Limits）"},
+    {"id": "groq-gpt-oss", "provider": "groq", "models": ["openai/gpt-oss-120b"], "requests": 1000, "tokens": 200000,
+     "note": "同上"},
+    {"id": "gemini", "provider": "gemini", "models": ["gemini-3.5-flash-lite"], "requests": 500, "tokens": None,
+     "note": "Gemini 3.5 Flash-Lite 免费档每天 500 次、每分钟约 15 次（10-20 在 Google AI Studio 的“速率限制”页看的，官网文档不写）"},
+    {"id": "deepseek", "provider": "deepseek", "requests": None, "tokens": None,
+     "note": "DeepSeek 没有免费档，按量扣余额：余额在 platform.deepseek.com 看"},
+]
+
+
+def list_price(model: str) -> tuple[float, float] | None:
+    """按付费档的标价：免费档的看 LIST_PRICES，付费的就是 PRICES 里的价，本机模型（型号里带冒号、没有斜杠的 Ollama 型号）按 0"""
+    if model in LIST_PRICES:
+        return LIST_PRICES[model]
+    rate = price(model)
+    if rate and rate != (0.0, 0.0):
+        return rate
+    if ":" in model and "/" not in model:
+        return (0.0, 0.0)
+    return None
 
 
 def price(model: str) -> tuple[float, float] | None:
@@ -46,9 +89,10 @@ def price(model: str) -> tuple[float, float] | None:
     return None
 
 
-def call_cost(call: dict) -> float | None:
-    """一次调用花了多少美元。OpenAI 的输出 token 已经含推理；Gemini 的思考 token 另算、按输出价收"""
-    rate = price(call.get("model", ""))
+def call_cost(call: dict, rates=None) -> float | None:
+    """一次调用花了多少美元。OpenAI 的输出 token 已经含推理；Gemini 的思考 token 另算、按输出价收。
+    rates 是按哪张价格表（默认实际花的 price，后台的“按标价折算”传 list_price）"""
+    rate = (rates or price)(call.get("model", ""))
     if rate is None:
         return None
     output = (call.get("output_tokens") or 0) + (call.get("thinking_tokens") or 0 if call.get("model", "").startswith("gemini") else 0)
@@ -84,6 +128,55 @@ def usage(rows: list[dict]) -> dict:
                 item["cost"] += cost
                 days[day] += cost
     return {"turns": turns, "alerts_read": alerts_read, "models": dict(models), "days": dict(sorted(days.items()))}
+
+
+def billing(rows: list[dict]) -> dict:
+    """计费总账（ledger.load 的行）按天、谁调用的、哪个模型汇总：调用次数、token（估算的有几次）、实际花费、按标价折算。
+    没有价格的模型花费记“不知道”（unpriced / unlisted），不当成 0。后台把本机服务的这一份和每晚 GitHub 上读公告的那一份加起来"""
+    cells: dict[tuple, dict] = {}
+    for row in rows:
+        key = (row.get("day") or "?", row.get("source") or "other", row.get("model") or "?", row.get("provider") or "?")
+        cell = cells.setdefault(key, {"calls": 0, "prompt_tokens": 0, "output_tokens": 0, "thinking_tokens": 0, "estimated": 0,
+                                      "cost": 0.0, "unpriced": 0, "list_cost": 0.0, "unlisted": 0})
+        cell["calls"] += 1
+        for name in ("prompt_tokens", "output_tokens", "thinking_tokens"):
+            cell[name] += row.get(name) or 0
+        cell["estimated"] += 1 if row.get("estimated") else 0
+        cost = call_cost(row)
+        if cost is None:
+            cell["unpriced"] += 1
+        else:
+            cell["cost"] += cost
+        listed = call_cost(row, list_price)
+        if listed is None:
+            cell["unlisted"] += 1
+        else:
+            cell["list_cost"] += listed
+    out = [{"day": day, "source": source, "model": model, "provider": provider, **cell}
+           for (day, source, model, provider), cell in sorted(cells.items())]
+    return {"rows": out, "limits": FREE_LIMITS}
+
+
+def billing_report(days: int = 7) -> str:
+    """命令行看计费总账（python -m nps_copilot billing）：这台机器上记的（每晚 GitHub 上读公告的那一份在后台看）"""
+    rows = billing(ledger.load(days))["rows"]
+    if not rows:
+        return f"最近 {days} 天计费总账里没有调用（{ledger.folder()}）"
+    by_model: dict[str, dict] = defaultdict(lambda: defaultdict(float))
+    for row in rows:
+        item = by_model[row["model"]]
+        for key in ("calls", "prompt_tokens", "output_tokens", "thinking_tokens", "estimated", "cost", "list_cost", "unpriced", "unlisted"):
+            item[key] += row[key]
+        item[f"source:{row['source']}"] += row["calls"]
+    lines = [f"最近 {days} 天的计费总账（{ledger.folder()}）"]
+    for model, item in sorted(by_model.items(), key=lambda pair: -pair[1]["calls"]):
+        sources = "、".join(f"{key[7:]} {int(value)}" for key, value in item.items() if key.startswith("source:"))
+        cost = "不知道（没有价格）" if item["unpriced"] else f"${item['cost']:.4f}"
+        listed = "不知道" if item["unlisted"] else f"${item['list_cost']:.4f}"
+        lines.append(f"  {model}：{int(item['calls'])} 次（{sources}），token 输入 {int(item['prompt_tokens'])}、输出 {int(item['output_tokens'])}"
+                     + (f"（{int(item['estimated'])} 次是按字数估的）" if item["estimated"] else "")
+                     + f"；实际花费 {cost}，按付费标价算 {listed}")
+    return "\n".join(lines)
 
 
 def load(days: int, runs: Path = RUNS) -> list[dict]:

@@ -4,11 +4,12 @@
 # 新的关闭公告是模型没见过的数据，可以标好答案做下一版提示词的评测。
 # 10-20 补上闭环（仓库主人定的“模型提议、人来批”）：
 #   1. 抽查：读完再让同一串模型读 26 条标好答案的旧公告，分数掉到门槛以下就开 alerts-quality issue（模型换了、NPS 改了写法都能发现）；
-#      每周一（加州）跑一次、手动触发也跑，多约 26 次调用（10-26 仓库主人定的：MiniMax 免费档一天约 50 次，每晚抽查会挤掉读新公告的额度）；
+#      每周一（加州）跑一次、手动触发也跑，多约 26 次调用（10-26 仓库主人定的：OpenRouter 免费档一天约 50 次，每晚抽查会挤掉读新公告的额度）；
 #      仓库变量 ALERTS_CANARY 设成 0 就不抽查
 #   2. 提议：模型和规则都认、closures.ts 里还没有的关闭写进 closures.ts，推到 bot/closures-<日期> 分支，issue 里给开 PR 的链接；
 #      GitHub 不让工作流自己开 PR（仓库设置里没开），而且机器人开的 PR 不会跑 CI，所以由人点链接开 PR
-#   3. 发布：当晚的关闭清单推到 data/alerts-live 分支，网站行程页按它排两周内出发的行程（src/lib/alerts-live.ts）
+#   3. 发布：当晚的关闭清单推到 data/alerts-live 分支，网站行程页按它排两周内出发的行程（src/lib/alerts-live.ts）；
+#      当晚调用模型的计费总账并进同一个分支的 usage.json，后台看（copilot/scripts/publish_usage.py）
 # 仓库设置里加了 secret DATA_GOV_API_KEY 就用它（DEMO_KEY 按 IP 限次数，GitHub 的机器是很多仓库共用的，常常 429）。
 name: NPS alerts (nightly)
 
@@ -86,7 +87,7 @@ jobs:
       - name: Read alerts with the model (only new or changed ones)
         id: extract
         continue-on-error: true
-        # 模型按 providers.alerts_chain 的顺序：MiniMax（OpenRouter 免费，推理开 high）→ Gemini → Qwen（Groq），
+        # 模型按 providers.alerts_chain 的顺序：Gemini → Nemotron 3.5 Super（OpenRouter 免费，推理开 high）→ Qwen（Groq），
         # 前一个出错（额度用完、服务忙）换下一个；一把 key 都没有就只用规则（CI 上没有本机模型）
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -118,7 +119,7 @@ jobs:
           gh label create alerts-quality --color 6b4f3a --description "每晚抽查读公告的模型，分数掉到门槛以下" 2>/dev/null || true
           {
             echo "每晚抽查读公告的模型（\`eval/alerts.py --chain --sample 26\`，门槛 \`copilot/eval/baseline-alerts-canary.json\`）没过。"
-            echo "可能是模型换了（MiniMax 额度用完换到下一家）、NPS 改了公告写法，或者提示词要改。先看下面的分数和读错的几条。"
+            echo "可能是模型换了（前一家额度用完换到下一家）、NPS 改了公告写法，或者提示词要改。先看下面的分数和读错的几条。"
             echo
             echo '```'
             tail -n 25 canary.log
@@ -189,9 +190,11 @@ jobs:
             cd "$RUNNER_TEMP/live"
             git checkout --orphan data-live
             git rm -rf -q .
-            echo "每晚模型读 NPS 公告提取的关闭清单（.github/workflows/alerts-nightly.yml 写的，不要手改）。网站行程页按它排两周内出发的行程。" > README.md
+            echo "每晚模型读 NPS 公告提取的关闭清单（.github/workflows/alerts-nightly.yml 写的，不要手改）。网站行程页按它排两周内出发的行程；usage.json 是每晚调用模型的计费总账，后台看。" > README.md
           fi
           cp "$RUNNER_TEMP/closures-latest.json" closures-latest.json
+          # 计费总账：今晚这台机器调用模型的次数、token 和花费并进 usage.json（后台看免费档用了多少）
+          python "$GITHUB_WORKSPACE/copilot/scripts/publish_usage.py" usage.json
           git add -A
           if git diff --cached --quiet; then echo "和昨晚一样，不用推"; exit 0; fi
           git commit -q -m "关闭清单 $(date +%F) / Closures from NPS alerts"

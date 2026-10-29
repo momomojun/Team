@@ -185,18 +185,30 @@ flowchart LR
 
 聊天时为了两周内出发的行程现读公告（`alerts_live.refresh_for`）用的 token 不在这里，只记读了几条。HTTP 服务另有 `GET /stats?days=7`，返回同样的统计（JSON），外加按天的数字、最近 30 轮和读公告的关闭清单状态；网站的后台 `/zh-Hans/admin` 读的就是它（加上 GitHub 上每晚读公告的结果），画成图表。
 
+### 计费总账（10-28）
+
+仓库主人要“针对所有模型的计费”：免费档的 API 在各家后台看不到用了多少，上面的“模型用量”又只算聊天。所以另记一本总账（`nps_copilot/ledger.py`）：
+
+- **每次真的调用模型都记一行**：每一家（Ollama、Gemini、OpenAI、OpenRouter、Groq、DeepSeek）拿到回答的地方都过 `providers._billed`，回放录音、测试用的假模型不过。记的是谁调用的（`COPILOT_SOURCE`：聊天 `chat`、读公告 `alerts`、评测 `eval`、裁判 `judge`，各个入口启动时设）、哪一家哪个型号、做什么、token、多久。模型没回报 token 数的按字数估（汉字一个一个、别的四个字符一个），标 `estimated`。
+- **文件**：`COPILOT_LEDGER`（默认 `copilot/runs/usage/`，Docker 里 `/data/runs/usage/`）按天一个 JSONL，不进仓库。测试里设成 `off`。
+- **算钱**（`monitor.billing`）：实际花费按 `PRICES`；另按 `LIST_PRICES` 算“换成付费档要多少”（Gemini 3.5 Flash-Lite $0.30 / $2.50、Groq Qwen3.8 27B $0.80 / $4.00、GPT-OSS 120B $0.15 / $0.60、MiniMax M3.1 Flash $0.15 / $0.60，每百万 token，各家官网 10-28 的价）。DeepSeek 按人民币标价、白天贵一倍，按高峰价换成美元，算的是上限。只有免费版的模型没有标价，记“没有付费版”，不当成 0。
+- **免费额度**（`FREE_LIMITS`）：OpenRouter 没充值的账户所有免费模型加起来每天约 50 次；Groq 每个模型每天 1000 次、20 万 token；Gemini 每天的上限官网不写，在 AI Studio 看；DeepSeek 没有免费档。后台看今天用了几成。
+- **每晚 GitHub 上读公告的那一份**：那台机器上的总账，读完公告以后由 `copilot/scripts/publish_usage.py` 并进 `data/alerts-live` 分支的 `usage.json`（留最近 90 天）。网站后台（`/api/copilot/admin`）把它和本机服务 `/stats` 里的 `billing` 加起来，Copilot 服务没开时也看得到每晚那一份。
+- **命令行**：`python -m nps_copilot billing [--days 7] [--json]`。
+
 什么时候该回滚、怎么回滚见 [GUIDE.md](GUIDE.md#回滚)。
 
 ## 环境变量
 
 | 变量 | 默认 | 作用 |
 |---|---|---|
-| `COPILOT_PROVIDER` | 聊天：Gemini 3.5 Flash Lite → MiniMax M3.1 Flash（OpenRouter）→ Groq Qwen3.8 27B → `ollama`（`cloud_chain`）；读公告：MiniMax M3.1 Flash（推理开 high）→ Gemini → Qwen3.8 27B → `ollama`（`alerts_chain`），全是免费档（10-21 OpenAI 的 key 没额度了，GPT-4.1 mini 拿掉，设 `openai` 还能单独用）；前一个出错换下一个、没配 key 的跳过（`ProviderChain`）；评测：`ollama` | `ollama` / `gemini` / `openai` / `openrouter` / `groq` / `replay`，设了就按设的。顺序是 10-20 仓库主人定的“哪个稳哪个准用哪个，免费的能用就先用免费的”，按第四轮对照（RESULTS.md）。评测脚本（`eval/run.py`、`conversation.py`、`alerts.py`）也认，`--record` 录到 `recordings/<模型>…jsonl` |
+| `COPILOT_PROVIDER` | 聊天：Gemini 3.5 Flash Lite → Nemotron 3.5 Super（OpenRouter 免费版）→ Groq Qwen3.8 27B → `ollama`（`cloud_chain`）；读公告：Gemini → Nemotron 3.5 Super（推理开 high）→ Qwen3.8 27B → `ollama`（`alerts_chain`），全是免费档（10-28 MiniMax M3.1 Flash 的免费推广期结束，换成 Nemotron）（10-21 OpenAI 的 key 没额度了，GPT-4.1 mini 拿掉，设 `openai` 还能单独用）；前一个出错换下一个、没配 key 的跳过（`ProviderChain`）；评测：`ollama` | `ollama` / `gemini` / `openai` / `openrouter` / `groq` / `deepseek` / `replay`，设了就按设的（`deepseek` 是 10-28 加的，按量付费，默认型号 `deepseek-flash`，不在默认顺序里）。顺序是 10-20 仓库主人定的“哪个稳哪个准用哪个，免费的能用就先用免费的”，按第四轮对照（RESULTS.md）。评测脚本（`eval/run.py`、`conversation.py`、`alerts.py`）也认，`--record` 录到 `recordings/<模型>…jsonl` |
 | `COPILOT_MODEL` | Ollama：`qwen3.5:4b-q4_K_M`；Gemini：`gemini-3.5-flash-lite`；OpenAI：`gpt-5-nano` | 模型名（Gemini 免费档能用的有 `gemma-4-31b-it`、`gemini-3.8-flash` 等，见 AI Studio 的“速率限制”页） |
-| `GEMINI_API_KEY`、`OPENAI_API_KEY`、`OPENROUTER_API_KEY`、`GROQ_API_KEY` | — | 商业 API 的 key，写在仓库根目录的 `.env.local`（不提交）或设成环境变量；只放在请求头里，不写日志、不进录音 |
+| `GEMINI_API_KEY`、`OPENAI_API_KEY`、`OPENROUTER_API_KEY`、`GROQ_API_KEY`、`DEEPSEEK_API_KEY` | — | 商业 API 的 key，写在仓库根目录的 `.env.local`（不提交）或设成环境变量；只放在请求头里，不写日志、不进录音 |
 | `COPILOT_STEP_MODELS` | — | 某几步单独换模型（GOALS P12，10-20）：`intake=gemini,qa=openai:gpt-4.1-mini`，写成 `步骤=提供方[:型号]`，步骤是 `dispatch`（调度员）/ `intake`（摘条件）/ `qa`（回答问题）/ `writer`（写说明），提供方是 `gemini` / `openai` / `openrouter` / `groq` / `ollama`；单独指定的出错退回平常的顺序，写错了直接报错。后台和 `/health` 的 `steps` 显示换了哪几步。读公告另用 `COPILOT_ALERTS_PROVIDER` |
 | `COPILOT_PROMPT_JUDGE` | `v1` | 模型打分（`eval/judge.py`）的裁判提示词版本 |
-| `COPILOT_REASONING` | `low` | OpenRouter、Groq 推理模型的推理档位：`minimal` / `low` / `medium` / `high` / `none`（不传；Groq 只认 `low` / `medium` / `high`） |
+| `COPILOT_REASONING` | `low` | OpenRouter、Groq 推理模型的推理档位：`minimal` / `low` / `medium` / `high` / `none`（不传；Groq 只认 `low` / `medium` / `high`）。DeepSeek 不设就关掉思考（快、能 temperature 0），设 `low` / `high` / `max` 打开 |
+| `COPILOT_LEDGER` | `copilot/runs/usage` | 计费总账放哪（`off` 不记）；`COPILOT_SOURCE` 记成谁调用的（各入口自己设，一般不用管） |
 | `COPILOT_FALLBACK` | — | 设成 `ollama`：商业 API 出错（额度用完、一直忙）时这一次改用本机模型。Copilot 服务用，评测别开 |
 | `OLLAMA_HOST_URL` | `http://127.0.0.1:11435` | Ollama 地址（momomojun 电脑上的便携版用 11435；自己装的默认 11434；Docker 里是 `http://ollama:11434` 或 `http://host.docker.internal:11435`） |
 | `COPILOT_REPLAY` | — | 回放用的录音文件 |

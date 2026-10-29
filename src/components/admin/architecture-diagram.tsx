@@ -10,12 +10,14 @@ export type AdminLang = "zh" | "en";
 const MODEL_NAMES: Record<string, { name: string; via: string }> = {
   "gemini-3.5-flash-lite": { name: "Gemini 3.5 Flash Lite", via: "Google" },
   "minimax/minimax-m3.1-flash:free": { name: "MiniMax M3.1 Flash", via: "OpenRouter" },
+  "nvidia/nemotron-3.5-super-vl:free": { name: "Nemotron 3.5 Super", via: "OpenRouter" },
+  "deepseek-flash": { name: "DeepSeek Flash", via: "DeepSeek" },
   "qwen/qwen3.8-27b": { name: "Qwen3.8 27B", via: "Groq" },
   "qwen3.5:4b-q4_K_M": { name: "Qwen3.5 4B", via: "Ollama" },
   "gpt-4.1-mini": { name: "GPT-4.1 mini", via: "OpenAI" },
 };
-const CHAT_DEFAULT = ["gemini-3.5-flash-lite", "minimax/minimax-m3.1-flash:free", "qwen/qwen3.8-27b", "qwen3.5:4b-q4_K_M"];
-const ALERTS_DEFAULT = ["minimax/minimax-m3.1-flash:free", "gemini-3.5-flash-lite", "qwen/qwen3.8-27b", "qwen3.5:4b-q4_K_M"];
+const CHAT_DEFAULT = ["gemini-3.5-flash-lite", "nvidia/nemotron-3.5-super-vl:free", "qwen/qwen3.8-27b", "qwen3.5:4b-q4_K_M"];
+const ALERTS_DEFAULT = ["gemini-3.5-flash-lite", "nvidia/nemotron-3.5-super-vl:free", "qwen/qwen3.8-27b", "qwen3.5:4b-q4_K_M"];
 
 const TEXT = {
   zh: {

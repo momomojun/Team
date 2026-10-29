@@ -24,12 +24,14 @@ from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel
 
-from . import __version__, alerts_live, guard, monitor, tts
+from . import __version__, alerts_live, guard, ledger, monitor, tts
 from . import graph as graph_module
 from .pipeline import VERSION, Session, prompt_hashes
 from .providers import ProviderError, chat_provider
 
 app = FastAPI(title="NPS Guide Copilot", version=__version__)
+# 计费总账（ledger.py）里这个服务的调用记成聊天（读公告时调用的模型也在这里，按聊天算）
+os.environ.setdefault("COPILOT_SOURCE", "chat")
 sessions: dict[str, Session] = {}
 # LangGraph 的流程图和检查点（第一次用到时才建：chat_provider() 配错了也不影响 /health）
 _graph: graph_module.CopilotGraph | None = None
@@ -128,7 +130,9 @@ def stats(days: int = 7) -> dict:
     days = max(1, min(days, 90))
     rows = monitor.load(days)
     return {"days": days, "versions": monitor.summarize(rows), "usage": monitor.usage(rows), "daily": monitor.daily(rows),
-            "recent": monitor.recent(rows), "alerts": alerts_live.status()}
+            "recent": monitor.recent(rows), "alerts": alerts_live.status(),
+            # 计费总账：这台机器上所有调用（聊天、评测、裁判……），后台再加上每晚 GitHub 上读公告的那一份
+            "billing": monitor.billing(ledger.load(days))}
 
 
 @app.post("/sessions")

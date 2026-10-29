@@ -10,6 +10,8 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "copilot"))
 # 评测、测试不用本机的 NPS 公告关闭清单（每天会变），结果才能复现
 os.environ.setdefault("COPILOT_LIVE", "0")
+# 测试里的调用（假的网络回复）不记进真的计费总账；测总账的测试自己换成临时目录
+os.environ["COPILOT_LEDGER"] = "off"
 
 from nps_copilot.intake import Intake  # noqa: E402
 from nps_copilot.providers import ScriptedProvider  # noqa: E402

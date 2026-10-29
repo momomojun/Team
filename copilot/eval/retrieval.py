@@ -29,6 +29,8 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
+# 计费总账（nps_copilot/ledger.py）里记成“评测”调用的
+os.environ.setdefault("COPILOT_SOURCE", "eval")
 
 from nps_copilot import catalog, knowledge  # noqa: E402
 from nps_copilot.catalog import ROOT  # noqa: E402

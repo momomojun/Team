@@ -3,7 +3,7 @@
 - 读过的公告记在缓存里（按公告 id + 更新时间 + 提示词版本），同一条没改过就不再交给模型，每晚只读新出现、改过的几条；
   模型出错（额度用完、服务忙）的那条这次按规则算、不进缓存，下次再试
 - 读公告用哪个模型：COPILOT_ALERTS_PROVIDER（gemini / openai / openrouter / groq / ollama / rules）；没设时按
-  providers.alerts_chain 的顺序（MiniMax 推理开 high → GPT-4.1 mini → Gemini）再加本机，没配 key 的跳过；COPILOT_ALERTS_MODEL 换型号
+  providers.alerts_chain 的顺序（Gemini → Nemotron 3.5 Super 推理开 high → Qwen3.8 27B）再加本机，没配 key 的跳过；COPILOT_ALERTS_MODEL 换型号
 - 聊天时（plan_client 调行程引擎之前）：两周内出发、要去的公园今天还没读过公告，就当场只抓这几座公园的公告读一遍，
   合进关闭清单（每座公园记下哪天读的，src/lib/copilot/live.ts 按要去的公园看新不新）
 """
@@ -40,7 +40,7 @@ def alerts_provider(chat: bool = False) -> Provider | None:
     """读公告用的模型；None 表示只用规则。chat=True 是聊天时现读：不按免费档排队、一家超时就换下一家"""
     kind = os.environ.get("COPILOT_ALERTS_PROVIDER")
     if not kind:
-        # 没指定：MiniMax（推理开 high）→ GPT-4.1 mini → Gemini → 本机，没配 key 的跳过；一次读一批，按免费档放慢
+        # 没指定：Gemini → Nemotron 3.5 Super（推理开 high）→ Qwen3.8 27B → 本机，没配 key 的跳过；一次读一批，按免费档放慢
         chain = alerts_chain(batch=not chat)
         return ProviderChain([*chain, OllamaProvider()]) if chain else OllamaProvider()
     model = os.environ.get("COPILOT_ALERTS_MODEL")

@@ -24,6 +24,9 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
+import os  # noqa: E402
+# 计费总账（nps_copilot/ledger.py）里记成“裁判”调用的
+os.environ.setdefault("COPILOT_SOURCE", "judge")
 sys.path.insert(0, str(HERE))
 
 from conversation import REFERENCE  # noqa: E402
