@@ -1,0 +1,66 @@
+{
+ "rows": [
+  {
+   "day": "2026-10-29",
+   "source": "alerts",
+   "model": "gemini-3.5-flash-lite",
+   "provider": "gemini",
+   "calls": 10,
+   "prompt_tokens": 8146,
+   "output_tokens": 580,
+   "thinking_tokens": 0,
+   "estimated": 0,
+   "cost": 0.0,
+   "unpriced": 0,
+   "list_cost": 0.0038937999999999998,
+   "unlisted": 0
+  }
+ ],
+ "limits": [
+  {
+   "id": "openrouter-free",
+   "provider": "openrouter",
+   "free": true,
+   "requests": 50,
+   "tokens": null,
+   "note": "OpenRouter 没充值过的账户，所有免费模型加起来每天约 50 次（充值 10 美元以上是 1000 次）"
+  },
+  {
+   "id": "groq-qwen",
+   "provider": "groq",
+   "models": [
+    "qwen/qwen3.8-27b"
+   ],
+   "requests": 1000,
+   "tokens": 200000,
+   "note": "Groq 免费档每个模型每天 1000 次、20 万 token，每分钟 8000 token（console.groq.com → Settings → Limits）"
+  },
+  {
+   "id": "groq-gpt-oss",
+   "provider": "groq",
+   "models": [
+    "openai/gpt-oss-120b"
+   ],
+   "requests": 1000,
+   "tokens": 200000,
+   "note": "同上"
+  },
+  {
+   "id": "gemini",
+   "provider": "gemini",
+   "models": [
+    "gemini-3.5-flash-lite"
+   ],
+   "requests": 500,
+   "tokens": null,
+   "note": "Gemini 3.5 Flash-Lite 免费档每天 500 次、每分钟约 15 次（10-20 在 Google AI Studio 的“速率限制”页看的，官网文档不写）"
+  },
+  {
+   "id": "deepseek",
+   "provider": "deepseek",
+   "requests": null,
+   "tokens": null,
+   "note": "DeepSeek 没有免费档，按量扣余额：余额在 platform.deepseek.com 看"
+  }
+ ]
+}
