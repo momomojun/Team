@@ -415,7 +415,7 @@ docker compose -f copilot/docker-compose.yml exec -T copilot python -m nps_copil
 - Writer 退回模板变多；
 - 耗时中位数明显变长。
 
-最后一段“模型用量”按模型列出调用次数、出错、token 和花费：Gemini 出错多、轮到 Nemotron、Qwen 甚至本机的变多，说明免费额度不够了（OpenRouter 免费模型每天约 50 次、Groq 每分钟 8000 token）。所有模型（聊天、每晚读公告、评测、裁判）的调用次数、token、实际花费、按付费价折算和今天的免费额度，看后台的“计费（所有模型）”（见 [COPILOT.md](COPILOT.md#计费总账10-28)）。
+最后一段“模型用量”按模型列出调用次数、出错、token 和花费：Gemini 出错多、轮到 Nemotron、Qwen 甚至本机的变多，说明免费额度不够了（OpenRouter 免费模型每天约 50 次、Groq 每分钟 8000 token）。所有模型（聊天、每晚读公告、评测、裁判）的调用次数、token、实际付出去的钱、估算花费（免费档、本机也估）和今天的免费额度，看后台的“计费（所有模型）”（见 [COPILOT.md](COPILOT.md#计费总账10-28)）。
 
 同样的数字也可以在网站的后台看：开着 Copilot 服务和网站时打开 http://localhost:3000/zh-Hans/admin （最上面是模型调用架构图，下面有每天的图、每个模型的花费、最近几轮对话、每晚读公告的结果，每 30 秒刷新）。英文版是 http://localhost:3000/en/admin （给老师看）。部署到公网时要设 `SITE_PASSWORD`，不然后台接口不给数据（最近几轮里有用户原话）；老师要看线上的，还得先把 Copilot 放到 Hugging Face Space（见上面一节），再把访问密码告诉老师。
 

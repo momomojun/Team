@@ -182,7 +182,7 @@ flowchart LR
 |---|---|---|
 | 每个模型的调用次数、出错次数 | 按真正回答的那个模型算；Gemini 出错、换 GPT-4.1 mini 回答的，算 GPT-4.1 mini 一次（“轮到它的”），Gemini 记一次出错 | 主模型出错变多、备用模型轮到的变多：免费额度不够了，或者服务不稳 |
 | token（输入 / 输出 / 思考） | 商业 API 返回的 usage；本机 Ollama 的是 prompt_eval_count、eval_count | 每轮 token 变多：提示词变长了，或者模型想得更多 |
-| 花费、每天花费 | 按 `monitor.PRICES`（每百万 token 的美元，10-19 按第三方汇总的价格，没有官网核实；免费档、本机按 0）；没写价格的模型记“不知道”，不当成 0 | 突然变贵：退到付费模型的多了 |
+| 花费、每天花费 | 都是估算（`monitor.estimate_cost`，10-29 起不写 0）：付费的按实际价（DeepSeek 按人民币、北京时间分时段、缓存命中另算，`DEEPSEEK_CNY`，和 DeepSeek 后台扣的对得上）；免费档按它付费档的标价（`LIST_PRICES`）；本机按电费（`LOCAL_WATTS` 250 瓦 × 调用时间，每度 $0.17）；没有付费版的免费模型按同类模型的价（`REFERENCE_PRICE`）；都不是的记“不知道”。后台计费另列“实际付出去的钱”（只有付费模型） | 突然变贵：退到付费模型的多了 |
 
 聊天时为了两周内出发的行程现读公告（`alerts_live.refresh_for`）用的 token 不在这里，只记读了几条。HTTP 服务另有 `GET /stats?days=7`，返回同样的统计（JSON），外加按天的数字、最近 30 轮和读公告的关闭清单状态；网站的后台 `/zh-Hans/admin` 读的就是它（加上 GitHub 上每晚读公告的结果），画成图表。
 
@@ -192,7 +192,7 @@ flowchart LR
 
 - **每次真的调用模型都记一行**：每一家（Ollama、Gemini、OpenAI、OpenRouter、Groq、DeepSeek）拿到回答的地方都过 `providers._billed`，回放录音、测试用的假模型不过。记的是谁调用的（`COPILOT_SOURCE`：聊天 `chat`、读公告 `alerts`、评测 `eval`、裁判 `judge`，各个入口启动时设）、哪一家哪个型号、做什么、token、多久。模型没回报 token 数的按字数估（汉字一个一个、别的四个字符一个），标 `estimated`。
 - **文件**：`COPILOT_LEDGER`（默认 `copilot/runs/usage/`，Docker 里 `/data/runs/usage/`）按天一个 JSONL，不进仓库。测试里设成 `off`。
-- **算钱**（`monitor.billing`）：实际花费按 `PRICES`；另按 `LIST_PRICES` 算“换成付费档要多少”（Gemini 3.5 Flash-Lite $0.30 / $2.50、Groq Qwen3.8 27B $0.80 / $4.00、GPT-OSS 120B $0.15 / $0.60、MiniMax M3.1 Flash $0.15 / $0.60，每百万 token，各家官网 10-28 的价）。DeepSeek 按人民币标价、白天贵一倍，按高峰价换成美元，算的是上限。只有免费版的模型没有标价，记“没有付费版”，不当成 0。
+- **算钱**（`monitor.billing`）：实际花费按 `PRICES`；另按 `LIST_PRICES` 算“换成付费档要多少”（Gemini 3.5 Flash-Lite $0.30 / $2.50、Groq Qwen3.8 27B $0.80 / $4.00、GPT-OSS 120B $0.15 / $0.60、MiniMax M3.1 Flash $0.15 / $0.60，每百万 token，各家官网 10-28 的价）。DeepSeek 按人民币标价（`DEEPSEEK_CNY`），按每次调用的北京时间分高峰、空闲（高峰贵一倍），缓存命中的输入另算，1 美元按 7.1 元换算；10-28 评测的 268 次算出 ¥0.1325，和 DeepSeek 后台扣的 ¥0.13 对得上。10-29 起后台的“估算花费”不写 0：本机按电费（250 瓦 × 调用时间，每度 $0.17），只有免费版的模型按同类的 Nemotron 付费版估（`estimate_cost`）。
 - **免费额度**（`FREE_LIMITS`）：OpenRouter 没充值的账户所有免费模型加起来每天约 50 次；Groq 每个模型每天 1000 次、20 万 token；Gemini 每天的上限官网不写，在 AI Studio 看；DeepSeek 没有免费档。后台看今天用了几成。
 - **每晚 GitHub 上读公告的那一份**：那台机器上的总账，读完公告以后由 `copilot/scripts/publish_usage.py` 并进 `data/alerts-live` 分支的 `usage.json`（留最近 90 天）。网站后台（`/api/copilot/admin`）把它和本机服务 `/stats` 里的 `billing` 加起来，Copilot 服务没开时也看得到每晚那一份。
 - **命令行**：`python -m nps_copilot billing [--days 7] [--json]`。

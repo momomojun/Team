@@ -48,7 +48,7 @@ const TEXT = {
     alertsTitle: "每晚读 NPS 公告（GitHub Actions）",
     alertsFlow: ["NPS API 公告", "读公告：关了哪个景点", "关闭清单", "两周内出发的行程不排"],
     alertsNote: "推理开 high；只读新出现、改过的几条",
-    observe: "日志 → /stats → 本后台；CI 用本机模型录好的回答回放 7 组评测，分数低于基线不让合并；评测成绩记到 MLflow",
+    observe: "日志 → /stats → 本后台；CI 用本机模型录好的回答回放 8 组评测，分数低于基线不让合并；评测成绩记到 MLflow",
   },
   en: {
     title: "Model call architecture",
@@ -77,7 +77,7 @@ const TEXT = {
     alertsTitle: "Nightly NPS alerts (GitHub Actions)",
     alertsFlow: ["NPS API alerts", "Which sight is closed?", "Closure list", "Trips within 2 weeks skip it"],
     alertsNote: "High reasoning effort; only new or changed alerts are read",
-    observe: "Logs → /stats → this dashboard. CI replays 7 eval sets recorded with the local model and blocks merges that fall below baseline; eval scores go to MLflow",
+    observe: "Logs → /stats → this dashboard. CI replays 8 eval sets recorded with the local model and blocks merges that fall below baseline; eval scores go to MLflow",
   },
 } as const;
 

@@ -12,7 +12,8 @@ Writer 退回模板的比例、耗时有没有变差。指标的意思：
   qa_fallback 模型的回答里有资料里没有的数字（或者出错），改成摘资料原文
 
 模型用量（usage）：按真正回答的那个模型汇总调用次数、出错、退到它的次数（前面的模型出错才轮到它）、token 和花费，
-另外按天算花费。价格在 PRICES（每百万 token 的美元），没写价格的模型花费记“不知道”，不当成 0。
+另外按天算花费。花费都是估算（estimate_cost）：付费的按实际价，免费档按它付费档的标价，本机按电费，
+没有付费版的按同类模型的价；实在估不了的记“不知道”，不写 0（10-29 仓库主人：花费不要写零，按预估算）。
 """
 from __future__ import annotations
 
@@ -36,10 +37,27 @@ PRICES = {
     "openai/gpt-oss-120b": (0.0, 0.0),
     "qwen/qwen3.8-27b": (0.0, 0.0),
     "qwen3.5:4b-q4_K_M": (0.0, 0.0),
-    # DeepSeek 官网（10-28）按人民币标价、白天贵一倍：按高峰价、缓存未命中、1 美元约 7.1 元换算，算的是上限
+    # DeepSeek 按人民币、分时段、缓存命中另算，实际花费按下面的 DEEPSEEK_CNY；这里是高峰、缓存未命中的上限，
+    # 只给 eval/compare_alerts.py 这种拿不到调用时间的地方用
     "deepseek-flash": (0.28, 1.13),
     "deepseek-v4-pro": (1.27, 3.80),
 }
+
+# DeepSeek 官网价（api-docs.deepseek.com/zh-cn/quick_start/pricing，10-29）：空闲时段每百万 token 的人民币
+# （输入缓存命中, 输入缓存未命中, 输出）；高峰时段（北京时间工作日 9:00–12:00、14:00–18:00）贵一倍。
+# 10-28 评测的 268 次按这个算是 ¥0.1325，和 DeepSeek 后台扣的 ¥0.13 对得上（原来按高峰、不算缓存，多算了 4 倍多）。
+# 中国法定节假日也是空闲时段，这里没算（按工作日算，可能偏贵）
+DEEPSEEK_CNY = {
+    "deepseek-flash": (0.02, 1.0, 4.0),
+    "deepseek-v4-pro": (0.15, 4.5, 13.5),
+}
+CNY_PER_USD = 7.1  # 10 月的大约汇率
+
+# 本机模型按电费估：跑模型时整台电脑约 250 瓦，美国居民电价约每度 0.17 美元（EIA 2025 年平均），按调用花的时间算
+LOCAL_WATTS = 250
+USD_PER_KWH = 0.17
+# 没有付费版的免费模型（OpenRouter 上的 preview）按同类的 Nemotron 3.5 Super 付费版估
+REFERENCE_PRICE = (0.15, 0.50)
 
 
 # 免费档的模型换成付费档要多少钱（每百万 token 的美元，各家官网 10-28 的标价）：后台的“按标价折算”用它，
@@ -92,11 +110,59 @@ def price(model: str) -> tuple[float, float] | None:
 def call_cost(call: dict, rates=None) -> float | None:
     """一次调用花了多少美元。OpenAI 的输出 token 已经含推理；Gemini 的思考 token 另算、按输出价收。
     rates 是按哪张价格表（默认实际花的 price，后台的“按标价折算”传 list_price）"""
-    rate = (rates or price)(call.get("model", ""))
+    model = call.get("model", "")
+    if model in DEEPSEEK_CNY and rates in (None, price, list_price):
+        return deepseek_cost(call)
+    rate = (rates or price)(model)
     if rate is None:
         return None
-    output = (call.get("output_tokens") or 0) + (call.get("thinking_tokens") or 0 if call.get("model", "").startswith("gemini") else 0)
+    output = (call.get("output_tokens") or 0) + (call.get("thinking_tokens") or 0 if model.startswith("gemini") else 0)
     return ((call.get("prompt_tokens") or 0) * rate[0] + output * rate[1]) / 1e6
+
+
+def deepseek_peak(at: str | None) -> bool:
+    """调用时间（带时区的 ISO 时间）在不在北京时间的高峰时段；不知道时间按高峰算（宁可多估）"""
+    if not at:
+        return True
+    try:
+        when = dt.datetime.fromisoformat(at).astimezone(dt.timezone(dt.timedelta(hours=8)))
+    except ValueError:
+        return True
+    minutes = when.hour * 60 + when.minute
+    return when.weekday() < 5 and (9 * 60 <= minutes < 12 * 60 or 14 * 60 <= minutes < 18 * 60)
+
+
+def deepseek_cost(call: dict) -> float:
+    """DeepSeek 一次调用的美元：缓存命中的输入按命中价，其余按未命中价，高峰时段贵一倍"""
+    hit_rate, miss_rate, out_rate = DEEPSEEK_CNY[call["model"]]
+    prompt = call.get("prompt_tokens") or 0
+    hit = min(call.get("cache_hit_tokens") or 0, prompt)
+    output = (call.get("output_tokens") or 0) + (call.get("thinking_tokens") or 0)
+    cny = (hit * hit_rate + (prompt - hit) * miss_rate + output * out_rate) / 1e6
+    return cny * (2 if deepseek_peak(call.get("at")) else 1) / CNY_PER_USD
+
+
+def local_model(model: str) -> bool:
+    """本机 Ollama 的型号：带冒号、没有斜杠（qwen3.5:4b-q4_K_M）"""
+    return ":" in model and "/" not in model
+
+
+def estimate_cost(call: dict) -> float | None:
+    """估算花费（后台、stats 的“花费”都用它，不写 0）：付费的按实际价；免费档按它付费档的标价（LIST_PRICES）；
+    本机按电费（LOCAL_WATTS 瓦 × 调用的时间）；没有付费版的免费模型按 REFERENCE_PRICE；都不是的记“不知道”"""
+    model = call.get("model", "")
+    if model in DEEPSEEK_CNY:
+        return deepseek_cost(call)
+    if model in LIST_PRICES:
+        return call_cost(call, list_price)
+    if local_model(model):
+        return (call.get("ms") or 0) / 3_600_000 * LOCAL_WATTS / 1000 * USD_PER_KWH
+    rate = price(model)
+    if rate and rate != (0.0, 0.0):
+        return call_cost(call)
+    if model.endswith(":free"):
+        return call_cost(call, lambda _: REFERENCE_PRICE)
+    return None
 
 
 def usage(rows: list[dict]) -> dict:
@@ -121,7 +187,7 @@ def usage(rows: list[dict]) -> dict:
             item["fallback_to"] += 1 if call.get("fallback_from") else 0
             for key in ("prompt_tokens", "output_tokens", "thinking_tokens"):
                 item[key] += call.get(key) or 0
-            cost = call_cost(call)
+            cost = estimate_cost({**call, "at": call.get("at") or row.get("at")})
             if cost is None:
                 item["unpriced"] += 1
             else:
@@ -131,8 +197,9 @@ def usage(rows: list[dict]) -> dict:
 
 
 def billing(rows: list[dict]) -> dict:
-    """计费总账（ledger.load 的行）按天、谁调用的、哪个模型汇总：调用次数、token（估算的有几次）、实际花费、按标价折算。
-    没有价格的模型花费记“不知道”（unpriced / unlisted），不当成 0。后台把本机服务的这一份和每晚 GitHub 上读公告的那一份加起来"""
+    """计费总账（ledger.load 的行）按天、谁调用的、哪个模型汇总：调用次数、token（估算的有几次）、
+    实际付出去的钱（cost：只有付费的模型，DeepSeek 按调用时间分时段）、估算花费（list_cost，estimate_cost：免费档、本机也估）。
+    估不了的记“不知道”（unpriced / unlisted），不当成 0。后台把本机服务的这一份和每晚 GitHub 上读公告的那一份加起来"""
     cells: dict[tuple, dict] = {}
     for row in rows:
         key = (row.get("day") or "?", row.get("source") or "other", row.get("model") or "?", row.get("provider") or "?")
@@ -147,7 +214,7 @@ def billing(rows: list[dict]) -> dict:
             cell["unpriced"] += 1
         else:
             cell["cost"] += cost
-        listed = call_cost(row, list_price)
+        listed = estimate_cost(row)
         if listed is None:
             cell["unlisted"] += 1
         else:
@@ -171,11 +238,11 @@ def billing_report(days: int = 7) -> str:
     lines = [f"最近 {days} 天的计费总账（{ledger.folder()}）"]
     for model, item in sorted(by_model.items(), key=lambda pair: -pair[1]["calls"]):
         sources = "、".join(f"{key[7:]} {int(value)}" for key, value in item.items() if key.startswith("source:"))
-        cost = "不知道（没有价格）" if item["unpriced"] else f"${item['cost']:.4f}"
-        listed = "不知道" if item["unlisted"] else f"${item['list_cost']:.4f}"
+        cost = "不知道（没有价格）" if item["unpriced"] else "免费" if item["cost"] == 0 else f"${item['cost']:.4f}"
+        listed = "估不了" if item["unlisted"] else f"${item['list_cost']:.4f}"
         lines.append(f"  {model}：{int(item['calls'])} 次（{sources}），token 输入 {int(item['prompt_tokens'])}、输出 {int(item['output_tokens'])}"
                      + (f"（{int(item['estimated'])} 次是按字数估的）" if item["estimated"] else "")
-                     + f"；实际花费 {cost}，按付费标价算 {listed}")
+                     + f"；实际付的 {cost}，估算花费 {listed}")
     return "\n".join(lines)
 
 
