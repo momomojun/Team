@@ -35,6 +35,7 @@ def main() -> None:
     billing = sub.add_parser("billing", help="计费总账：每个模型调用了多少次、多少 token、花了多少钱、按付费标价折算多少")
     billing.add_argument("--days", type=int, default=7)
     billing.add_argument("--json", action="store_true", help="输出汇总的 JSON（每晚读公告以后发布给后台用）")
+    billing.add_argument("--publish", action="store_true", help="把这台机器最近 90 天的账发到 GitHub（data/alerts-live 的 usage-local.json），线上的后台看")
     sub.add_parser("version")
     sub.add_parser("graph", help="把一轮对话的 LangGraph 流程图打成 Mermaid")
     alerts_cmd = sub.add_parser("alerts")
@@ -84,6 +85,11 @@ def main() -> None:
         from . import ledger
         from .monitor import billing, billing_report
 
+        if args.publish:
+            from .publish import publish
+
+            print(publish())
+            return
         print(json.dumps(billing(ledger.load(args.days)), ensure_ascii=False) if args.json else billing_report(args.days))
         return
 
