@@ -330,6 +330,7 @@
 | O88 | 10-28 | MiniMax 不再免费：从 OpenRouter 找免费可用的模型 | 仓库主人 | 已完成 | 10-28：OpenRouter 模型列表里 19 个免费的，试了 Nemotron 3.5 Super（各地写法 16/17）和 dots-3（13/17），换成 Nemotron；读公告改成 Gemini 排第一 | |
 | O89 | 10-28 | 把 DeepSeek 放在免费模型后面当备用 | 仓库主人 | 已完成 | 10-28：聊天、读公告两条链都是 Gemini → Nemotron → Qwen3.8（免费）→ DeepSeek Flash（付费）→ 本机；`test_paid_deepseek_only_answers_after_every_free_model_fails` 检查免费的能答就不碰付费的。线上（HF Space、GitHub 每晚读公告）要另加 `DEEPSEEK_API_KEY` 这个 secret 才会用 | |
 | O90 | 10-28 | 多写一些测试，现在测试案例过少，不够扎实、靠谱 | 仓库主人 | 已完成 | 10-28：新的没见过的评测样例 held-out v2 70 组（约四成故意刁难），先提交期望再跑：第一次 61/70，改了规则以后 70/70，当第八组门禁；规则那一层的逐条测试 216 个（`tests/test_rules.py`），Copilot 的 pytest 从 223 个到 439 个。测试找出并修了 10 处读错的地方（18 个机场没英文名、过去的日期照排、“不错/nice”当成否定……，见 RESULTS.md） | |
+| O91 | 10-29 | 计费的花费不要写零，按预估去算；DeepSeek 的价格按它后台扣的对上 | 仓库主人 | 已完成 | 10-29：花费都按 `monitor.estimate_cost` 估：免费档按付费档的标价、本机按电费、没有付费版的按同类模型；DeepSeek 改成按人民币、北京时间分时段、缓存命中另算，10-28 的 268 次算出 ¥0.1325，和 DeepSeek 后台的 ¥0.13 对上（原来按高峰、不算缓存，多算了 4 倍多） | |
 | O61 | 10-18 | 网站行程页加对话框（助手提议，仓库主人同意排进计划） | 计划 | 已完成 | 10-19：行程页的对话框（`copilot-chat.tsx`，经 `/api/copilot/chat` 连本机 Copilot），排出的行程原样放进行程页，可以接着改；没开 Copilot 时不显示。演示时 Copilot 放哪（本机还是服务器）还没定，先按本机 | 对应 P22 |
 
 ### D. 长期规则

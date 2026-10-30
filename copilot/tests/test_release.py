@@ -82,9 +82,11 @@ def test_monitor_adds_up_tokens_and_cost_by_the_model_that_answered(tmp_path):
     assert used["turns"] == 1 and used["alerts_read"] == 3
     gpt, gemini = used["models"]["gpt-4.1-mini"], used["models"]["gemini-3.5-flash-lite"]
     assert gpt["calls"] == 1 and gpt["fallback_to"] == 1 and abs(gpt["cost"] - 1.2) < 1e-9  # 0.40 + 0.5 × 1.60
-    assert gemini["calls"] == 1 and gemini["errors"] == 1 and gemini["thinking_tokens"] == 12 and gemini["cost"] == 0
-    assert used["models"]["mystery-model"]["unpriced"] == 1  # 没有价格的不当成 0
-    assert abs(used["days"][today] - 1.2) < 1e-9
+    assert gemini["calls"] == 1 and gemini["errors"] == 1 and gemini["thinking_tokens"] == 12
+    # 免费档的花费按付费档的价估，不写 0：800 × 0.30 + (40 + 12) × 2.50，每百万 token
+    assert abs(gemini["cost"] - 0.00037) < 1e-12
+    assert used["models"]["mystery-model"]["unpriced"] == 1  # 估不了的不当成 0
+    assert abs(used["days"][today] - 1.20037) < 1e-9
     text = monitor.report(7, tmp_path)
     assert "gpt-4.1-mini：1 次（其中前面的模型出错、轮到它的 1 次）" in text and "不知道（没有价格）" in text
 

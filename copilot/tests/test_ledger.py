@@ -1,4 +1,4 @@
-"""计费总账：真的调用模型才记、没回报 token 的按字数估、按来源和模型汇总、实际花费和按标价折算、每晚的那一份并进 usage.json"""
+"""计费总账：真的调用模型才记、没回报 token 的按字数估、按来源和模型汇总、实际付的钱和估算花费（DeepSeek 按北京时间分时段，免费档、本机也估，不写 0）、每晚的那一份并进 usage.json"""
 import datetime as dt
 import importlib.util
 import json
@@ -57,12 +57,34 @@ def test_billing_sums_by_day_source_and_model_with_actual_and_list_prices(monkey
     assert abs(gemini["list_cost"] - 2.80) < 1e-9
     deepseek = out[("eval", "deepseek-flash")]
     assert deepseek["cost"] == deepseek["list_cost"] > 0
-    # 新冒出来的免费模型：实际 0，没有付费版的标价，不当成 0
+    # 没有付费版的免费模型：实际 0，估算按同类模型的价，不写 0
     new = out[("eval", "someone/new-model:free")]
-    assert new["cost"] == 0 and new["unlisted"] == 1
+    assert new["cost"] == 0 and new["unlisted"] == 0 and new["list_cost"] > 0
     assert any(limit["id"] == "openrouter-free" and limit["requests"] for limit in monitor.billing(rows)["limits"])
-    # 本机模型不收钱
-    assert monitor.list_price("qwen3.5:4b-q4_K_M") == (0.0, 0.0)
+
+
+def test_deepseek_is_priced_in_yuan_by_beijing_time_and_cache_hits():
+    # 10-28 评测的 268 次合起来：DeepSeek 后台扣了 ¥0.13
+    call = {"model": "deepseek-flash", "prompt_tokens": 239_312, "cache_hit_tokens": 158_720, "output_tokens": 12_185,
+            "at": "2026-10-28T21:23:11-07:00"}  # 北京时间周四 12:23，午休是空闲时段
+    assert not monitor.deepseek_peak(call["at"])
+    assert abs(monitor.deepseek_cost(call) * monitor.CNY_PER_USD - 0.1325) < 1e-3
+    # 北京时间周四 10:00 是高峰，贵一倍；周六全天空闲；不知道时间按高峰
+    assert monitor.deepseek_peak("2026-10-29T10:00:00+08:00")
+    assert not monitor.deepseek_peak("2026-10-31T10:00:00+08:00")
+    assert monitor.deepseek_peak(None)
+    peak = {**call, "at": "2026-10-29T10:00:00+08:00"}
+    assert abs(monitor.deepseek_cost(peak) - 2 * monitor.deepseek_cost(call)) < 1e-12
+
+
+def test_free_and_local_models_get_an_estimate_instead_of_zero():
+    # 本机：250 瓦跑一小时约 0.25 度电，每度 0.17 美元
+    assert abs(monitor.estimate_cost({"model": "qwen3.5:4b-q4_K_M", "ms": 3_600_000}) - 0.0425) < 1e-9
+    # 免费档按付费档的标价
+    gemini = {"model": "gemini-3.5-flash-lite", "prompt_tokens": 1_000_000, "output_tokens": 0}
+    assert monitor.call_cost(gemini) == 0 and abs(monitor.estimate_cost(gemini) - 0.30) < 1e-9
+    assert monitor.estimate_cost({"model": "dots-studio/dots-3-note-preview:free", "prompt_tokens": 1_000_000}) > 0
+    assert monitor.estimate_cost({"model": "who-knows", "prompt_tokens": 10}) is None
 
 
 def test_publishing_replaces_tonights_days_and_keeps_ninety_days():
