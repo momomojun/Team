@@ -273,4 +273,22 @@ export const tempClosures: TempClosure[] = [
     source: "https://www.nps.gov/cuva/planyourvisit/conditions.htm",
     checked: "2026-10-20",
   },
+  {
+    // 2026-10-30 每晚读公告自动提议（公告 96A00261-453A-467D-A1D5-24D68A59AB50）：核对公告原文，把 reasonZh 改成中文说明再合并
+    attractions: ["acad-schoodic-point","acad-schoodic-loop"],
+    from: "2026-08-31",
+    reopen: null,
+    reasonZh: "NPS 公告：Schoodic Mountain Road Closed for Repairs（每晚读公告自动提议，机器读取；合并前改成中文说明、写上替代办法）",
+    source: "",
+    checked: "2026-10-30",
+  },
+  {
+    // 2026-10-30 每晚读公告自动提议（公告 3216A1E5-CE91-44E7-87D7-252C2178E9B7）：核对公告原文，把 reasonZh 改成中文说明再合并
+    attractions: ["mora-skyline-trail","mora-myrtle-falls","mora-reflection-lakes","mora-narada-falls","mora-paradise-visitor-center","mora-nisqually-vista","mora-christine-falls","mora-comet-falls","mora-trail-of-the-shadows","mora-longmire"],
+    from: "2026-10-30",
+    reopen: null,
+    reasonZh: "NPS 公告：Paradise Road Status: Gate closed at Longmire, projected to open tomorrow（每晚读公告自动提议，机器读取；合并前改成中文说明、写上替代办法）",
+    source: "",
+    checked: "2026-10-30",
+  },
 ];
