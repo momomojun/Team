@@ -79,3 +79,16 @@ def test_publishing_replaces_tonights_days_and_keeps_ninety_days():
     merged = module.merge(old, tonight, today)
     assert [(row["day"], row["calls"]) for row in merged] == [("2026-10-27", 3), ("2026-10-28", 7)]
     assert isinstance(Completion(data={}, model="x", latency_ms=0), Completion)
+
+
+def test_a_worktree_records_into_the_main_checkout(tmp_path):
+    main = tmp_path / "Team" / "copilot"
+    tree = tmp_path / "Team" / ".claude" / "worktrees" / "referee" / "copilot"
+    main.mkdir(parents=True)
+    tree.mkdir(parents=True)
+    assert ledger._main_checkout(tree) == main
+    assert ledger._main_checkout(main) == main
+    # 主目录不在（单独拷出来的 worktree）就还记在自己这里
+    lone = tmp_path / "x" / ".claude" / "worktrees" / "a" / "copilot"
+    lone.mkdir(parents=True)
+    assert ledger._main_checkout(lone) == lone

@@ -4,7 +4,7 @@
 多少 token、多久。模型没回报 token 数的按字数估（汉字一个算一个 token，别的四个字符算一个），标上 estimated。
 回放录音、测试用的假模型不是真的调用，不记。钱不在这里算（价格会变）：monitor.billing 读这本账、按 PRICES 算。
 
-文件：COPILOT_LEDGER（默认 copilot/runs/usage，Docker 里是 /data/runs/usage）下按天、按进程各一个 JSONL
+文件：COPILOT_LEDGER（默认 copilot/runs/usage，在 git worktree 里是主目录的那一份，Docker 里是 /data/runs/usage）下按天、按进程各一个 JSONL
 （<日期>.<进程号>.jsonl：同时跑两个评测时两个进程往同一个文件追加，Windows 上两行会搅在一起，10-28 碰上过），不进仓库。谁调用的看 COPILOT_SOURCE（各个入口启动时设：chat / alerts / eval / judge），没设是 other。
 COPILOT_LEDGER=off 不记（测试里换成临时目录）
 """
@@ -28,7 +28,19 @@ def folder() -> Path | None:
     if value:
         return Path(value)
     runs = os.environ.get("COPILOT_RUNS")
-    return (Path(runs) if runs else Path(__file__).resolve().parents[1] / "runs") / "usage"
+    return (Path(runs) if runs else _main_checkout(Path(__file__).resolve().parents[1]) / "runs") / "usage"
+
+
+def _main_checkout(copilot: Path) -> Path:
+    """在 git worktree（<仓库>/.claude/worktrees/<名字>/copilot）里跑评测时，账记到主目录的 copilot/runs：
+    后台、stats 读的是主目录那一份，记在 worktree 里看不到（10-29 仓库主人问“之前测过的数据呢”）"""
+    parts = copilot.parts
+    for i in range(len(parts) - 2):
+        if parts[i] == ".claude" and parts[i + 1] == "worktrees":
+            main = Path(*parts[:i]) / "copilot"
+            if main.is_dir():
+                return main
+    return copilot
 
 
 def estimate_tokens(text: str) -> int:

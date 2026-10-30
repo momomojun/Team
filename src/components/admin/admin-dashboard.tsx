@@ -222,7 +222,11 @@ const TEXT = {
       quotaHead: ["哪一家", "今天的调用", "上限", "今天的 token", "上限", "说明"],
       none: "—",
       unknownLimit: "看说明",
-      empty: "这段时间计费总账里还没有调用：10-28 以后的版本才记，每晚读公告的那一份第一次跑完以后才有。",
+      empty: (local: boolean, nightly: boolean) =>
+        [
+          local ? "本机 Copilot 服务的总账里这段时间还没有调用。" : "本机的 Copilot 服务没开，读不到它的总账（聊天、评测、裁判都记在本机）：开着 Copilot 服务再看。",
+          nightly ? null : "每晚 GitHub 上读公告的那一份第一次跑完以后才有。",
+        ].filter(Boolean).join(""),
       parts: (local: boolean, nightly: boolean) =>
         `这里加起来的是：${[local ? "本机 Copilot 服务的总账" : null, nightly ? "每晚 GitHub 上读公告的总账" : null].filter(Boolean).join("、") || "（都还没有）"}`,
       noList: "没有付费版",
@@ -330,7 +334,11 @@ const TEXT = {
       quotaHead: ["Provider", "Calls today", "Limit", "Tokens today", "Limit", "Notes"],
       none: "—",
       unknownLimit: "see notes",
-      empty: "No calls in the ledger for this period yet: versions from 10-28 on record them, and the nightly part appears after its first run.",
+      empty: (local: boolean, nightly: boolean) =>
+        [
+          local ? "The local Copilot service's ledger has no calls in this period yet." : "The local Copilot service is off, so its ledger (chat, evals and the judge are all recorded locally) can't be read. Start the Copilot service and look again.",
+          nightly ? null : "The nightly GitHub alerts part appears after its first run.",
+        ].filter(Boolean).join(" "),
       parts: (local: boolean, nightly: boolean) =>
         `Combined here: ${[local ? "the local Copilot service's ledger" : null, nightly ? "the nightly GitHub alerts ledger" : null].filter(Boolean).join(" and ") || "(neither yet)"}`,
       noList: "no paid version",
@@ -556,7 +564,7 @@ function BillingSection({ local, nightly, days, t }: { local?: Billing; nightly?
           />
         </>
       ) : (
-        <p className="mt-4 text-sm text-mute">{b.empty}</p>
+        <p className="mt-4 text-sm text-mute">{b.empty(Boolean(local), Boolean(nightly))}</p>
       )}
       <h3 className="eyebrow mt-10 text-mute">{b.quota}</h3>
       <Table
