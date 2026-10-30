@@ -110,6 +110,8 @@ if (-not (Fetch "$copilotUrl/health")) {
   $envs = "`$env:PYTHONIOENCODING='utf-8';"
   if ($ollamaUrl) { $envs += " `$env:OLLAMA_HOST_URL='$ollamaUrl';" }
   if ($LocalModel) { $envs += " `$env:COPILOT_PROVIDER='ollama';" }
+  # 计费总账每小时发到 GitHub 一次，线上的后台（Vercel）也看得到
+  $envs += " `$env:COPILOT_PUBLISH_USAGE='1';"
   $mode = if ($LocalModel) { '只用本机模型' } else { '云端免费模型优先' }
   $command = "`$host.UI.RawUI.WindowTitle='NPS Guide · Copilot（$mode，端口 $copilotPort）'; $envs Set-Location '$root\copilot'; python -m nps_copilot serve --port $copilotPort"
   $process = Start-Process powershell -ArgumentList '-NoExit', '-NoProfile', '-Command', $command -PassThru

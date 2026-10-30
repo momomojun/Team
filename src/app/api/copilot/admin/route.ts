@@ -3,9 +3,11 @@
  * 加上 GitHub 上每晚读公告的 workflow 最近几次跑得怎么样、还开着的 nps-alerts issue，和每晚调用模型的计费总账
  * （data/alerts-live 分支的 usage.json，copilot/scripts/publish_usage.py 写的；本机服务的那一份在 stats.billing 里，后台加起来）。
  *
+ * 还有各台机器发到同一个分支的本机总账（usage-local.json，copilot/nps_copilot/publish.py 写的）：线上读不到本机，靠它看。
+ *
  * GET ?days=7 → {available, health, stats, nightly}
  *
- * 最近几轮里有用户说的原话：部署到公网又没设访问密码（SITE_PASSWORD）时不给，返回 404。
+ * 线上和本机看到的一样（10-29 仓库主人：不需要隐藏，线上线下一致）：以前部署到公网又没设访问密码时整个返回 404。
  * Copilot 没开（或者部署在 Vercel 上连不到）时 available: false，GitHub 那部分照样给
  */
 import { copilotHeaders } from "@/lib/copilot/upstream";
@@ -21,6 +23,8 @@ interface Nightly {
   issues: { number: number; title: string; created: string; url: string }[];
   /** 每晚 GitHub 上调用模型的计费总账（还没发布过、读不到时是 null） */
   billing: { rows: unknown[]; limits: unknown[] } | null;
+  /** 各台机器发上来的本机总账：{机器: {updated, rows}} */
+  machines: Record<string, { updated: string; rows: unknown[] }> | null;
   error?: string;
 }
 
@@ -36,14 +40,23 @@ async function nightly(): Promise<Nightly> {
   if (githubCache && Date.now() - githubCache.at < GITHUB_TTL_MS) return githubCache.data;
   const headers = { Accept: "application/vnd.github+json", "User-Agent": "nps-guide-admin" };
   try {
-    const [runs, issues, billing] = await Promise.all([
-      getJson(`https://api.github.com/repos/${REPO}/actions/workflows/${WORKFLOW}/runs?per_page=7`, 8_000, headers),
-      getJson(`https://api.github.com/repos/${REPO}/issues?labels=nps-alerts&state=open&per_page=10`, 8_000, headers),
+    // GitHub 接口不登录每个 IP 每小时 60 次，Vercel 的出口 IP 是很多网站共用的，常常超：超了只是没有 runs、issues，计费照样读
+    let limited: string | undefined;
+    const api = (url: string) =>
+      getJson(url, 8_000, headers).catch((error) => {
+        limited = error instanceof Error ? error.message : "github";
+        return null;
+      });
+    const raw = (file: string) => getJson(`https://raw.githubusercontent.com/${REPO}/data/alerts-live/${file}`, 8_000).catch(() => null);
+    const [runs, issues, billing, local] = await Promise.all([
+      api(`https://api.github.com/repos/${REPO}/actions/workflows/${WORKFLOW}/runs?per_page=7`),
+      api(`https://api.github.com/repos/${REPO}/issues?labels=nps-alerts&state=open&per_page=10`),
       // raw 文件不算进 GitHub 接口每小时 60 次的额度；还没发布过是 404
-      getJson(`https://raw.githubusercontent.com/${REPO}/data/alerts-live/usage.json`, 8_000).catch(() => null),
+      raw("usage.json"),
+      raw("usage-local.json"),
     ]);
     const data: Nightly = {
-      runs: (runs.workflow_runs ?? []).map((run: Record<string, unknown>) => ({
+      runs: (runs?.workflow_runs ?? []).map((run: Record<string, unknown>) => ({
         id: run.id,
         status: run.status,
         conclusion: run.conclusion,
@@ -60,18 +73,18 @@ async function nightly(): Promise<Nightly> {
           url: issue.html_url,
         })),
       billing: billing && Array.isArray(billing.rows) ? billing : null,
+      machines: local && typeof local.machines === "object" ? local.machines : null,
+      ...(limited ? { error: limited } : {}),
     };
-    githubCache = { at: Date.now(), data };
+    // 被限流了 1 分钟后再试，不等 5 分钟
+    githubCache = { at: limited ? Date.now() - GITHUB_TTL_MS + 60_000 : Date.now(), data };
     return data;
   } catch (error) {
-    return { runs: [], issues: [], billing: null, error: error instanceof Error ? error.message : "github" };
+    return { runs: [], issues: [], billing: null, machines: null, error: error instanceof Error ? error.message : "github" };
   }
 }
 
 export async function GET(request: Request) {
-  if (process.env.NODE_ENV === "production" && !process.env.SITE_PASSWORD) {
-    return Response.json({ error: "not_found" }, { status: 404 });
-  }
   const asked = Number(new URL(request.url).searchParams.get("days"));
   const days = Number.isFinite(asked) && asked >= 1 ? Math.min(Math.round(asked), 90) : 7;
   const github = nightly();

@@ -117,7 +117,11 @@ interface FreeLimit {
 interface Billing {
   rows: BillingRow[];
   limits: FreeLimit[];
+  /** 这台机器（和 GitHub 上发上来的对上，同一台的不重复算） */
+  machine?: string;
 }
+/** 各台机器发到 GitHub 的本机总账（copilot/nps_copilot/publish.py）：线上读不到本机，靠它看 */
+type Machines = Record<string, { updated: string; rows: BillingRow[] }>;
 
 interface AdminData {
   available: boolean;
@@ -148,6 +152,7 @@ interface AdminData {
     issues: { number: number; title: string; created: string; url: string }[];
     /** 每晚 GitHub 上调用模型的计费总账 */
     billing?: Billing | null;
+    machines?: Machines | null;
     error?: string;
   };
 }
@@ -170,7 +175,7 @@ const TEXT = {
     lastDays: (n: number) => `最近 ${n} 天`,
     refresh: "刷新",
     updated: (time: string) => `更新于 ${time}`,
-    failed: "读不到后台数据（/api/copilot/admin）。网站部署到公网又没设访问密码时，这里不给数据。",
+    failed: "读不到后台数据（/api/copilot/admin）。",
     loading: "读取中…",
     running: "Copilot 在运行",
     chain: "模型顺序",
@@ -224,11 +229,17 @@ const TEXT = {
       unknownLimit: "看说明",
       empty: (local: boolean, nightly: boolean) =>
         [
-          local ? "本机 Copilot 服务的总账里这段时间还没有调用。" : "本机的 Copilot 服务没开，读不到它的总账（聊天、评测、裁判都记在本机）：开着 Copilot 服务再看。",
+          local
+            ? "本机 Copilot 服务的总账里这段时间还没有调用。"
+            : "本机的 Copilot 服务没开，GitHub 上也还没有发上来的本机总账（start.cmd 开的服务每小时发一次，也可以 python -m nps_copilot billing --publish）。",
           nightly ? null : "每晚 GitHub 上读公告的那一份第一次跑完以后才有。",
         ].filter(Boolean).join(""),
-      parts: (local: boolean, nightly: boolean) =>
-        `这里加起来的是：${[local ? "本机 Copilot 服务的总账" : null, nightly ? "每晚 GitHub 上读公告的总账" : null].filter(Boolean).join("、") || "（都还没有）"}`,
+      parts: (local: boolean, nightly: boolean, machines: number, updated: string | null) =>
+        `这里加起来的是：${[
+          local ? "本机 Copilot 服务的总账" : null,
+          machines ? `${machines} 台机器发到 GitHub 的本机总账（最近一次 ${updated}）` : null,
+          nightly ? "每晚 GitHub 上读公告的总账" : null,
+        ].filter(Boolean).join("、") || "（都还没有）"}`,
       noList: "估不了",
       free: "免费",
       noListCalls: (n: number) => `其中 ${n} 次调用的模型估不了价`,
@@ -283,7 +294,7 @@ const TEXT = {
     lastDays: (n: number) => `Last ${n} days`,
     refresh: "Refresh",
     updated: (time: string) => `Updated ${time}`,
-    failed: "Can't read the dashboard data (/api/copilot/admin). A public deployment without a site password returns nothing here.",
+    failed: "Can't read the dashboard data (/api/copilot/admin).",
     loading: "Loading…",
     running: "Copilot is running",
     chain: "Model order",
@@ -337,11 +348,17 @@ const TEXT = {
       unknownLimit: "see notes",
       empty: (local: boolean, nightly: boolean) =>
         [
-          local ? "The local Copilot service's ledger has no calls in this period yet." : "The local Copilot service is off, so its ledger (chat, evals and the judge are all recorded locally) can't be read. Start the Copilot service and look again.",
+          local
+            ? "The local Copilot service's ledger has no calls in this period yet."
+            : "The local Copilot service is off, and no local ledger has been published to GitHub yet (the service started by start.cmd publishes hourly, or run python -m nps_copilot billing --publish).",
           nightly ? null : "The nightly GitHub alerts part appears after its first run.",
         ].filter(Boolean).join(" "),
-      parts: (local: boolean, nightly: boolean) =>
-        `Combined here: ${[local ? "the local Copilot service's ledger" : null, nightly ? "the nightly GitHub alerts ledger" : null].filter(Boolean).join(" and ") || "(neither yet)"}`,
+      parts: (local: boolean, nightly: boolean, machines: number, updated: string | null) =>
+        `Combined here: ${[
+          local ? "the local Copilot service's ledger" : null,
+          machines ? `local ledgers published to GitHub from ${machines} ${machines === 1 ? "machine" : "machines"} (last at ${updated})` : null,
+          nightly ? "the nightly GitHub alerts ledger" : null,
+        ].filter(Boolean).join(", ") || "(none yet)"}`,
       noList: "can't estimate",
       free: "free",
       noListCalls: (n: number) => `${n} ${n === 1 ? "call" : "calls"} used a model we can't price`,
@@ -476,7 +493,7 @@ function Table({ head, rows, align }: { head: string[]; rows: React.ReactNode[][
         <thead>
           <tr className="border-b border-line">
             {head.map((cell, index) => (
-              <th key={cell} className={`eyebrow py-2.5 pr-4 font-normal whitespace-nowrap text-mute ${align?.[index] === "r" ? "text-right" : "text-left"}`}>
+              <th key={`${index}-${cell}`} className={`eyebrow py-2.5 pr-4 font-normal whitespace-nowrap text-mute ${align?.[index] === "r" ? "text-right" : "text-left"}`}>
                 {cell}
               </th>
             ))}
@@ -510,14 +527,17 @@ const BILLING_KEYS: BillingKey[] = ["calls", "prompt_tokens", "output_tokens", "
  * 计费：本机 Copilot 服务的总账（stats.billing）和每晚 GitHub 上读公告的总账（nightly.billing）加起来，按模型列；
  * 再按免费档每天的上限看今天用了多少。价格都是 Python 那边算好的，这里只加
  */
-function BillingSection({ local, nightly, days, t }: { local?: Billing; nightly?: Billing | null; days: number; t: AdminText }) {
+function BillingSection({ local, nightly, machines, days, t }: { local?: Billing; nightly?: Billing | null; machines?: Machines | null; days: number; t: AdminText }) {
   const b = t.billing;
-  const { money } = makeFormat(t);
+  const { money, clock } = makeFormat(t);
   const since = new Date();
   since.setDate(since.getDate() - (days - 1));
   const sinceDay = isoDay(since);
   const today = isoDay(new Date());
-  const rows = [...(local?.rows ?? []), ...(nightly?.rows ?? [])].filter((row) => row.day >= sinceDay);
+  // 发到 GitHub 的本机总账：开着的就是这台机器的，用服务里的（更新），不重复算
+  const published = Object.entries(machines ?? {}).filter(([id]) => id !== local?.machine);
+  const updated = published.map(([, item]) => item.updated).sort().at(-1) ?? null;
+  const rows = [...(local?.rows ?? []), ...published.flatMap(([, item]) => item.rows), ...(nightly?.rows ?? [])].filter((row) => row.day >= sinceDay);
   const limits = local?.limits ?? nightly?.limits ?? [];
   const byModel = new Map<string, BillingRow & { sources: Record<string, number> }>();
   for (const row of rows) {
@@ -581,7 +601,7 @@ function BillingSection({ local, nightly, days, t }: { local?: Billing; nightly?
           <span key="n" className="text-[12px] leading-5 text-ink-soft">{limit.note}</span>,
         ])}
       />
-      <p className="mt-3 text-[11px] text-mute">{b.parts(Boolean(local), Boolean(nightly))}</p>
+      <p className="mt-3 text-[11px] text-mute">{b.parts(Boolean(local), Boolean(nightly), published.length, updated ? clock(updated) : null)}</p>
     </Section>
   );
 }
@@ -788,7 +808,7 @@ export function AdminDashboard({ lang = "zh" }: { lang?: AdminLang }) {
         </>
       )}
 
-      <BillingSection local={stats?.billing} nightly={data?.nightly.billing} days={days} t={t} />
+      <BillingSection local={stats?.billing} nightly={data?.nightly.billing} machines={data?.nightly.machines} days={days} t={t} />
 
       <Section title={t.alerts} note={t.alertsNote}>
         <div className="mt-4 grid gap-x-10 gap-y-6 lg:grid-cols-2">

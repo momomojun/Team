@@ -24,12 +24,15 @@ from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel
 
-from . import __version__, alerts_live, guard, ledger, monitor, tts
+from . import __version__, alerts_live, guard, ledger, monitor, publish, tts
 from . import graph as graph_module
 from .pipeline import VERSION, Session, prompt_hashes
 from .providers import ProviderError, chat_provider
 
 app = FastAPI(title="NPS Guide Copilot", version=__version__)
+# 计费总账每小时发到 GitHub 一次，线上的后台也看得到（start.cmd 设了；Docker、Space 里没有 git，不设）
+if os.environ.get("COPILOT_PUBLISH_USAGE") == "1":
+    publish.start_hourly()
 # 计费总账（ledger.py）里这个服务的调用记成聊天（读公告时调用的模型也在这里，按聊天算）
 os.environ.setdefault("COPILOT_SOURCE", "chat")
 sessions: dict[str, Session] = {}
@@ -132,7 +135,7 @@ def stats(days: int = 7) -> dict:
     return {"days": days, "versions": monitor.summarize(rows), "usage": monitor.usage(rows), "daily": monitor.daily(rows),
             "recent": monitor.recent(rows), "alerts": alerts_live.status(),
             # 计费总账：这台机器上所有调用（聊天、评测、裁判……），后台再加上每晚 GitHub 上读公告的那一份
-            "billing": monitor.billing(ledger.load(days))}
+            "billing": {**monitor.billing(ledger.load(days)), "machine": ledger.machine()}}
 
 
 @app.post("/sessions")

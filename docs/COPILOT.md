@@ -192,6 +192,7 @@ flowchart LR
 
 - **每次真的调用模型都记一行**：每一家（Ollama、Gemini、OpenAI、OpenRouter、Groq、DeepSeek）拿到回答的地方都过 `providers._billed`，回放录音、测试用的假模型不过。记的是谁调用的（`COPILOT_SOURCE`：聊天 `chat`、读公告 `alerts`、评测 `eval`、裁判 `judge`，各个入口启动时设）、哪一家哪个型号、做什么、token、多久。模型没回报 token 数的按字数估（汉字一个一个、别的四个字符一个），标 `estimated`。
 - **文件**：`COPILOT_LEDGER`（默认 `copilot/runs/usage/`，Docker 里 `/data/runs/usage/`）按天一个 JSONL，不进仓库。测试里设成 `off`。
+- **线上看**：线上的后台读不到本机，`python -m nps_copilot billing --publish`（`publish.py`）把最近 90 天的汇总推到 `data/alerts-live` 的 `usage-local.json`，每台机器一份、只换自己的、没变不推；`COPILOT_PUBLISH_USAGE=1` 时 `serve` 每小时发一次。
 - **算钱**（`monitor.billing`）：实际花费按 `PRICES`；另按 `LIST_PRICES` 算“换成付费档要多少”（Gemini 3.5 Flash-Lite $0.30 / $2.50、Groq Qwen3.8 27B $0.80 / $4.00、GPT-OSS 120B $0.15 / $0.60、MiniMax M3.1 Flash $0.15 / $0.60，每百万 token，各家官网 10-28 的价）。DeepSeek 按人民币标价（`DEEPSEEK_CNY`），按每次调用的北京时间分高峰、空闲（高峰贵一倍），缓存命中的输入另算，1 美元按 7.1 元换算；10-28 评测的 268 次算出 ¥0.1325，和 DeepSeek 后台扣的 ¥0.13 对得上。10-29 起后台的“估算花费”不写 0：本机按电费（250 瓦 × 调用时间，每度 $0.17），只有免费版的模型按同类的 Nemotron 付费版估（`estimate_cost`）。
 - **免费额度**（`FREE_LIMITS`）：OpenRouter 没充值的账户所有免费模型加起来每天约 50 次；Groq 每个模型每天 1000 次、20 万 token；Gemini 每天的上限官网不写，在 AI Studio 看；DeepSeek 没有免费档。后台看今天用了几成。
 - **每晚 GitHub 上读公告的那一份**：那台机器上的总账，读完公告以后由 `copilot/scripts/publish_usage.py` 并进 `data/alerts-live` 分支的 `usage.json`（留最近 90 天）。网站后台（`/api/copilot/admin`）把它和本机服务 `/stats` 里的 `billing` 加起来，Copilot 服务没开时也看得到每晚那一份。
@@ -209,7 +210,8 @@ flowchart LR
 | `COPILOT_STEP_MODELS` | — | 某几步单独换模型（GOALS P12，10-20）：`intake=gemini,qa=openai:gpt-4.1-mini`，写成 `步骤=提供方[:型号]`，步骤是 `dispatch`（调度员）/ `intake`（摘条件）/ `qa`（回答问题）/ `writer`（写说明），提供方是 `gemini` / `openai` / `openrouter` / `groq` / `ollama`；单独指定的出错退回平常的顺序，写错了直接报错。后台和 `/health` 的 `steps` 显示换了哪几步。读公告另用 `COPILOT_ALERTS_PROVIDER` |
 | `COPILOT_PROMPT_JUDGE` | `v1` | 模型打分（`eval/judge.py`）的裁判提示词版本 |
 | `COPILOT_REASONING` | `low` | OpenRouter、Groq 推理模型的推理档位：`minimal` / `low` / `medium` / `high` / `none`（不传；Groq 只认 `low` / `medium` / `high`）。DeepSeek 不设就关掉思考（快、能 temperature 0），设 `low` / `high` / `max` 打开 |
-| `COPILOT_LEDGER` | `copilot/runs/usage` | 计费总账放哪（`off` 不记）；`COPILOT_SOURCE` 记成谁调用的（各入口自己设，一般不用管） |
+| `COPILOT_LEDGER` | `copilot/runs/usage` | 计费总账放哪（`off` 不记；在 git worktree 里默认是主目录那一份）；`COPILOT_SOURCE` 记成谁调用的（各入口自己设，一般不用管） |
+| `COPILOT_PUBLISH_USAGE` | 不设 | 设成 `1`：`serve` 每小时把这台机器的计费汇总推到 `data/alerts-live` 的 `usage-local.json`，线上的后台看（`start.cmd` 设了；要能推 git）。`COPILOT_MACHINE` 是这台机器在里面的名字，不设按电脑名的 hash |
 | `COPILOT_FALLBACK` | — | 设成 `ollama`：商业 API 出错（额度用完、一直忙）时这一次改用本机模型。Copilot 服务用，评测别开 |
 | `OLLAMA_HOST_URL` | `http://127.0.0.1:11435` | Ollama 地址（momomojun 电脑上的便携版用 11435；自己装的默认 11434；Docker 里是 `http://ollama:11434` 或 `http://host.docker.internal:11435`） |
 | `COPILOT_REPLAY` | — | 回放用的录音文件 |

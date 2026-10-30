@@ -11,8 +11,10 @@ COPILOT_LEDGER=off 不记（测试里换成临时目录）
 from __future__ import annotations
 
 import datetime as dt
+import hashlib
 import json
 import os
+import platform
 import re
 import threading
 from pathlib import Path
@@ -41,6 +43,11 @@ def _main_checkout(copilot: Path) -> Path:
             if main.is_dir():
                 return main
     return copilot
+
+
+def machine() -> str:
+    """这台机器叫什么（后台分清本机服务的账和发到 GitHub 上的是不是同一台的）：COPILOT_MACHINE，没设按电脑名的 hash"""
+    return os.environ.get("COPILOT_MACHINE") or hashlib.sha1(platform.node().encode("utf-8")).hexdigest()[:8]
 
 
 def estimate_tokens(text: str) -> int:
