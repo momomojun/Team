@@ -44,6 +44,21 @@
    "unpriced": 0,
    "list_cost": 0.0030847999999999995,
    "unlisted": 0
+  },
+  {
+   "day": "2026-11-01",
+   "source": "alerts",
+   "model": "gemini-3.5-flash-lite",
+   "provider": "gemini",
+   "calls": 6,
+   "prompt_tokens": 5504,
+   "output_tokens": 384,
+   "thinking_tokens": 0,
+   "estimated": 0,
+   "cost": 0.0,
+   "unpriced": 0,
+   "list_cost": 0.0026112,
+   "unlisted": 0
   }
  ],
  "limits": [
