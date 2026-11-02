@@ -59,6 +59,36 @@
    "unpriced": 0,
    "list_cost": 0.0026112,
    "unlisted": 0
+  },
+  {
+   "day": "2026-11-02",
+   "source": "alerts",
+   "model": "gemini-3.5-flash-lite",
+   "provider": "gemini",
+   "calls": 12,
+   "prompt_tokens": 9902,
+   "output_tokens": 642,
+   "thinking_tokens": 0,
+   "estimated": 0,
+   "cost": 0.0,
+   "unpriced": 0,
+   "list_cost": 0.0045756,
+   "unlisted": 0
+  },
+  {
+   "day": "2026-11-02",
+   "source": "eval",
+   "model": "gemini-3.5-flash-lite",
+   "provider": "gemini",
+   "calls": 26,
+   "prompt_tokens": 21800,
+   "output_tokens": 1205,
+   "thinking_tokens": 0,
+   "estimated": 0,
+   "cost": 0.0,
+   "unpriced": 0,
+   "list_cost": 0.009552499999999998,
+   "unlisted": 0
   }
  ],
  "limits": [
