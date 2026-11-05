@@ -30,7 +30,7 @@
 - [ ] CI：镜像 tag 带提示词版本和数据 hash；staging 环境（P29、P24）。Ruff 检查、评测分数贴到 PR 评论 11-04 做了，见 [timeline/2026-11-04-ci-review.md](timeline/2026-11-04-ci-review.md)（P27、P28）
 - [ ] 不同的步骤可以用不同的模型（P12；10-20 做了机制 `COPILOT_STEP_MODELS`，默认还是每一步都按 Gemini → MiniMax → Qwen（Groq）→ 本机（10-21 起不用 OpenAI）；按对照成绩怎么分配等仓库主人定）
 - [ ] Writer 的行程说明逐句附来源（P17）；Critic 最多退回 3 轮（P16，现在有意只改一次）；数据快照用 Pydantic 校验（P6）
-- [ ] 路线动画导出成短视频（第一版动画 10-19 做了）；Copilot 的线上部署（O53、A1；10-21 准备好了 Hugging Face Spaces 的部署文件和 workflow，等仓库主人注册账号、加 secret 后推上去）。网站行程页的对话框 10-19 做了（O61）
+- [ ] 路线动画导出成短视频（第一版动画 10-19 做了）。Copilot 的线上部署 11-04 做了：Modal 上分 staging 和正式，正式 https://momomojun--nps-copilot-web.us-east.modal.run ，见 [timeline/2026-11-04-modal-deploy.md](timeline/2026-11-04-modal-deploy.md)（O53、A1、P24）；还差 Vercel 连上去。网站行程页的对话框 10-19 做了（O61）
 - [x] 排行程等得久时的过渡界面：按真实的步骤显示做到哪了（理解需求、读公告、排路线、写说明），先给看已经认出的条件（O65；10-22 做了，见 [timeline/2026-10-22-progress-langgraph.md](timeline/2026-10-22-progress-langgraph.md)）
 - [ ] 照着小红书帖子排行程：把帖子里的图（路线多在图上）存下来上传给 Copilot，看图读出每天去哪，确认后排成行程（O64）
 - [ ] 明星同款：中国大陆明星、更多公园（O22；10-20 查了不登录的办法：微博单条帖子要登录、中文娱乐新闻搜不到，大陆明星一条也没找到，先加了港台的 3 条：蔡明思的马蹄湾和羚羊峡谷、阎奕格的冰川点；调研记录在 archive/audit/2026-10-20/）
@@ -221,7 +221,7 @@
 | P21 | 10-13 | FastAPI 接口 | §4 | 已完成 | `copilot/nps_copilot/api.py`：`/health`、`/sessions`、`/sessions/{id}/messages`；网站另有 `POST /api/copilot/plan` | 计划书写 `/plan`，名字不同 |
 | P22 | 10-13 | Streamlit 演示界面 / demo UI | §4、§8 | 已完成 | 改成了网站行程页的对话框（10-19），不做 Streamlit | |
 | P23 | 10-13 | Docker Compose | §4 | 已完成 | `copilot/docker-compose.yml`、`.ollama.yml`、`.gpu.yml`、`Dockerfile` | |
-| P24 | 10-13 | 部署到 staging（AWS Academy 或 Render） | §4、§6 | 没做 | 只有 GHCR 公开镜像 + 本机 compose；网站在 Vercel，但 Copilot 没有线上环境 | 演示时 Copilot 放哪还没定 |
+| P24 | 10-13 | 部署到 staging（AWS Academy 或 Render） | §4、§6 | 已完成 | 11-04：Modal 的 `staging` 环境（main 上 Copilot 的代码变了就构建、冒烟、推 `main-<提交>` 镜像、部署、核对 `/health` 的 build，`copilot-staging.yml`）和正式环境（发版后部署同一个镜像、可以手动回滚，`modal-deploy.yml`）；部署文件 `deploy/modal/app.py` | 没用 AWS / Render：Hugging Face Docker Space 改成付费，按仓库主人 11-02 的决定用 Modal |
 | P25 | 10-13 | MLflow 追踪每一步（token、费用、延迟、工具调用、Critic 退回） | §4、§7 | 部分完成 | JSONL 日志 + `python -m nps_copilot stats`（按版本统计排出率、追问、出错、被丢掉的片段、Writer 退回、耗时中位数和 P90）；10-19 加了按模型的调用次数、出错、退到备用模型的次数、token 和花费（每轮日志的 `calls`，`GET /stats`），网站后台 `/zh-Hans/admin`（每天的图、按模型的花费、最近几轮、每晚读公告的结果）；10-22 评测（单句、多轮对话、读公告、检索）可以记到本机的 MLflow（`COPILOT_MLFLOW=1`，`eval/tracking.py`），历次模型对照的回放都补记进去了；线上每一步的追踪还是 JSONL + 后台 | |
 | P26 | 10-13 | 护栏：没查到来源不说开没开、输入校验、限流、外部 API 挂了退回缓存快照 | §4 | 部分完成 | 输入校验、提示注入没得逞（holdout 两组）、QA 数字核对和“查不到说不知道”有；10-21 加了限流（每个来源每分钟 20、每天 300 句，全局每天 2000 句）和共享口令（`guard.py`，为上 Hugging Face Spaces）；没有缓存回退（plan_trip 本来就不联网） | |
 | P27 | 10-13 | 每个 PR：Ruff lint、mock pytest、数据快照校验、工具契约测试 | §6 | 已完成 | pytest、契约测试（`tests/copilot-plan.test.ts`、契约文件是否最新）都有；11-04 加了 `ruff check copilot`（`copilot/pyproject.toml`），第一次跑就查出两处正则的真 bug；另有 CodeRabbit 的 AI 审查（`.coderabbit.yaml`） | |

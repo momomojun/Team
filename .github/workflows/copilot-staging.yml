@@ -1,0 +1,84 @@
+# Copilot 的预发布（staging）：Copilot 或行程引擎的代码合进 main 以后，构建镜像、冒烟测试、推到 GHCR（main-<提交>），
+# 再部署到 Modal 的 staging 环境，确认 /health 报的是这次提交。网站的预览版（Vercel Preview）连它。
+# 正式环境只在发版（copilot-v* tag）以后部署，见 modal-deploy.yml。
+# 要仓库的 secret：MODAL_TOKEN_ID、MODAL_TOKEN_SECRET（Modal → Settings → API Tokens）；没设就只推镜像、不部署。
+name: Copilot staging
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "copilot/**"
+      - "src/**"
+      - "scripts/plan-trip.mjs"
+      - "scripts/lookup.mjs"
+      - "tests/register.mjs"
+      - "tests/resolve.mjs"
+      - "package.json"
+      - "deploy/modal/**"
+      - ".github/workflows/copilot-staging.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: copilot-staging
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  IMAGE: ghcr.io/momomojun/team-copilot
+
+jobs:
+  staging:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -f copilot/Dockerfile --build-arg COPILOT_BUILD_SHA=${GITHUB_SHA::7} -t "$IMAGE:main-${GITHUB_SHA::7}" .
+      - name: Smoke test (replay provider)
+        run: |
+          docker run -d --name copilot -p 127.0.0.1:8765:8765 \
+            -e COPILOT_PROVIDER=replay -e COPILOT_REPLAY=/app/copilot/eval/recordings/qwen3.5_4b-q4_K_M.jsonl \
+            "$IMAGE:main-${GITHUB_SHA::7}"
+          python3 copilot/scripts/smoke.py http://127.0.0.1:8765 --expect-version repo
+      - if: failure()
+        run: docker logs copilot
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push main-<commit> and staging
+        run: |
+          docker tag "$IMAGE:main-${GITHUB_SHA::7}" "$IMAGE:staging"
+          docker push "$IMAGE:main-${GITHUB_SHA::7}"
+          docker push "$IMAGE:staging"
+      - name: Deploy to Modal (staging)
+        id: deploy
+        env:
+          MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+        run: |
+          if [ -z "$MODAL_TOKEN_ID" ] || [ -z "$MODAL_TOKEN_SECRET" ]; then
+            echo "::notice::没设 MODAL_TOKEN_ID / MODAL_TOKEN_SECRET，只推了镜像、没部署"
+            exit 0
+          fi
+          python3 -m pip install --quiet modal
+          COPILOT_IMAGE="$IMAGE:main-${GITHUB_SHA::7}" python3 -m modal deploy --env staging deploy/modal/app.py | tee deploy.log
+          url=$(grep -o 'https://[^ ]*\.modal\.run' deploy.log | head -1)
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+      - name: Check staging is this commit
+        if: steps.deploy.outputs.url != ''
+        env:
+          URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          # 第一次要冷启动（拉镜像、起 Node 和 Python），最多等 3 分钟
+          for i in $(seq 1 18); do
+            build=$(curl -fsS --max-time 60 "$URL/health" | python3 -c 'import json,sys;print(json.load(sys.stdin).get("build"))' 2>/dev/null) && break
+            sleep 10
+          done
+          echo "staging $URL 报的 build：$build"
+          test "$build" = "${GITHUB_SHA::7}" || { echo "::error::staging 上的不是这次提交（$build）"; exit 1; }
+          echo "### Copilot staging：$URL（build ${GITHUB_SHA::7}）" >> "$GITHUB_STEP_SUMMARY"
