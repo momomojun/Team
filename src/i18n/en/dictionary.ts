@@ -1616,7 +1616,7 @@ export const en: Dictionary = {
       offline: "Can't reach the Copilot (the local Copilot service may be off). You can still use Build a trip below.",
       error: "The Copilot hit an error. Try rephrasing.",
       rateLimited: "Too many messages. Try again in {n} {n|second|seconds}.",
-      note: "The Copilot runs Qwen3.5 4B on this computer to understand you and ask for anything missing; the itinerary itself comes from the site's planner and its own data on hours and drive times. Check nps.gov before you go.",
+      note: "The Copilot uses AI models to understand you and ask for anything missing (free cloud models first, paid DeepSeek only if all of them fail, or Qwen3.5 4B on your own machine when developing locally); the itinerary itself comes from the site's planner and its own data on hours and drive times. Check nps.gov before you go.",
       replaceConfirm: "Replace your current trip with the one the Copilot planned?",
     },
     wizard: {

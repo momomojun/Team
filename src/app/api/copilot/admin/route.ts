@@ -10,7 +10,7 @@
  * 线上和本机看到的一样（10-29 仓库主人：不需要隐藏，线上线下一致）：以前部署到公网又没设访问密码时整个返回 404。
  * Copilot 没开（或者部署在 Vercel 上连不到）时 available: false，GitHub 那部分照样给
  */
-import { copilotHeaders } from "@/lib/copilot/upstream";
+import { copilotHeaders, HEALTH_TIMEOUT_MS } from "@/lib/copilot/upstream";
 
 const BASE = (process.env.COPILOT_URL || "http://127.0.0.1:8765").replace(/\/$/, "");
 const REPO = "momomojun/Team";
@@ -90,8 +90,9 @@ export async function GET(request: Request) {
   const github = nightly();
   try {
     const [health, stats] = await Promise.all([
-      getJson(`${BASE}/health`, 4_000, copilotHeaders()),
-      getJson(`${BASE}/stats?days=${days}`, 15_000, copilotHeaders()),
+      getJson(`${BASE}/health`, HEALTH_TIMEOUT_MS, copilotHeaders()),
+      // 冷启动时和 /health 一起等同一台机器起来，再加上算统计的时间
+      getJson(`${BASE}/stats?days=${days}`, HEALTH_TIMEOUT_MS + 15_000, copilotHeaders()),
     ]);
     // 端口上可能是别的程序：要像 Copilot 的 /health 才算
     const available = typeof health.version === "string" && stats && typeof stats === "object" && "usage" in stats;
