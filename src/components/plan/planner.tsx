@@ -84,6 +84,7 @@ import { OfflineMaps } from "./offline-maps";
 import { roadNoteFor } from "./road-note";
 import { paceParts, TodayPanel } from "./today-panel";
 import { TripTools } from "./trip-tools";
+import { CloudSync } from "./cloud-sync";
 import { CopilotChat } from "./copilot-chat";
 import { TripWizard, useRequestedPark, type WizardInput, type WizardPlace } from "./trip-wizard";
 import type { DayView, DragSpot, PlannerPark, PlannerText, ResolvedLodging, StargazingInfo, SunInfo } from "./types";
@@ -1366,6 +1367,7 @@ export function Planner({
 
 
 
+      <CloudSync />
       <CopilotChat text={text} english={locale === "en"} onTrip={applyCopilotTrip} />
 
       <section id="plan-wizard" className="scroll-mt-32 border-t border-ink pt-6 print:hidden">

@@ -47,6 +47,17 @@ interface Progress {
   done?: boolean;
 }
 
+function persistChat(sessionId: string | null, messages: Message[]) {
+  void fetch("/api/me/chat", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      sessionId,
+      messages: messages.map((message) => ({ role: message.role, text: message.text })),
+    }),
+  }).catch(() => undefined);
+}
+
 interface ChatReply {
   session: string;
   status: "needs_input" | "planned" | "error";
@@ -85,6 +96,24 @@ export function CopilotChat({
       .catch(() => alive && setAvailable(false));
     return () => {
       alive = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancel = false;
+    fetch("/api/me/chat")
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data: { sessionId?: string | null; messages?: { role: "user" | "copilot"; text: string }[] } | null) => {
+        if (cancel || !data?.messages?.length) return;
+        setMessages((current) => {
+          if (current.length) return current;
+          session.current = data.sessionId ?? null;
+          return data.messages!.map((message) => ({ role: message.role, text: message.text }));
+        });
+      })
+      .catch(() => undefined);
+    return () => {
+      cancel = true;
     };
   }, []);
 
@@ -159,7 +188,12 @@ export function CopilotChat({
           applied = true;
         }
       }
-      setMessages((current) => [...current, { role: "copilot", text: reply.text, question: reply.question, applied }]);
+      const saved = reply;
+      setMessages((current) => {
+        const next = [...current, { role: "copilot" as const, text: saved.text, question: saved.question, applied }];
+        persistChat(saved.session, next);
+        return next;
+      });
     } catch {
       setError(t.offline);
     } finally {

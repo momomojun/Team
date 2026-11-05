@@ -75,6 +75,9 @@ export function SiteHeader({
             <span className="text-[13px] tracking-[0.12em] lg:hidden">
               <TripNavLink href={`/${locale}/plan`} label={text.plan} />
             </span>
+            <span className="hidden text-[13px] tracking-[0.12em] lg:inline">
+              <NavLink href={`/${locale}/account`} label={text.account} active={pathname === `/${locale}/account`} />
+            </span>
             <LocaleSwitcher current={locale} />
             <MobileMenu locale={locale} wordmark={wordmark} regions={regions} text={text} />
             <Link
