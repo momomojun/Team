@@ -17,7 +17,7 @@ const localeOf = (pathname: string): Locale | undefined =>
   locales.find((locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`));
 
 /** 设了访问密码时，不用登录也能打开的：全站密码页，以及 Neon Auth 的接口（否则注册登录会被挡在外面） */
-const OPEN = /^\/(?:api\/(?:login|auth(?:\/|$))|(?:zh-Han[st]|en)\/login)$/;
+const OPEN = /^\/(?:api\/(?:login|auth(?:\/.*)?)|(?:zh-Han[st]|en)\/login)$/;
 
 export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;

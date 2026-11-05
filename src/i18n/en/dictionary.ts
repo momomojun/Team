@@ -1750,12 +1750,12 @@ export const en: Dictionary = {
     signupSubmit: "Create account",
     logout: "Log out",
     backHome: "Back home",
-    notConfigured: "Neon Auth is not enabled yet. Turn on Auth for this project in the Neon console, put the Auth URL in NEON_AUTH_BASE_URL in .env.local, restart, and then sign up.",
+    notConfigured: "Neon Auth is not enabled yet. Turn on Auth for this project in the Neon console, put the Auth URL in NEON_AUTH_BASE_URL in .env.local, set NEON_AUTH_COOKIE_SECRET to a random string of at least 32 characters (openssl rand -base64 32), restart, and then sign up.",
     errors: {
       invalid: "Use a password of 8 characters. Capitals and symbols are not required.",
       credentials: "That email or password is wrong.",
       taken: "That email is already registered. Log in instead.",
-      config: "Neon Auth is not configured. Enable Auth in the console and set NEON_AUTH_BASE_URL.",
+      config: "Neon Auth is not configured. Enable Auth in the console and set NEON_AUTH_BASE_URL and NEON_AUTH_COOKIE_SECRET (at least 32 characters).",
     },
   },
   prices: {

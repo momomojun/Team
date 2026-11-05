@@ -29,6 +29,8 @@ async function sql(): Promise<Sql | null> {
         messages jsonb NOT NULL,
         updated_at timestamptz NOT NULL DEFAULT now()
       )`;
+      // 同一个用户、同一个 Copilot 会话只有一行：两个保存请求同时到也不会各插一行
+      await client`CREATE UNIQUE INDEX IF NOT EXISTS chat_threads_user_session ON chat_threads (user_id, session_id) WHERE session_id IS NOT NULL`;
       return client;
     })().catch((error) => {
       ready = null;
@@ -77,12 +79,11 @@ export async function saveChat(userId: string, sessionId: string | null, message
   if (!db) throw new Error("DATABASE_URL is not set");
   const payload = JSON.stringify(messages);
   if (sessionId) {
-    const existing = await db`SELECT id FROM chat_threads WHERE user_id = ${userId} AND session_id = ${sessionId} LIMIT 1`;
-    const id = (existing[0] as { id: string } | undefined)?.id ?? randomUUID();
     await db`
       INSERT INTO chat_threads (id, user_id, session_id, messages, updated_at)
-      VALUES (${id}, ${userId}, ${sessionId}, ${payload}::jsonb, now())
-      ON CONFLICT (id) DO UPDATE SET messages = EXCLUDED.messages, updated_at = now()
+      VALUES (${randomUUID()}, ${userId}, ${sessionId}, ${payload}::jsonb, now())
+      ON CONFLICT (user_id, session_id) WHERE session_id IS NOT NULL
+      DO UPDATE SET messages = EXCLUDED.messages, updated_at = now()
     `;
     return;
   }

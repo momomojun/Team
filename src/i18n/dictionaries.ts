@@ -1714,12 +1714,12 @@ const zhHans = {
     signupSubmit: "注册",
     logout: "退出登录",
     backHome: "回首页",
-    notConfigured: "Neon Auth 还没打开。在 Neon 控制台给这个项目打开 Auth，把 Auth URL 填进 .env.local 的 NEON_AUTH_BASE_URL，重启网站后再注册。",
+    notConfigured: "Neon Auth 还没打开。在 Neon 控制台给这个项目打开 Auth，把 Auth URL 填进 .env.local 的 NEON_AUTH_BASE_URL，再在 NEON_AUTH_COOKIE_SECRET 填一串至少 32 个字符的随机字符（openssl rand -base64 32），重启网站后再注册。",
     errors: {
       invalid: "密码要有 8 位。不需要大写或符号。",
       credentials: "邮箱或密码不对。",
       taken: "这个邮箱已经注册过了。直接登录就行。",
-      config: "Neon Auth 还没配好。在控制台打开 Auth，并设置 NEON_AUTH_BASE_URL。",
+      config: "Neon Auth 还没配好。在控制台打开 Auth，并设置 NEON_AUTH_BASE_URL 和 NEON_AUTH_COOKIE_SECRET（至少 32 个字符）。",
     },
   },
   prices: {

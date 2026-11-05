@@ -94,6 +94,8 @@ self.addEventListener("fetch", (event) => {
 
   if (url.origin === self.location.origin) {
     if (url.pathname.startsWith("/api/prices/")) return;
+    // 账号的行程、对话和登录状态：不缓存（退出登录、换人以后断网也不能读到上一个人的）
+    if (url.pathname.startsWith("/api/me/") || url.pathname.startsWith("/api/auth/")) return;
     if (request.mode === "navigate" || url.searchParams.has("_rsc")) {
       event.respondWith(networkFirst(request, PAGES));
     } else if (url.pathname.startsWith("/_next/static/") || url.pathname.startsWith("/maplibre/")) {

@@ -104,12 +104,11 @@ export function CopilotChat({
     fetch("/api/me/chat")
       .then((response) => (response.ok ? response.json() : null))
       .then((data: { sessionId?: string | null; messages?: { role: "user" | "copilot"; text: string }[] } | null) => {
-        if (cancel || !data?.messages?.length) return;
-        setMessages((current) => {
-          if (current.length) return current;
-          session.current = data.sessionId ?? null;
-          return data.messages!.map((message) => ({ role: message.role, text: message.text }));
-        });
+        // 已经开始新的对话了（会话号有了）就不再接上次的
+        if (cancel || !data?.messages?.length || session.current !== null) return;
+        const restored = data.messages.map((message) => ({ role: message.role, text: message.text }));
+        session.current = data.sessionId ?? null;
+        setMessages((current) => (current.length ? current : restored));
       })
       .catch(() => undefined);
     return () => {
@@ -120,6 +119,14 @@ export function CopilotChat({
   useEffect(() => {
     list.current?.lastElementChild?.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }, [messages, busy]);
+
+  // Copilot 回了一句以后存一次（只存回复以后的，不存恢复出来的）
+  const saveAfterRender = useRef(false);
+  useEffect(() => {
+    if (!saveAfterRender.current) return;
+    saveAfterRender.current = false;
+    persistChat(session.current, messages);
+  }, [messages]);
 
   if (!available) return null;
 
@@ -189,11 +196,9 @@ export function CopilotChat({
         }
       }
       const saved = reply;
-      setMessages((current) => {
-        const next = [...current, { role: "copilot" as const, text: saved.text, question: saved.question, applied }];
-        persistChat(saved.session, next);
-        return next;
-      });
+      // 存进 Neon 在下面的 effect 里做：setState 的更新函数要保持“纯”，React 可能跑两遍
+      saveAfterRender.current = true;
+      setMessages((current) => [...current, { role: "copilot" as const, text: saved.text, question: saved.question, applied }]);
     } catch {
       setError(t.offline);
     } finally {
