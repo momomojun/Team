@@ -195,6 +195,8 @@ jobs:
             echo "每晚模型读 NPS 公告提取的关闭清单（.github/workflows/alerts-nightly.yml 写的，不要手改）。网站行程页按它排两周内出发的行程；usage.json 是每晚调用模型的计费总账，后台看。" > README.md
           fi
           cp "$RUNNER_TEMP/closures-latest.json" closures-latest.json
+          # 这个分支只放数据，不让 Vercel 拿它构建预览版（Vercel 读的是这个分支自己的 vercel.json；bot/closures-* 的在 main 的 vercel.json 里）
+          echo '{"git":{"deploymentEnabled":false}}' > vercel.json
           # 计费总账：今晚这台机器调用模型的次数、token 和花费并进 usage.json（后台看免费档用了多少）
           python "$GITHUB_WORKSPACE/copilot/scripts/publish_usage.py" usage.json
           git add -A

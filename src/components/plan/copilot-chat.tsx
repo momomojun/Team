@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { IconArrowRight } from "@/components/icons";
 import { buttonLarge } from "@/components/ui";
 import { fill } from "@/i18n/format";
-import type { Trip } from "@/lib/trip-store";
+import { useTrip, type Trip } from "@/lib/trip-store";
 import type { PlannerText } from "./types";
 
 /**
@@ -78,6 +78,7 @@ export function CopilotChat({
 }) {
   const t = text.plan.copilot;
   const [available, setAvailable] = useState<boolean | null>(null);
+  const trip = useTrip();
   const [messages, setMessages] = useState<Message[]>([]);
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
@@ -219,6 +220,13 @@ export function CopilotChat({
   };
   const last = messages.at(-1);
   const options = last?.role === "copilot" ? (last.question?.options ?? []) : [];
+  // Copilot 还在追问、这次对话还没排出行程，下面显示的却是以前的行程：说一声，免得当成排错了（11-05 仓库主人就误会了）
+  const oldTripBelow =
+    !busy &&
+    last?.role === "copilot" &&
+    Boolean(last.question) &&
+    !messages.some((message) => message.applied) &&
+    (trip.pool.length > 0 || trip.days.some((day) => day.length > 0));
 
   return (
     <section id="plan-copilot" className="scroll-mt-32 border-t border-ink pt-6 print:hidden">
@@ -290,6 +298,8 @@ export function CopilotChat({
             })}
           </div>
         )}
+
+        {oldTripBelow && <p className="mt-4 text-xs leading-6 text-mute">{t.oldTrip}</p>}
 
         <form onSubmit={submit} className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-end">
           <label className="min-w-0 flex-1">

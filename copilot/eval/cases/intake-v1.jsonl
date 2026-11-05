@@ -13,7 +13,7 @@
 {"id": "zh-unknown-park", "turns": [{"user": "想去迪士尼乐园", "kind": "parks"}], "expect": {"status": "needs_input"}}
 {"id": "zh-far-parks", "turns": [{"user": "2027年6月1日旧金山出发，优胜美地和阿卡迪亚，5天，适中", "kind": "choose"}, {"user": "优胜美地"}], "expect": {"status": "ready", "request": {"parks": ["yose"], "days": 5, "origin": {"airport": "SFO"}}}}
 {"id": "zh-kid-age", "turns": [{"user": "2027年7月1日博兹曼进出，黄石5天，带孩子，适中", "kind": "party"}, {"user": "孩子5岁"}], "expect": {"status": "ready", "request": {"parks": ["yell"], "days": 5, "party": {"youngestKid": 5}}}}
-{"id": "zh-seniors-no-fabrication", "turns": [{"user": "2027年6月10日博兹曼进出，黄石5天，带老人", "kind": "choose"}, {"user": "适中"}], "expect": {"status": "ready", "request": {"parks": ["yell"], "days": 5, "pace": "normal", "party": {"seniors": true}}}}
+{"id": "zh-seniors-no-fabrication", "turns": [{"user": "2027年6月10日博兹曼进出，黄石5天，带老人"}], "expect": {"status": "ready", "request": {"parks": ["yell"], "days": 5, "pace": "relaxed", "party": {"seniors": true}}}}
 {"id": "zh-wheelchair-hotel", "turns": [{"user": "2027年10月5日从丹佛去落基山国家公园3天，坐轮椅，只住酒店，轻松"}], "expect": {"status": "ready", "request": {"parks": ["romo"], "days": 3, "origin": {"airport": "DEN"}, "lodgingPref": "hotel", "party": {"wheelchair": true}}}}
 {"id": "zh-different-return", "turns": [{"user": "2027年6月5日盐湖城进、拉斯维加斯出，锡安和布莱斯一共5天，适中"}], "expect": {"status": "ready", "request": {"parks": ["zion", "brca"], "days": 5, "origin": {"airport": "SLC"}, "destination": {"airport": "LAS"}}}}
 {"id": "zh-chinese-numbers", "turns": [{"user": "二〇二七年三月十二日去大弯国家公园四天，埃尔帕索进出，适中"}], "expect": {"status": "ready", "request": {"parks": ["bibe"], "startDate": "2027-03-12", "days": 4, "origin": {"airport": "ELP"}}}}

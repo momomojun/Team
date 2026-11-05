@@ -75,7 +75,7 @@
 |---|---|---|---|---|---|
 | W9 | 09-23 | 中文为主，面向会中文的游客（含台湾、东南亚华人） | 已完成 | `zh-Hans` / `zh-Hant`（OpenCC 台湾用语） | 后来又加了英文版 `/en` |
 | W10 | 09-23 | 以后扩展到日本、韩国用户 | 没做 | `src/i18n/config.ts:1` 只写了“以后加 ja、ko” | 一直是计划 |
-| W11 | 09-23 | 先自用，不做账号、不优先 SEO | 已执行 | 行程存 localStorage，没有账号系统 | |
+| W11 | 09-23 | 先自用，不做账号、不优先 SEO | 后来改主意或放弃 | 11-05 起有账号：组员 Huiling 的 #88 用 Neon Auth 登录、行程和对话存进 Neon，仓库主人在线上配好（见 [timeline/2026-11-05-neon-online.md](timeline/2026-11-05-neon-online.md)）；不登录照旧存在浏览器里 | |
 | W12 | 09-23 | 首批加红杉、大峡谷、锡安、布莱斯（去过的） | 已完成 | `parks.ts`：seki、grca、zion、brca | |
 | W13 | 09-23 | 路上适合中日韩、台湾、东南亚口味的餐饮补给；路上的韩超、日超、中超 | 已完成 | `scripts/build-services.mjs`（亚洲超市、亚洲餐厅）、`scripts/asian-names.mjs`、Overture 补漏 `build-asian-groceries.py`，行程页“最后补给”“落地后” | 店是按名字认出来的，页面上不分韩超 / 日超 / 中超 |
 | W14 | 09-23 | 机票能不能爬 Google Flights，或者让 Claude 操控浏览器查 | 已完成 | `src/lib/prices/google-flights.ts`（自用低频抓取，缓存 6 小时，`SELF_USE_SCRAPE`） | 公开前要换 SerpApi 等正式接口（文档写了） |

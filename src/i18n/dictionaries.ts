@@ -1585,6 +1585,7 @@ const zhHans = {
       rateLimited: "说得太快了，{n} 秒后再试。",
       note: "Copilot 用 AI 模型理解你的话、追问缺的条件（先用免费的云端模型，都出错时才用付费的 DeepSeek；本机开发时也能用本机的 Qwen3.5 4B），行程由网站的排行程引擎排，开放时间、车程都来自网站的数据；出发前仍以 nps.gov 为准。",
       replaceConfirm: "用 Copilot 排的行程换掉现在的行程吗？",
+      oldTrip: "下面显示的还是你之前的行程。回答完上面的问题、排好以后，才会换成新的。",
     },
     wizard: {
       sitesGroup: "园外名胜",
