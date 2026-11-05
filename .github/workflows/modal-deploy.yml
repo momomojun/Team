@@ -46,7 +46,11 @@ jobs:
             echo "::notice::没设 MODAL_TOKEN_ID / MODAL_TOKEN_SECRET，跳过"
             exit 0
           fi
-          case "$TAG" in copilot-v*|main-*|staging|latest) ;; *) echo "::error::不认识的 tag：$TAG"; exit 1 ;; esac
+          # 正式环境只上发版测过的 copilot-v*；main-<提交>、staging、latest 只能上 staging
+          case "$ENVIRONMENT:$TAG" in
+            main:copilot-v*|staging:copilot-v*|staging:main-*|staging:staging|staging:latest) ;;
+            *) echo "::error::$ENVIRONMENT 环境不能部署 $TAG（正式环境只收 copilot-v*）"; exit 1 ;;
+          esac
           python3 -m pip install --quiet modal
           COPILOT_IMAGE="ghcr.io/momomojun/team-copilot:$TAG" python3 -m modal deploy --env "$ENVIRONMENT" deploy/modal/app.py | tee deploy.log
           url=$(grep -o 'https://[^ ]*\.modal\.run' deploy.log | head -1)
@@ -57,10 +61,11 @@ jobs:
           URL: ${{ steps.deploy.outputs.url }}
         run: |
           for i in $(seq 1 18); do
-            version=$(curl -fsS --max-time 60 "$URL/health" | python3 -c 'import json,sys;print(json.load(sys.stdin).get("version"))' 2>/dev/null) && break
+            curl -fsS --max-time 60 "$URL/health" -o health.json && break
+            rm -f health.json
             sleep 10
           done
-          echo "$ENVIRONMENT $URL 报的版本：$version"
-          # /health 报的是 copilot/0.4.0 这种
-          case "$TAG" in copilot-v*) test "copilot-v${version#copilot/}" = "$TAG" || { echo "::error::起来的是 $version，不是 $TAG"; exit 1; } ;; esac
+          test -s health.json || { echo "::error::$ENVIRONMENT 的 /health 3 分钟都没响应"; exit 1; }
+          cat health.json
+          python3 deploy/modal/check_health.py health.json "$TAG"
           echo "### Copilot $ENVIRONMENT：$URL（$TAG）" >> "$GITHUB_STEP_SUMMARY"

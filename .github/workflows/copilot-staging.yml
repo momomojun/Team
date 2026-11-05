@@ -45,7 +45,7 @@ jobs:
           python3 copilot/scripts/smoke.py http://127.0.0.1:8765 --expect-version repo
       - if: failure()
         run: docker logs copilot
-      - uses: docker/login-action@v3
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -76,9 +76,11 @@ jobs:
         run: |
           # 第一次要冷启动（拉镜像、起 Node 和 Python），最多等 3 分钟
           for i in $(seq 1 18); do
-            build=$(curl -fsS --max-time 60 "$URL/health" | python3 -c 'import json,sys;print(json.load(sys.stdin).get("build"))' 2>/dev/null) && break
+            curl -fsS --max-time 60 "$URL/health" -o health.json && break
+            rm -f health.json
             sleep 10
           done
-          echo "staging $URL 报的 build：$build"
-          test "$build" = "${GITHUB_SHA::7}" || { echo "::error::staging 上的不是这次提交（$build）"; exit 1; }
+          test -s health.json || { echo "::error::staging 的 /health 3 分钟都没响应"; exit 1; }
+          cat health.json
+          python3 deploy/modal/check_health.py health.json "main-${GITHUB_SHA::7}"
           echo "### Copilot staging：$URL（build ${GITHUB_SHA::7}）" >> "$GITHUB_STEP_SUMMARY"

@@ -48,6 +48,9 @@ data = modal.Volume.from_name("nps-copilot-data", create_if_missing=True)
 @modal.concurrent(max_inputs=20)
 @modal.asgi_app()
 def web():
+    # 公网上必须有口令：guard.py 在 COPILOT_TOKEN 为空时放行所有请求（本机开发要这样），这里缺了就直接起不来
+    if not os.environ.get("COPILOT_TOKEN", "").strip():
+        raise RuntimeError("Modal 的 Secret nps-copilot 里没有 COPILOT_TOKEN：不设口令不对外服务")
     from nps_copilot.api import app as fastapi_app
 
     return fastapi_app
