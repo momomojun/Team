@@ -33,6 +33,10 @@ jobs:
   copilot:
     name: Copilot (tests, replay eval gate)
     runs-on: ubuntu-latest
+    # 把八组门禁的成绩贴到 PR 评论（只改自己那一条）
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -48,29 +52,57 @@ jobs:
           cache: pip
           cache-dependency-path: copilot/pyproject.toml
       - run: pip install -e "copilot[dev]"
+      - name: Lint (ruff)
+        run: ruff check copilot
       - name: Unit and integration tests
         run: python -m pytest -q copilot/tests
-      - name: Replay eval gate
+      - if: ${{ !cancelled() }}
+        name: Replay eval gate
         run: python copilot/eval/run.py --replay copilot/eval/recordings/qwen3.5_4b-q4_K_M.jsonl --gate copilot/eval/baseline.json --plan
-      - name: Replay eval gate (held-out v1, now a regression set)
+      - if: ${{ !cancelled() }}
+        name: Replay eval gate (held-out v1, now a regression set)
         run: python copilot/eval/run.py --cases copilot/eval/cases/holdout-v1.jsonl --replay copilot/eval/recordings/qwen3.5_4b-q4_K_M-holdout-v1.jsonl --gate copilot/eval/baseline-holdout.json --plan
-      - name: Replay eval gate (held-out v2, 70 cases, about 40% adversarial)
+      - if: ${{ !cancelled() }}
+        name: Replay eval gate (held-out v2, 70 cases, about 40% adversarial)
         run: python copilot/eval/run.py --cases copilot/eval/cases/holdout-v2.jsonl --replay copilot/eval/recordings/qwen3.5_4b-q4_K_M-holdout-v2.jsonl --gate copilot/eval/baseline-holdout-v2.json --plan
-      - name: Replay eval gate (regional wording - Hong Kong, Taiwan, Singapore, Malaysia)
+      - if: ${{ !cancelled() }}
+        name: Replay eval gate (regional wording - Hong Kong, Taiwan, Singapore, Malaysia)
         run: python copilot/eval/run.py --cases copilot/eval/cases/regional-v1.jsonl --replay copilot/eval/recordings/qwen3.5_4b-q4_K_M-regional-v1.jsonl --gate copilot/eval/baseline-regional.json --plan
-      - name: Replay eval gate (multi-turn conversations, dev set)
+      - if: ${{ !cancelled() }}
+        name: Replay eval gate (multi-turn conversations, dev set)
         run: python copilot/eval/conversation.py --replay copilot/eval/recordings/qwen3.5_4b-q4_K_M-conversation-v1.jsonl --gate copilot/eval/baseline-conversation.json
-      - name: Replay eval gate (multi-turn conversations, held-out v2, now a regression set)
+      - if: ${{ !cancelled() }}
+        name: Replay eval gate (multi-turn conversations, held-out v2, now a regression set)
         run: python copilot/eval/conversation.py --cases copilot/eval/cases/conversation-v2.jsonl --replay copilot/eval/recordings/qwen3.5_4b-q4_K_M-conversation-v2.jsonl --gate copilot/eval/baseline-conversation-v2.json
-      - name: Replay eval gate (multi-turn conversations, the owner's third trial)
+      - if: ${{ !cancelled() }}
+        name: Replay eval gate (multi-turn conversations, the owner's third trial)
         run: python copilot/eval/conversation.py --cases copilot/eval/cases/conversation-v3.jsonl --replay copilot/eval/recordings/qwen3.5_4b-q4_K_M-conversation-v3.jsonl --gate copilot/eval/baseline-conversation-v3.json
-      - name: Replay eval gate (NPS alert closure extraction)
+      - if: ${{ !cancelled() }}
+        name: Replay eval gate (NPS alert closure extraction)
         run: python copilot/eval/alerts.py --replay copilot/eval/recordings/qwen3.5_4b-q4_K_M-alerts-2026-10-19.jsonl --gate copilot/eval/baseline-alerts.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: copilot-eval-report
           path: copilot/eval/reports/
+      - name: Eval scores to the run summary and the PR
+        if: ${{ !cancelled() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          python copilot/eval/pr_summary.py copilot/eval/reports > eval-summary.md
+          cat eval-summary.md >> "$GITHUB_STEP_SUMMARY"
+          # PR 上只留一条成绩评论：有就改，没有就新建（别人 fork 来的 PR 没有写权限，贴不上就算了）
+          if [ -n "$PR" ]; then
+            id=$(gh api "repos/${{ github.repository }}/issues/$PR/comments" --paginate --jq '.[] | select(.body | startswith("<!-- copilot-eval-summary -->")) | .id' | head -1)
+            body=$(jq -Rs '{body: .}' eval-summary.md)
+            if [ -n "$id" ]; then
+              echo "$body" | gh api -X PATCH "repos/${{ github.repository }}/issues/comments/$id" --input - > /dev/null || true
+            else
+              echo "$body" | gh api -X POST "repos/${{ github.repository }}/issues/$PR/comments" --input - > /dev/null || true
+            fi
+          fi
 
   docker:
     name: Copilot image (build, smoke test)

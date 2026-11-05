@@ -38,6 +38,8 @@ jobs:
           cache: pip
           cache-dependency-path: copilot/pyproject.toml
       - run: pip install -e "copilot[dev]"
+      - name: Lint (ruff)
+        run: ruff check copilot
       - run: python -m pytest -q copilot/tests
       - name: Replay eval gates
         run: |

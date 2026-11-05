@@ -27,7 +27,7 @@
 - [ ] 数据版本：快照的 hash，每个回答记下模型名和数据版本（P9、P32、P33、A4）
 - [x] 监控：token、成本、看板（P25；10-19 每轮日志记下每次模型调用的模型和 token，`stats` 和 `GET /stats` 按模型算花费；网站后台 `/zh-Hans/admin` 画成图表。计划书写的 MLflow 没用）
 - [ ] 护栏：外部接口挂了退回快照（P26；限流和共享口令 10-21 做了，`guard.py`）
-- [ ] CI：Python 的 Ruff 检查；评测分数贴到 PR 评论；镜像 tag 带提示词版本和数据 hash；staging 环境（P27、P28、P29、P24）
+- [ ] CI：镜像 tag 带提示词版本和数据 hash；staging 环境（P29、P24）。Ruff 检查、评测分数贴到 PR 评论 11-04 做了，见 [timeline/2026-11-04-ci-review.md](timeline/2026-11-04-ci-review.md)（P27、P28）
 - [ ] 不同的步骤可以用不同的模型（P12；10-20 做了机制 `COPILOT_STEP_MODELS`，默认还是每一步都按 Gemini → MiniMax → Qwen（Groq）→ 本机（10-21 起不用 OpenAI）；按对照成绩怎么分配等仓库主人定）
 - [ ] Writer 的行程说明逐句附来源（P17）；Critic 最多退回 3 轮（P16，现在有意只改一次）；数据快照用 Pydantic 校验（P6）
 - [ ] 路线动画导出成短视频（第一版动画 10-19 做了）；Copilot 的线上部署（O53、A1；10-21 准备好了 Hugging Face Spaces 的部署文件和 workflow，等仓库主人注册账号、加 secret 后推上去）。网站行程页的对话框 10-19 做了（O61）
@@ -190,7 +190,7 @@
 | A4 | 10-11 | 模型生命周期管理和部署的最佳实践 | 目标 2 | 部分完成 | 代码版本、提示词版本（文件 + hash）、镜像 tag、两种回滚都演示过（RESULTS.md）；数据没有版本 / hash | 见 P9、P33 |
 | A5 | 10-11 | 评估系统性能和运行稳健性 | 目标 4 | 部分完成 | 82 条评测（25+40+17）当门禁、三个模型对比、Writer 忠实度；没有对照实验、漂移测试、故障测试 | 见 P34–P37 |
 | A6 | 10-13 | 交 1–2 页 proposal（标题、成员联系方式、问题和动机、架构和重点、CI/CD 计划、工具数据集和预期结果） | 作业 §4、模板 | 部分完成 | 文件写好了（2 页，9 节齐）；提交没有：大纲写 10 月 29 日那周交，仓库主人还没说交了没有 | 见 P2–P4 |
-| A7 | — | 11 月 5 日起每周 scrum 汇报 | 大纲第 9–13 周 | 没做 | 还没到时间；仓库里没有 scrum 记录或模板 | 项目占总分 25%：每周 scrum + 最后演示 |
+| A7 | — | 11 月 5 日起每周 scrum 汇报 | 大纲第 9–13 周 | 部分完成 | 11-04：`npm run scrum` 按时间线和合并的 PR 生成周报草稿到 `docs/scrum/`，第一份 `2026-10-29.md`；每周还要人填下周计划、卡住的 | 项目占总分 25%：每周 scrum + 最后演示 |
 | A8 | — | 12 月 10 日项目演示 | 大纲第 13 周 | 没做 | 还没到时间；演示脚本、报告、网站对话框都还没做 | |
 | A9 | 10-13 | 1–3 人团队协作 | 作业、10-13 仓库主人 | 部分完成 | 协作者 JadenChen10、huilingfu95-source 已加；队友 0 个提交、0 个 PR | 计划书写的是 Tianyue Chen，GitHub 用户名和人名的对应要确认 |
 
@@ -224,8 +224,8 @@
 | P24 | 10-13 | 部署到 staging（AWS Academy 或 Render） | §4、§6 | 没做 | 只有 GHCR 公开镜像 + 本机 compose；网站在 Vercel，但 Copilot 没有线上环境 | 演示时 Copilot 放哪还没定 |
 | P25 | 10-13 | MLflow 追踪每一步（token、费用、延迟、工具调用、Critic 退回） | §4、§7 | 部分完成 | JSONL 日志 + `python -m nps_copilot stats`（按版本统计排出率、追问、出错、被丢掉的片段、Writer 退回、耗时中位数和 P90）；10-19 加了按模型的调用次数、出错、退到备用模型的次数、token 和花费（每轮日志的 `calls`，`GET /stats`），网站后台 `/zh-Hans/admin`（每天的图、按模型的花费、最近几轮、每晚读公告的结果）；10-22 评测（单句、多轮对话、读公告、检索）可以记到本机的 MLflow（`COPILOT_MLFLOW=1`，`eval/tracking.py`），历次模型对照的回放都补记进去了；线上每一步的追踪还是 JSONL + 后台 | |
 | P26 | 10-13 | 护栏：没查到来源不说开没开、输入校验、限流、外部 API 挂了退回缓存快照 | §4 | 部分完成 | 输入校验、提示注入没得逞（holdout 两组）、QA 数字核对和“查不到说不知道”有；10-21 加了限流（每个来源每分钟 20、每天 300 句，全局每天 2000 句）和共享口令（`guard.py`，为上 Hugging Face Spaces）；没有缓存回退（plan_trip 本来就不联网） | |
-| P27 | 10-13 | 每个 PR：Ruff lint、mock pytest、数据快照校验、工具契约测试 | §6 | 部分完成 | pytest、契约测试（`tests/copilot-plan.test.ts`、契约文件是否最新）都有；**没有 Ruff**（只有网站的 ESLint） | |
-| P28 | 10-13 | 改了提示词/agent/模型/数据的 PR 跑评测门禁，分数表贴到 PR 评论 | §6 | 部分完成 | 每个 PR 都跑 3 组回放门禁（不能低于基线），报告上传为 artifact；**没有贴 PR 评论**；只能拦代码改坏，改提示词要本机重录 | |
+| P27 | 10-13 | 每个 PR：Ruff lint、mock pytest、数据快照校验、工具契约测试 | §6 | 已完成 | pytest、契约测试（`tests/copilot-plan.test.ts`、契约文件是否最新）都有；11-04 加了 `ruff check copilot`（`copilot/pyproject.toml`），第一次跑就查出两处正则的真 bug；另有 CodeRabbit 的 AI 审查（`.coderabbit.yaml`） | |
+| P28 | 10-13 | 改了提示词/agent/模型/数据的 PR 跑评测门禁，分数表贴到 PR 评论 | §6 | 已完成 | 每个 PR 跑八组回放门禁（不能低于基线），报告上传为 artifact；11-04 起 `copilot/eval/pr_summary.py` 把成绩表贴到 PR 评论（一条、每次更新）和 CI 摘要页；改提示词还是要本机重录，只改了几次调用的可以 `--fill` 补录 | |
 | P29 | 10-13 | 合并到 main 时构建镜像（tag = git SHA + 提示词版本 + 数据 hash）、推 GHCR、部署 staging、冒烟；回滚 = 重新部署上一个 tag | §6 | 部分完成 | 改成推 `copilot-v*` tag 时发版：测试、门禁、构建、冒烟、推 GHCR、拉回再冒烟、建 Release；回滚演示过（0.2.1 → 0.2.0 → 0.2.1）；镜像 tag 只有版本号，没有提示词版本和数据 hash；没有 staging | |
 | P30 | 10-13 | 每晚定时：刷新公告 → 重建索引 → 重跑评测 → 分数漂移自动开 issue | §6 | 已完成 | 10-20：`alerts-nightly.yml` 每晚读完公告用同一串模型抽查 26 条标好答案的公告（`eval/alerts.py --chain`），低于 `baseline-alerts-canary.json` 开 `alerts-quality` issue；提议改 `closures.ts`、发布关闭清单给网站。没有“重建索引”这一步：资料（`copilot/contracts/`）跟着代码走，改数据的 PR 里跑 `npm run copilot:contracts` | |
 | P31 | 10-13 | 交付物：仓库、带 demo UI 的 Docker 服务、CI/CD、评测报告、期末展示 | §8 | 部分完成 | 仓库、Docker 服务、CI/CD 有；`copilot/eval/RESULTS.md` 是过程记录，不是最终报告；demo UI、展示没有 | |

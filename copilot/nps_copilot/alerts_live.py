@@ -177,8 +177,8 @@ def fetch_alerts(parks: list[str], timeout: float = 20.0) -> list[dict]:
     query = ",".join(sorted(set(codes.values())))
     request = urllib.request.Request(f"https://developer.nps.gov/api/v1/alerts?parkCode={query}&limit=500",
                                      headers={"X-Api-Key": key, "User-Agent": USER_AGENT})
-    for wait in (0, 3, 10):
-        time.sleep(wait)
+    for delay in (0, 3, 10):
+        time.sleep(delay)
         try:
             with urllib.request.urlopen(request, timeout=timeout) as response:
                 data = json.loads(response.read().decode("utf-8"))

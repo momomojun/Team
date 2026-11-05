@@ -4,6 +4,7 @@
   python eval/conversation.py --record                          # 同上，并录到 recordings/<模型>-conversation-v1.jsonl
   python eval/conversation.py --replay recordings/x.jsonl       # 回放（CI 用）
   python eval/conversation.py --replay ... --gate baseline-conversation.json
+  python eval/conversation.py --replay recordings/x.jsonl --fill   # 录音里没有的调用用真模型补录（改了一处提示词时用）
 
 每一轮可以写的期望（都写在 expect 里，没写的不查）：
 - status：planned / needs_input / error
@@ -104,6 +105,7 @@ def main() -> int:
     parser.add_argument("--cases", type=Path, default=CASES)
     parser.add_argument("--replay", type=Path)
     parser.add_argument("--record", action="store_true")
+    parser.add_argument("--fill", action="store_true", help="和 --replay 一起用：录音里没有的调用用真模型补录进同一个文件，别的照旧回放")
     parser.add_argument("--gate", type=Path)
     parser.add_argument("--only", help="只跑这几个（逗号分隔的 id 前缀）")
     # 混沌测试（GOALS P37）：回放时让这么大比例的模型调用随机失败（超时、额度用完、服务忙、乱码轮着来，固定种子），
@@ -118,7 +120,8 @@ def main() -> int:
         cases = [case for case in cases if any(case["id"].startswith(prefix) for prefix in args.only.split(","))]
     faulty = None
     if args.replay:
-        provider, label = ReplayProvider(args.replay), f"replay:{args.replay.stem}"
+        fallback = RecordingProvider(StopEarly(from_env()), args.replay) if args.fill else None
+        provider, label = ReplayProvider(args.replay, fallback=fallback), f"replay:{args.replay.stem}" + ("+fill" if args.fill else "")
         if args.chaos > 0:
             faulty = FaultyProvider(provider, args.chaos, args.chaos_seed)
             provider = ProviderChain([faulty, provider]) if args.chaos_backup else faulty

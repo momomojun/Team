@@ -334,3 +334,16 @@ def test_deepseek_writes_the_schema_into_the_prompt_turns_thinking_off_and_treat
     fake_api({"choices": [{"message": {"content": ""}}]})
     with pytest.raises(ProviderError):
         provider.complete_json("intake", "s", "u", SCHEMA)
+
+
+def test_replay_fill_records_only_the_missing_calls(tmp_path):
+    from nps_copilot.providers import RecordingProvider, ReplayProvider, ScriptedProvider, request_key
+
+    path = tmp_path / "rec.jsonl"
+    path.write_text(json.dumps({"key": request_key("qa", "s", "old", {}), "task": "qa", "user": "old", "model": "m",
+                                "output": {"answer": "录过的"}}, ensure_ascii=False) + "\n", encoding="utf-8")
+    real = ScriptedProvider([{"answer": "新录的"}])
+    replay = ReplayProvider(path, fallback=RecordingProvider(real, path))
+    assert replay.complete_json("qa", "s", "old", {}).data == {"answer": "录过的"}  # 录过的不碰真模型
+    assert replay.complete_json("qa", "s", "new", {}).data == {"answer": "新录的"}
+    assert ReplayProvider(path).complete_json("qa", "s", "new", {}).data == {"answer": "新录的"}  # 补进了同一个文件

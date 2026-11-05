@@ -1,0 +1,74 @@
+# CodeRabbit：每个 PR 自动用 AI 审代码（公开仓库免费）。只提意见，不挡合并（必需的检查还是 CI 那三项）。
+# 说明：docs/GUIDE.md 第 5 节“PR 上的检查”；配置项见 https://docs.coderabbit.ai/reference/configuration
+language: zh-CN
+tone_instructions: "用简体中文、说人话；指出问题时写清楚会在什么情况下出错。仓库主人刚接触 LLMOps，术语第一次出现时用一句话解释。"
+
+reviews:
+  profile: chill
+  high_level_summary: true
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - "^main$"
+  # 机器生成的数据、评测录音、锁文件不审（几万行，审了也没意义）
+  path_filters:
+    - "!**/*.generated.ts"
+    - "!src/data/attractions/gallery*.ts"
+    - "!copilot/eval/recordings/**"
+    - "!copilot/eval/reports/**"
+    - "!copilot/contracts/**"
+    - "!copilot/nps_copilot/data/*.json"
+    - "!package-lock.json"
+    - "!public/maplibre/**"
+    - "!docs/archive/**"
+    - "!docs/screenshots/**"
+    - "!**/*.pdf"
+  path_instructions:
+    - path: "copilot/**"
+      instructions: |
+        这是 LLMOps 课程的 Copilot：模型只从用户原话里摘片段，规则来解释，排行程是确定的代码（plan_trip），不能让模型编行程、编数字。
+        重点看：
+        - 有没有让模型的输出不经核对就直接进行程或回答（编造风险）；
+        - 有没有在测试里真的调用云端 API（测试必须用假的 HTTP，不能花仓库主人的免费额度）；
+        - 有没有把 API key、口令写进代码、日志或报告；
+        - 改了提示词（prompts/*.txt）要新建下一版文件，不能改旧文件；改了提示词或评测样例要重新录回放，否则 CI 的门禁对不上；
+        - 免费模型在前、付费的 DeepSeek 只在免费的都出错时才用（providers.py 的顺序）。
+    - path: "copilot/eval/cases/**"
+      instructions: "评测样例：先提交期望再第一次跑，看过失败再改的那一批不能再算没见过的数据。不要建议为了让评测通过而改期望。"
+    - path: "src/data/**"
+      instructions: |
+        景点、开放日期、价格、班次这些事实要以英文官方资料（NPS、Parks Canada、运营商官网）为准，写明来源和核对日期。
+        改中文原文要用 scripts/rekey-zh.py，直接改会让英文版对不上。
+    - path: "src/**"
+      instructions: |
+        这是 Next.js 16（App Router），和常见的旧版本 API 不一样，按 node_modules/next/dist/docs/ 判断，不要按旧版本的写法提建议。
+        界面文案在 src/i18n/ 里（简体撰写、繁体自动转换、英文另写），不要在组件里写死中文标点和单位。
+    - path: ".github/workflows/**"
+      instructions: "secret 只能通过 secrets.* 用，不能 echo 出来；main 受保护，CI 里不能直接推 main。"
+  tools:
+    ruff:
+      enabled: true
+    eslint:
+      enabled: true
+    actionlint:
+      enabled: true
+    hadolint:
+      enabled: true
+    shellcheck:
+      enabled: true
+    markdownlint:
+      enabled: false
+
+chat:
+  auto_reply: true
+
+knowledge_base:
+  code_guidelines:
+    enabled: true
+    filePatterns:
+      - "AGENTS.md"
+      - "docs/GUIDE.md"
+      - "docs/DEVELOPMENT.md"
+      - "docs/COPILOT.md"
+      - "docs/ENGLISH.md"

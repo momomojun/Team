@@ -90,6 +90,9 @@ class OllamaProvider:
 class ReplayProvider:
     path: Path
     name: str = "replay"
+    # 补录：录音里没有的调用交给它（一般是 RecordingProvider 包着的真模型，录进同一个文件）。
+    # 改了一处提示词只补那几次，别的照旧回放，不会因为整套重录把没改的结果也换掉
+    fallback: "Provider | None" = None
 
     def __post_init__(self) -> None:
         self.records: dict[str, dict] = {}
@@ -104,8 +107,10 @@ class ReplayProvider:
     def complete_json(self, task: str, system: str, user: str, schema: dict) -> Completion:
         key = request_key(task, system, user, schema)
         record = self.records.get(key)
+        if record is None and self.fallback is not None:
+            return self.fallback.complete_json(task, system, user, schema)
         if record is None:
-            raise ProviderError(f"回放记录里没有这次调用（{task}：{user[:40]}），提示词或样例改了要重新录")
+            raise ProviderError(f"回放记录里没有这次调用（{task}：{user[:40]}），提示词或样例改了要重新录（或者用 --fill 只补录缺的）")
         return Completion(data=record["output"], model=record["model"], latency_ms=record.get("latency_ms", 0), raw=record.get("raw", ""),
                           meta=record.get("meta") or {})
 
@@ -125,7 +130,8 @@ class RecordingProvider:
             # 用了多少 token（商业 API 算成本用；Ollama 的是 eval_count 这些）
             **({"meta": completion.meta} if completion.meta else {}),
         }
-        with self.path.open("a", encoding="utf-8") as handle:
+        # newline="\n"：Windows 上补录进同一个文件时别混进 CRLF
+        with self.path.open("a", encoding="utf-8", newline="\n") as handle:
             handle.write(json.dumps(record, ensure_ascii=False) + "\n")
         return completion
 
@@ -267,7 +273,7 @@ class GeminiProvider:
             body = {"systemInstruction": {"parts": [{"text": system}]}, "contents": [{"role": "user", "parts": [{"text": user}]}],
                     "generationConfig": config}
             try:
-                reply = self.pace.run(lambda: _post(url, body, {"x-goog-api-key": self.key}, self.timeout))
+                reply = self.pace.run(lambda body=body: _post(url, body, {"x-goog-api-key": self.key}, self.timeout))
                 break
             except ProviderError as error:
                 # 这个模型不认这档思考设置（400，“not supported”）：记住，换下一档再发
@@ -318,7 +324,7 @@ class OpenAIProvider:
             if self.temperature:
                 body["temperature"] = 0
             try:
-                reply = self.pace.run(lambda: _post("https://api.openai.com/v1/chat/completions", body,
+                reply = self.pace.run(lambda body=body: _post("https://api.openai.com/v1/chat/completions", body,
                                                     {"Authorization": f"Bearer {self.key}"}, self.timeout))
                 break
             except ProviderError as error:
@@ -386,7 +392,7 @@ class OpenRouterProvider:
             if self.reasoning is not None:
                 body["reasoning"] = self.reasoning
             try:
-                reply = self.pace.run(lambda: _post("https://openrouter.ai/api/v1/chat/completions", body,
+                reply = self.pace.run(lambda body=body: _post("https://openrouter.ai/api/v1/chat/completions", body,
                                                     {"Authorization": f"Bearer {self.key}", "X-Title": "NPS Guide Copilot"}, self.timeout))
                 break
             except ProviderError as error:
@@ -447,7 +453,7 @@ class GroqProvider:
             if self.reasoning is not None:
                 body["reasoning_effort"] = self.reasoning
             try:
-                reply = self.pace.run(lambda: _post("https://api.groq.com/openai/v1/chat/completions", body,
+                reply = self.pace.run(lambda body=body: _post("https://api.groq.com/openai/v1/chat/completions", body,
                                                     {"Authorization": f"Bearer {self.key}"}, self.timeout))
                 break
             except ProviderError as error:

@@ -80,7 +80,7 @@ def parse_date_spans(spans: list[str]) -> tuple[list[DateParts], list[str]]:
         # “二〇二七年” → “2027年”
         text = CN_YEAR.sub(lambda m: "".join(CN_DIGIT[ch] for ch in m.group(1)) + "年", normalize(span))
         hits: list[tuple[int, int, DateParts]] = []
-        for pattern, kind in PATTERNS:
+        for pattern, _kind in PATTERNS:
             for match in pattern.finditer(text):
                 if any(match.start() < end and match.end() > start for start, end, _ in hits):
                     continue
