@@ -41,7 +41,7 @@ def is_question(message: str) -> bool:
 
 def travel_months(plan_text: str) -> str:
     """行程里的日期范围和月份（“2026-10-31 到 2026-11-04（10 月、11 月）”）：让模型不用自己推算出行月份"""
-    dates = sorted(set(re.findall(r"(\d{4}-\d{2}-\d{2})", plan_text)))
+    dates = sorted(set(re.findall(r"\b(\d{4}-\d{2}-\d{2})\b", plan_text)))
     if not dates:
         return ""
     months = "、".join(dict.fromkeys(f"{int(d[5:7])} 月" for d in dates))

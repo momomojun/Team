@@ -39,7 +39,7 @@ RUNS = Path(os.environ.get("COPILOT_RUNS", Path(__file__).resolve().parents[1] /
 QUICK_ANSWER_CHARS = 6
 # 调度员把自己的话当成了“提问”：“用户想……”“The user wants……”
 NARRATION = re.compile(r"\s*(用户|the user)", re.I)
-CONTEXTUAL = re.compile(r"那|这|它|他们|她们|呢|上面|刚才|前面|(it|that|there|those|they|this)", re.I)
+CONTEXTUAL = re.compile(r"那|这|它|他们|她们|呢|上面|刚才|前面|\b(it|that|there|those|they|this)\b", re.I)
 QUICK_ANSWER = re.compile(r"\s*(\d{1,2}|[一二两三四五六七八九十]+|是的?|对|对的|好|好的|不是|不对|不用|都去|都要|第.{1,2}个?|yes|no|yep|nope)\s*(天|日|个|号|岁|晚)?[。.!！]?\s*", re.I)
 
 

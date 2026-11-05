@@ -13,7 +13,7 @@ graph = ["langgraph>=1.0", "langgraph-checkpoint-sqlite>=2.0"]
 # 评测记到 MLflow、向量检索对照实验（可选，只在本机跑）
 experiments = ["mlflow>=3.0", "chromadb>=1.0"]
 tts = ["kokoro-onnx>=0.6", "onnxruntime>=1.20", "misaki[zh]>=0.9.4", "soundfile>=0.13"]
-dev = ["pytest>=8", "jsonschema>=4.21"]
+dev = ["pytest>=8", "jsonschema>=4.21", "ruff>=0.6"]
 
 [build-system]
 requires = ["setuptools>=68"]
@@ -27,3 +27,17 @@ nps_copilot = ["prompts/*.txt", "data/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+# Python 代码检查（CI 里跑 ruff check copilot）：语法错误、没定义的名字、没用到的变量和 import、
+# 循环里的闭包、字符串里混进控制字符这类真 bug；风格类的不管（中文注释多，行长不限）
+[tool.ruff]
+target-version = "py311"
+line-length = 160
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "B", "PLE"]
+ignore = [
+  "E731",  # 用 lambda 赋值：小工具函数里常用
+  "B008",  # 参数默认值里调用函数（FastAPI 的写法）
+  "B905",  # zip 不写 strict：这里的几处长度本来就一样
+]

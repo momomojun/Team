@@ -117,7 +117,6 @@ def template(request: dict, result: dict, critique: Critique, language: str, pre
             lines.append(f"- {'第' if zh else 'Day '}{finding.day}{' 天' if zh else ''} {who} {label}".replace("  ", " "))
     skipped = result.get("skipped", [])
     if skipped:
-        reasons = SKIP_ZH if zh else SKIP_EN
         sample = skipped[:6]
         text = "；".join(f"{item['nameZh']}（{skip_reason(item, zh)}）" for item in sample) if zh else \
             "; ".join(f"{item['nameEn']} ({skip_reason(item, zh)})" for item in sample)

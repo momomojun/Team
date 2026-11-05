@@ -12,6 +12,7 @@
 | **本文件** | 怎么做事：安装、运行、改代码、开 PR、部署、发版、回滚 |
 | [PROJECT.md](PROJECT.md) | 项目现状：做到哪、下一步、待决定的事、做过的决定 |
 | [timeline/](timeline/) | 按时间的记录：每次改动（一个 PR）一个文件 |
+| [scrum/](scrum/) | 每周 scrum 周报（`npm run scrum` 按时间线和合并的 PR 生成草稿，下周计划、卡住的自己填） |
 | [GOALS.md](GOALS.md) | 目标清单：仓库主人提过的所有要求、计划书和课程的承诺，每条做到哪了；还没完成的列在最前面 |
 | [TRUST.md](TRUST.md) | 行程靠不靠得住：怎么保证不编造、排得通、知道哪些可能过时，和真人行程对照的成绩 |
 | [DEVELOPMENT.md](DEVELOPMENT.md) | 网站的技术参考：代码结构、数据脚本、数据源和注意事项 |
@@ -254,9 +255,10 @@ git push -u origin feature/你要做的事
 | 检查 | 查什么 | 没过怎么办 |
 |---|---|---|
 | Website (lint, types, tests) | 网站代码风格、TypeScript 类型、`npm test` | 本机跑 `npm run lint`、`npx next typegen`、`npx tsc --noEmit -p .`、`npm test` |
-| Copilot (tests, replay eval gate) | Copilot 的 pytest、八组回放评测（四组单句、三组多轮对话、NPS 公告提取）不能低于基线 | 本机跑 `pytest` 和第 4 节 A 的命令（另两组见 `.github/workflows/ci.yml`） |
+| Copilot (tests, replay eval gate) | Python 代码检查（Ruff）、Copilot 的 pytest、八组回放评测（四组单句、三组多轮对话、NPS 公告提取）不能低于基线；八组都跑完，成绩表贴在 PR 下面（一条评论，每次推送更新）和这次 CI 的摘要页 | 本机跑 `ruff check copilot`（`python -m pip install ruff`）、`pytest` 和第 4 节 A 的命令（其余几组见 `.github/workflows/ci.yml`） |
 | Copilot image (build, smoke test) | Docker 镜像能构建、起来以后能排出行程 | 看 GitHub 上这项的日志 |
 | Vercel / Vercel Preview Comments | 网站能在 Vercel 上构建出预览版（不是必需的） | 点进去看构建日志 |
+| CodeRabbit | AI 审代码（不是必需的，只提意见）：PR 总结、逐行意见，按 `.coderabbit.yaml` 用中文、读 AGENTS.md 和本文件这些规矩 | 有道理的改掉，误报的在下面回复原因；在 PR 评论里写 `@coderabbitai review` 让它再审一遍、`@coderabbitai help` 看全部命令 |
 
 ### 改了什么，要多跑什么
 
@@ -273,6 +275,7 @@ git push -u origin feature/你要做的事
 ### 改提示词
 
 1. 不改旧文件，新建下一版，比如 `copilot/nps_copilot/prompts/intake_v2.txt`。
+   （只是修了一处代码、让某几次调用的提示词变了，不换提示词版本时：多轮对话可以只补录缺的那几次，`python copilot/eval/conversation.py --replay <录音> --fill`，别的照旧回放。）
 2. 在本机用真模型把三组样例都录一遍（以开发集为例，另两组加 `--cases eval/cases/holdout-v1.jsonl`、`--cases eval/cases/regional-v1.jsonl`）：
 
 ```bash
