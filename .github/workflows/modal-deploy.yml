@@ -1,0 +1,71 @@
+# 把 GHCR 上已经发布、测过的某个 Copilot 镜像部署到 Modal 的正式环境（main）。
+#   - 发版（Copilot release 跑成功）以后自动部署这个 tag；
+#   - 回滚：Actions → Deploy Copilot to Modal → Run workflow，填上一个 tag（比如 copilot-v0.3.0），不用重新构建。
+# 要仓库的 secret：MODAL_TOKEN_ID、MODAL_TOKEN_SECRET；没设就跳过。
+name: Deploy Copilot to Modal
+
+on:
+  workflow_run:
+    workflows: ["Copilot release"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "要部署的镜像 tag（copilot-v0.4.0 这种；回滚就填上一个）"
+        required: true
+      environment:
+        description: "Modal 环境：main 是正式，staging 是预发布"
+        required: true
+        default: main
+        type: choice
+        options: [main, staging]
+
+concurrency:
+  group: modal-${{ github.event.inputs.environment || 'main' }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    # 自动触发时只接发版成功的
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.event.inputs.tag || github.event.workflow_run.head_branch }}
+      ENVIRONMENT: ${{ github.event.inputs.environment || 'main' }}
+      MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+      MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy
+        id: deploy
+        run: |
+          if [ -z "$MODAL_TOKEN_ID" ] || [ -z "$MODAL_TOKEN_SECRET" ]; then
+            echo "::notice::没设 MODAL_TOKEN_ID / MODAL_TOKEN_SECRET，跳过"
+            exit 0
+          fi
+          # 正式环境只上发版测过的 copilot-v*；main-<提交>、staging、latest 只能上 staging
+          case "$ENVIRONMENT:$TAG" in
+            main:copilot-v*|staging:copilot-v*|staging:main-*|staging:staging|staging:latest) ;;
+            *) echo "::error::$ENVIRONMENT 环境不能部署 $TAG（正式环境只收 copilot-v*）"; exit 1 ;;
+          esac
+          python3 -m pip install --quiet modal
+          COPILOT_IMAGE="ghcr.io/momomojun/team-copilot:$TAG" python3 -m modal deploy --env "$ENVIRONMENT" deploy/modal/app.py | tee deploy.log
+          url=$(grep -o 'https://[^ ]*\.modal\.run' deploy.log | head -1)
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+      - name: Check the version that came up
+        if: steps.deploy.outputs.url != ''
+        env:
+          URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          for i in $(seq 1 18); do
+            curl -fsS --max-time 60 "$URL/health" -o health.json && break
+            rm -f health.json
+            sleep 10
+          done
+          test -s health.json || { echo "::error::$ENVIRONMENT 的 /health 3 分钟都没响应"; exit 1; }
+          cat health.json
+          python3 deploy/modal/check_health.py health.json "$TAG"
+          echo "### Copilot $ENVIRONMENT：$URL（$TAG）" >> "$GITHUB_STEP_SUMMARY"
