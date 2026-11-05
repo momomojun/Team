@@ -10,7 +10,7 @@
  * Copilot 的地址是 COPILOT_URL（默认 http://127.0.0.1:8765；8765 被别的程序占了就在 .env.local 里改，比如 :8766）。
  * 部署在 Vercel 上时连不到谁电脑上的 Copilot，GET 返回 available: false，对话框不出现，页面照旧能用
  */
-import { copilotHeaders } from "@/lib/copilot/upstream";
+import { copilotHeaders, HEALTH_TIMEOUT_MS } from "@/lib/copilot/upstream";
 
 const BASE = (process.env.COPILOT_URL || "http://127.0.0.1:8765").replace(/\/$/, "");
 /** 模型几秒一句、排行程一两秒；第一次调用要把模型装进显卡，多等一会儿 */
@@ -36,7 +36,7 @@ async function call(path: string, body?: unknown, timeout = TIMEOUT_MS, request?
 export async function GET(request: Request) {
   void request.url; // 每次现查，不在构建时预先生成
   try {
-    const response = await call("/health", undefined, 3_000);
+    const response = await call("/health", undefined, HEALTH_TIMEOUT_MS);
     const health = (await response.json()) as { version?: string; plan_tool?: string };
     // 端口上可能是别的程序：要像 Copilot 的 /health 才算
     const available = response.ok && typeof health.version === "string" && health.plan_tool !== "missing";
