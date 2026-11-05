@@ -90,6 +90,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
             inSeason: dict.nav.inSeason,
             menu: dict.nav.menu,
             close: dict.nav.close,
+            account: dict.nav.account,
           }}
         />
         <main className="flex-1">{children}</main>

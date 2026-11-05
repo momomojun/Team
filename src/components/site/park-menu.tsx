@@ -24,6 +24,7 @@ export interface MenuText {
   inSeason: string;
   menu: string;
   close: string;
+  account: string;
 }
 
 const noSubscribe = () => () => {};
@@ -212,6 +213,9 @@ export function MobileMenu({
               </Link>
               <Link href={`/${locale}/rankings`} onClick={close} className="border border-ink/25 px-4 py-3 text-center text-sm tracking-[0.12em]">
                 {text.rankings}
+              </Link>
+              <Link href={`/${locale}/account`} onClick={close} className="border border-ink/25 px-4 py-3 text-center text-sm tracking-[0.12em]">
+                {text.account}
               </Link>
             </div>
             {regions.map((region) => (

@@ -302,6 +302,8 @@ cd copilot && COPILOT_PROMPT_INTAKE=v2 python eval/run.py --record --plan
 | `DATA_GOV_API_KEY` | 基本必填。`DEMO_KEY` 按 IP 限次数，Vercel 的出口 IP 是很多网站共用的 |
 | `SELF_USE_SCRAPE` | 设了密码、只有自己用时才设成 `1`。Google 对云服务器的请求拦得更严，机票价格可能查不到，查不到就只给比价链接 |
 | `DEEPL_API_KEY`、`SERPAPI_API_KEY` | 可选。MyMemory 的免费额度也是按 IP 算的，部署后翻译更容易用完，配 DeepL 更稳 |
+| `DATABASE_URL` | 可选。Neon 的 Postgres 连接串。登录以后，行程和 Copilot 对话存在这里 |
+| `NEON_AUTH_BASE_URL`、`NEON_AUTH_COOKIE_SECRET` | 可选。Neon 控制台打开 Auth 之后的 Auth URL，以及至少 32 位的 cookie secret。两样都有，`/account` 才用 Neon Auth 注册登录。和全站访问密码 `SITE_PASSWORD` 是两回事 |
 
 - 手机上用：HTTPS 下 service worker 才能注册，所以离线功能要部署后才有；iPhone 用 Safari“添加到主屏幕”，安卓用 Chrome“安装应用”。
 - 在微信里直接点 `*.vercel.app` 的链接可能会被拦，用手机浏览器打开，或者绑一个自己的域名。
