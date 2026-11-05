@@ -22,6 +22,8 @@ async function sql(): Promise<Sql | null> {
         trip jsonb NOT NULL,
         updated_at timestamptz NOT NULL DEFAULT now()
       )`;
+      // 修订号：只接受比库里新的行程（晚到的旧请求不会盖掉新的）
+      await client`ALTER TABLE user_trips ADD COLUMN IF NOT EXISTS rev bigint NOT NULL DEFAULT 0`;
       await client`CREATE TABLE IF NOT EXISTS chat_threads (
         id text PRIMARY KEY,
         user_id text NOT NULL,
@@ -48,14 +50,16 @@ export async function loadTrip(userId: string): Promise<Trip | null> {
   return normalizeTrip(typeof trip === "string" ? JSON.parse(trip) : trip);
 }
 
-export async function saveTrip(userId: string, trip: Trip): Promise<void> {
+/** 存行程；rev 比库里的旧（晚到的旧请求）就不存 */
+export async function saveTrip(userId: string, trip: Trip, rev: number): Promise<void> {
   const db = await sql();
   if (!db) throw new Error("DATABASE_URL is not set");
   const payload = JSON.stringify(trip);
   await db`
-    INSERT INTO user_trips (user_id, trip, updated_at)
-    VALUES (${userId}, ${payload}::jsonb, now())
-    ON CONFLICT (user_id) DO UPDATE SET trip = EXCLUDED.trip, updated_at = now()
+    INSERT INTO user_trips (user_id, trip, rev, updated_at)
+    VALUES (${userId}, ${payload}::jsonb, ${rev}, now())
+    ON CONFLICT (user_id) DO UPDATE SET trip = EXCLUDED.trip, rev = EXCLUDED.rev, updated_at = now()
+    WHERE user_trips.rev < EXCLUDED.rev
   `;
 }
 

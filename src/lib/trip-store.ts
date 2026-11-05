@@ -82,6 +82,11 @@ function subscribe(listener: () => void) {
   };
 }
 
+/** 这一刻本机的行程（不是 React 的状态，不会落后一拍） */
+export function currentTrip(): Trip {
+  return read();
+}
+
 export function useTrip(): Trip {
   return useSyncExternalStore(subscribe, read, () => EMPTY_TRIP);
 }

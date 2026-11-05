@@ -43,6 +43,9 @@ export async function signInWithNeon(formData: FormData): Promise<{ error: strin
 export async function signOutNeon(formData: FormData): Promise<void> {
   const auth = neonAuth();
   const next = safeNext(formData.get("next"));
-  if (auth) await auth.signOut().catch(() => undefined);
+  if (auth) {
+    const result = await auth.signOut();
+    if (result?.error) throw new Error(`sign-out failed: ${result.error.message ?? "unknown"}`);
+  }
   redirect(next);
 }

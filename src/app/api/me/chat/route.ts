@@ -15,18 +15,18 @@ function messagesOf(value: unknown): SavedMessage[] | null {
 
 export async function GET() {
   const user = await currentUser();
-  if (!user) return Response.json({ error: "unauthorized" }, { status: 401 });
+  if (!user) return Response.json({ error: "unauthorized" }, { status: 401, headers: { "Cache-Control": "no-store" } });
   const chat = await loadLatestChat(user.id);
-  return Response.json(chat ?? { sessionId: null, messages: [] });
+  return Response.json(chat ?? { sessionId: null, messages: [] }, { headers: { "Cache-Control": "no-store" } });
 }
 
 export async function PUT(request: Request) {
   const user = await currentUser();
-  if (!user) return Response.json({ error: "unauthorized" }, { status: 401 });
+  if (!user) return Response.json({ error: "unauthorized" }, { status: 401, headers: { "Cache-Control": "no-store" } });
   const body = (await request.json().catch(() => null)) as { sessionId?: unknown; messages?: unknown } | null;
   const messages = messagesOf(body?.messages);
-  if (!messages) return Response.json({ error: "invalid" }, { status: 400 });
+  if (!messages) return Response.json({ error: "invalid" }, { status: 400, headers: { "Cache-Control": "no-store" } });
   const sessionId = typeof body?.sessionId === "string" ? body.sessionId.slice(0, 200) : null;
   await saveChat(user.id, sessionId, messages);
-  return Response.json({ ok: true });
+  return Response.json({ ok: true }, { headers: { "Cache-Control": "no-store" } });
 }

@@ -1,18 +1,30 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { replaceTrip, useTrip, type Trip } from "@/lib/trip-store";
+import { currentTrip, replaceTrip, useTrip, type Trip } from "@/lib/trip-store";
 
 /** 登录后云端的行程替换掉本机的之前，本机那份存在这里（别的设备上排过的行程更新，但万一想找回本机的） */
 export const BEFORE_SYNC_KEY = "nps-trip-before-sync";
 
-function put(trip: Trip, keepalive = false) {
-  return fetch("/api/me/trip", {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ trip }),
-    keepalive,
-  }).catch(() => undefined);
+/** 一次要上传的：行程和修订号（改的那一刻的时间，服务器只收比库里新的） */
+interface Upload {
+  trip: Trip;
+  rev: number;
+}
+
+/** 上传一次，返回成没成（4xx、5xx、断网都算没成） */
+async function put({ trip, rev }: Upload, keepalive = false): Promise<boolean> {
+  try {
+    const response = await fetch("/api/me/trip", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ trip, rev }),
+      keepalive,
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
 }
 
 function hasPlans(trip: Trip) {
@@ -22,22 +34,18 @@ function hasPlans(trip: Trip) {
 /** 登录以后把行程同步到 Neon。没登录（接口 401）就继续只用这台浏览器的 localStorage */
 export function CloudSync() {
   const trip = useTrip();
-  const latest = useRef(trip);
   const ready = useRef(false);
   const skipNext = useRef(false);
-  // 上传一个接一个发：先发的请求不会晚到、把后面的新行程盖掉
+  // 上传一个接一个发；服务器按修订号只收新的，所以离开页面时直接发也不会被旧的盖掉
   const queue = useRef<Promise<unknown>>(Promise.resolve());
-  // 改了还没发出去的（800 毫秒以内离开页面时补发）
-  const pending = useRef<Trip | null>(null);
-  const upload = (next: Trip) => {
+  // 改了还没发成的：离开页面时补发；发失败了、后面又没有更新的，也留在这里等下次
+  const pending = useRef<Upload | null>(null);
+  const upload = (next: Upload) => {
     pending.current = null;
-    queue.current = queue.current.then(() => put(next));
+    queue.current = queue.current.then(async () => {
+      if (!(await put(next)) && pending.current === null) pending.current = next;
+    });
   };
-
-  // 渲染时不能写 ref（React 的规则），在 effect 里跟上最新的行程
-  useEffect(() => {
-    latest.current = trip;
-  }, [trip]);
 
   useEffect(() => {
     let cancel = false;
@@ -46,8 +54,8 @@ export function CloudSync() {
       .then((data: { trip?: Trip | null } | null) => {
         if (cancel || !data) return;
         ready.current = true;
+        const local = currentTrip();
         if (data.trip) {
-          const local = latest.current;
           if (hasPlans(local) && JSON.stringify(local) !== JSON.stringify(data.trip)) {
             try {
               localStorage.setItem(BEFORE_SYNC_KEY, JSON.stringify(local));
@@ -59,7 +67,7 @@ export function CloudSync() {
           replaceTrip(data.trip);
           return;
         }
-        upload(latest.current);
+        upload({ trip: local, rev: Date.now() });
       })
       .catch(() => undefined);
     return () => {
@@ -73,12 +81,13 @@ export function CloudSync() {
       skipNext.current = false;
       return;
     }
-    pending.current = trip;
-    const timer = window.setTimeout(() => upload(trip), 800);
+    const next = { trip, rev: Date.now() };
+    pending.current = next;
+    const timer = window.setTimeout(() => upload(next), 800);
     return () => window.clearTimeout(timer);
   }, [trip]);
 
-  // 关掉页面、离开行程页时，把还没发出去的那次发出去（keepalive：页面关了请求也会发完）
+  // 关掉页面、离开行程页时，把还没发成的马上发出去（keepalive：页面关了请求也会发完；修订号保证不被旧的盖掉）
   useEffect(() => {
     const flush = () => {
       if (pending.current && ready.current) void put(pending.current, true);
