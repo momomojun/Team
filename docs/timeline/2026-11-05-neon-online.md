@@ -1,5 +1,6 @@
 # 11-05：线上打开账号（Neon）；带老人小孩直接按轻松排；Copilot 追问时说明下面是旧行程（分支 `feature/neon-online-and-chat-hints`）
 
+- **想法是谁提的**：用 Neon 是组员 Huiling（`huilingfu95-source`）10-29 提的，仓库主人转述是“我的朋友huilingfu说neon或者colab来部署或者免费GPU额度”。当时查下来：Colab 不能用来部署；Neon 是数据库，不能单独部署，但可以存对话、计费的账和以后的向量检索；部署另外推荐了 Modal，定成“Modal 跑 Copilot + Neon 存数据”。11-02 排进第一周的计划（见 [scrum/2026-10-29.md](../scrum/2026-10-29.md) 的“下周计划”），11-04 Huiling 做了 #88。
 - **账号上线**：组员 Huiling 的 #88（11-04 合并）做了 Neon Auth 登录、行程和 Copilot 对话存进 Neon 的 Postgres，但 Vercel 上没配，线上一直是关着的（登录接口报 “Neon Auth is not configured”）。仓库主人 11-05 建了 Neon 项目 `nps-guide`（AWS US East 1，开 Postgres 和 Better Auth）、Domains 加了网站域名，在 Vercel 填 `DATABASE_URL`、`NEON_AUTH_BASE_URL`、`NEON_AUTH_COOKIE_SECRET` 后重新部署。核对：账号页能注册登录；注册后数据库里 1 个用户、1 个有效会话；`user_trips`、`chat_threads` 在第一次登录时自动建好，行程（4 天）和一段 4 条消息的对话都存进去了。步骤写进 GUIDE 第 6 节，代码位置写进 DEVELOPMENT 的代码结构；GOALS 的 W11（不做账号）改成“后来改主意”。
 - **起因**：仓库主人在线上试“6 月带爸妈去优胜美地玩 4 天，从旧金山飞”，以为排出了一个旧的或错的行程。查 Modal 上的运行日志：模型读出的条件全对，Copilot 在追问“这次想怎么玩？”，下面显示的是浏览器里以前存的行程。
 - **带老人、坐轮椅、7 岁以下的孩子又没说节奏**：不再追问，直接按轻松排（`intake.py` 的 `_needs_easy_pace`，节奏记成 `inferred`，说明里告诉用户想多看一些可以直接说）；孩子大一点、没有老人的照旧问。仓库主人 11-05 同意的。
