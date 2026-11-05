@@ -715,6 +715,11 @@ class Intake:
         if question is None and self.party.get("_kidAgeUnknown"):
             self.party.pop("_kidAgeUnknown")
             question = {"kind": "party", "text": "最小的孩子几岁？有的步道和导览有年龄限制。" if zh else "How old is the youngest child? Some trails and tours have age limits."}
+        if question is None and not self.pace.value and not self.asked_pace and self._needs_easy_pace():
+            # 带老人、轮椅、小小孩又没说节奏：直接按轻松排，少问一轮（11-05 仓库主人要的；想多看一些可以接着说）
+            self.pace = Field("relaxed", "inferred", "；".join(self.party_evidence)[:200])
+            notices.append("带着老人或小孩，先按轻松的节奏排（一天少排几个地方、多留休息），想多看一些可以直接说。" if zh
+                           else "Since you're traveling with older parents or young kids, I'll start with a relaxed pace (fewer stops a day, more rest). Tell me if you'd like to see more.")
         if question is None and not self.pace.value and not self.asked_pace:
             self.asked_pace = True
             question = {"kind": "choose", "target": "pace",
@@ -727,6 +732,11 @@ class Intake:
         self.pending = None
         self.asked = None
         return Turn("ready", None, self.request(), notices, trace)
+
+    def _needs_easy_pace(self) -> bool:
+        """同行里有老人、坐轮椅的，或者最小的孩子不到 7 岁"""
+        party = self.party
+        return bool(party.get("seniors") or party.get("wheelchair") or party.get("youngestKid", 99) < 7)
 
     def _special_pending(self, zh: bool) -> dict | None:
         pending = self.pending

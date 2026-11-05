@@ -304,6 +304,16 @@ cd copilot && COPILOT_PROMPT_INTAKE=v2 python eval/run.py --record --plan
 | `DEEPL_API_KEY`、`SERPAPI_API_KEY` | 可选。MyMemory 的免费额度也是按 IP 算的，部署后翻译更容易用完，配 DeepL 更稳 |
 | `DATABASE_URL` | 可选。Neon 的 Postgres 连接串。登录以后，行程和 Copilot 对话存在这里 |
 | `NEON_AUTH_BASE_URL`、`NEON_AUTH_COOKIE_SECRET` | 可选。Neon 控制台打开 Auth 之后的 Auth URL，以及至少 32 位的 cookie secret。两样都有，`/account` 才用 Neon Auth 注册登录。和全站访问密码 `SITE_PASSWORD` 是两回事 |
+| `COPILOT_URL`、`COPILOT_TOKEN` | Copilot 在 Modal 上的网址和口令（见第 7 节）。不填行程页就不显示对话框 |
+
+**打开账号（Neon，11-05 线上配好的）**：
+1. https://neon.tech 建项目（区域 AWS US East），服务里开 **Postgres database** 和 **Better Auth**（就是 Neon Auth）。
+2. 项目 → Settings → Better Auth：**Domains** 里加 `https://team-peach-five.vercel.app`（不加就拦下这个网站的登录）；**Allow Localhost** 开着，本机也能登录。同一页的 **Auth URL** 就是 `NEON_AUTH_BASE_URL`。
+3. 左上角 **Connect** 里以 `postgresql://` 开头的连接串是 `DATABASE_URL`（带着数据库密码，别截图）；`NEON_AUTH_COOKIE_SECRET` 用 `python -c "import secrets;print(secrets.token_urlsafe(32))"` 生成。
+4. 三个都填进 Vercel（Production 和 Preview），Deployments 里从 `main` 那一行 **Redeploy**。存行程、存对话的两张表（`user_trips`、`chat_threads`）在第一个人登录时自动建。
+5. 本机也要用的话，三行一样写进 `.env.local`。
+
+`bot/closures-*` 和 `data/alerts-live` 这两种机器人分支不让 Vercel 构建预览版：前者写在根目录的 `vercel.json`，后者是只放数据的分支，每晚的 workflow 往里写自己的 `vercel.json`。
 
 - 手机上用：HTTPS 下 service worker 才能注册，所以离线功能要部署后才有；iPhone 用 Safari“添加到主屏幕”，安卓用 Chrome“安装应用”。
 - 在微信里直接点 `*.vercel.app` 的链接可能会被拦，用手机浏览器打开，或者绑一个自己的域名。

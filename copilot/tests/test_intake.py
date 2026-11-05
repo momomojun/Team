@@ -116,8 +116,26 @@ def test_fabricated_spans_are_dropped_without_exposing_internals(make_intake):
     turn = intake.step("2027年6月10日博兹曼进出，黄石5天，带老人")
     assert {"field": "preferences", "span": "少走路", "reason": "not_in_message"} in turn.trace["dropped_spans"]
     assert "lessWalking" not in intake.preferences
-    assert turn.question["kind"] == "choose"  # 正常问节奏，而不是让用户“重新说明 preferences”
-    assert not re.search(r"preferences|parks|origin|duration|seniors", turn.question["text"])
+    # 带老人、没说节奏：直接按轻松排（11-05 起不再问节奏），也不让用户“重新说明 preferences”
+    assert turn.status == "ready" and turn.question is None
+    assert not re.search(r"preferences|parks|origin|duration|seniors", " ".join(turn.notices))
+
+
+def test_seniors_or_small_kids_default_to_relaxed_pace(make_intake):
+    """带爸妈、没说节奏：按轻松排，记成推断的，说明里告诉用户可以改（11-05 仓库主人试的那一句）"""
+    intake = make_intake(extraction(parks=["优胜美地"], dates=["6 月"], party=["爸妈"], duration="4 天", origin="旧金山"))
+    turn = intake.step("6 月带爸妈去优胜美地玩 4 天，从旧金山飞")
+    assert turn.status == "ready"
+    assert turn.request["pace"] == "relaxed"
+    assert turn.request["provenance"]["pace"]["source"] == "inferred"
+    assert any("轻松" in notice for notice in turn.notices)
+
+
+def test_older_kids_still_ask_pace(make_intake):
+    """孩子 10 岁、没有老人：照旧问节奏"""
+    intake = make_intake(extraction(parks=["优胜美地"], dates=["2027年6月1日"], party=["带10岁的孩子"], duration="4天", origin="弗雷斯诺"))
+    turn = intake.step("2027年6月1日带10岁的孩子去优胜美地4天，从弗雷斯诺出发")
+    assert turn.status == "needs_input" and turn.question["kind"] == "choose" and "怎么玩" in turn.question["text"]
 
 
 def test_ambiguous_airport_asks_which_one(make_intake):
