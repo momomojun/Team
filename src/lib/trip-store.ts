@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import type { CustomStop } from "./custom-stops";
 import { fitNights, type Trip, type TripLodging } from "./trip-record";
 
 export type { ItemStatus, Trip, TripItem, TripLodging } from "./trip-record";

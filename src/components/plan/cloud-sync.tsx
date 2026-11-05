@@ -9,7 +9,11 @@ export function CloudSync() {
   const latest = useRef(trip);
   const ready = useRef(false);
   const skipNext = useRef(false);
-  latest.current = trip;
+
+  // 渲染时不能写 ref（React 的规则），在 effect 里跟上最新的行程
+  useEffect(() => {
+    latest.current = trip;
+  }, [trip]);
 
   useEffect(() => {
     let cancel = false;
