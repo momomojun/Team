@@ -273,4 +273,13 @@ export const tempClosures: TempClosure[] = [
     source: "https://www.nps.gov/cuva/planyourvisit/conditions.htm",
     checked: "2026-10-20",
   },
+  {
+    // 2026-11-06 每晚读公告自动提议（公告 A9A62666-54C0-41A3-A682-49D721E9DEBB）：核对公告原文，把 reasonZh 改成中文说明再合并
+    attractions: ["zion-narrows"],
+    from: "2026-11-06",
+    reopen: null,
+    reasonZh: "NPS 公告：The Virgin River Narrows closed to top-down travel（每晚读公告自动提议，机器读取；合并前改成中文说明、写上替代办法）",
+    source: "",
+    checked: "2026-11-06",
+  },
 ];
