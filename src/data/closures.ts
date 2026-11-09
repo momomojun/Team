@@ -273,4 +273,13 @@ export const tempClosures: TempClosure[] = [
     source: "https://www.nps.gov/cuva/planyourvisit/conditions.htm",
     checked: "2026-10-20",
   },
+  {
+    // 2026-11-09 每晚读公告自动提议（公告 3B2739FF-2415-49C0-8C2C-A9B0896052AD）：核对公告原文，把 reasonZh 改成中文说明再合并
+    attractions: ["mora-skyline-trail","mora-myrtle-falls","mora-reflection-lakes","mora-narada-falls","mora-paradise-visitor-center","mora-nisqually-vista","mora-christine-falls","mora-comet-falls"],
+    from: "2026-11-09",
+    reopen: null,
+    reasonZh: "NPS 公告：Paradise Road Status: Open, traction tires advised, gate closing at 3 p.m.（每晚读公告自动提议，机器读取；合并前改成中文说明、写上替代办法）",
+    source: "",
+    checked: "2026-11-09",
+  },
 ];
