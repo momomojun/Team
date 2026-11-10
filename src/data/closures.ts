@@ -273,4 +273,13 @@ export const tempClosures: TempClosure[] = [
     source: "https://www.nps.gov/cuva/planyourvisit/conditions.htm",
     checked: "2026-10-20",
   },
+  {
+    // 2026-11-10 每晚读公告自动提议（公告 0D951550-3606-4DF5-AE92-0AA3904191A8）：核对公告原文，把 reasonZh 改成中文说明再合并
+    attractions: ["noca-cascade-pass"],
+    from: "2026-11-10",
+    reopen: null,
+    reasonZh: "NPS 公告：Cascade River Road Closed for the Winter Season（每晚读公告自动提议，机器读取；合并前改成中文说明、写上替代办法）",
+    source: "https://www.nps.gov/noca/planyourvisit/winter-safety.htm",
+    checked: "2026-11-10",
+  },
 ];
