@@ -47,6 +47,8 @@ def main() -> None:
     vectors_cmd.add_argument("action", choices=["sync"])
     vectors_cmd.add_argument("--model", help="嵌入型号（默认 COPILOT_EMBED_MODEL，再默认 gemini-embedding-001）")
     vectors_cmd.add_argument("--dry-run", action="store_true", help="只数新的、改过的、要删的各几条、要调几次接口，不调接口、不写数据库")
+    vectors_cmd.add_argument("--first", help="先算这几座公园的资料（逗号隔开的公园代码，比如跑分要用的）")
+    vectors_cmd.add_argument("--limit", type=int, help="这次最多算几条（免费档每个型号每天 1000 条，给别的调用留额度）")
     args = parser.parse_args()
     sys.stdout.reconfigure(encoding="utf-8")
     # 计费总账（ledger.py）里记成谁调用的：读公告是 alerts，聊天和服务是 chat
@@ -93,10 +95,13 @@ def main() -> None:
             raise SystemExit("没有 DATABASE_URL：写进 .env.local 或设成环境变量（Neon 控制台 Connect 里 postgresql:// 开头的那串）")
         store = NeonStore(url)
         embedder = None if args.dry_run else GeminiEmbedder(model=model)
-        stats = sync(store, embedder, model, dry_run=args.dry_run,
+        first = set(args.first.split(",")) if args.first else None
+        stats = sync(store, embedder, model, dry_run=args.dry_run, first=first, limit=args.limit,
                      on_batch=lambda done, total: print(f"算向量 {done}/{total}", flush=True))
         print(f"{model}：资料 {stats['docs']} 条，库里原有 {stats['stored']} 条；新的 {stats['new']}、改过的 {stats['changed']}、"
-              f"删掉 {stats['removed']}，{'要' if args.dry_run else '已'}调嵌入接口 {stats['requests']} 次")
+              f"删掉 {stats['removed']}" + ("，要调嵌入接口 {} 次".format(stats["requests"]) if args.dry_run else f"，这次算了 {stats['embedded']} 条、还剩 {stats['left']} 条"))
+        if stats.get("stopped") == "quota":
+            print("今天这个型号的免费额度（每天 1000 条）用完了，算好的已经存进 Neon；明天再跑同一条命令接着算")
         return
     if args.command == "stats":
         from .monitor import report

@@ -265,6 +265,7 @@ git push -u origin feature/你要做的事
 | 你改了 | 还要做 |
 |---|---|
 | 景点、住宿数据（`src/data/attractions/` 等） | 按 [DEVELOPMENT.md](DEVELOPMENT.md#数据脚本) 重新生成；`npm run copilot:contracts`（Copilot 回答问题用的资料跟着更新）；`npm test` |
+| 回答问题用的资料（`copilot/contracts/knowledge.jsonl`，`npm run copilot:contracts` 生成的） | 合并以后跑一次 `cd copilot && python -m nps_copilot vectors sync`，把新的、改过的资料的向量写进 Neon（先加 `--dry-run` 看要调几次 Gemini；免费档按每分钟限量，条数多时设 `COPILOT_EMBED_BATCH=50`、`COPILOT_EMBED_RPM=1` 慢慢算）。没跑的话新资料只能按关键词找到 |
 | 公园、机场（`src/data/parks.ts`、`airports.ts`） | `npm run copilot:contracts`；必要时 `python copilot/scripts/regional_names.py`（各地叫法，要联网） |
 | Copilot 的 Python 代码 | `pytest`、八组回放门禁（命令见 `.github/workflows/ci.yml`）；**加了新汉字也要跑 `npm run copilot:contracts`**（繁简对照表按代码里的汉字生成，不跑网站测试会失败） |
 | 提示词 | 见下面“改提示词” |
@@ -394,6 +395,7 @@ python -m modal environment create staging
    - `COPILOT_TOKEN`：自己编一串长的随机字符（`python -c "import secrets;print(secrets.token_urlsafe(32))"`），Vercel 那边填同一串；两个环境可以用不同的；
    - 模型的 key：`GEMINI_API_KEY`、`OPENROUTER_API_KEY`、`GROQ_API_KEY`（免费档）、`DEEPSEEK_API_KEY`（付费备用，免费的都出错才用）；
    - `DATA_GOV_API_KEY`（聊天时现读 NPS 公告）；
+   - `DATABASE_URL`（Neon 的连接串，和 Vercel 上填的是同一串）：回答问题时按意思找资料，向量存在 Neon 里。不加也能用，只是一直按关键词找（11-10）；
    - 可选的限流变量：`COPILOT_RATE_MINUTE`、`COPILOT_RATE_DAY`、`COPILOT_RATE_GLOBAL_DAY`（默认见 [COPILOT.md](COPILOT.md#环境变量)）。
 5. GitHub 仓库 Settings → Secrets and variables → Actions，加 `MODAL_TOKEN_ID`、`MODAL_TOKEN_SECRET`（Modal → Settings → API Tokens → New Token）。之后 staging、正式都由 GitHub 自动部署。
 6. Vercel 项目 Settings → Environment Variables：`COPILOT_URL`、`COPILOT_TOKEN` 各加两条——Production 填正式环境的网址和口令，Preview 填 staging 的。重新部署一次，打开行程页，最上面出现“Copilot · 用一句话说需求”就连上了。

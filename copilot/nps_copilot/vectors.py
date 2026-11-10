@@ -20,9 +20,9 @@ import time
 from functools import lru_cache
 
 from . import knowledge
-from .embeddings import DIMS, GeminiEmbedder, document_text, model_name
+from .embeddings import BATCH, DIMS, GeminiEmbedder, document_text, model_name
 from .knowledge import Doc
-from .providers import ProviderError, secret
+from .providers import ProviderError, QuotaError, secret
 
 TABLE = "copilot_knowledge_vectors"
 DEPTH = 20
@@ -76,8 +76,8 @@ class NeonStore:
     def _connect(self):
         import psycopg
 
-        return psycopg.connect(self.url, autocommit=True, connect_timeout=self.connect_timeout,
-                               options=f"-c statement_timeout={self.statement_ms}")
+        # Neon 的连接池地址（-pooler）不接受连接时带的 options（statement_timeout），超时改在每次的事务里 SET LOCAL
+        return psycopg.connect(self.url, autocommit=True, connect_timeout=self.connect_timeout)
 
     def _run(self, work):
         import psycopg
@@ -87,7 +87,8 @@ class NeonStore:
                 try:
                     if self._conn is None or self._conn.closed:
                         self._conn = self._connect()
-                    with self._conn.cursor() as cur:
+                    with self._conn.transaction(), self._conn.cursor() as cur:
+                        cur.execute(f"SET LOCAL statement_timeout = {int(self.statement_ms)}")
                         return work(cur)
                 except psycopg.OperationalError:
                     # Neon 闲置后休眠、连接被断开：重连一次再试
@@ -131,25 +132,41 @@ class NeonStore:
         return self._run(work)
 
 
-def sync(store, embedder, model: str, docs: list[Doc] | None = None, dry_run: bool = False, on_batch=None) -> dict:
-    """让 Neon 里的向量和资料一致：新的、改过的算向量写进去，资料里没有了的删掉。返回各有几条"""
+def sync(store, embedder, model: str, docs: list[Doc] | None = None, dry_run: bool = False, on_batch=None,
+         first: set[str] | None = None, limit: int | None = None) -> dict:
+    """让 Neon 里的向量和资料一致：新的、改过的算向量写进去，资料里没有了的删掉。返回各有几条。
+    first 是先算哪几座公园（和不分公园的资料）。免费档每个型号每天只能算 1000 条（11-10 撞上的
+    EmbedContentRequestsPerDayPerUserPerProjectPerModel-FreeTier），用完就停下、已经算好的照样存着，第二天再跑接着算"""
     docs = docs if docs is not None else knowledge.index()[0]
     store.ensure()
     have = store.hashes(model)
     want = {doc.id: (doc, content_hash(doc, model)) for doc in docs}
     todo = [(doc, digest) for doc, digest in want.values() if have.get(doc.id) != digest]
+    if first:
+        todo.sort(key=lambda item: not (not item[0].park or item[0].park in first))
+    # limit：这次最多算几条（给同一天别的调用留出额度，比如跑分时的问题）
+    left = len(todo) - limit if limit is not None and limit < len(todo) else 0
+    todo = todo[:limit] if limit is not None else todo
     gone = sorted(set(have) - set(want))
     stats = {"model": model, "docs": len(docs), "stored": len(have), "new": sum(doc.id not in have for doc, _ in todo),
              "changed": sum(doc.id in have for doc, _ in todo), "removed": len(gone),
-             "requests": -(-len(todo) // 100)}
+             "requests": -(-len(todo) // BATCH)}
     if dry_run:
         return stats
-    for i in range(0, len(todo), 100):
-        batch = todo[i:i + 100]
-        vectors = embedder.documents([(doc.title, doc.text) for doc, _ in batch])
+    done = 0
+    for i in range(0, len(todo), BATCH):
+        batch = todo[i:i + BATCH]
+        try:
+            vectors = embedder.documents([(doc.title, doc.text) for doc, _ in batch])
+        except QuotaError:
+            stats["stopped"] = "quota"
+            break
         store.upsert(model, [(doc, digest, vector) for (doc, digest), vector in zip(batch, vectors)])
+        done += len(batch)
         if on_batch:
-            on_batch(min(i + 100, len(todo)), len(todo))
+            on_batch(done, len(todo))
+    stats["embedded"] = done
+    stats["left"] = len(todo) - done + left
     store.delete(model, gone)
     return stats
 

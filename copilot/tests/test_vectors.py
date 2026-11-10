@@ -193,3 +193,22 @@ def test_qa_trace_says_how_docs_were_found(monkeypatch):
     provider = ScriptedProvider([{"found": True, "answer": "冰川点在优胜美地。", "sources": [1]}])
     _, trace = qa.answer("冰川点在哪", ["yose"], "", provider, True)
     assert trace["retrieval"] == "bm25" and "retrieval_fallback" in trace
+
+
+def test_sync_puts_first_parks_first_and_stops_on_daily_quota(monkeypatch):
+    from nps_copilot.providers import QuotaError
+
+    monkeypatch.setattr(vectors, "BATCH", 2)
+    docs = [d for d in knowledge.index()[0] if d.park in ("yose", "zion")][:3] + [d for d in knowledge.index()[0] if d.park == "arch"][:3]
+
+    class Limited(FakeEmbedder):
+        def documents(self, rows):
+            if self.calls == 1:
+                raise QuotaError("今天的免费额度用完了（429）")
+            return super().documents(rows)
+
+    store = FakeStore()
+    stats = vectors.sync(store, Limited(), "gemini-embedding-2", docs, first={"arch"})
+    assert stats["stopped"] == "quota" and stats["embedded"] == 2
+    # 先算的是 arch 的
+    assert {doc_id for (_, doc_id) in store.rows} <= {d.id for d in docs if d.park == "arch"}

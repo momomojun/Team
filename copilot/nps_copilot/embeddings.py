@@ -21,7 +21,8 @@ from .providers import ProviderError, _Paced, secret
 DEFAULT_MODEL = "gemini-embedding-001"
 MODELS = ("gemini-embedding-001", "gemini-embedding-2")
 DIMS = 768
-BATCH = 100
+# 一次送几条。免费档按每分钟的量限（11-10 建库时一批 100 条、约 3 万 token 一直被 429 挡回来）：建库时可以调小、放慢
+BATCH = int(os.environ.get("COPILOT_EMBED_BATCH", "100"))
 QUERY_PREFIX = "task: search result | query: "
 
 
@@ -44,6 +45,27 @@ def normalized(values: list[float]) -> list[float]:
     return [v / norm for v in values] if norm else values
 
 
+def _explained(send):
+    """429 时把 Google 说的是哪一项限额（quotaId、上限）打到 stderr，再照原样交给 _Paced 处理（等一会儿再试）"""
+    import io
+    import json
+    import sys
+    import urllib.error
+
+    try:
+        return send()
+    except urllib.error.HTTPError as error:
+        body = error.read()
+        if error.code == 429:
+            try:
+                details = json.loads(body.decode("utf-8")).get("error", {}).get("details", [])
+                quotas = [f"{v.get('quotaId')}={v.get('quotaValue')}" for d in details for v in d.get("violations", [])]
+                print(f"  （429：{', '.join(quotas) or '没写是哪一项'}）", file=sys.stderr, flush=True)
+            except ValueError:
+                pass
+        raise urllib.error.HTTPError(error.url, error.code, error.msg, error.headers, io.BytesIO(body)) from None
+
+
 @dataclass
 class GeminiEmbedder:
     model: str = DEFAULT_MODEL
@@ -56,7 +78,8 @@ class GeminiEmbedder:
         self.key = secret("GEMINI_API_KEY")
         # 免费档每分钟能调几次官方没写（AI Studio 里看），按每分钟 60 次放慢；429、503 等一会儿再试
         rpm = float(os.environ.get("COPILOT_EMBED_RPM", "60"))
-        self.pace = _Paced(rpm, waits=(1,), retry_timeouts=False) if self.quick else _Paced(rpm)
+        # 建库时被 429 挡回来就多等一会儿再试（免费档按一段时间里的量算，11-10 等 2 分钟常常还不够）
+        self.pace = _Paced(rpm, waits=(1,), retry_timeouts=False) if self.quick else _Paced(rpm, waits=(30, 60, 120, 300, 600))
 
     def _item(self, text: str, kind: str, title: str = "") -> dict:
         item: dict = {"model": f"models/{self.model}", "outputDimensionality": DIMS}
@@ -71,7 +94,7 @@ class GeminiEmbedder:
     def _send(self, items: list[dict], task: str) -> list[list[float]]:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:batchEmbedContents"
         start = time.monotonic()
-        reply = self.pace.run(lambda: providers._post(url, {"requests": items}, {"x-goog-api-key": self.key}, self.timeout))
+        reply = self.pace.run(lambda: _explained(lambda: providers._post(url, {"requests": items}, {"x-goog-api-key": self.key}, self.timeout)))
         rows = reply.get("embeddings")
         if not isinstance(rows, list) or len(rows) != len(items) or not all(isinstance(row.get("values"), list) for row in rows):
             raise ProviderError(f"Gemini 嵌入接口返回的条数不对：送了 {len(items)} 条")

@@ -187,7 +187,9 @@ def main() -> int:
         print(f"{name} 前 5 条没找到的：{', '.join(misses) or '无'}")
     reports = HERE / "reports"
     reports.mkdir(exist_ok=True)
-    out = reports / f"{dt.datetime.now().strftime('%Y%m%dT%H%M%S')}-retrieval-{label.replace(':', '_')}.json"
+    # 回放的报告名里带 replay_<录音名>，PR 评论的成绩表（pr_summary.py）按它找
+    tail = f"replay_{args.replay.stem}" if args.replay else label.replace(":", "_")
+    out = reports / f"{dt.datetime.now().strftime('%Y%m%dT%H%M%S')}-retrieval-{tail}.json"
     out.write_text(json.dumps({"embed_model": label, "replay": bool(args.replay), "cases_file": args.cases.name, "table": table, "runs": runs},
                               ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"报告：{out}")
