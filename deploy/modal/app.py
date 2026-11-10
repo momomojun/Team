@@ -18,13 +18,15 @@ IMAGE = os.environ.get("COPILOT_IMAGE", "ghcr.io/momomojun/team-copilot:latest")
 
 image = (
     modal.Image.from_registry(IMAGE)
-    # 镜像里只装了 copilot[api]；加上 LangGraph，对话存进 Volume 上的 SQLite，机器关了再开接着聊
-    .pip_install("langgraph>=1.0", "langgraph-checkpoint-sqlite>=2.0")
+    # 镜像里只装了 copilot[api]；加上 LangGraph（对话存进 Volume 上的 SQLite，机器关了再开接着聊）和 psycopg（连 Neon 找资料）
+    .pip_install("langgraph>=1.0", "langgraph-checkpoint-sqlite>=2.0", "psycopg[binary]>=3.2")
     .env({
         "COPILOT_RUNS": "/data/runs",
         "COPILOT_SESSIONS_DB": "/data/sessions.sqlite",
         # 不设 COPILOT_PROVIDER：按默认顺序用云端模型（Gemini → Nemotron → Groq → DeepSeek，Secret 里有哪家的 key 用哪家）
         "COPILOT_IMAGE": IMAGE,
+        # 回答问题前找资料：关键词 + 按意思找（向量在 Neon，Secret 里要有 DATABASE_URL；没有、出错都退回关键词）
+        "COPILOT_RETRIEVAL": "hybrid",
     })
 )
 

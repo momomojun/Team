@@ -24,7 +24,7 @@ from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel
 
-from . import __version__, alerts_live, guard, ledger, monitor, publish, tts
+from . import __version__, alerts_live, guard, ledger, monitor, publish, tts, vectors
 from . import graph as graph_module
 from .pipeline import VERSION, Session, prompt_hashes
 from .providers import ProviderError, chat_provider
@@ -110,6 +110,9 @@ def health() -> dict:
         "auth": bool(guard.token()),
         # 一轮对话怎么跑：LangGraph（对话存档，重启不丢）还是直接调
         "graph": "langgraph" if graph_module.enabled() else None,
+        # 回答问题前怎么找资料：bm25 / vector / hybrid（只报设置，不查数据库：后台每 30 秒问一次，会让 Neon 一直醒着）
+        "retrieval": vectors.mode(),
+        "embed_model": os.environ.get("COPILOT_EMBED_MODEL") or ("gemini-embedding-001" if vectors.mode() != "bm25" else None),
     }
 
 

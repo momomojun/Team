@@ -33,6 +33,9 @@ PRICES = {
     "gpt-5-nano": (0.05, 0.40),
     "gpt-6-luna": (0.10, 0.50),
     "gemini-3.5-flash-lite": (0.0, 0.0),
+    # 嵌入（按意思找资料，embeddings.py）：免费档，只有输入 token
+    "gemini-embedding-001": (0.0, 0.0),
+    "gemini-embedding-2": (0.0, 0.0),
     "gemma-4-31b-it": (0.0, 0.0),
     "openai/gpt-oss-120b": (0.0, 0.0),
     "qwen/qwen3.8-27b": (0.0, 0.0),
@@ -64,6 +67,9 @@ REFERENCE_PRICE = (0.15, 0.50)
 # 看免费额度到底省了多少、以后转付费大概要花多少。付费的模型标价就是 PRICES；本机模型不收钱，按 0 算
 LIST_PRICES = {
     "gemini-3.5-flash-lite": (0.30, 2.50),  # ai.google.dev/gemini-api/docs/pricing，Standard 付费档
+    # 同一页 11-10：嵌入每百万输入 token 001 是 $0.15、Embedding 2 是 $0.20（文字），没有输出
+    "gemini-embedding-001": (0.15, 0.0),
+    "gemini-embedding-2": (0.20, 0.0),
     "minimax/minimax-m3.1-flash:free": (0.15, 0.60),  # openrouter.ai/minimax/minimax-m3.1-flash/pricing（免费推广期已结束）
     "nvidia/nemotron-3.5-super-vl:free": (0.15, 0.50),  # OpenRouter 模型列表里付费版 nvidia/nemotron-3.5-super-vl 的价
     "qwen/qwen3.8-27b": (0.80, 4.00),  # console.groq.com/docs/models（Preview，按量付费价）

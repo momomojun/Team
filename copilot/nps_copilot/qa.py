@@ -1,6 +1,7 @@
 """回答问题（RAG）：行程排好以后，用户问“El Portal 离园区多远”“火瀑哪几天有”“19 号几点出发”这类问题。
 
-1. knowledge.search 在网站资料里找最相关的几条（只在这次行程的公园里找）；
+1. 在网站资料里找最相关的几条（只在这次行程的公园里找）：默认按关键词（knowledge.search），COPILOT_RETRIEVAL 设成 hybrid 时
+   关键词和按意思找（vectors.py，向量存在 Neon）两份合起来，出错退回关键词；
 2. 模型只根据“行程 + 这几条资料”回答，输出 {found, answer, sources}；
 3. 代码检查：回答里的时间、数字都要在行程或资料里出现过，引用的编号要是给过的；对不上就不用模型写的，
    改成直接摘资料原文（问题里点了名的那条），什么都没查到就老实说不知道。
@@ -11,9 +12,10 @@ from __future__ import annotations
 import re
 
 from . import prompts
-from .knowledge import Doc, get, search
+from .knowledge import Doc, get
 from .providers import Provider, ProviderError
 from .text import normalize
+from .vectors import retrieve
 from .writer import NUMBER_RE, TIME_RE
 
 QA_SCHEMA = {
@@ -136,11 +138,15 @@ def fallback(question: str, docs: list[Doc], zh: bool, looked: list[str] | None 
 
 def answer(question: str, parks: list[str], plan_text: str, provider: Provider | None, zh: bool,
            stops: list[str] | None = None, meaning: str = "", skipped: list[dict] | None = None,
-           looked: list[str] | None = None) -> tuple[str, dict]:
+           looked: list[str] | None = None, docs: list[Doc] | None = None) -> tuple[str, dict]:
     """question 是用户原话；meaning 是调度员按上下文补全的问法（“那条步道”→“雾径”），只用来帮着找资料、给模型参考，
-    回答和“问题里点了名的那条”都以原话为准（补全有时会补错）"""
-    docs = search(f"{question} {meaning}" if meaning else question, parks)
-    trace: dict = {"retrieved": [doc.id for doc in docs]}
+    回答和“问题里点了名的那条”都以原话为准（补全有时会补错）。docs 给了就不再找资料（评测比不同找法用）"""
+    if docs is None:
+        # 关键词、按意思找，还是两样合起来：COPILOT_RETRIEVAL（vectors.py），出错退回关键词
+        docs, how = retrieve(f"{question} {meaning}" if meaning else question, parks)
+    else:
+        how = {"retrieval": "given"}
+    trace: dict = {"retrieved": [doc.id for doc in docs], **how}
     briefs = stop_briefs(stops) if stops and ABOUT_TRIP.search(normalize(question)) else []
     left_out = skipped_lines(skipped, zh) if skipped and SKIPPED_Q.search(normalize(f"{question} {meaning}")) else []
     trace["skipped_lines"] = len(left_out)
