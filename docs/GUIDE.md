@@ -255,7 +255,7 @@ git push -u origin feature/你要做的事
 | 检查 | 查什么 | 没过怎么办 |
 |---|---|---|
 | Website (lint, types, tests) | 网站代码风格、TypeScript 类型、`npm test` | 本机跑 `npm run lint`、`npx next typegen`、`npx tsc --noEmit -p .`、`npm test` |
-| Copilot (tests, replay eval gate) | Python 代码检查（Ruff）、Copilot 的 pytest、八组回放评测（四组单句、三组多轮对话、NPS 公告提取）不能低于基线；八组都跑完，成绩表贴在 PR 下面（一条评论，每次推送更新）和这次 CI 的摘要页 | 本机跑 `ruff check copilot`（`python -m pip install ruff`）、`pytest` 和第 4 节 A 的命令（其余几组见 `.github/workflows/ci.yml`） |
+| Copilot (tests, replay eval gate) | Python 代码检查（Ruff）、Copilot 的 pytest、九组回放评测（四组单句、三组多轮对话、NPS 公告提取、回答问题前找资料）不能低于基线；九组都跑完，成绩表贴在 PR 下面（一条评论，每次推送更新）和这次 CI 的摘要页 | 本机跑 `ruff check copilot`（`python -m pip install ruff`）、`pytest` 和第 4 节 A 的命令（其余几组见 `.github/workflows/ci.yml`） |
 | Copilot image (build, smoke test) | Docker 镜像能构建、起来以后能排出行程 | 看 GitHub 上这项的日志 |
 | Vercel / Vercel Preview Comments | 网站能在 Vercel 上构建出预览版（不是必需的） | 点进去看构建日志 |
 | CodeRabbit | AI 审代码（不是必需的，只提意见）：PR 总结、逐行意见，按 `.coderabbit.yaml` 用中文、读 AGENTS.md 和本文件这些规矩 | 有道理的改掉，误报的在下面回复原因；在 PR 评论里写 `@coderabbitai review` 让它再审一遍、`@coderabbitai help` 看全部命令 |
@@ -265,8 +265,9 @@ git push -u origin feature/你要做的事
 | 你改了 | 还要做 |
 |---|---|
 | 景点、住宿数据（`src/data/attractions/` 等） | 按 [DEVELOPMENT.md](DEVELOPMENT.md#数据脚本) 重新生成；`npm run copilot:contracts`（Copilot 回答问题用的资料跟着更新）；`npm test` |
+| 回答问题用的资料（`copilot/contracts/knowledge.jsonl`，`npm run copilot:contracts` 生成的） | 合并以后跑一次 `cd copilot && python -m nps_copilot vectors sync`，把新的、改过的资料的向量写进 Neon（先加 `--dry-run` 看要调几次 Gemini；免费档按每分钟限量，条数多时设 `COPILOT_EMBED_BATCH=50`、`COPILOT_EMBED_RPM=1` 慢慢算）。没跑的话，线上（`COPILOT_RETRIEVAL=vector`）按意思找不到新资料，只有问题里点了它的全名时才会被放进去 |
 | 公园、机场（`src/data/parks.ts`、`airports.ts`） | `npm run copilot:contracts`；必要时 `python copilot/scripts/regional_names.py`（各地叫法，要联网） |
-| Copilot 的 Python 代码 | `pytest`、八组回放门禁（命令见 `.github/workflows/ci.yml`）；**加了新汉字也要跑 `npm run copilot:contracts`**（繁简对照表按代码里的汉字生成，不跑网站测试会失败） |
+| Copilot 的 Python 代码 | `pytest`、九组回放门禁（命令见 `.github/workflows/ci.yml`）；**加了新汉字也要跑 `npm run copilot:contracts`**（繁简对照表按代码里的汉字生成，不跑网站测试会失败） |
 | 提示词 | 见下面“改提示词” |
 | 评测样例 | 见下面“加评测样例” |
 | 中文文案 | 有英文版对应的，用 `scripts/rekey-zh.py` 改 |
@@ -352,7 +353,7 @@ git -C D:/LLM/Team tag copilot-v0.4.0 origin/main
 git -C D:/LLM/Team push origin copilot-v0.4.0
 ```
 
-3. `Copilot release` workflow 会检查 tag 和代码里的版本一致，再跑一遍测试和八组门禁，构建镜像、冒烟测试、推到 `ghcr.io/momomojun/team-copilot:<tag>` 和 `:latest`，从 GHCR 拉回来再冒烟一次，最后建 GitHub Release（附评测报告、镜像 digest、默认提示词版本，后面接上 `docs/releases/` 里这一版的说明）。任何一步没过都不发。
+3. `Copilot release` workflow 会检查 tag 和代码里的版本一致，再跑一遍测试和九组门禁，构建镜像、冒烟测试、推到 `ghcr.io/momomojun/team-copilot:<tag>` 和 `:latest`，从 GHCR 拉回来再冒烟一次，最后建 GitHub Release（附评测报告、镜像 digest、默认提示词版本，后面接上 `docs/releases/` 里这一版的说明）。任何一步没过都不发。
 
 镜像在 GHCR 上是公开的（仓库公开，包跟着公开），任何人不用登录就能拉。发过的版本见仓库的 [Releases](https://github.com/momomojun/Team/releases)。
 
@@ -394,6 +395,7 @@ python -m modal environment create staging
    - `COPILOT_TOKEN`：自己编一串长的随机字符（`python -c "import secrets;print(secrets.token_urlsafe(32))"`），Vercel 那边填同一串；两个环境可以用不同的；
    - 模型的 key：`GEMINI_API_KEY`、`OPENROUTER_API_KEY`、`GROQ_API_KEY`（免费档）、`DEEPSEEK_API_KEY`（付费备用，免费的都出错才用）；
    - `DATA_GOV_API_KEY`（聊天时现读 NPS 公告）；
+   - `DATABASE_URL`（Neon 的连接串，和 Vercel 上填的是同一串）：回答问题时按意思找资料，向量存在 Neon 里。不加也能用，只是一直按关键词找（11-10）；
    - 可选的限流变量：`COPILOT_RATE_MINUTE`、`COPILOT_RATE_DAY`、`COPILOT_RATE_GLOBAL_DAY`（默认见 [COPILOT.md](COPILOT.md#环境变量)）。
 5. GitHub 仓库 Settings → Secrets and variables → Actions，加 `MODAL_TOKEN_ID`、`MODAL_TOKEN_SECRET`（Modal → Settings → API Tokens → New Token）。之后 staging、正式都由 GitHub 自动部署。
 6. Vercel 项目 Settings → Environment Variables：`COPILOT_URL`、`COPILOT_TOKEN` 各加两条——Production 填正式环境的网址和口令，Preview 填 staging 的。重新部署一次，打开行程页，最上面出现“Copilot · 用一句话说需求”就连上了。

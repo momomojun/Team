@@ -62,9 +62,13 @@ def index() -> tuple[list[Doc], list[Counter], dict[str, int], float]:
     return docs, counts, dict(df), average
 
 
+@lru_cache(maxsize=1)
+def _by_id() -> dict[str, Doc]:
+    return {doc.id: doc for doc in index()[0]}
+
+
 def get(doc_id: str) -> Doc | None:
-    docs = index()[0]
-    return next((doc for doc in docs if doc.id == doc_id), None)
+    return _by_id().get(doc_id)
 
 
 def _name_hit(name: str, query: str) -> bool:
@@ -76,18 +80,24 @@ def _name_hit(name: str, query: str) -> bool:
     return name in query
 
 
+def scope(question: str, parks: list[str]) -> list[str]:
+    """在哪几座公园里找：这次行程的公园 + 问题里点名的公园（“冰川点”这种别的公园里的地名不算点了冰川国家公园）。空的是不限"""
+    found = set(parks)
+    found.update(code for code, alias in catalog.find_all(question, catalog.parks()) if not inside_place_name(alias, code, question))
+    return sorted(found)
+
+
 def search(question: str, parks: list[str], k: int = 4) -> list[Doc]:
     """和问题最相关的 k 条资料。parks 是这次行程的公园；问题里点名的公园也算进去"""
     docs, counts, df, average = index()
     query = normalize(question).lower()
-    scope = set(parks)
-    scope.update(code for code, alias in catalog.find_all(question, catalog.parks()) if not inside_place_name(alias, code, question))
+    allowed = set(scope(question, parks))
     wanted = Counter(tokens(question))
     n = len(docs)
     scored: list[tuple[float, int]] = []
     for i, doc in enumerate(docs):
         # 片区、州的资料（park 是空的）不分公园，都查
-        if scope and doc.park and doc.park not in scope:
+        if allowed and doc.park and doc.park not in allowed:
             continue
         score = 0.0
         length = sum(counts[i].values())
@@ -110,6 +120,21 @@ def search(question: str, parks: list[str], k: int = 4) -> list[Doc]:
             scored.append((score, i))
     scored.sort(reverse=True)
     return [docs[i] for _, i in scored[:k]]
+
+
+def named_in(said: str, parks: list[str], scope_text: str | None = None) -> list[Doc]:
+    """said 里直接说了全名的资料（和 search 里“名字命中”一样的认法；片区、州这种不分公园的也算），名字长的在前。
+    只在 scope 的公园里找，scope 按 scope_text 算（不给就按 said）：回答问题时 said 是用户原话，scope_text 是补全后的问法"""
+    query = normalize(said).lower()
+    allowed = set(scope(scope_text if scope_text is not None else said, parks))
+    hits = []
+    for doc in index()[0]:
+        if allowed and doc.park and doc.park not in allowed:
+            continue
+        names = [name for name in doc.names if _name_hit(name, query)]
+        if names:
+            hits.append((max(len(name) for name in names), doc))
+    return [doc for _, doc in sorted(hits, key=lambda item: -item[0])]
 
 
 @lru_cache(maxsize=1)

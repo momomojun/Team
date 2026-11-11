@@ -1,0 +1,7 @@
+{
+  "note": "找资料的门禁（eval/retrieval.py --gate）：按意思找的名单回放 recordings/retrieval-gemini-embedding-2.jsonl（11-10 用 Gemini 嵌入 + Neon 录的），关键词现算。48 题“全部”那一栏不能低于这些",
+  "min": {
+    "vector": {"recall_at_5": 1.0, "mrr_at_10": 0.925},
+    "bm25": {"recall_at_5": 0.812, "mrr_at_10": 0.596}
+  }
+}

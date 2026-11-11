@@ -20,7 +20,7 @@
 - [x] 一句话里又改条件又提问（O55，调度员改造后做到；“紧凑要几天”资料里没有，不编）
 - [x] 多轮对话评测集，先提交期望再跑，当门禁（O57：conversation-v1、v2）
 - [ ] 评测集扩到约 150 条（中英、约 30% 刁钻样例），下一批 holdout-v2 没见过的（P18）
-- [ ] 对照实验：单个模型直接回答 / 只加检索 / 完整系统；recall@5、延迟、成本（P35，第一个对照“调度员开 / 关”做了）；更弱的模型、坏数据也当成注入测试跑门禁（P34）
+- [ ] 对照实验：单个模型直接回答 / 只加检索 / 完整系统；recall@5、延迟、成本（P35，第一个对照“调度员开 / 关”做了；11-11 做了回答问题的 A 不给资料 / B 关键词 / C 按意思找，有 recall@5、耗时、每千次成本，见 RESULTS.md；还差“完整系统”那一组）；更弱的模型、坏数据也当成注入测试跑门禁（P34）
 - [x] 用模型给回答有没有依据打分（LLM-as-judge）（P20；10-20 `eval/judge.py`，两个裁判交叉、带校准题，成绩在 RESULTS.md）
 - [x] 漂移测试（插入一条新的关闭公告，看多久反映出来）、故障测试（模型超时、NPS 接口挂了）（P36、P37；10-20 量了时间、改成距上次读超过 6 小时就现读；故障测试和混沌测试在 RESULTS.md）
 - [x] 每天读 NPS 实时公告、模型提取关闭信息（10-19 提取、评测、接进 Copilot、每晚抓公告；10-20 每晚抽查模型分数、掉了开 issue，提议改 `closures.ts` 推到 bot 分支由人开 PR 合并，关闭清单发布给网站行程页用）；仓库主人 10-20 定“模型提议、人来批”，不直接取代 `closures.ts`（O60、P8、P30）
@@ -204,7 +204,7 @@
 | P4 | 10-13 | 计划书要和实际做法一致 | 助手 10-13、10-18 两次建议 | 没做 | 10-13 仓库主人说“计划书先不改”；10-18 助手提醒 MLflow 等已经不一样，仓库主人没回复 | 下面 P7、P11、P14、P22、P24、P25 都要改写 |
 | P5 | 10-13 | 把 NPS Guide 数据导出成 JSON 快照 | §4 数据管理 | 已完成 | `copilot/contracts/parks.json`、`airports.json`、`knowledge.jsonl`（1600 多条），`npm run copilot:contracts` 生成，测试检查是不是最新 | |
 | P6 | 10-13 | 快照用 Pydantic 做 schema 校验 | §4 | 部分完成 | `TripRequest`/`TripResult` 用 JSON Schema（TS 里写、生成给 Python），请求逐字段报错；没有对数据快照本身做 Pydantic 校验 | |
-| P7 | 10-13 | 切块、做 embedding、存进 Chroma（向量检索） | §4、§7 | 部分完成 | 10-22 做了对照实验：Chroma + bge-m3（本机 Ollama）的向量检索，48 个问题前 5 条找到 0.92，关键词 BM25 0.81，英文问题 0.81 对 0.56（RESULTS.md）；Copilot 照旧用 BM25，换不换等仓库主人定（部署的地方要有嵌入模型、多轮对话要重录） | |
+| P7 | 10-13 | 切块、做 embedding、存进 Chroma（向量检索） | §4、§7 | 已完成 | 10-22 做了对照实验：Chroma + bge-m3（本机 Ollama）的向量检索，48 个问题前 5 条找到 0.92，关键词 BM25 0.81，英文问题 0.81 对 0.56（RESULTS.md）；Copilot 照旧用 BM25，换不换等仓库主人定（部署的地方要有嵌入模型、多轮对话要重录）；11-11 做完向量检索（PR #102）：Gemini 嵌入（gemini-embedding-2，768 维）存进 Neon 的 pgvector（没用 Chroma：Modal 上没有本机嵌入模型，Neon 已经开着），48 题前 5 条 1.00、第 1 条 0.88，关键词 0.81 / 0.46；单用按意思找比和关键词合起来好，Modal 上设成 `COPILOT_RETRIEVAL=vector`，出错退回关键词（`vectors.py`，RESULTS.md）。**线上还没用上**：要等 Modal 的 Secret 加上 `DATABASE_URL`、embedding-2 剩下的 67 条资料算完、合并后部署，部署后看 `/health` 的 `retrieval` 和日志里的 `retrieval_ms` 确认了再改成“线上在用” | |
 | P8 | 10-13 | 每晚刷新 NPS 公告 | §4、§6 | 已完成 | 关闭信息还是手动维护的 `src/data/closures.ts`；`npm run check:closures` 只在本机定时任务里每天报告、不改数据、不在 CI 里；10-19 能抓快照、模型提取了（`npm run alerts:fetch`、`python -m nps_copilot alerts`），每晚自动跑和接进排行程还没做；10-19 GitHub 每晚抓一次（`alerts-nightly.yml`），新的关闭公告开 issue；模型提取在本机跑，没有自动接进数据；10-19 每晚在 GitHub 上用 Gemini 只读新的、改过的公告，issue 里列出模型找到的景点；聊天时要去的公园今天没读过就现读；10-20 每晚抽查模型、提议改 `closures.ts`（人开 PR 合并）、网站行程页也用模型提取的结果 | PROJECT.md“下一步”第 2 条 |
 | P9 | 10-13 | 每份快照有内容 hash，每个回答记下用的哪份数据 | §3、§4 | 没做 | 日志每轮记 Copilot 版本、提示词 hash、`reference_date`；`/health` 有构建提交；`TripResult.engine.version` 写死 "1"；没有数据 hash | |
 | P10 | 10-13 | Provider 抽象 + 测试用的 mock provider（不需要密钥） | §4、§6 | 已完成 | `providers.py`：Ollama、Replay、Recording、Scripted；CI 用回放 | |
@@ -232,7 +232,7 @@
 | P32 | 10-13 | 每个回答能追溯到模型、提示词、数据版本 | §8 目标 1 | 部分完成 | 日志有 Copilot 版本、提示词 hash；没有模型名（只在 `version` 命令和环境变量里）、没有数据版本 | |
 | P33 | 10-13 | 提示词、模型、数据都有版本；镜像打 tag；能回滚 | §8 目标 2 | 部分完成 | 提示词、代码、镜像有版本，两种回滚都演示过；数据没有版本 | |
 | P34 | 10-13 | 回归注入测试：故意合进更差的提示词、更弱的模型、坏数据，证明门禁都能拦住 | §8 目标 3 | 部分完成 | 更差的提示词：intake v2 开发集 24/25 被门禁拦下（RESULTS.md）；更弱的模型：Qwen3 4B 20/25 只做了对比，没当成注入跑门禁；坏数据：没做 | |
-| P35 | 10-13 | 对照实验：(A) 单个提示词的 LLM、(B) 只加检索、(C) 完整系统；指标：约束违规率、依据性、recall@5、Critic 轮数、p50/p95 延迟、每次请求成本 | §8 目标 4 | 部分完成 | 只有模型之间的对比（Qwen3.5 4B / 9B / Qwen3 4B）；没有 A/B/C，没有 recall@5、成本；10-18 做了第一个对照：调度员关掉（`COPILOT_DISPATCH=0`）vs 打开，没见过的多轮对话 6/15 → 14/15（RESULTS.md）；A/B/C、recall@5、成本还没做；10-19 公告提取做了规则 / 模型 / 两者合并的对照（RESULTS.md）；10-19 读公告比了 6 个模型（本机 4B、GPT-4.1 mini、GPT-6 luna、GPT-5 nano、Gemini 3.5 Flash Lite、Gemma 4 31B），有了每 1000 次的成本和延迟 | PROJECT.md“下一步”第 4 条 |
+| P35 | 10-13 | 对照实验：(A) 单个提示词的 LLM、(B) 只加检索、(C) 完整系统；指标：约束违规率、依据性、recall@5、Critic 轮数、p50/p95 延迟、每次请求成本 | §8 目标 4 | 部分完成 | 只有模型之间的对比（Qwen3.5 4B / 9B / Qwen3 4B）；没有 A/B/C，没有 recall@5、成本；10-18 做了第一个对照：调度员关掉（`COPILOT_DISPATCH=0`）vs 打开，没见过的多轮对话 6/15 → 14/15（RESULTS.md）；A/B/C、recall@5、成本还没做；10-19 公告提取做了规则 / 模型 / 两者合并的对照（RESULTS.md）；10-19 读公告比了 6 个模型（本机 4B、GPT-4.1 mini、GPT-6 luna、GPT-5 nano、Gemini 3.5 Flash Lite、Gemma 4 31B），有了每 1000 次的成本和延迟；11-11 回答问题的三组：A 不给资料（48 题全部老实说没写，没编）、B 关键词（答到点子上 0.73）、C 按意思找（0.94，英文 0.44 → 0.88），附 recall@5、耗时、每千次成本（RESULTS.md）；“完整系统”那一组还没做 | PROJECT.md“下一步”第 4 条 |
 | P36 | 10-13 | 漂移测试：插入一条新的关闭公告，量回答多久能反映出来 | §8 | 已完成 | 依赖 P810-19：`tests/copilot-plan.test.ts` 和 `test_alerts.py` 的漂移测试，塞一条新的关闭公告，下一次提取后的行程就不排这个景点、说明里说是公告说的；“多久反映出来”取决于本机多久跑一次提取，还没量；10-20 `copilot/scripts/drift_timing.py` 量了时间：以前 11–16.5 小时，现在问的时候当场读约 4–5 秒，最晚 6 小时 | |
 | P37 | 10-13 | 故障测试：模型超时、NPS API 宕机 | §8 | 已完成 | 10-20：`tests/test_faults.py`（超时、额度用完、服务忙、乱码、NPS 接口挂了、行程引擎拒绝），修了摘条件不接住模型出错的问题；`eval/conversation.py --chaos` 混沌测试 | |
 | P38 | 10-13 | 主重点多智能体编排，次重点 PromptOps / 自动评测 | §5 | 部分完成 | 次重点做到了；主重点见 P14；主重点 10-18 加了调度员，见 P14 | |

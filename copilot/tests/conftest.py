@@ -12,6 +12,8 @@ sys.path.insert(0, str(ROOT / "copilot"))
 os.environ.setdefault("COPILOT_LIVE", "0")
 # 测试里的调用（假的网络回复）不记进真的计费总账；测总账的测试自己换成临时目录
 os.environ["COPILOT_LEDGER"] = "off"
+# 回答问题时只按关键词找资料：不连 Neon、不调嵌入接口（测按意思找的测试自己换成假的）
+os.environ["COPILOT_RETRIEVAL"] = "bm25"
 
 from nps_copilot.intake import Intake  # noqa: E402
 from nps_copilot.providers import ScriptedProvider  # noqa: E402

@@ -102,6 +102,7 @@ flowchart LR
 | `copilot/scripts/alerts_report.py`、`.github/workflows/alerts-nightly.yml` | 每晚抓公告、新的关闭公告开 issue；抽查模型（`eval/baseline-alerts-canary.json`）、提议改 `closures.ts`（`scripts/propose-closures.mjs`）、把关闭清单推到 `data/alerts-live` 分支给网站用（`src/lib/alerts-live.ts`） |
 | `copilot/nps_copilot/dispatcher.py` | 调度员：给模型看的上下文、输出格式、丢掉编造的名字 |
 | `copilot/nps_copilot/knowledge.py`、`qa.py` | QA：在 `knowledge.jsonl` 里检索（名字命中 + BM25）、让模型只按查到的资料回答、检查回答里的数字，对不上就摘原文 |
+| `copilot/nps_copilot/vectors.py`、`embeddings.py` | QA 的按意思找（11-10）：资料用 Gemini 的嵌入接口变成 768 维向量，存进 Neon 的 `copilot_knowledge_vectors`（pgvector，按型号、资料 id）；回答问题时按 `COPILOT_RETRIEVAL` 用关键词、按意思找，或者两份名单按 RRF 合起来，嵌入接口、数据库任何一步出错，或者按意思找一条都没找到（库是空的），都退回关键词；问题里点了全名、按意思找的前 20 条里却没有的景点、住处（多半是还没算向量），放到最前面（`retrieval_pinned`）。建库、更新：`python -m nps_copilot vectors sync`（只算新的、改过的，删掉资料里没有了的；`--dry-run` 只数要算几条）。逐条比距离、不建 HNSW 索引（两千来条，精确又够快） |
 | `copilot/nps_copilot/graph.py` | 一轮对话按 LangGraph 的流程图跑（10-22）：understand（`Session.begin` + 调度员）→ dispatch（按调度员给的几件事做）或 legacy（原来的规则）→ finish（写日志、存档）。每个节点调 `pipeline.py` 同一套代码，评测直接调 `Session.send` 测到的就是这里跑的。对话状态（`Session.snapshot`）存进 LangGraph 的 SQLite 检查点（`copilot/data/sessions.sqlite`），Copilot 重启以后用原来的会话 id 接着说。`python -m nps_copilot graph` 打出 Mermaid 流程图。没装 langgraph（`pip install "copilot[graph]"`）或 `COPILOT_GRAPH=0` 就直接调 `Session.send`、会话只在内存里。Docker 镜像和 Hugging Face Space 里没装（免费 Space 重启会清空磁盘，存档本来也留不住） |
 | `copilot/eval/tracking.py`、`copilot/eval/retrieval.py` | 评测记到 MLflow（`COPILOT_MLFLOW=1`，本机 `copilot/mlruns/` 的 SQLite，`mlflow ui --backend-store-uri sqlite:///copilot/mlruns/mlflow.db` 看）；检索对照实验（关键词 vs Chroma 向量 vs 混合，结果在 RESULTS.md） |
 | `copilot/nps_copilot/tts.py`、`src/app/api/copilot/tts/route.ts` | 讲解版的配音（10-21）：本机跑 Kokoro（开源 TTS，ONNX 版，CPU 上一句一秒左右），中文用 v1.1-zh（读音按 misaki 的 v1.1 规则转成注音，“11:04”先改成“11点04分”、间隔号去掉），英文用 v1.0；`GET /tts?text=&lang=` 返回 MP3，按“文字 + 声音 + 模型”存在 `copilot/data/tts/`，同一句只生成一次；没装模型时 503，网站退回浏览器自带的声音。`/health` 的 `tts` 写着能不能用 |
@@ -149,6 +150,7 @@ flowchart LR
 | `copilot/eval/alerts/`（`eval/alerts.py`） | 151 条公告 | 2026-10-19 的 NPS 公告快照和模型跑之前标好的标准答案（21 条 ambiguous）；比较规则、模型、两者合并：类型准确率、整段关闭的精确和召回、景点的精确召回 F1、日期 | `baseline-alerts.json` |
 | `copilot/eval/cases/conversation-v3.jsonl` | 2 组 14 轮 | 仓库主人第三次试用的原话（波特兰附近、西雅图附近、奥林匹亚、不住酒店、看不出哪天在哪、季节对不上），先写期望再跑 | `baseline-conversation-v3.json` |
 | `copilot/eval/cases/conversation-v2.jsonl` | 15 组 34 轮 | 调度员写完以后才写的多轮对话（繁体、粤语、每晚都住某处、公园里没有的地方、“那就加上它”、去掉又加回来、两座公园……），第一次跑 14/15；修了一处，当回归集 | `baseline-conversation-v2.json` |
+| `copilot/eval/cases/retrieval-v1.jsonl`（`eval/retrieval.py`、`eval/rag_answers.py`） | 48 题 | 回答问题前找资料：点名的、只描述不点名的、英文的各 16 个，标准答案是资料 id，10-22 先提交再跑。`retrieval.py` 比关键词、按意思、两样合起来（前 5 条有对的、第 1 条就对、MRR）；按意思找的名单（Gemini 嵌入 + Neon）录在 `recordings/retrieval-<嵌入型号>.jsonl`，CI 回放；`rag_answers.py` 是 A/B/C 三组对照（不给资料 / 关键词 / 按意思），比回答答没答到点子上、引用对不对、编造被拦了几次 | `baseline-retrieval.json` |
 
 - `copilot/eval/run.py`：逐轮跑对话，比较最后的状态和 `TripRequest` 是否符合期望。`--replay` 回放录音（CI 用，不要 GPU）、`--record` 用真模型并录音、`--gate` 低于基线就失败、`--plan` 条件齐了再真的调 plan_trip、`--writer` 加 Writer 的成批评测、`--cases` 换样例文件。报告写到 `copilot/eval/reports/`（不提交）。
 - 录音在 `copilot/eval/recordings/<模型>[-<样例>][-intake_v<n>].jsonl`：默认样例不加后缀，不是默认版本的提示词另加后缀，不会互相覆盖。
@@ -228,7 +230,11 @@ flowchart LR
 | `COPILOT_GRAPH` | `1` | 设成 `0` 不用 LangGraph（直接调 `Session.send`，会话只在内存里） |
 | `COPILOT_SESSIONS_DB` | `copilot/data/sessions.sqlite` | LangGraph 检查点（对话存档）放在哪 |
 | `COPILOT_MLFLOW` | — | 设成 `1`：评测脚本把成绩记到本机 MLflow |
-| `COPILOT_EMBED_MODEL`、`COPILOT_CHROMA` | `bge-m3`、`copilot/data/chroma` | 检索对照实验用的嵌入模型（本机 Ollama）和 Chroma 向量库放在哪 |
+| `COPILOT_RETRIEVAL` | `bm25`（Modal 上 `vector`） | 回答问题前怎么找资料：`bm25` 关键词（CI 的回放门禁也走这条）/ `vector` 按意思 / `hybrid` 两样按 RRF 合起来（11-10；跑分里单用按意思找最好，线上用 `vector`，见 RESULTS.md）。按意思找要 `DATABASE_URL`、`GEMINI_API_KEY`，没有或出错都退回关键词，日志里记 `retrieval_fallback`；`/health` 的 `retrieval` 只报设置，不查数据库 |
+| `DATABASE_URL` | — | Neon 的连接串（和网站存账号、行程的是同一个库）：按意思找资料的向量存在这里。Modal 两个环境的 Secret `nps-copilot` 里都要加 |
+| `COPILOT_EMBED_MODEL` | `gemini-embedding-2` | 按意思找用的嵌入型号：`gemini-embedding-2` / `gemini-embedding-001`（两个都存在 Neon 里；11-11 按 `eval/retrieval.py` 的成绩选了 2） |
+| `COPILOT_EMBED_BATCH`、`COPILOT_EMBED_RPM` | `100`、`60` | 建库时一次送几条、每分钟最多送几次。免费档按每分钟的量限，11-10 一批 100 条（约 3 万 token）一直被 429 挡回来，建库时用 `50`、`1` |
+| `COPILOT_OLLAMA_EMBED_MODEL`、`COPILOT_CHROMA` | `bge-m3`、`copilot/data/chroma` | 10-22 检索对照实验（`eval/retrieval.py --backend ollama`）用的本机嵌入模型和 Chroma 向量库放在哪 |
 | `COPILOT_TOOLS` | `1` | 设成 `0`：回答问题时不调查询工具，只按资料回答（对照实验、出问题时回滚） |
 | `COPILOT_CHAT_TIMEOUT` | `20` | 聊天时每次调商业模型最多等几秒，超时不重试、直接换顺序里的下一个（10-21：Gemini 偶尔 70 多秒才回，第一句话要等一分多钟）；评测、每晚读公告不受影响 |
 | `COPILOT_ALERTS_BUDGET` | `12` | 聊天时现读公告最多等几秒：没读过的几条同时交给模型，到时间还没读完的按规则算、不进缓存（10-21：一次排行程读公告用了 49 秒） |
