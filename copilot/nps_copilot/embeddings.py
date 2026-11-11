@@ -1,7 +1,7 @@
 """把文字变成向量（嵌入，embedding）：Gemini 的嵌入接口（AI Studio 免费档，GEMINI_API_KEY）。回答问题前按意思找资料用（vectors.py）。
 
 - 两个型号：gemini-embedding-001（用 taskType 区分“资料”和“问题”）、gemini-embedding-2（不认 taskType，按官方的前缀写法：
-  问题前加 “task: search result | query: ”，资料写成 “title: … | text: …”）。用哪个按 eval/retrieval.py 的成绩定（COPILOT_EMBED_MODEL）。
+  问题前加 “task: search result | query: ”，资料写成 “title: … | text: …”）。11-11 按 eval/retrieval.py 的成绩选了 gemini-embedding-2（第 1 条就对 0.88，001 是 0.73），COPILOT_EMBED_MODEL 可以换。
 - 都要 768 维（outputDimensionality）：默认的 3072 维超过 pgvector 索引的上限（2000），768 也是官方推荐的几档之一。
   001 截短的向量要自己归一化（官方说的），2 会自己归一化；这里两个都归一化一遍，不影响结果。
 - 一次最多送 BATCH 条（batchEmbedContents）。每次真调用都记进计费总账（ledger.py，task 是 embed）。
@@ -18,7 +18,7 @@ from . import ledger
 from . import providers
 from .providers import ProviderError, _Paced, secret
 
-DEFAULT_MODEL = "gemini-embedding-001"
+DEFAULT_MODEL = "gemini-embedding-2"
 MODELS = ("gemini-embedding-001", "gemini-embedding-2")
 DIMS = 768
 # 一次送几条。免费档按每分钟的量限（11-10 建库时一批 100 条、约 3 万 token 一直被 429 挡回来）：建库时可以调小、放慢

@@ -150,6 +150,7 @@ flowchart LR
 | `copilot/eval/alerts/`（`eval/alerts.py`） | 151 条公告 | 2026-10-19 的 NPS 公告快照和模型跑之前标好的标准答案（21 条 ambiguous）；比较规则、模型、两者合并：类型准确率、整段关闭的精确和召回、景点的精确召回 F1、日期 | `baseline-alerts.json` |
 | `copilot/eval/cases/conversation-v3.jsonl` | 2 组 14 轮 | 仓库主人第三次试用的原话（波特兰附近、西雅图附近、奥林匹亚、不住酒店、看不出哪天在哪、季节对不上），先写期望再跑 | `baseline-conversation-v3.json` |
 | `copilot/eval/cases/conversation-v2.jsonl` | 15 组 34 轮 | 调度员写完以后才写的多轮对话（繁体、粤语、每晚都住某处、公园里没有的地方、“那就加上它”、去掉又加回来、两座公园……），第一次跑 14/15；修了一处，当回归集 | `baseline-conversation-v2.json` |
+| `copilot/eval/cases/retrieval-v1.jsonl`（`eval/retrieval.py`、`eval/rag_answers.py`） | 48 题 | 回答问题前找资料：点名的、只描述不点名的、英文的各 16 个，标准答案是资料 id，10-22 先提交再跑。`retrieval.py` 比关键词、按意思、两样合起来（前 5 条有对的、第 1 条就对、MRR）；按意思找的名单（Gemini 嵌入 + Neon）录在 `recordings/retrieval-<嵌入型号>.jsonl`，CI 回放；`rag_answers.py` 是 A/B/C 三组对照（不给资料 / 关键词 / 按意思），比回答答没答到点子上、引用对不对、编造被拦了几次 | `baseline-retrieval.json` |
 
 - `copilot/eval/run.py`：逐轮跑对话，比较最后的状态和 `TripRequest` 是否符合期望。`--replay` 回放录音（CI 用，不要 GPU）、`--record` 用真模型并录音、`--gate` 低于基线就失败、`--plan` 条件齐了再真的调 plan_trip、`--writer` 加 Writer 的成批评测、`--cases` 换样例文件。报告写到 `copilot/eval/reports/`（不提交）。
 - 录音在 `copilot/eval/recordings/<模型>[-<样例>][-intake_v<n>].jsonl`：默认样例不加后缀，不是默认版本的提示词另加后缀，不会互相覆盖。
@@ -229,7 +230,7 @@ flowchart LR
 | `COPILOT_GRAPH` | `1` | 设成 `0` 不用 LangGraph（直接调 `Session.send`，会话只在内存里） |
 | `COPILOT_SESSIONS_DB` | `copilot/data/sessions.sqlite` | LangGraph 检查点（对话存档）放在哪 |
 | `COPILOT_MLFLOW` | — | 设成 `1`：评测脚本把成绩记到本机 MLflow |
-| `COPILOT_RETRIEVAL` | `bm25`（Modal 上 `hybrid`） | 回答问题前怎么找资料：`bm25` 关键词（CI 的回放门禁也走这条）/ `vector` 按意思 / `hybrid` 两样合起来（11-10）。按意思找要 `DATABASE_URL`、`GEMINI_API_KEY`，没有或出错都退回关键词，日志里记 `retrieval_fallback`；`/health` 的 `retrieval` 只报设置，不查数据库 |
+| `COPILOT_RETRIEVAL` | `bm25`（Modal 上 `vector`） | 回答问题前怎么找资料：`bm25` 关键词（CI 的回放门禁也走这条）/ `vector` 按意思 / `hybrid` 两样按 RRF 合起来（11-10；跑分里单用按意思找最好，线上用 `vector`，见 RESULTS.md）。按意思找要 `DATABASE_URL`、`GEMINI_API_KEY`，没有或出错都退回关键词，日志里记 `retrieval_fallback`；`/health` 的 `retrieval` 只报设置，不查数据库 |
 | `DATABASE_URL` | — | Neon 的连接串（和网站存账号、行程的是同一个库）：按意思找资料的向量存在这里。Modal 两个环境的 Secret `nps-copilot` 里都要加 |
 | `COPILOT_EMBED_MODEL` | `gemini-embedding-001` | 按意思找用的嵌入型号：`gemini-embedding-001` / `gemini-embedding-2`（两个都存在 Neon 里，按 `eval/retrieval.py` 的成绩选） |
 | `COPILOT_EMBED_BATCH`、`COPILOT_EMBED_RPM` | `100`、`60` | 建库时一次送几条、每分钟最多送几次。免费档按每分钟的量限，11-10 一批 100 条（约 3 万 token）一直被 429 挡回来，建库时用 `50`、`1` |

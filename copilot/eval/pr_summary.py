@@ -24,7 +24,7 @@ SUITES = [
     (f"{MODEL}-conversation-v3", "baseline-conversation-v3.json", "多轮对话 v3（仓库主人试用）", "Multi-turn v3 (owner's trial)"),
     (f"{MODEL}-alerts-2026-10-19", "baseline-alerts.json", "NPS 公告提取", "NPS alert extraction"),
     # 回答问题前找资料（11-10）：按意思找的名单是 Gemini 嵌入 + Neon 录好的，关键词现算
-    ("retrieval-gemini-embedding-001", "baseline-retrieval.json", "找资料（关键词 + 按意思）", "Retrieval (keyword + semantic)"),
+    ("retrieval-gemini-embedding-2", "baseline-retrieval.json", "找资料（按意思 · 关键词）", "Retrieval (semantic · keyword)"),
 ]
 
 

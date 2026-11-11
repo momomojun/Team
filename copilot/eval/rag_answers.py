@@ -2,8 +2,8 @@
 
 - A none：一条资料都不给，只靠模型自己（看它会不会老实说不知道、会不会编）；
 - B bm25：关键词找的 4 条（现在 CI、本机默认）；
-- C hybrid：关键词 + 按意思找合起来的 4 条（线上 Modal 用的）。按意思找的名单从 eval/retrieval.py 录好的
-  recordings/retrieval-<嵌入型号>.jsonl 读，不再调嵌入接口。
+- C vector：按意思找的 4 条（线上 Modal 用的；11-10 检索跑分里单用它比两样合起来好，见 RESULTS.md）。名单从 eval/retrieval.py
+  录好的 recordings/retrieval-<嵌入型号>.jsonl 读，不再调嵌入接口。
 
 每个回答看：
 - 答到点子上：用了模型写的回答（不是退回原文摘录、不是“没写”），而且回答里提到了标准答案那条资料的名字；
@@ -36,7 +36,7 @@ import tracking  # noqa: E402
 
 CASES = HERE / "cases" / "retrieval-v1.jsonl"
 RECORDINGS = HERE / "recordings"
-CONFIGS = ("none", "bm25", "hybrid")
+CONFIGS = ("none", "bm25", "vector")
 
 
 class Counting:
@@ -70,7 +70,7 @@ def docs_for(config: str, case: dict, semantic: dict) -> list:
     keyword = knowledge.search(case["query"], case["parks"], k=vectors.DEPTH)
     if config == "bm25":
         return keyword[:4]
-    ids = vectors.fuse([doc.id for doc in keyword], semantic[(case["query"], tuple(case["parks"]))])
+    ids = semantic[(case["query"], tuple(case["parks"]))]
     return [doc for doc in (knowledge.get(doc_id) for doc_id in ids) if doc][:4]
 
 
@@ -99,7 +99,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--cases", type=Path, default=CASES)
     parser.add_argument("--model", default="gemini-3.5-flash-lite", help="回答问题的聊天模型（Gemini）")
-    parser.add_argument("--embed-model", default="gemini-embedding-001", help="C 组按意思找的名单用哪个嵌入型号录的")
+    parser.add_argument("--embed-model", default="gemini-embedding-2", help="C 组按意思找的名单用哪个嵌入型号录的")
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--record", action="store_true")
     mode.add_argument("--replay", type=Path)
@@ -136,7 +136,7 @@ def main() -> int:
     kinds = sorted({case["kind"] for case in cases})
     table = {config: {"all": score(rows), **{kind: score([r for r in rows if r["kind"] == kind]) for kind in kinds}}
              for config, rows in runs.items()}
-    label = {"none": "A 不给资料", "bm25": "B 关键词", "hybrid": "C 关键词+按意思"}
+    label = {"none": "A 不给资料", "bm25": "B 关键词", "vector": "C 按意思找"}
     for config, by_kind in table.items():
         m = by_kind["all"]
         print(f"{label[config]:12} 答到点子上 {m['on_point']:.2f}  引用对了 {m['cited_right']:.2f}  用了模型的回答 {m['model_answered']:.2f}  "

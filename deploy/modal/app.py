@@ -25,8 +25,9 @@ image = (
         "COPILOT_SESSIONS_DB": "/data/sessions.sqlite",
         # 不设 COPILOT_PROVIDER：按默认顺序用云端模型（Gemini → Nemotron → Groq → DeepSeek，Secret 里有哪家的 key 用哪家）
         "COPILOT_IMAGE": IMAGE,
-        # 回答问题前找资料：关键词 + 按意思找（向量在 Neon，Secret 里要有 DATABASE_URL；没有、出错都退回关键词）
-        "COPILOT_RETRIEVAL": "hybrid",
+        # 回答问题前找资料：按意思找（向量在 Neon，Secret 里要有 DATABASE_URL；没有、出错都退回关键词）。
+        # 11-10 跑分里单用它比和关键词合起来好（copilot/eval/RESULTS.md）
+        "COPILOT_RETRIEVAL": "vector",
     })
 )
 
