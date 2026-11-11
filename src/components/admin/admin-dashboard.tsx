@@ -5,7 +5,7 @@ import { buttonPrimary, buttonSecondary } from "@/components/ui";
 import { ArchitectureDiagram, type AdminLang } from "./architecture-diagram";
 
 /**
- * 后台页面：读 /api/copilot/admin（Copilot 服务的 /health、/stats 和 GitHub 上每晚读公告的结果），每 30 秒刷新一次。
+ * 后台页面：读 /api/copilot/admin（Copilot 服务的 /health、/stats 和 GitHub 上每晚读公告的结果），标签页看得见时每 30 秒刷新一次。
  * 数字的意思见 docs/COPILOT.md 的“监控指标”；什么时候该回滚见 docs/GUIDE.md。
  * 中英两套字（/en/admin 给老师看，10-22）：后台不进网站的翻译表，字都写在下面的 TEXT 里
  */
@@ -633,9 +633,28 @@ export function AdminDashboard({ lang = "zh" }: { lang?: AdminLang }) {
     };
   }, [days, tick, t.locale]);
 
+  // 只在标签页看得见时每 30 秒刷新：Modal 上的 Copilot 5 分钟没人请求才关机，后台标签页一直问它就一直开着、一直扣额度。
+  // 切回来时上次刷新已经超过 30 秒就马上刷新一次，再接着每 30 秒
   useEffect(() => {
-    const timer = window.setInterval(refresh, 30_000);
-    return () => window.clearInterval(timer);
+    let timer: number | undefined;
+    let last = Date.now();
+    const tick = () => {
+      last = Date.now();
+      refresh();
+    };
+    const sync = () => {
+      window.clearInterval(timer);
+      timer = undefined;
+      if (document.visibilityState !== "visible") return;
+      if (Date.now() - last >= 30_000) tick();
+      timer = window.setInterval(tick, 30_000);
+    };
+    sync();
+    document.addEventListener("visibilitychange", sync);
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", sync);
+    };
   }, [refresh]);
 
   const stats = data?.stats;
