@@ -243,3 +243,23 @@ def test_named_doc_already_found_keeps_semantic_order(live):
     store.upsert("gemini-embedding-2", [(d, "h", vec(i + 1)) for i, d in enumerate(others)] + [(glacier, "h", vec(3))])
     docs, how = vectors.retrieve(question, ["yose"], how="vector")
     assert "retrieval_pinned" not in how and docs[0] == others[0]
+
+
+def test_only_the_users_own_words_can_pin_a_named_doc(live):
+    """调度员补全的问法里写错了名字：补错的那条不能放到最前面、把用户点名的挤掉"""
+    store, embedder = live
+    yose = [d for d in knowledge.index()[0] if d.park == "yose" and d.type == "attraction"]
+    glacier = next(d for d in yose if "冰川点" in d.names)
+    tunnel = next(d for d in yose if "隧道观景点" in d.names)
+    others = [d for d in yose if d.id not in (glacier.id, tunnel.id)][:5]
+    said, meaning = "冰川点几点看日落", "隧道观景点"
+    query = f"{said} {meaning}"
+    embedder.mapping[query] = vec(1)
+    # 冰川点按意思排第 4，隧道观景点没算向量（补错的那个名字）
+    store.upsert("gemini-embedding-2", [(d, "h", vec(i + 1)) for i, d in enumerate(others[:3])] + [(glacier, "h", vec(4))]
+                 + [(d, "h", vec(i + 10)) for i, d in enumerate(others[3:])])
+    docs, how = vectors.retrieve(query, ["yose"], how="vector", said=said)
+    assert tunnel not in docs and glacier in docs and "retrieval_pinned" not in how
+    # 不给原话时照旧按问法认（单独调 retrieve 的地方）
+    docs, how = vectors.retrieve(query, ["yose"], how="vector")
+    assert docs[0] == tunnel and how["retrieval_pinned"] == [tunnel.id]

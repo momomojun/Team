@@ -122,10 +122,11 @@ def search(question: str, parks: list[str], k: int = 4) -> list[Doc]:
     return [docs[i] for _, i in scored[:k]]
 
 
-def named_in(question: str, parks: list[str]) -> list[Doc]:
-    """问题里直接说了全名的资料（和 search 里“名字命中”一样的认法，只在 scope 的公园里；片区、州这种不分公园的也算），名字长的在前"""
-    query = normalize(question).lower()
-    allowed = set(scope(question, parks))
+def named_in(said: str, parks: list[str], scope_text: str | None = None) -> list[Doc]:
+    """said 里直接说了全名的资料（和 search 里“名字命中”一样的认法；片区、州这种不分公园的也算），名字长的在前。
+    只在 scope 的公园里找，scope 按 scope_text 算（不给就按 said）：回答问题时 said 是用户原话，scope_text 是补全后的问法"""
+    query = normalize(said).lower()
+    allowed = set(scope(scope_text if scope_text is not None else said, parks))
     hits = []
     for doc in index()[0]:
         if allowed and doc.park and doc.park not in allowed:

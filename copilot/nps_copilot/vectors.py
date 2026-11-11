@@ -206,8 +206,9 @@ def _query_vector(model: str, text: str) -> tuple[float, ...]:
     return tuple(embedder.query(text))
 
 
-def retrieve(question: str, parks: list[str], k: int = 4, how: str | None = None) -> tuple[list[Doc], dict]:
-    """回答问题用的 k 条资料 + 这次是怎么找的（写进日志）。how 不给就按 COPILOT_RETRIEVAL"""
+def retrieve(question: str, parks: list[str], k: int = 4, how: str | None = None, said: str | None = None) -> tuple[list[Doc], dict]:
+    """回答问题用的 k 条资料 + 这次是怎么找的（写进日志）。how 不给就按 COPILOT_RETRIEVAL。
+    question 是拿去找的问法（可以带调度员补全的意思）；said 是用户原话，只用来认“点了名的”（补全可能补错名字），不给就用 question"""
     how = how or mode()
     keyword = knowledge.search(question, parks, k=DEPTH if how != "bm25" else k)
     if how == "bm25":
@@ -231,7 +232,7 @@ def retrieve(question: str, parks: list[str], k: int = 4, how: str | None = None
     # 问题里直接点了名、按意思找的 DEPTH 条里却根本没有的资料（多半是还没算向量：新加的、改过还没 sync 的），放到最前面。
     # 按意思找到了的不动，名次照旧（跑分量的就是这个名次）
     # 只放名字最长的那一条，公园、片区、州的总介绍不放：问题里顺带提到的公园名不该把按意思找到的挤出去
-    missing = [doc for doc in knowledge.named_in(question, parks)
+    missing = [doc for doc in knowledge.named_in(said if said is not None else question, parks, scope_text=question)
                if doc.id not in semantic and doc.type not in ("park", "region", "state")][:1]
     pinned = [doc.id for doc in missing]
     if missing:

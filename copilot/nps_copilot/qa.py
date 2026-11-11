@@ -143,7 +143,8 @@ def answer(question: str, parks: list[str], plan_text: str, provider: Provider |
     回答和“问题里点了名的那条”都以原话为准（补全有时会补错）。docs 给了就不再找资料（评测比不同找法用）"""
     if docs is None:
         # 关键词、按意思找，还是两样合起来：COPILOT_RETRIEVAL（vectors.py），出错退回关键词
-        docs, how = retrieve(f"{question} {meaning}" if meaning else question, parks)
+        # 拿补全后的问法去找，“点了名的”只认用户原话（补全可能补错名字）
+        docs, how = retrieve(f"{question} {meaning}" if meaning else question, parks, said=question)
     else:
         how = {"retrieval": "given"}
     trace: dict = {"retrieved": [doc.id for doc in docs], **how}
