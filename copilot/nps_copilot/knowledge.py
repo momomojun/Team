@@ -122,6 +122,20 @@ def search(question: str, parks: list[str], k: int = 4) -> list[Doc]:
     return [docs[i] for _, i in scored[:k]]
 
 
+def named_in(question: str, parks: list[str]) -> list[Doc]:
+    """问题里直接说了全名的资料（和 search 里“名字命中”一样的认法，只在 scope 的公园里；片区、州这种不分公园的也算），名字长的在前"""
+    query = normalize(question).lower()
+    allowed = set(scope(question, parks))
+    hits = []
+    for doc in index()[0]:
+        if allowed and doc.park and doc.park not in allowed:
+            continue
+        names = [name for name in doc.names if _name_hit(name, query)]
+        if names:
+            hits.append((max(len(name) for name in names), doc))
+    return [doc for _, doc in sorted(hits, key=lambda item: -item[0])]
+
+
 @lru_cache(maxsize=1)
 def place_names() -> tuple[tuple[str, str], ...]:
     """景点、住处、活动的名字和所在公园（不含公园本身）：[("冰川点", "yose"), ...]"""

@@ -90,6 +90,9 @@ class NeonStore:
                     with self._conn.transaction(), self._conn.cursor() as cur:
                         cur.execute(f"SET LOCAL statement_timeout = {int(self.statement_ms)}")
                         return work(cur)
+                except psycopg.errors.QueryCanceled:
+                    # 查询超时（statement_timeout）：连接是好的，不重连、不再查一遍，直接交给调用方退回关键词
+                    raise
                 except psycopg.OperationalError:
                     # Neon 闲置后休眠、连接被断开：重连一次再试
                     self._conn = None
@@ -217,6 +220,23 @@ def retrieve(question: str, parks: list[str], k: int = 4, how: str | None = None
     except Exception as error:  # 任何一步出错都退回关键词：找资料不能让回答失败
         return keyword[:k], {"retrieval": "bm25", "retrieval_fallback": f"{type(error).__name__}: {str(error)[:120]}",
                              "retrieval_ms": round((time.monotonic() - start) * 1000)}
+    took = round((time.monotonic() - start) * 1000)
+    if not semantic:
+        # 这个型号的库是空的（换了 COPILOT_EMBED_MODEL 没建库）、或者这几座公园一条向量都没有：照样用关键词
+        return keyword[:k], {"retrieval": "bm25", "retrieval_fallback": "empty_vector_result", "embed_model": model, "retrieval_ms": took}
     ids = semantic if how == "vector" else fuse([doc.id for doc in keyword], semantic)
     docs = [doc for doc in (knowledge.get(doc_id) for doc_id in ids) if doc is not None][:k]
-    return docs, {"retrieval": how, "embed_model": model, "retrieval_ms": round((time.monotonic() - start) * 1000)}
+    if not docs:
+        return keyword[:k], {"retrieval": "bm25", "retrieval_fallback": "stale_vector_ids", "embed_model": model, "retrieval_ms": took}
+    # 问题里直接点了名、按意思找的 DEPTH 条里却根本没有的资料（多半是还没算向量：新加的、改过还没 sync 的），放到最前面。
+    # 按意思找到了的不动，名次照旧（跑分量的就是这个名次）
+    # 只放名字最长的那一条，公园、片区、州的总介绍不放：问题里顺带提到的公园名不该把按意思找到的挤出去
+    missing = [doc for doc in knowledge.named_in(question, parks)
+               if doc.id not in semantic and doc.type not in ("park", "region", "state")][:1]
+    pinned = [doc.id for doc in missing]
+    if missing:
+        docs = (missing + [doc for doc in docs if doc not in missing])[:k]
+    info = {"retrieval": how, "embed_model": model, "retrieval_ms": took}
+    if pinned:
+        info["retrieval_pinned"] = pinned
+    return docs, info

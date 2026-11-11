@@ -91,8 +91,10 @@ def ollama_search():
     store = chroma_collection()
 
     def search(query: str, parks: list[str]) -> list[str]:
-        allowed = [*knowledge.scope(query, parks), ""]
-        found = store.query(query_embeddings=ollama_embed([query]), n_results=DEPTH, where={"park": {"$in": allowed}})
+        # 范围是空的就不限公园（和 knowledge.search、NeonStore.nearest 一样）；有范围时再加上不分公园的资料
+        scope = knowledge.scope(query, parks)
+        where = {"where": {"park": {"$in": [*scope, ""]}}} if scope else {}
+        found = store.query(query_embeddings=ollama_embed([query]), n_results=DEPTH, **where)
         return found["ids"][0]
     return search
 
@@ -123,6 +125,10 @@ def replay_search(path: Path):
         raise SystemExit(f"回放文件不存在：{path}")
     rows = {(row["query"], tuple(row["parks"])): row["ranked"]
             for row in (json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip())}
+    # 录音里的资料现在还在不在：资料删了、改了 id，线上（vectors.retrieve）就找不回来，回放还算命中就不对了
+    gone = sorted({doc_id for ranked in rows.values() for doc_id in ranked if knowledge.get(doc_id) is None})
+    if gone:
+        raise SystemExit(f"回放记录里有 {len(gone)} 条资料现在已经没有了（{', '.join(gone[:5])}…），资料改过要重新录：--backend gemini")
 
     def search(query: str, parks: list[str]) -> list[str]:
         key = (query, tuple(parks))

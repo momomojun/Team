@@ -265,7 +265,7 @@ git push -u origin feature/你要做的事
 | 你改了 | 还要做 |
 |---|---|
 | 景点、住宿数据（`src/data/attractions/` 等） | 按 [DEVELOPMENT.md](DEVELOPMENT.md#数据脚本) 重新生成；`npm run copilot:contracts`（Copilot 回答问题用的资料跟着更新）；`npm test` |
-| 回答问题用的资料（`copilot/contracts/knowledge.jsonl`，`npm run copilot:contracts` 生成的） | 合并以后跑一次 `cd copilot && python -m nps_copilot vectors sync`，把新的、改过的资料的向量写进 Neon（先加 `--dry-run` 看要调几次 Gemini；免费档按每分钟限量，条数多时设 `COPILOT_EMBED_BATCH=50`、`COPILOT_EMBED_RPM=1` 慢慢算）。没跑的话新资料只能按关键词找到 |
+| 回答问题用的资料（`copilot/contracts/knowledge.jsonl`，`npm run copilot:contracts` 生成的） | 合并以后跑一次 `cd copilot && python -m nps_copilot vectors sync`，把新的、改过的资料的向量写进 Neon（先加 `--dry-run` 看要调几次 Gemini；免费档按每分钟限量，条数多时设 `COPILOT_EMBED_BATCH=50`、`COPILOT_EMBED_RPM=1` 慢慢算）。没跑的话，线上（`COPILOT_RETRIEVAL=vector`）按意思找不到新资料，只有问题里点了它的全名时才会被放进去 |
 | 公园、机场（`src/data/parks.ts`、`airports.ts`） | `npm run copilot:contracts`；必要时 `python copilot/scripts/regional_names.py`（各地叫法，要联网） |
 | Copilot 的 Python 代码 | `pytest`、九组回放门禁（命令见 `.github/workflows/ci.yml`）；**加了新汉字也要跑 `npm run copilot:contracts`**（繁简对照表按代码里的汉字生成，不跑网站测试会失败） |
 | 提示词 | 见下面“改提示词” |

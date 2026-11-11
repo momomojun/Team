@@ -6,8 +6,10 @@
   录好的 recordings/retrieval-<嵌入型号>.jsonl 读，不再调嵌入接口。
 
 每个回答看：
-- 答到点子上：用了模型写的回答（不是退回原文摘录、不是“没写”），而且回答里提到了标准答案那条资料的名字；
-- 引用对了：模型引用的资料里有标准答案那条；
+- 答到点子上：用了模型写的回答（不是退回原文摘录、不是“没写”），而且模型自己标的出处（sources）里有标准答案那条；
+- 正文点到名字（偏严，只当参考）：回答正文里出现了标准答案那条的名字（“·”隔开的半个名字也算），不算 qa.answer 末尾自动附的“（资料：…）”。
+  问题里已经点了名的，模型常常不再重复名字（“雾径要走多久”答“一般停留约 3 小时”），这一项会算成没点到；
+- 引用对了：模型引用的资料里有标准答案那条（不管最后用没用模型的回答）；
 - 编造被拦下：模型写了资料里没有的时间、数字，被 qa.unsupported 拦下、退回摘录的；
 - 模型耗时、估算花费（按付费档标价，免费档实际不花钱）。
 
@@ -78,7 +80,7 @@ def mentions(text: str, relevant: list[str]) -> bool:
     said = normalize(text).lower()
     for doc_id in relevant:
         doc = knowledge.get(doc_id)
-        if doc and any(len(name) >= 2 and normalize(name).lower() in said for name in doc.names):
+        if doc and any(len(name) >= 2 and normalize(name).lower() in said for name in (*doc.names, *doc.parts)):
             return True
     return False
 
@@ -87,6 +89,7 @@ def score(rows: list[dict]) -> dict:
     n = len(rows)
     return {
         "on_point": round(sum(r["on_point"] for r in rows) / n, 3),
+        "names_in_answer": round(sum(r["names_in_answer"] for r in rows) / n, 3),
         "cited_right": round(sum(r["cited_right"] for r in rows) / n, 3),
         "model_answered": round(sum(r["answer"] == "model" for r in rows) / n, 3),
         "blocked_unfaithful": sum(r["answer"] == "fallback" and r.get("fallback") == "unfaithful" for r in rows),
@@ -98,7 +101,7 @@ def score(rows: list[dict]) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--cases", type=Path, default=CASES)
-    parser.add_argument("--model", default="gemini-3.5-flash-lite", help="回答问题的聊天模型（Gemini）")
+    parser.add_argument("--model", help="回答问题的聊天模型（Gemini，--record 时默认 gemini-3.5-flash-lite；--replay 时按录音里的，写了又对不上就报错）")
     parser.add_argument("--embed-model", default="gemini-embedding-2", help="C 组按意思找的名单用哪个嵌入型号录的")
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--record", action="store_true")
@@ -106,6 +109,15 @@ def main() -> int:
     args = parser.parse_args()
     cases = [json.loads(line) for line in args.cases.read_text(encoding="utf-8").splitlines() if line.strip()]
     semantic = vector_rankings(args.embed_model)
+    if args.replay:
+        recorded = {json.loads(line)["model"] for line in args.replay.read_text(encoding="utf-8").splitlines() if line.strip()}
+        if len(recorded) != 1:
+            raise SystemExit(f"{args.replay} 里的模型不止一个（{', '.join(sorted(recorded)) or '空的'}），没法按一个模型算花费")
+        (model,) = recorded
+        if args.model and args.model != model:
+            raise SystemExit(f"--model 写的是 {args.model}，录音里是 {model}")
+        args.model = model
+    args.model = args.model or "gemini-3.5-flash-lite"
     recording = RECORDINGS / f"rag-answers-{args.model}.jsonl"
     if args.record:
         recording.write_text("", encoding="utf-8")
@@ -126,7 +138,9 @@ def main() -> int:
                 "id": case["id"], "kind": case["kind"], "query": case["query"], "relevant": case["relevant"],
                 "retrieved": trace["retrieved"], "answer": trace.get("answer"), "fallback": trace.get("fallback"),
                 "unsupported": trace.get("unsupported", []), "text": text,
-                "on_point": trace.get("answer") == "model" and mentions(text, case["relevant"]),
+                "on_point": trace.get("answer") == "model" and bool(set(cited) & set(case["relevant"])),
+                # 只看模型写的正文（draft）：qa.answer 会在末尾附“（资料：…）”，那里的名字不算
+                "names_in_answer": trace.get("answer") == "model" and mentions(trace.get("draft", ""), case["relevant"]),
                 "cited_right": bool(set(cited) & set(case["relevant"])),
                 "ms": trace.get("latency_ms", 0),
                 "cost": (call["prompt_tokens"] * price[0] + call["output_tokens"] * price[1]) / 1e6,
@@ -139,7 +153,7 @@ def main() -> int:
     label = {"none": "A 不给资料", "bm25": "B 关键词", "vector": "C 按意思找"}
     for config, by_kind in table.items():
         m = by_kind["all"]
-        print(f"{label[config]:12} 答到点子上 {m['on_point']:.2f}  引用对了 {m['cited_right']:.2f}  用了模型的回答 {m['model_answered']:.2f}  "
+        print(f"{label[config]:12} 答到点子上 {m['on_point']:.2f}  正文点到名字 {m['names_in_answer']:.2f}  引用对了 {m['cited_right']:.2f}  用了模型的回答 {m['model_answered']:.2f}  "
               f"编造被拦 {m['blocked_unfaithful']}  模型耗时中位 {m['median_model_ms']:.0f} ms  每千次 ${m['cost_per_1000_usd']:.3f}")
         print("             " + "  ".join(f"{kind} {by_kind[kind]['on_point']:.2f}" for kind in kinds))
     reports = HERE / "reports"

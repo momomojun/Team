@@ -45,7 +45,7 @@ def main() -> None:
     alerts_cmd.add_argument("--cache", default=str(DATA / "alerts" / "extracted.json"), help="读过的公告记在这里，下次只读新的、改过的")
     vectors_cmd = sub.add_parser("vectors", help="按意思找资料用的向量：写进 Neon（sync），或者只数一下要算几条（--dry-run）")
     vectors_cmd.add_argument("action", choices=["sync"])
-    vectors_cmd.add_argument("--model", help="嵌入型号（默认 COPILOT_EMBED_MODEL，再默认 gemini-embedding-001）")
+    vectors_cmd.add_argument("--model", help="嵌入型号（默认 COPILOT_EMBED_MODEL，再默认 gemini-embedding-2）")
     vectors_cmd.add_argument("--dry-run", action="store_true", help="只数新的、改过的、要删的各几条、要调几次接口，不调接口、不写数据库")
     vectors_cmd.add_argument("--first", help="先算这几座公园的资料（逗号隔开的公园代码，比如跑分要用的）")
     vectors_cmd.add_argument("--limit", type=int, help="这次最多算几条（免费档每个型号每天 1000 条，给别的调用留额度）")

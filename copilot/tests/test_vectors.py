@@ -149,7 +149,7 @@ def live(monkeypatch):
     store = FakeStore()
     embedder = FakeEmbedder()
     vectors._query_vector.cache_clear()
-    monkeypatch.setattr(vectors, "_live", lambda: (embedder, store, "gemini-embedding-001"))
+    monkeypatch.setattr(vectors, "_live", lambda: (embedder, store, "gemini-embedding-2"))
     return store, embedder
 
 
@@ -159,11 +159,11 @@ def test_hybrid_finds_english_question_keywords_miss(live, monkeypatch):
     others = [d for d in knowledge.index()[0] if d.park == "zion" and d.id != narrows.id][:10]
     question = "the canyon where you wade through the river"
     embedder.mapping[question] = vec(99)
-    store.upsert("gemini-embedding-001", [(narrows, "h", vec(99))] + [(d, "h", vec(i + 1)) for i, d in enumerate(others)])
+    store.upsert("gemini-embedding-2", [(narrows, "h", vec(99))] + [(d, "h", vec(i + 1)) for i, d in enumerate(others)])
     keyword_only, how = vectors.retrieve(question, ["zion"], how="bm25")
     assert how == {"retrieval": "bm25"}
     docs, how = vectors.retrieve(question, ["zion"], how="hybrid")
-    assert narrows in docs and how["retrieval"] == "hybrid" and how["embed_model"] == "gemini-embedding-001"
+    assert narrows in docs and how["retrieval"] == "hybrid" and how["embed_model"] == "gemini-embedding-2"
     assert narrows in vectors.retrieve(question, ["zion"], how="vector")[0][:1]
 
 
@@ -212,3 +212,34 @@ def test_sync_puts_first_parks_first_and_stops_on_daily_quota(monkeypatch):
     assert stats["stopped"] == "quota" and stats["embedded"] == 2
     # 先算的是 arch 的
     assert {doc_id for (_, doc_id) in store.rows} <= {d.id for d in docs if d.park == "arch"}
+
+
+def test_vector_mode_falls_back_to_keywords_when_store_is_empty(live):
+    _, embedder = live
+    question = "冰川点几点看日落"
+    embedder.mapping[question] = vec(5)
+    docs, how = vectors.retrieve(question, ["yose"], how="vector")
+    assert docs == knowledge.search(question, ["yose"]) and how["retrieval_fallback"] == "empty_vector_result"
+
+
+def test_named_doc_without_vector_is_still_found(live):
+    store, embedder = live
+    glacier = next(d for d in knowledge.index()[0] if d.park == "yose" and d.type == "attraction" and "冰川点" in d.names)
+    others = [d for d in knowledge.index()[0] if d.park == "yose" and d.type == "attraction" and d.id != glacier.id][:6]
+    question = "冰川点几点看日落"
+    embedder.mapping[question] = vec(7)
+    # 冰川点还没算向量（新加的、改过还没 sync 的）：库里只有别的景点
+    store.upsert("gemini-embedding-2", [(d, "h", vec(i + 1)) for i, d in enumerate(others)])
+    docs, how = vectors.retrieve(question, ["yose"], how="vector")
+    assert docs[0] == glacier and how["retrieval_pinned"] == [glacier.id] and len(docs) == 4
+
+
+def test_named_doc_already_found_keeps_semantic_order(live):
+    store, embedder = live
+    glacier = next(d for d in knowledge.index()[0] if d.park == "yose" and d.type == "attraction" and "冰川点" in d.names)
+    others = [d for d in knowledge.index()[0] if d.park == "yose" and d.type == "attraction" and d.id != glacier.id][:6]
+    question = "冰川点几点看日落"
+    embedder.mapping[question] = vec(1)
+    store.upsert("gemini-embedding-2", [(d, "h", vec(i + 1)) for i, d in enumerate(others)] + [(glacier, "h", vec(3))])
+    docs, how = vectors.retrieve(question, ["yose"], how="vector")
+    assert "retrieval_pinned" not in how and docs[0] == others[0]
