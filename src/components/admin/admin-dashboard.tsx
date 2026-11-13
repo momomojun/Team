@@ -74,6 +74,8 @@ interface Turn {
   writer_fallback: boolean;
   /** 这一轮记了模型调用（10-19 以前的日志没记） */
   logged?: boolean;
+  /** 回答问题时怎么找的资料（11-13 起）；这一轮没回答问题是 null，旧版本的服务没有这一项 */
+  retrieval?: { how: string; fallback: string | null; ms: number | null } | null;
 }
 
 interface AlertsStatus {
@@ -277,6 +279,8 @@ const TEXT = {
     callErrors: (n: number) => `${n} 次调用出错`,
     dropped: (n: number) => `丢掉编造 ${n}`,
     writerFallback: "说明退回模板",
+    retrieval: { vector: "按意思找资料", hybrid: "关键词 + 按意思找资料", bm25: "按关键词找资料" } as Record<string, string>,
+    retrievalFallback: (reason: string) => `按意思找没成，退回关键词（${reason}）`,
     sep: "；",
     listSep: "、",
     recentEmpty: "这段时间没有对话。",
@@ -396,6 +400,8 @@ const TEXT = {
     callErrors: (n: number) => `${n} call errors`,
     dropped: (n: number) => `${n} made-up spans dropped`,
     writerFallback: "writer used the template",
+    retrieval: { vector: "semantic retrieval", hybrid: "keyword + semantic retrieval", bm25: "keyword retrieval" } as Record<string, string>,
+    retrievalFallback: (reason: string) => `semantic retrieval failed, fell back to keywords (${reason})`,
     sep: "; ",
     listSep: ", ",
     recentEmpty: "No turns in this period.",
@@ -925,9 +931,16 @@ export function AdminDashboard({ lang = "zh" }: { lang?: AdminLang }) {
                     turn.call_errors && t.callErrors(turn.call_errors),
                     turn.dropped && t.dropped(turn.dropped),
                     turn.writer_fallback && t.writerFallback,
+                    turn.retrieval?.fallback && t.retrievalFallback(turn.retrieval.fallback.split(":")[0]),
                   ]
                     .filter(Boolean)
                     .join(t.sep)}
+                  {turn.retrieval && !turn.retrieval.fallback && (
+                    <span className="block text-mute">
+                      {t.retrieval[turn.retrieval.how] ?? turn.retrieval.how}
+                      {turn.retrieval.ms != null && ` · ${ms(turn.retrieval.ms)}`}
+                    </span>
+                  )}
                 </span>,
               ])}
             />
