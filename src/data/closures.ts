@@ -273,4 +273,22 @@ export const tempClosures: TempClosure[] = [
     source: "https://www.nps.gov/cuva/planyourvisit/conditions.htm",
     checked: "2026-10-20",
   },
+  {
+    // 2026-11-13 每晚读公告自动提议（公告 8B9456B8-ADD5-4E68-82C7-250AA299991E）：核对公告原文，把 reasonZh 改成中文说明再合并
+    attractions: ["grba-baker-creek","grba-great-basin-vc"],
+    from: "2026-11-13",
+    reopen: null,
+    reasonZh: "NPS 公告：Prescribed Fire Area Closure - Baker Creek（每晚读公告自动提议，机器读取；合并前改成中文说明、写上替代办法）",
+    source: "",
+    checked: "2026-11-13",
+  },
+  {
+    // 2026-11-13 每晚读公告自动提议（公告 A3F9B63A-B7B6-46BA-91C5-1F381D30D921）：核对公告原文，把 reasonZh 改成中文说明再合并
+    attractions: ["grsm-newfound-gap","grsm-kuwohi","grsm-andrews-bald","grsm-alum-cave","grsm-chimney-tops","grsm-charlies-bunion"],
+    from: "2026-11-13",
+    reopen: null,
+    reasonZh: "NPS 公告：US 441 / Newfound Gap Road Closed（每晚读公告自动提议，机器读取；合并前改成中文说明、写上替代办法）",
+    source: "https://www.nps.gov/grsm/planyourvisit/conditions.htm",
+    checked: "2026-11-13",
+  },
 ];
