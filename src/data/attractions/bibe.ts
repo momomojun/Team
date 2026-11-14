@@ -538,6 +538,6 @@ export const bigBend: Attraction[] = [
       "Big Hill 一带坡陡弯急，大房车、拖车慢慢开；沿路几乎没有加油站，从 Study Butte 或 Presidio 加满",
       "Closed Canyon 里有几处要从光滑的岩坎上下，雨后可能有积水；下雨天别进窄峡谷",
     ],
-    photoFile: "Harvest moon in Big Bend Ranch State Park.JPG",
+    photoFile: "Along the River Road in Big Bend Ranch - panoramio.jpg",
   },
 ];

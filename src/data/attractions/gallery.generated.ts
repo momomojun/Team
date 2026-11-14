@@ -36884,13 +36884,13 @@ export const gallery: Record<string, Photo[]> = {
       "license": "Public domain"
     },
     {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1c/Great_Sand_Dunes_National_Park_-_Medano_Creek%2C_dunes_and_Sangre_de_Cristo_Mountains.jpg/960px-Great_Sand_Dunes_National_Park_-_Medano_Creek%2C_dunes_and_Sangre_de_Cristo_Mountains.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1c/Great_Sand_Dunes_National_Park_-_Medano_Creek%2C_dunes_and_Sangre_de_Cristo_Mountains.jpg/1920px-Great_Sand_Dunes_National_Park_-_Medano_Creek%2C_dunes_and_Sangre_de_Cristo_Mountains.jpg",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/Medano_Creek_at_the_Great_Sand_Dunes_National_Park_and_Preserve_in_Colorado_%2848257161496%29.jpg/960px-Medano_Creek_at_the_Great_Sand_Dunes_National_Park_and_Preserve_in_Colorado_%2848257161496%29.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/Medano_Creek_at_the_Great_Sand_Dunes_National_Park_and_Preserve_in_Colorado_%2848257161496%29.jpg/1920px-Medano_Creek_at_the_Great_Sand_Dunes_National_Park_and_Preserve_in_Colorado_%2848257161496%29.jpg",
       "width": 960,
       "height": 720,
-      "page": "https://commons.wikimedia.org/wiki/File:Great_Sand_Dunes_National_Park_-_Medano_Creek,_dunes_and_Sangre_de_Cristo_Mountains.jpg",
-      "author": "Pimlico27",
-      "license": "CC BY-SA 4.0"
+      "page": "https://commons.wikimedia.org/wiki/File:Medano_Creek_at_the_Great_Sand_Dunes_National_Park_and_Preserve_in_Colorado_(48257161496).jpg",
+      "author": "PEO ACWA",
+      "license": "CC BY 2.0"
     }
   ],
   "grsa-medano-creek": [
@@ -36940,15 +36940,6 @@ export const gallery: Record<string, Photo[]> = {
       "license": "CC BY-SA 4.0"
     },
     {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/Medano_Creek_at_the_Great_Sand_Dunes_National_Park_and_Preserve_in_Colorado_%2848257161496%29.jpg/960px-Medano_Creek_at_the_Great_Sand_Dunes_National_Park_and_Preserve_in_Colorado_%2848257161496%29.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/Medano_Creek_at_the_Great_Sand_Dunes_National_Park_and_Preserve_in_Colorado_%2848257161496%29.jpg/1920px-Medano_Creek_at_the_Great_Sand_Dunes_National_Park_and_Preserve_in_Colorado_%2848257161496%29.jpg",
-      "width": 960,
-      "height": 720,
-      "page": "https://commons.wikimedia.org/wiki/File:Medano_Creek_at_the_Great_Sand_Dunes_National_Park_and_Preserve_in_Colorado_(48257161496).jpg",
-      "author": "PEO ACWA",
-      "license": "CC BY 2.0"
-    },
-    {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e7/Great_Sand_Dunes_National_Park_August_2021_Medano_Creek.jpg/960px-Great_Sand_Dunes_National_Park_August_2021_Medano_Creek.jpg",
       "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e7/Great_Sand_Dunes_National_Park_August_2021_Medano_Creek.jpg/1920px-Great_Sand_Dunes_National_Park_August_2021_Medano_Creek.jpg",
       "width": 960,
@@ -36965,6 +36956,15 @@ export const gallery: Record<string, Photo[]> = {
       "page": "https://commons.wikimedia.org/wiki/File:Medano_Creek.jpg",
       "author": "Xrzt",
       "license": "CC BY-SA 4.0"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d0/Blue_medano_%2837587285200%29.jpg/960px-Blue_medano_%2837587285200%29.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d0/Blue_medano_%2837587285200%29.jpg/1920px-Blue_medano_%2837587285200%29.jpg",
+      "width": 960,
+      "height": 640,
+      "page": "https://commons.wikimedia.org/wiki/File:Blue_medano_(37587285200).jpg",
+      "author": "Christian Collins",
+      "license": "CC BY-SA 2.0"
     }
   ],
   "grsa-high-dune": [
@@ -44059,12 +44059,12 @@ export const gallery: Record<string, Photo[]> = {
   ],
   "bibe-river-road": [
     {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1a/Harvest_moon_in_Big_Bend_Ranch_State_Park.JPG/960px-Harvest_moon_in_Big_Bend_Ranch_State_Park.JPG",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1a/Harvest_moon_in_Big_Bend_Ranch_State_Park.JPG/1920px-Harvest_moon_in_Big_Bend_Ranch_State_Park.JPG",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/92/Along_the_River_Road_in_Big_Bend_Ranch_-_panoramio.jpg/960px-Along_the_River_Road_in_Big_Bend_Ranch_-_panoramio.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/92/Along_the_River_Road_in_Big_Bend_Ranch_-_panoramio.jpg/1920px-Along_the_River_Road_in_Big_Bend_Ranch_-_panoramio.jpg",
       "width": 960,
-      "height": 576,
-      "page": "https://commons.wikimedia.org/wiki/File:Harvest_moon_in_Big_Bend_Ranch_State_Park.JPG",
-      "author": "Jcllorca",
+      "height": 375,
+      "page": "https://commons.wikimedia.org/wiki/File:Along_the_River_Road_in_Big_Bend_Ranch_-_panoramio.jpg",
+      "author": "Todd Dwyer",
       "license": "CC BY-SA 3.0"
     }
   ],
