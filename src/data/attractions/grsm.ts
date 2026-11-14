@@ -60,7 +60,7 @@ export const greatSmokyMountains: Attraction[] = [
     summary:
       "公园里最热门的瀑布步道，以前每年 30 多万人走：一条约 2 公里的铺装小路通到两层、共约 24 米高的瀑布，步道从瀑布中间穿过。",
     tips: ["整修完以后停车位会多一些（约 50 个），但仍是最难停车的步道口之一，早到", PARKING_TAG],
-    photoFile: "Laurel Falls Kaldari.jpg",
+    photoFile: "Laurel Falls Tennessee.jpg",
   },
   {
     id: "grsm-rainbow-falls",
@@ -114,7 +114,7 @@ export const greatSmokyMountains: Attraction[] = [
       "路窄弯多，开得慢，算上停车看木屋留 1–1.5 小时；Grotto Falls 的步道口也在这条路上",
       "傍晚常看到黑熊在路边找吃的，留在车里拍，不要下车靠近",
     ],
-    photoFile: "Roaring Fork Motor Nature Trail - March 2024 - Sarah Stierch 03.jpg",
+    photoFile: "Roaring Fork Motor Nature Trail - March 2024 - Sarah Stierch.jpg",
   },
   {
     id: "grsm-grotto-falls",
@@ -283,7 +283,7 @@ export const greatSmokyMountains: Attraction[] = [
       "停车场不大，周末早到；441 号公路上去 Newfound Gap 的车多，路边不许乱停",
       "台阶多、下坡伤膝盖，带登山杖",
     ],
-    photoFile: "Chimney Tops viewed from Chimney Tops overlook, May 2017.jpg",
+    photoFile: "Road Prong of the Little Pigeon River with blocks of Thunderhead Sandstone (Chimney Tops Trail, Great Smoky Mountains, Tennessee, USA) (37047435501).jpg",
   },
   {
     id: "grsm-charlies-bunion",

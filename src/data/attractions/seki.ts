@@ -63,7 +63,7 @@ export const sequoiaKingsCanyon: Attraction[] = [
       "打雷时不要上去",
       "夏季班车季（一般 5 月底到 9 月初）的周末和节假日，白天这条路不让私家车进，只能坐免费班车；挂无障碍停车证的车可以开进去",
     ],
-    photoFile: "Moro Rock-View from Potwisha.jpg",
+    photoFile: "Moro Rock Trail Sequoia July 2017 panorama.jpg",
   },
   {
     id: "seki-tunnel-log",
@@ -92,8 +92,7 @@ export const sequoiaKingsCanyon: Attraction[] = [
     durationMin: 60,
     summary: "被巨杉环绕的草甸，约翰·缪尔称它为“Sierra 的明珠”。沿草甸边的步道走，常能看到黑熊。",
     tips: ["看到黑熊保持距离，不要靠近或喂食", "Crescent Meadow Road 冬季可能因雪封路"],
-    photoFile:
-      "Giant Forest in Crescent Meadow of Sequoia National Park (edfb1c90-b5a3-4333-87ff-d15202c9485e).jpg",
+    photoFile: "Giant Forest in Crescent Meadow of Sequoia National Park (edfb1c90-b5a3-4333-87ff-d15202c9485e).jpg",
   },
   {
     id: "seki-tokopah-falls",
@@ -186,6 +185,7 @@ export const sequoiaKingsCanyon: Attraction[] = [
     hike: { distanceMi: 2, gainFt: 200, difficulty: "easy", loop: true },
     summary:
       "从谢尔曼将军树往森林深处走的铺装环线，经过“参议院”“众议院”两组巨杉群和“总统树”，比只看谢尔曼树安静得多。",
+    photoFile: "Sequoia National Park, 2022 21.jpg",
     tips: ["从停车场下到谢尔曼树是下坡，回程要爬坡", "全程铺装，雨后也好走"],
   },
   {
@@ -202,6 +202,7 @@ export const sequoiaKingsCanyon: Attraction[] = [
     trail: { via: [{ lat: 36.56621, lon: -118.7695 }], loop: true },
     hike: { distanceMi: 0.75, difficulty: "easy", loop: true },
     summary: "绕圆草甸一圈的无障碍步道，巨杉围着草甸生长，沿途的解说牌讲巨杉为什么离不开火和水。",
+    photoFile: "Round Meadow, Giant Forest, Sequoia National Park.jpg",
     tips: ["全程铺装加栈道，坡度中等，适合带老人小孩", "夏天停车位紧张，可以坐园区免费班车"],
   },
   {
@@ -222,6 +223,7 @@ export const sequoiaKingsCanyon: Attraction[] = [
       "步道口在 Cedar Grove 最里面的 Roads End，180 号公路冬季封闭，通常 11 月上中旬到次年 4 月底或 5 月进不去（以 NPS 公告为准），开路后的 5–6 月瀑布水量最大；冬季想看瀑布可以去红杉公园的托科帕瀑布步道（有雪时要穿防滑鞋或雪鞋）。",
     bestMonths: [5, 6, 7],
     summary: "国王峡谷谷底最有名的步道，沿南福克河一路上溯，终点是一道宽阔的瀑布，春末初夏水雾最大。",
+    
     tips: ["前面几英里平坦开阔、没树荫，夏天带帽子和足够的水", "这一带熊很活跃，所有带气味的东西都要放进防熊储物柜，别留在车里"],
   },
   {
@@ -239,6 +241,7 @@ export const sequoiaKingsCanyon: Attraction[] = [
     closedNote:
       "在 Cedar Grove 的 180 号公路边，这段路冬季封闭，通常 11 月上中旬到次年 4 月底或 5 月进不去（以 NPS 公告为准）；这段时间可以在 Grant Grove 看格兰特将军树，或去红杉公园的托科帕瀑布步道。",
     summary: "180 号公路边一条几百米的铺装小路，尽头是从花岗岩缝里冲出来的瀑布，去 Roads End 的路上顺路就能看。",
+    photoFile: "Roaring River Falls splashdown.jpg",
     tips: ["停车场就在路边"],
   },
   {
@@ -256,6 +259,7 @@ export const sequoiaKingsCanyon: Attraction[] = [
     closedNote:
       "Panoramic Point Road 冬季不清雪，积雪后就对车辆关闭，一般到 5 月下旬阵亡将士纪念日前的周三才重开（以 NPS 公告为准）；封路期间可以从 Grant Grove 村沿这条路步行或穿雪鞋上去（单程约 3.7 公里），或者在格兰特将军树一带看雪中巨杉。",
     summary: "Grant Grove 上方的山顶观景台，眺望国王峡谷和远处连绵的高山雪峰，从停车场走几百米就到。",
+    photoFile: "Výhled z Panoramic Point na jezero Hume Lake - panoramio.jpg",
     tips: ["上山的小路很窄，房车和拖车不准上", "冬季道路封闭"],
   },
   {

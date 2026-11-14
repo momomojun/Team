@@ -57,7 +57,7 @@ export const glacier: Attraction[] = [
       "湖东北岸 Lake McDonald Lodge 的码头有 1 小时的历史木船游湖（2026 年 5 月 20 日到 9 月 26 日，成人 $27.80），傍晚那班可以看日落",
       "湖水夏天也很冷，下水要小心",
     ],
-    photoFile: "The view of Lake McDonald from Apgar (12092155856).jpg",
+    photoFile: "Lake McDonald Lodge, Glacier National Park, Bellhops, 1950s.jpg",
   },
   {
     id: "glac-trail-of-the-cedars",
@@ -445,7 +445,7 @@ export const glacier: Attraction[] = [
       "走格林内尔冰川步道可以坐船省掉约 5.5 公里平路，7 月 1 日起还有只坐回程的单程票",
       "早班船最先卖完，预订时留出从停车场走到码头的时间",
     ],
-    photoFile: "Boat Glacier National Park.jpg",
+    photoFile: "Sunrise at Swiftcurrent Lake as seen from the Many Glacier Hotel (48490111337).jpg",
   },
   {
     id: "glac-grinnell-glacier",
@@ -479,7 +479,7 @@ export const glacier: Attraction[] = [
       "后半段又陡又晒，中途要从崖上淋下来的瀑布下穿过，带防水外套",
       "这一带是灰熊密度很高的地方，结伴、出声，每人带熊喷雾",
     ],
-    photoFile: "20240914 Canon R5 Grinnell Glacier-8844.jpg",
+    photoFile: "Hiking with a Ranger to Grinnell Glacier (51420377683).jpg",
   },
   {
     id: "glac-iceberg-lake",

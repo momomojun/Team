@@ -40,7 +40,7 @@ export const canyonlands: Attraction[] = [
   },
   {
     id: "cany-mesa-arch",
-    park: "cany",
+        park: "cany",
     nameZh: "梅萨拱门",
     nameEn: "Mesa Arch",
     kind: "hike",
@@ -100,7 +100,7 @@ export const canyonlands: Attraction[] = [
     bestTime: ["afternoon"],
     summary: "从野餐区出发，沿一条细长的台地走到朝东的崖尖，俯瞰纪念碑盆地的石柱群、科罗拉多河峡谷和拉萨尔山，风景和大观景点相近，人少得多，恐高的人也会觉得轻松些。",
     tips: ["下午晚些时候光线最好", "步道口车位很少，别停到路外或占用野餐区车位"],
-    photoFile: "White Rim Overlook, Canyonlands National Park - 49026227128.jpg",
+    photoFile: "White Rim Overlook, Canyonlands National Park - 49026730276.jpg",
   },
   {
     id: "cany-green-river-overlook",
@@ -117,7 +117,7 @@ export const canyonlands: Attraction[] = [
     mustSee: true,
     summary: "天空之岛少数能看见河的地方：约 400 米下的格林河在峡谷里弯弯曲曲，对岸是迷宫区和橙色悬崖，白缘路像一条白线绕在台阶上。这里是天空之岛看日落最好的地方。",
     tips: ["在去隆起穹丘的路上，从 Willow Flat 露营地旁的支路开进去，停车场离观景台只有几十米"],
-    photoFile: "Canyonlands National Park as seen from Green River Overlook 20110815 1.jpg",
+    photoFile: "2021 Green River Overlook - Canyonlands National Park 03.jpg",
   },
   {
     id: "cany-aztec-butte",
@@ -174,7 +174,7 @@ export const canyonlands: Attraction[] = [
       "第一观景点往返约 1 公里，路短但陡；继续走到第二观景点往返约 1.9 公里，能看得更深",
       "步道口有野餐区和厕所",
     ],
-    photoFile: "Upheaval Dome View.jpg",
+    photoFile: "2021 Upheaval Dome 02.jpg",
   },
   {
     id: "cany-dead-horse-point",
@@ -341,7 +341,7 @@ export const canyonlands: Attraction[] = [
       "步道口在约 5 公里砂石路的尽头，普通轿车能开；再往前的 Elephant Hill 四驱路是犹他最难的越野路之一，要日间许可证",
       "每人每小时约 1 升水，夏天中午别走",
     ],
-    photoFile: "Chesler Park (35418367653).jpg",
+    photoFile: "Chesler Park, The Needles, Canyonlands (29046056724).jpg",
   },
   {
     id: "cany-horseshoe-canyon",

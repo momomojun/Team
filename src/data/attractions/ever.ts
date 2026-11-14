@@ -54,7 +54,7 @@ export const everglades: Attraction[] = [
       "鳄鱼离步道很近，保持至少 4–5 米距离，不要喂食；带小孩和推车时看紧",
       "旁边的 Gumbo Limbo 步道是一小圈约 600 米的热带硬木林，顺路走；旱季晚上有护林员带的夜间漫步，用手电照鳄鱼的眼睛",
     ],
-    photoFile: "Anhinga Trail (48637524178).jpg",
+    photoFile: "American Alligator - Alligator mississippiensis, Anhinga Trail, Everglades National Park, Homestead, Florida.jpg",
   },
   {
     id: "ever-nike-missile-site",

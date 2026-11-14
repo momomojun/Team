@@ -233,7 +233,7 @@ export const acadia: Attraction[] = [
       "体力一般的先走东岸，走到北头看够了原路返回，不用勉强绕完西岸的乱石段",
       "停车场常在上午过半前停满，早上 8 点前或傍晚 5 点后来，或者坐 Island Explorer 的 Jordan Pond 线",
     ],
-    photoFile: "The Bubbles at Jordan Pond, Acadia National Park (30107369060).jpg",
+    photoFile: "Jordon Pond and the Bubbles, Acadia National Park, Bar Harbor, Me (78751).jpg",
   },
   {
     id: "acad-jordan-pond-house",

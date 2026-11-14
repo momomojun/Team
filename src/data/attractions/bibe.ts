@@ -79,7 +79,7 @@ export const bigBend: Attraction[] = [
       "最后一段在光滑岩面上找路，看好箭头标记；下坡时沙砾很滑，护林员常在这里处理崴脚",
       `全程没有树荫，${DESERT_HEAT}`,
     ],
-    photoFile: "Balanced Rock in Big bend.jpg",
+    photoFile: "Gfp-texas-big-bend-national-park-balanced-rock.jpg",
   },
 
   // ===== 奇索斯山 · 盆地 =====
@@ -229,7 +229,7 @@ export const bigBend: Attraction[] = [
       "2 月 1 日到 5 月 31 日游隼筑巢，东南缘步道和东北缘一段封闭；西南缘和 Boot 峡谷照常开放，环线照样能走",
       "山上没有可靠水源，每人带 4 升以上；4–9 月 Boot 峡谷能看到在美国只在这里繁殖的 Colima 林莺",
     ],
-    photoFile: "Big Bend South Rim sunset.jpg",
+    photoFile: "Big Bend South Rim.jpg",
   },
 
   // ===== Ross Maxwell 观景道 · 圣埃伦娜峡谷 =====
@@ -280,7 +280,7 @@ export const bigBend: Attraction[] = [
       "有铺装环路、旱厕，大车也能停；傍晚光线最好",
       "观景道全长约 48 公里，从这里往下陆续是 Mule Ears、Tuff 峡谷、Castolon 和圣埃伦娜峡谷，留出大半天",
     ],
-    photoFile: "SotolVistaView1.jpg",
+    photoFile: "Ancient crater - Big Bend National Park.jpg",
   },
   {
     id: "bibe-mule-ears",
@@ -367,7 +367,7 @@ export const bigBend: Attraction[] = [
       "进峡谷前要先过 Terlingua 溪：可能是干沙、齐踝的烂泥，也可能是流水，水大就别过；穿能弄湿的鞋",
       "峡谷口朝东，早上岩壁被照亮、也最凉快；停车场只有约 20 个车位，旺季中午常要排队",
     ],
-    photoFile: "Santa Elena - 05.jpg",
+    photoFile: "Santa Elena - 01.jpg",
   },
   {
     id: "bibe-night-sky",
@@ -492,7 +492,7 @@ export const bigBend: Attraction[] = [
       "停车场只有约 15 个车位，旺季护林员会“出一辆进一辆”",
       DESERT_HEAT,
     ],
-    photoFile: "Boquillas Canyon.JPG",
+    photoFile: "Rangers pulling raft out into the river for Boquillas Canyon Patrol in Big Bend National Park. Image Number Waso- 1527. (6f1cfecae8794b64a0b351728abcd8b6).jpg",
   },
 
   // ===== 园外：Terlingua · 河路 =====

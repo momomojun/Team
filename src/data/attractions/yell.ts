@@ -33,10 +33,11 @@ export const yellowstone: Attraction[] = [
       "想从高处看喷发，可以走 Observation Point 步道：往返约 2.6 公里，一段之字形上坡",
       "冬季道路不通私家车，只能跟雪地车团进来",
     ],
-    photoFile: "Yellowstone National Park (WY, USA), Old Faithful Geyser -- 2022 -- 2599.jpg",
+    photoFile: "Yellowstone National Park (WY, USA), Old Faithful Geyser -- 2022 -- 2615.jpg",
   },
   {
     id: "yell-upper-geyser-basin",
+    photoFile: "Morning Glory Pool, Yellowstone.jpg",
     park: "yell",
     nameZh: "上间歇泉盆地 · 牵牛花池",
     nameEn: "Upper Geyser Basin – Morning Glory Pool",
@@ -84,7 +85,7 @@ export const yellowstone: Attraction[] = [
       "在栈道上只能看到温泉边缘，想看全貌要去南边 Fairy Falls 步道上的观景台",
       "栈道上风大，帽子常被吹进热泉，吹走了也不能下去捡",
     ],
-    photoFile: "Yellowstone National Park (WY, USA), Grand Prismatic Spring -- 2022 -- 2514.jpg",
+    photoFile: "Aerial image of Grand Prismatic Spring (view from the south).jpg",
   },
   {
     id: "yell-grand-prismatic-overlook",
@@ -177,7 +178,7 @@ export const yellowstone: Attraction[] = [
       "晴天上午阳光从背后照进峡谷，瀑布的水雾里常能看到彩虹",
       "能走到瀑布脚下的 Uncle Tom's Trail 已永久关闭",
     ],
-    photoFile: "Artist Point view of Yellowstone Canyon 03.jpg",
+    photoFile: "Lower Falls from Artist Point (19087799399).jpg",
   },
   {
     id: "yell-hayden-valley",
@@ -421,7 +422,7 @@ export const yellowstone: Attraction[] = [
       "Tower Junction 到这里的路通常 5 月上旬才开通，再往南翻 Dunraven Pass 去峡谷村要到 5 月下旬",
       "往北不远的 Calcite Springs 观景台能看到黄石大峡谷的下游段和玄武岩柱",
     ],
-    photoFile: "Morning light on Tower Fall (36694655800).jpg",
+    photoFile: "Sunrise over Roosevelt Arch at the North Entrance (38443679615).jpg",
   },
   {
     id: "yell-mount-washburn",
@@ -444,6 +445,7 @@ export const yellowstone: Attraction[] = [
     bestMonths: [7, 8],
     summary:
       "海拔 3,115 米的山顶有一座夏季有人值守的防火瞭望塔，天晴时能看到黄石大峡谷、黄石湖和大半个公园。7 月山坡开满野花，步道边常见大角羊。",
+    photoFile: "Mount Washburn summit panorama facing south 20090902.jpg",
     tips: [
       "走的是宽阔的老防火道，坡度平缓，但海拔高、没有遮挡，午后常有雷暴，一早出发",
       "Dunraven Pass 步道口车位少，也可以从北坡的 Chittenden Road 步道口上山（往返约 9.3 公里，即 5.8 英里，可以骑车）",
@@ -466,6 +468,7 @@ export const yellowstone: Attraction[] = [
     outsidePark: true,
     summary:
       "东北门外的 US-212，从 Cooke City 翻过海拔 3,337 米的熊齿山口通往蒙大拿的 Red Lodge，全长约 110 公里，沿途是高山湖泊、冰斗和夏天也不化的积雪。",
+    photoFile: "Beartooth Highway MT-WY2.jpg",
     tips: [
       "通常 5 月下旬（阵亡将士纪念日前的周五）开通、10 月中旬封路，夏天也会因风雪临时封闭，出发前查路况",
       "从东北门开到山口单程约 1 小时，山顶风大、气温低，带外套",
@@ -489,6 +492,7 @@ export const yellowstone: Attraction[] = [
     closedNote:
       "峡谷村随诺里斯—峡谷村公路开放，约 11 月初到次年 4 月中旬不通私家车（2026 年 4 月 17 日开通、10 月 31 日关闭），刚开通时之字形步道可能结冰或因积雪暂不开放；冬季只能跟雪地车团到峡谷，可以改去全年通车的猛犸温泉和拉马尔谷。",
     summary: "沿之字形铺装小路下到下瀑布的边缘，站在 94 米落差的瀑布顶上，脚下就是轰鸣而下的水流。",
+    photoFile: "Grand Canyon of the Yellowstone from Brink of the Lower Falls viewing area (53041958364).jpg",
     tips: [
       "单程约 0.6 公里、下降约 180 米，回程一路上坡，NPS 不建议心肺不好的人走",
       "步道开头有条短岔路可以看上瀑布",
@@ -509,6 +513,7 @@ export const yellowstone: Attraction[] = [
     closedNote:
       "北岸观景道随诺里斯—峡谷村公路开放，约 11 月初到次年 4 月中旬不通私家车（2026 年 4 月 17 日开通、10 月 31 日关闭），下红岩点的陡峭步道初春还可能有冰雪；冬季（12 月中旬到 3 月中旬）只能跟雪地车团来看结冰的下瀑布。",
     summary: "北岸正对下瀑布的观景台，从停车场走几步就到；旁边一条陡峭小路下到离瀑布更近的红岩点。",
+    photoFile: "Lower Falls from Lookout Point (53524958266).jpg",
     tips: [
       "去红岩点要沿之字形小路和一长段台阶往下走约 15 分钟，回程全是上坡，NPS 不建议心肺不好的人走",
       "North Rim Drive 沿线依次是下瀑布之巅、瞭望点、Grand View 和灵感点，可以一路停过去",
@@ -528,6 +533,7 @@ export const yellowstone: Attraction[] = [
     closedNote:
       "北岸观景道随诺里斯—峡谷村公路开放，约 11 月初到次年 4 月中旬不通私家车（2026 年 4 月 17 日开通、10 月 31 日关闭）；冬季只能坐雪地车到峡谷村，可以改去全年通车的猛犸温泉和拉马尔谷。",
     summary: "北岸最东头的观景台，伸到峡谷上方，能看到峡谷往下游延伸很远，远处还能望见下瀑布。",
+    photoFile: "Grand Canyon of the Yellowstone from Inspiration Point (48637329953).jpg",
     tips: [
       "去的路上经过 Grand View 观景台，两处都在 North Rim Drive 的支路上",
       "路边的 Glacial Boulder 是冰川搬来的巨石，Seven Mile Hole 步道也从这里出发",
@@ -563,6 +569,7 @@ export const yellowstone: Attraction[] = [
     closedNote: "泥火山在峡谷村到黄石湖的公路上，这段路冬季不通私家车，通常 5 月初开通（2026 年 5 月 1 日）、10 月底关闭；冬季只有雪地车经过，可以改去全年通车的猛犸温泉阶地看地热。",
     summary:
       "黄石最酸的地热区之一：龙口泉的热水在岩洞口一涌一涌、伴着低沉的轰响，泥火山是一大锅翻滚的泥浆，空气里满是臭鸡蛋味。",
+    photoFile: "Boardwalk leading out to Dragon's Mouth Spring (24457383327).jpg",
     tips: [
       "环线约 1 公里，顺时针走坡比较缓，从南边的步道口出发",
       "马路对面的硫磺锅（Sulphur Caldron）酸度和电池液差不多，路边就能看",
@@ -583,6 +590,7 @@ export const yellowstone: Attraction[] = [
       "湖区公路冬季不通私家车，通常 5 月上旬开通（2026 年峡谷村和东门方向 5 月 1 日、南门和 West Thumb 方向 5 月 8 日）、10 月底关闭，湖面一般 5 月底到 6 月初才解冻，湖畔酒店约 5 月中旬到 10 月上旬营业；冬季只能坐雪地车来，可以改去全年通车的猛犸温泉和拉马尔谷。",
     summary:
       "北美海拔 2,100 米以上最大的湖，面积约 341 平方公里，天气好时能望见东南边的阿布萨罗卡山脉。沿湖公路有多处湖景停车点，湖区村（Lake Village）一带的湖岸最方便。",
+    photoFile: "Sunset lake 20190714 132237 1.jpg",
     tips: [
       "湖水夏天也很冷，不建议游泳",
       "东边的 Fishing Bridge 是黄石河流出湖口的地方，桥上禁止钓鱼，初夏能看到切喉鳟",
@@ -614,6 +622,7 @@ export const yellowstone: Attraction[] = [
     bestMonths: [7, 8, 9],
     summary:
       "从 Indian Pond 出发，穿过草地和松林走到黄石湖边被风吹得光秃秃的岬角，岩石堆里住着一大群黄腹旱獭，再沿湖岸绕回来。",
+    photoFile: "Views along the shore of Yellowstone Lake near Storm Point Trail (53149159879).jpg",
     tips: [
       "春末夏初常因熊出没临时关闭，出发前到 Fishing Bridge 游客中心问一下",
       "步道口在 Fishing Bridge 以东约 5 公里的路边",
@@ -637,6 +646,7 @@ export const yellowstone: Attraction[] = [
       "West Thumb 所在的南门—老忠实—湖区公路冬季不通私家车，通常 5 月上旬开通（2026 年 5 月 8 日）、10 月底关闭；冬季只有从南门进来的雪地车团经过，关闭期间可以去全年通车的猛犸温泉阶地，4 月中旬以后也能从西门开车去老忠实一带的间歇泉盆地。",
     summary:
       "建在黄石湖岸边的地热区，栈道沿湖绕一圈，能看到深蓝色的深渊池（Abyss Pool），还有立在湖水里的钓鱼锥——早年游客真在这里把刚钓的鱼放进泉眼里煮。",
+    photoFile: "West Thumb Geysir Basin 2017 24.jpg",
     tips: [
       "2026 年 10 月中旬前，通到 Fishing Cone 和湖岸间歇泉（Lakeshore Geyser）的一段木栈道在换支撑，暂时关闭，其余木栈道照常开放",
       "离南门约 35 公里，从大提顿进园的第一站；开到老忠实约 35 分钟",

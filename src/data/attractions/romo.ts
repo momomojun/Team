@@ -133,7 +133,7 @@ export const rockyMountain: Attraction[] = [
     summary:
       "Bear Lake 路边的小湖，约 1.3 公里的环湖步道几乎是平的，可以推轮椅；湖面倒映着大陆分水岭上的 Hallett Peak 和 Flattop Mountain，日出时最美。",
     tips: ["停车场不大，日出后很快就满；Moraine Park 线免费班车也停这里", "湖边有野餐桌和厕所，适合带老人小孩"],
-    photoFile: "Rocky Mountain National Park in September 2011 - Sprague Lake.JPG",
+    photoFile: "Sprague Lake at Sunset (29560309357).jpg",
   },
   {
     id: "romo-bear-lake",
@@ -237,6 +237,7 @@ export const rockyMountain: Attraction[] = [
     permit: BEAR_LAKE_ROAD_PERMIT,
     summary:
       "过了艾伯塔瀑布继续深入 Glacier Gorge 冰川谷，终点的米尔斯湖被 Longs Peak、Pagoda Mountain 和锯齿状的 Keyboard of the Winds 环绕，湖边大块平整的花岗岩适合坐下来野餐。往返约 9 公里、爬升约 230 米。",
+    photoFile: "Mills Lake 1-10 (16639699932).jpg",
     tips: ["过了艾伯塔瀑布人少很多，最后一段要走过大片光滑的岩板，下雨后湿滑", "中午前往回走，躲开午后雷暴"],
   },
   {

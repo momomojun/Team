@@ -61,7 +61,7 @@ export const kenaiFjords: Attraction[] = [
       "步道禁止带宠物；这一带黑熊常见，带熊喷雾、结伴走、边走边出声",
       "夏季 10:00–15:30 停车位紧张，早上或傍晚来，也可以从 Seward 坐接驳车",
     ],
-    photoFile: "Exit Glacier, Harding Icefield, Kenai Fjords National Park, Alaska.jpg",
+    photoFile: "Exit Glacier, Kenai Fjords National Park, United States Aug 26, 2017 061029 PM.jpg",
   },
   {
     id: "kefj-harding-icefield",
@@ -94,7 +94,7 @@ export const kenaiFjords: Attraction[] = [
       "黑熊几乎每天出现在步道两边的浆果丛里，出声、带熊喷雾",
       "不一定要走到顶：到 Marmot Meadows 就能俯瞰 Exit Glacier",
     ],
-    photoFile: "Hikers on the Harding Icefield Trail (85b70a7e-1dd8-b71c-0709-4eea27e72d3f).jpg",
+    photoFile: "Emergency Shelter, Kenai Fjords National Park.jpg",
   },
   {
     id: "kefj-fjords-cruise",

@@ -60,7 +60,7 @@ export const yosemite: Attraction[] = [
     summary:
       "从谷底拔地而起约 900 米的花岗岩巨壁，世界攀岩圣地。在酋长岩草甸抬头，常能看到挂在岩壁上的攀岩者。",
     tips: ["带望远镜，找岩壁上的攀岩者和过夜用的吊帐", "日落时岩壁会被照成橙色"],
-    photoFile: "El Capitan en Californie.jpg",
+    photoFile: "Yosemite night elcapitan climbers.jpg",
   },
   {
     id: "yose-yosemite-falls",
@@ -84,7 +84,7 @@ export const yosemite: Attraction[] = [
       "下瀑布环线约 1.6 公里，全程铺装",
       "体力好可以走 Upper Yosemite Fall 步道到瀑布顶：往返约 11.6 公里、爬升约 820 米，非常陡",
     ],
-    photoFile: "Yosemite falls winter 2010.JPG",
+    photoFile: "Yosemite Falls from trail, Yosemite NP, CA, US - Diliff.jpg",
   },
   {
     id: "yose-mist-trail",
@@ -153,7 +153,7 @@ export const yosemite: Attraction[] = [
       "天没亮就出发；午后常有雷暴，钢缆段遇雷雨非常危险",
       "没有许可证也可以走到 Sub Dome 下方折返",
     ],
-    photoFile: "Half Dome with Eastern Yosemite Valley (Zuschnitt).jpg",
+    photoFile: "Half Dome with Eastern Yosemite Valley.jpg",
   },
   {
     id: "yose-horsetail-fall",
@@ -353,6 +353,7 @@ export const yosemite: Attraction[] = [
     bestTime: ["sunset"],
     summary:
       "出山谷路上的河边观景点（又叫 Gates of the Valley）：左边酋长岩，右边教堂岩和新娘面纱瀑布，默塞德河就在脚下，水静时有倒影。",
+    photoFile: "Panoramic Overview from Glacier Point over Yosemite Valley 2013 Alternative.jpg",
     tips: ["在出谷方向的单行道 Northside Drive 上，进谷时不经过", "路边停车位不多，停好再过马路"],
   },
   {
@@ -424,6 +425,7 @@ export const yosemite: Attraction[] = [
     bestMonths: [4, 5, 6],
     summary:
       "优胜美地最古老的步道之一，一路之字形爬到北美最高瀑布之一的顶端，中途的哥伦比亚岩就能俯瞰整个山谷。",
+    photoFile: "Yosemite National Park - Sentinel Rock.jpg'S MEADOW. - Yosemite National Park Roads and Bridges, Yosemite Village, Mariposa County, CA HAER CAL,22-YOSEM,5-19.tif'S MEADOW. - Yosemite National Park Roads and Bridges, Yosemite Village, Mariposa County, CA HAER CAL,22-YOSEM,5-19.tif",
     tips: [
       "只想看风景可以走到哥伦比亚岩（往返约 3.2 公里、爬升约 300 米）就折返",
       "夏天午后很晒，一早出发，带足 4 升水",
@@ -465,6 +467,7 @@ export const yosemite: Attraction[] = [
     bestMonths: [4, 5, 6],
     summary:
       "雾径的完整版：过了弗纳尔瀑布继续往上，爬到约 180 米高的内华达瀑布顶，回程可以走约翰·缪尔步道绕一圈。",
+    photoFile: "Four Mile Trailhead.jpg",
     tips: [
       "2026 年 10 月底前修步道：雾径从约翰·缪尔步道路口到弗纳尔瀑布顶这一段，周五到周日和节假日全天开放，周一到周四只在 15:30 到次日 7:00 开放，其余时间要走约翰·缪尔步道绕行",
       "上山走雾径、下山走约翰·缪尔步道，膝盖压力小一些",
@@ -560,6 +563,7 @@ export const yosemite: Attraction[] = [
     openMonths: TIOGA_ROAD,
     closedNote: "步道口在 Tioga Road 上，冬天积雪封路，通常 11 月到次年 5 月底或 6 月不通车，开通后 6 月高处也常有残雪，以 NPS 公告为准；这段时间可以改走山谷里的雾径或镜湖步道。",
     summary: "高山湖泊代表作：湖面倒映着尖顶的大教堂峰，是 Tioga Road 沿线最受欢迎的一日徒步。",
+    photoFile: "Yosemite National Park (28601023674).jpg",
     tips: ["步道口停车位少，夏天一早就满", "湖边蚊子多，7 月最厉害"],
   },
   {
@@ -598,6 +602,7 @@ export const yosemite: Attraction[] = [
     openMonths: TIOGA_ROAD,
     closedNote: "步道口在 Tioga Road 岔出的支路上，冬天积雪封路，通常 11 月到次年 5 月底或 6 月不通车，支路有时比主路开得更晚，以 NPS 公告为准；这段时间可以改走山谷里的镜湖步道。",
     summary: "一条短而舒服的高山步道，终点是霍夫曼山脚下的湖泊，适合想在 Tioga Road 上走一段又不想太累的人。",
+    photoFile: "Mount Hoffmann reflection May Lake.jpg",
     tips: ["步道口在 Tioga Road 岔出去的一条支路尽头"],
   },
   {
@@ -632,6 +637,7 @@ export const yosemite: Attraction[] = [
     hike: { distanceMi: 8.2, gainFt: 2400, difficulty: "hard" },
     bestMonths: [4, 5, 6],
     summary: "Wawona 附近的一连串瀑布，步道沿着溪谷一路往上爬，人比山谷里少得多，春季水量最大。",
+    photoFile: "Chilnualna Falls 2006.JPG",
     tips: ["起点附近就有一段小瀑布，体力不够看完就返回", "夏天中午热，早点出发"],
   },
   {
@@ -646,6 +652,7 @@ export const yosemite: Attraction[] = [
     durationMin: 40,
     summary:
       "Wawona 的露天历史博物馆：一座廊桥和一批从园区各处搬来的老木屋，讲早年驿站、护林员和马车时代的故事。",
+    photoFile: "Wawona Covered Bridge, Spanning South Fork Merced River on service road, Wawona (Mariposa County, California).jpg",
     tips: ["就在 Wawona Hotel 附近，去马里波萨巨杉林的路上可以顺路看"],
   },
 ];

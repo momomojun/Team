@@ -65,3 +65,8 @@ copilot/data/chroma/
 
 # 本机一键启动（start.cmd）记下的进程号
 .local-run/
+
+# 景点高质图集本地挑选暂存区
+sample-photos/
+assets/attractions-photos/
+

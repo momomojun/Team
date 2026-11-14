@@ -212,7 +212,7 @@ export const shenandoah: Attraction[] = [
       "不许带宠物；攀爬段有几处要靠手臂把身体撑上去，恐高、带小孩的慎重，雨后和结冰时岩石很滑",
       "不在天际线公路上：从 Thornton Gap 出园经 Sperryville 开到步道口约 40 分钟，步道口收费站只能刷卡、没信号，票提前截图或打印",
     ],
-    photoFile: "Atop Old Rag Mountain (28219264562).jpg",
+    photoFile: "Old Rag Mountain Summit (55343361865).jpg",
   },
   {
     id: "shen-byrd-vc",

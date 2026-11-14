@@ -16,7 +16,7 @@ export const grandCanyon: Attraction[] = [
     mustSee: true,
     summary: "游客中心旁的第一个观景点，很多人在这里第一次看到大峡谷，视野开阔，日出时人很多。",
     tips: ["游客中心停车场最大；从这里沿 Rim Trail 平路可以一直走到村子"],
-    photoFile: "0059 Grand Canyon Mather Point Improvements (5373762649).jpg",
+    photoFile: "Grand canyon march 2013.jpg",
   },
   {
     id: "grca-yavapai",
@@ -29,7 +29,7 @@ export const grandCanyon: Attraction[] = [
     lon: -112.1168,
     durationMin: 45,
     summary: "带地质博物馆的观景点，大窗户正对峡谷，能看到谷底的科罗拉多河，适合先了解岩层再看景。",
-    photoFile: "Yavapai Geology Museum.jpg",
+    photoFile: "Yavapai Point Sunset (51299796632).jpg",
   },
   {
     id: "grca-bright-angel",
@@ -90,7 +90,7 @@ export const grandCanyon: Attraction[] = [
     mustSee: true,
     summary: "Hermit Road 上视野最开阔的观景点之一，能看到好几段科罗拉多河，是南缘最受欢迎的日落点。",
     tips: ["3 月到 11 月 Hermit Road 只通免费班车（红线）；回程班车不停霍皮点，要沿边缘步道往东走约 500 米到 Powell Point 上车，日落后回程班车很挤，早点去"],
-    photoFile: "Grand Canyon Hopi Point Evening Light 2013.jpg",
+    photoFile: "Grand Canyon Hopi Point with rainbow 2013.jpg",
   },
   {
     id: "grca-hermits-rest",
@@ -117,7 +117,7 @@ export const grandCanyon: Attraction[] = [
     durationMin: 30,
     bestTime: ["sunrise"],
     summary: "Desert View Drive 上的观景点，能看到科罗拉多河的大转弯和彩色岩层，日出时很出片，人比村子附近少。",
-    photoFile: "Lipan Point Grand Canyon 09 2017 5548.jpg",
+    photoFile: "Grand Canyon NP Lipan Point 0016 (5446829074).jpg",
   },
   {
     id: "grca-desert-view",
@@ -136,7 +136,7 @@ export const grandCanyon: Attraction[] = [
       "沿途的 Grandview Point、Moran Point、Lipan Point 都值得停",
       "东入口就在旁边，从佩吉（Page）方向过来可以从这里进园",
     ],
-    photoFile: "Desert View Tower, GCNP, AZ 20110810 1.jpg",
+    photoFile: "Desert View Watchtower, Grand Canyon.jpg",
   },
   {
     id: "grca-grandview-point",
@@ -164,6 +164,7 @@ export const grandCanyon: Attraction[] = [
     durationMin: 15,
     bestTime: ["sunset"],
     summary: "以画家 Thomas Moran 命名的观景点，能看到峡谷底部的一段科罗拉多河和 Hance 急流。",
+    photoFile: "Le Grand Canyon du Colorado panorama en 2016.JPG",
     tips: ["日落时岩壁颜色变化明显，人比村子附近少"],
   },
   {

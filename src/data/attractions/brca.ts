@@ -57,7 +57,7 @@ export const bryceCanyon: Attraction[] = [
       "2026 年 8 月底一场暴雨后 Wall Street 一侧关闭、重开时间未定（看 NPS 公告），Navajo 段改走 Two Bridges 一侧；平常冬季 Wall Street 也常因落石或结冰关闭",
       "海拔约 2,400 米，上坡慢慢走",
     ],
-    photoFile: "Thor's Hammer-Bryce Canyon.jpg",
+    photoFile: "Thor's Hammer-Bryce Canyon.jpg's Hammer-Bryce Canyon.jpg",
   },
   {
     id: "brca-inspiration-point",
@@ -177,6 +177,7 @@ export const bryceCanyon: Attraction[] = [
     },
     hike: { distanceMi: 8, gainFt: 1900, difficulty: "hard", loop: true },
     summary: "布莱斯人少景好的长环线：下到石林深处经过“塔桥”，再沿着边缘步道回到起点，一路都是不同角度的岩柱群。",
+    photoFile: "Bryce Canyon Fairyland Loop - panoramio.jpg",
     tips: ["全程约 13 公里，上上下下累计爬升约 580 米，留足半天", "也可以从日出点起步走这个环"],
   },
   {
@@ -203,6 +204,7 @@ export const bryceCanyon: Attraction[] = [
     },
     hike: { distanceMi: 5.5, gainFt: 1560, difficulty: "hard", loop: true },
     summary: "从布莱斯点下到圆形剧场底部的环线，穿过“窗墙”（Wall of Windows）等岩柱群，比纳瓦霍环线更深入、更安静。",
+    photoFile: "Peekaboo Loop, Bryce Canyon (20787983583).jpg",
     tips: ["这条步道和骑马团共用，遇到马队靠边让行", "回到布莱斯点是一段长上坡，留好体力"],
   },
   {

@@ -173,6 +173,7 @@ export const northCascades: Attraction[] = [
     hike: { distanceMi: 0.4, difficulty: "easy", loop: true },
     summary:
       "Gorge 水电站背后的瀑布和岩石花园，1920 年代由西雅图城市电力修建，溪水在岩缝间层层跌落，天黑后有彩色灯光照明。",
+    photoFile: "North Cascades National Park (9290012929).jpg",
     tips: [
       "从 Newhalem 东头的吊桥过河到 Gorge 发电站，花园里的环线约 0.4 英里，台阶多、有扶手",
       "全年每天开放，天黑后亮灯到 23 点；晚上去带手电",
@@ -191,6 +192,7 @@ export const northCascades: Attraction[] = [
     durationMin: 20,
     summary:
       "20 号公路跨过 Gorge Creek 的桥上就能看到，溪水分几级落进又深又窄的岩缝；停车场旁还有一条小环线，能俯瞰 Gorge 大坝和碧绿的 Gorge 湖。",
+    photoFile: "Gorge Creek Falls - 01.jpg",
     tips: [
       "在 MP 123.4，从 Newhalem 往东约 5 分钟；停车后沿人行道走上公路桥看瀑布，过马路走人行横道",
       "停车场出发的 Gorge Overlook 环线前 0.3 英里是铺装路，后约 0.5 英里是林间土路绕回停车场，有厕所",
@@ -279,6 +281,7 @@ export const northCascades: Attraction[] = [
       "罗斯湖观景点在 20 号公路冬季封闭段内（MP 134 以东），公路通常 11 月下旬到 12 月初封闭、次年 4 月或 5 月初开通（2026 年 6 月 14 日才通）；封路期间可以去 MP 134 以西的迪亚布洛湖观景台。",
     summary:
       "20 号公路 MP 135–136 一带的路边观景点，俯瞰 Ross 湖南端的 Ruby Arm 湖湾；Ross 湖是 Ross 大坝蓄出的长湖，一直延伸到加拿大边境。",
+    photoFile: "Davis Peak seen from Diablo Lake Overlook in the North Cascades.jpg",
     tips: [
       "往西一两英里的 Ross Dam 步道口（MP 134）可以下到大坝顶：往返约 1.5 英里（再走过大坝往返约 2.5 英里），回程是上坡",
       "旁边 MP 134.3 的 Happy Creek 森林木栈道很短，十几分钟就能走完",
@@ -305,6 +308,7 @@ export const northCascades: Attraction[] = [
     outsidePark: true,
     summary:
       "从 Washington Pass 附近出发，穿过森林和草甸爬到 Early Winters Spires 脚下的高山湖，湖水清澈，四周是花岗岩尖峰，秋天落叶松金黄。",
+    photoFile: "Blue Lake, North Cascades.jpg",
     tips: [
       "步道口在 Washington Pass 观景台以西不到 1 英里的公路边，有旱厕",
       USFS_PARKING,
@@ -330,6 +334,7 @@ export const northCascades: Attraction[] = [
     outsidePark: true,
     summary:
       "Rainy Pass 停车场出发的铺装步道，约 1 英里几乎没有坡，走到被陡峭山壁环抱的 Rainy Lake 湖边，老人小孩和轮椅都能去。",
+    photoFile: "Rainy Lake im North Cascades National Park.jpg",
     tips: [
       `和枫树山口环线共用 Rainy Pass 停车场（MP 158 附近）；${USFS_PARKING}`,
       "海拔约 1,460 米，初夏步道上可能还有残雪",
