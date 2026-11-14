@@ -11,6 +11,17 @@ import { roadDecides, roadFor, roadStatus } from "../roads";
 import { fitFor, type Party } from "../suitability";
 import { departuresOn, runsOn, tourScheduleOf } from "../tours";
 import { airportMinutes, gatewayNode, NO_ROAD_MIN, travelMinutes } from "../travel";
+import { bookingRules } from "../../data/bookings";
+import { manualFees, parkingTags } from "../../data/fees-manual";
+import { feesUpdated, parkFees } from "../../data/fees.generated";
+import { bookingsForTrip, openingState } from "../booking";
+import { crowdLevel, crowdRatios } from "../crowd";
+import { rankSeasons, type ParkWindow } from "../season-score";
+import { parkSeason, type ParkSeason } from "../seasons";
+import { formatClock, minutesOfDay, sunTimes } from "../sun";
+import { zoneOf } from "../time-zone";
+import { parkVisits } from "../visits";
+import { NONRESIDENT_PASS, RESIDENT_PASS, SURCHARGE } from "../../components/plan/budget";
 
 /**
  * Copilot 的查询工具（计划书的 is_open、drive_time、search_attractions；10-21 仓库主人要的“单独的查询工具”）。
@@ -20,6 +31,12 @@ import { airportMinutes, gatewayNode, NO_ROAD_MIN, travelMinutes } from "../trav
  * - is_open：某个景点某一天能不能去（临时关闭、季节性山路往年这一天通没通、开放月份、游船导览的班次、许可证）
  * - drive_time：两个地方之间开车多久（景点、住处、公园、常用机场，都用预先算好的车程表）
  * - search：按条件找景点（公园、类型、步道长度和难度、同行的人、不用抽签、这几天开着）
+ * - season_rank：按季节比公园（“什么时候去”页的打分，lib/season-score.ts）
+ * - fees：门票、年卡、非居民附加费
+ * - sun_times：某天日出日落几点（当地时间）
+ * - booking：某天去要提前订什么、哪天开订（data/bookings.ts）
+ * - crowd：每个月人多不多（NPS 游客人次）
+ * 后五个是 11-13 为 search agent 加的：模型自己选工具、填参数，一句话可以查好几样
  */
 
 export type LookupRequest =
@@ -40,7 +57,16 @@ export type LookupRequest =
       date?: string;
       month?: number;
       limit?: number;
-    };
+    }
+  /** month（整个月）或 start（出发那天起十天，和“什么时候去”页一样）选一个；parks 给了就只比这几座 */
+  | { tool: "season_rank"; month?: number; start?: string; parks?: string[]; today?: string; limit?: number }
+  | { tool: "fees"; park: string }
+  /** park 或 attraction 选一个 */
+  | { tool: "sun_times"; park?: string; attraction?: string; date: string }
+  /** 那天去 park（或其中的 attraction、住 lodging）要提前订什么；today 用来算还有几天开订 */
+  | { tool: "booking"; park: string; date: string; attraction?: string; lodging?: string; today?: string }
+  /** month 不给就列 12 个月 */
+  | { tool: "crowd"; park: string; month?: number };
 
 export interface OpenFact {
   kind: "closure" | "road" | "season" | "tour" | "permit" | "hours";
@@ -274,8 +300,188 @@ export function searchAttractions(request: Extract<LookupRequest, { tool: "searc
   };
 }
 
+const round = (value: number, digits = 0) => Math.round(value * 10 ** digits) / 10 ** digits;
+const seasonsByToday = new Map<string, ParkSeason[]>();
+
+/** 所有公园每个月的情况（parkSeason 要把全部景点过一遍，同一个 today 只算一次） */
+function seasonsOn(today: string | undefined): ParkSeason[] {
+  const key = today ?? "";
+  if (!seasonsByToday.has(key)) seasonsByToday.set(key, parks.map((park) => parkSeason(park, today)));
+  return seasonsByToday.get(key)!;
+}
+
+function seasonRow(item: ParkWindow) {
+  const park = parkByCode.get(item.park.code);
+  const climate = item.climate;
+  return {
+    code: item.park.code,
+    nameZh: item.park.nameZh,
+    nameEn: item.park.nameEn,
+    site: park?.kind === "site",
+    country: park?.country ?? "US",
+    verdict: item.verdict,
+    score: round(item.score, 1),
+    inBestMonths: item.best,
+    bestMonths: item.park.bestMonths,
+    openShare: round(item.open, 2),
+    closedMustSee: item.closedMustSee,
+    climate: climate
+      ? {
+          highC: round(climate.high),
+          hottestC: round(climate.hottest),
+          lowC: round(climate.low),
+          wetDays: round(climate.wetDays),
+          snowDays: round(climate.snowDays),
+        }
+      : undefined,
+    events: item.events,
+    roads: item.roads.map((road) => ({ road: item.park.roadNames[road.road] ?? road.road, date: road.date, chance: round(road.chance, 2) })),
+    crowd: item.crowd ? { level: item.crowd.level, perDay: Math.round(item.crowd.perDay) } : undefined,
+  };
+}
+
+/** 按季节比公园：分最适合 / 可以去 / 不太合适三档（分数 5.2、3 分界，和“什么时候去”页一样） */
+export function seasonRank(request: Extract<LookupRequest, { tool: "season_rank" }>) {
+  const pick = request.start ? { start: request.start } : request.month ? { month: request.month } : null;
+  if (!pick) return { tool: "season_rank" as const, error: "need_month_or_start" };
+  // 和“什么时候去”页一样只比国家公园；点名比较时园外名胜（羚羊峡谷、马蹄湾……）也算
+  const pool = seasonsOn(request.today).filter((park) =>
+    request.parks?.length ? request.parks.includes(park.code) : parkByCode.get(park.code)?.kind !== "site",
+  );
+  const ranked = rankSeasons(pool, pick);
+  const window = "start" in pick ? { from: pick.start, days: 10 } : { month: pick.month };
+  if (request.parks?.length) return { tool: "season_rank" as const, window, compared: ranked.map(seasonRow) };
+  const limit = request.limit ?? 10;
+  const names = (items: ParkWindow[]) => items.map((item) => ({ code: item.park.code, nameZh: item.park.nameZh, nameEn: item.park.nameEn }));
+  const great = ranked.filter((item) => item.verdict === "great");
+  const ok = ranked.filter((item) => item.verdict === "ok");
+  const poor = ranked.filter((item) => item.verdict === "poor");
+  return {
+    tool: "season_rank" as const,
+    window,
+    counts: { great: great.length, ok: ok.length, poor: poor.length },
+    great: great.slice(0, limit).map(seasonRow),
+    moreGreat: names(great.slice(limit)),
+    ok: names(ok),
+    poor: names(poor),
+  };
+}
+
+/** 门票：一辆车 / 每人；美国 NPS 的公园另说年卡和 2026 年起的非居民附加费 */
+export function fees(code: string) {
+  const park = parkByCode.get(code);
+  if (!park) return { tool: "fees" as const, error: "unknown_park", park: code };
+  const nps = parkFees[code];
+  const manual = manualFees[code];
+  const tag = parkingTags[code];
+  const npsPark = park.kind !== "site" && park.country !== "CA";
+  return {
+    tool: "fees" as const,
+    park: { code, nameZh: park.nameZh, nameEn: park.nameEn },
+    currency: manual?.currency ?? "USD",
+    vehicle: nps?.vehicle ?? manual?.vehicle,
+    perPerson: nps?.perPerson ?? manual?.perPerson,
+    motorcycle: nps?.motorcycle,
+    perDay: manual?.perDay ?? false,
+    noteZh: nps?.note ?? manual?.note,
+    parkingTag: tag ? { day: tag.day, week: tag.week, year: tag.year } : undefined,
+    // 国家公园年卡只在美国 NPS 管的公园能用；园外名胜、加拿大的不行
+    passes: npsPark ? { residentUsd: RESIDENT_PASS, nonresidentUsd: NONRESIDENT_PASS } : undefined,
+    /** 16 岁以上的非美国居民每人；同车有人持有效年卡整车免收 */
+    nonresidentSurchargeUsd: park.nonresidentSurcharge ? SURCHARGE : 0,
+    checked: manual?.checked ?? feesUpdated,
+    source: manual?.source ?? `https://www.nps.gov/${code}/planyourvisit/fees.htm`,
+  };
+}
+
+/** 日出日落（当地时间，误差一两分钟）：景点按景点的位置和时区，公园按门户小镇 */
+export function sunTimesAt(request: Extract<LookupRequest, { tool: "sun_times" }>) {
+  const stop = request.attraction ? stopById.get(request.attraction) : undefined;
+  const park = parkByCode.get(stop?.park ?? request.park ?? "");
+  if (!park || (request.attraction && !stop)) {
+    return { tool: "sun_times" as const, error: "unknown_place", park: request.park, attraction: request.attraction };
+  }
+  const point = stop ? { lat: stop.lat, lon: stop.lon } : park.gateway;
+  const zone = (stop ? zoneOf(stop) : undefined) ?? park.timeZone;
+  const sun = sunTimes(request.date, point.lat, point.lon);
+  const place = stop ? brief(stop) : { code: park.code, nameZh: park.nameZh, nameEn: park.nameEn, gatewayZh: park.gateway.nameZh };
+  if (sun.kind !== "normal") return { tool: "sun_times" as const, place, date: request.date, timeZone: zone, polar: sun.kind };
+  return {
+    tool: "sun_times" as const,
+    place,
+    date: request.date,
+    timeZone: zone,
+    sunrise: formatClock(minutesOfDay(sun.sunrise, zone)),
+    sunset: formatClock(minutesOfDay(sun.sunset, zone)),
+  };
+}
+
+/** 那天去要提前订的：按网站“要提前订的”那一套规则算哪天开订；给了 today 再算现在是什么状态 */
+export function booking(request: Extract<LookupRequest, { tool: "booking" }>) {
+  const park = parkByCode.get(request.park);
+  if (!park) return { tool: "booking" as const, error: "unknown_park", park: request.park };
+  const stops = request.attraction
+    ? [request.attraction]
+    : attractions.filter((stop) => stop.park === request.park).map((stop) => stop.id);
+  const items = bookingsForTrip([{ day: 0, date: request.date, parks: [request.park], stops, lodging: request.lodging }], bookingRules);
+  return {
+    tool: "booking" as const,
+    park: { code: park.code, nameZh: park.nameZh, nameEn: park.nameEn },
+    date: request.date,
+    items: items.map((item) => ({
+      id: item.rule.id,
+      titleZh: item.rule.titleZh,
+      kind: item.rule.kind,
+      for: item.rule.targets
+        .filter((id) => stops.includes(id) || id === request.lodging)
+        .map((id) => stopById.get(id)?.nameZh ?? stayById.get(id)?.nameZh ?? id),
+      openings: item.openings.map((opening) => ({
+        type: opening.window.type,
+        opens: opening.opens,
+        time: opening.time,
+        tz: opening.tz,
+        closes: opening.closes,
+        results: opening.results,
+        ...(request.today ? { state: openingState(opening, request.today) } : {}),
+      })),
+      noteZh: item.rule.noteZh,
+      url: item.rule.url,
+      verified: item.rule.verified,
+    })),
+  };
+}
+
+/** 人多不多：每个月平均每天多少人次、和最挤的月份比是哪一档（加拿大的公园、园外名胜没有按月的数字） */
+export function crowd(code: string, month?: number) {
+  const park = parkByCode.get(code);
+  if (!park) return { tool: "crowd" as const, error: "unknown_park", park: code };
+  const base = { tool: "crowd" as const, park: { code, nameZh: park.nameZh, nameEn: park.nameEn } };
+  const visits = parkVisits(code);
+  if (!visits) return { ...base, error: "no_data" };
+  const daily = visits.daily;
+  const ratios = daily ? crowdRatios(daily) : undefined;
+  const months =
+    daily && ratios ? daily.map((perDay, i) => ({ month: i + 1, perDay: Math.round(perDay), level: crowdLevel(ratios[i]) })) : undefined;
+  return {
+    ...base,
+    latestYear: visits.lastYear,
+    latestVisits: visits.latest,
+    rank: visits.rank,
+    months: month && months ? months.filter((row) => row.month === month) : months,
+    busiestMonth: months ? months.reduce((a, b) => (b.perDay > a.perDay ? b : a)).month : undefined,
+    quietestMonth: months ? months.reduce((a, b) => (b.perDay < a.perDay ? b : a)).month : undefined,
+    years: visits.dailyYears,
+    source: visits.sourceUrl,
+  };
+}
+
 export function lookup(request: LookupRequest) {
   if (request.tool === "is_open") return isOpen(request.attraction, request.date, request.text);
   if (request.tool === "drive_time") return driveTime(request.from, request.to);
+  if (request.tool === "season_rank") return seasonRank(request);
+  if (request.tool === "fees") return fees(request.park);
+  if (request.tool === "sun_times") return sunTimesAt(request);
+  if (request.tool === "booking") return booking(request);
+  if (request.tool === "crowd") return crowd(request.park, request.month);
   return searchAttractions(request);
 }
