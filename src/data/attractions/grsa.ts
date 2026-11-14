@@ -78,7 +78,7 @@ export const greatSandDunes: Attraction[] = [
       "5 月下旬到 6 月初的周末最挤，入口排长队、停车场爆满，尽量工作日去；刚从山上下来的水很凉，太阳晒几个小时后暖一些",
       "6 月中旬水变浅变暖后蚊子很多，到对岸没有树丛的沙地上会好一些；水大的年份小孩可以趴在充气垫上顺浪漂一小段",
     ],
-    photoFile: "Great Sand Dunes National Park with Medano Creek in Foreground.tif",
+    photoFile: "Great Sand Dunes National Park - Medano Creek, dunes and Sangre de Cristo Mountains.jpg",
   },
   {
     id: "grsa-high-dune",

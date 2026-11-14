@@ -234,7 +234,7 @@ export const petrifiedForest: Attraction[] = [
     summary:
       "一根约 30 米长的化石树干横跨在一条砂岩冲沟上，自己成了一座“桥”。19 世纪末就是这里最有名的景点，1917 年在底下加了一道混凝土梁防止断裂。",
     tips: ["不能走上去，在旁边的观景台看"],
-    photoFile: "Culvert at Agate Bridge. Looking SW. - Petrified Forest National Park Roads and Bridges, Holbrook, Navajo County, AZ HAER AZ-58-15.tif",
+    photoFile: "Agate Bridge.jpg",
   },
   {
     id: "pefo-jasper-forest",

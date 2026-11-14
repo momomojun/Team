@@ -199,7 +199,7 @@ export const jasper: Attraction[] = [
       "精灵岛在湖中段，只能坐游船去看，湖边走不到",
       "旁边的驼鹿湖环线（Moose Lake Loop）约 2.7 公里，有时能在湖边看到驼鹿",
     ],
-    photoFile: "Spirit Island on Maligne Lake1.jpg",
+    photoFile: "Sunrise at Maligne lake.jpg",
   },
   {
     id: "jasp-spirit-island",

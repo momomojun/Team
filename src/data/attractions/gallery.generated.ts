@@ -1170,12 +1170,12 @@ export const gallery: Record<string, Photo[]> = {
   ],
   "yose-valley-view": [
     {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0f/Panoramic_Overview_from_Glacier_Point_over_Yosemite_Valley_2013_Alternative.jpg/960px-Panoramic_Overview_from_Glacier_Point_over_Yosemite_Valley_2013_Alternative.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0f/Panoramic_Overview_from_Glacier_Point_over_Yosemite_Valley_2013_Alternative.jpg/1920px-Panoramic_Overview_from_Glacier_Point_over_Yosemite_Valley_2013_Alternative.jpg",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f0/Valley_View_Yosemite_August_2013_002.jpg/960px-Valley_View_Yosemite_August_2013_002.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f0/Valley_View_Yosemite_August_2013_002.jpg/1920px-Valley_View_Yosemite_August_2013_002.jpg",
       "width": 960,
-      "height": 423,
-      "page": "https://commons.wikimedia.org/wiki/File:Panoramic_Overview_from_Glacier_Point_over_Yosemite_Valley_2013_Alternative.jpg",
-      "author": "Tuxyso",
+      "height": 636,
+      "page": "https://commons.wikimedia.org/wiki/File:Valley_View_Yosemite_August_2013_002.jpg",
+      "author": "King of Hearts",
       "license": "CC BY-SA 3.0"
     },
     {
@@ -1184,15 +1184,6 @@ export const gallery: Record<string, Photo[]> = {
       "width": 960,
       "height": 768,
       "page": "https://commons.wikimedia.org/wiki/File:Valley_View_Yosemite_August_2013_panorama.jpg",
-      "author": "King of Hearts",
-      "license": "CC BY-SA 3.0"
-    },
-    {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/Valley_View_Yosemite_August_2013_001.jpg/960px-Valley_View_Yosemite_August_2013_001.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/Valley_View_Yosemite_August_2013_001.jpg/1920px-Valley_View_Yosemite_August_2013_001.jpg",
-      "width": 960,
-      "height": 640,
-      "page": "https://commons.wikimedia.org/wiki/File:Valley_View_Yosemite_August_2013_001.jpg",
       "author": "King of Hearts",
       "license": "CC BY-SA 3.0"
     },
@@ -1240,6 +1231,15 @@ export const gallery: Record<string, Photo[]> = {
       "page": "https://commons.wikimedia.org/wiki/File:Yosemite_Valley_-_panoramio_(9).jpg",
       "author": "Dameon Hudson",
       "license": "CC BY 3.0"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1b/Yosemite_Valley_-_Flickr_-_Moo.The.Cow.jpg/960px-Yosemite_Valley_-_Flickr_-_Moo.The.Cow.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1b/Yosemite_Valley_-_Flickr_-_Moo.The.Cow.jpg/1920px-Yosemite_Valley_-_Flickr_-_Moo.The.Cow.jpg",
+      "width": 960,
+      "height": 720,
+      "page": "https://commons.wikimedia.org/wiki/File:Yosemite_Valley_-_Flickr_-_Moo.The.Cow.jpg",
+      "author": "Michael Kwok",
+      "license": "CC BY 2.0"
     }
   ],
   "yose-swinging-bridge": [
@@ -1466,6 +1466,15 @@ export const gallery: Record<string, Photo[]> = {
   ],
   "yose-upper-yosemite-fall": [
     {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/21/Yosemite_Falls_Trail_May_2011_003.jpg/960px-Yosemite_Falls_Trail_May_2011_003.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/21/Yosemite_Falls_Trail_May_2011_003.jpg/1920px-Yosemite_Falls_Trail_May_2011_003.jpg",
+      "width": 960,
+      "height": 1440,
+      "page": "https://commons.wikimedia.org/wiki/File:Yosemite_Falls_Trail_May_2011_003.jpg",
+      "author": "King of Hearts",
+      "license": "CC BY-SA 4.0"
+    },
+    {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2f/Yosemite_National_Park_-_HCP_-_October_07%2C_2022_-_063_-_Upper_Falls_Trail.jpg/960px-Yosemite_National_Park_-_HCP_-_October_07%2C_2022_-_063_-_Upper_Falls_Trail.jpg",
       "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2f/Yosemite_National_Park_-_HCP_-_October_07%2C_2022_-_063_-_Upper_Falls_Trail.jpg/1920px-Yosemite_National_Park_-_HCP_-_October_07%2C_2022_-_063_-_Upper_Falls_Trail.jpg",
       "width": 960,
@@ -1527,15 +1536,6 @@ export const gallery: Record<string, Photo[]> = {
       "page": "https://commons.wikimedia.org/wiki/File:Yosemite_National_Park_002.jpg",
       "author": "Nahid Sultan This work was made by Nahid Sultan and released under the license(s) stated below. Please feel free to use it for any purpose as long as you credit Nahid Sultan as author and follow the terms of the chosen license. If you use this work outside of the Wikimedia projects, I would very much like to get a note from you. Thanks!",
       "license": "CC BY-SA 4.0"
-    },
-    {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a1/Yosemite_Camp_Four-5.jpg/960px-Yosemite_Camp_Four-5.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a1/Yosemite_Camp_Four-5.jpg/1920px-Yosemite_Camp_Four-5.jpg",
-      "width": 960,
-      "height": 640,
-      "page": "https://commons.wikimedia.org/wiki/File:Yosemite_Camp_Four-5.jpg",
-      "author": "Almonroth",
-      "license": "CC BY-SA 3.0"
     }
   ],
   "yose-four-mile-trail": [
@@ -1614,13 +1614,13 @@ export const gallery: Record<string, Photo[]> = {
   ],
   "yose-nevada-fall": [
     {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/72/Four_Mile_Trailhead.jpg/960px-Four_Mile_Trailhead.jpg",
-      "large": "https://upload.wikimedia.org/wikipedia/commons/7/72/Four_Mile_Trailhead.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/12/Yosemite_National_Park%2C_Nevada_Fall%2C_2024-07_CN-03.jpg/960px-Yosemite_National_Park%2C_Nevada_Fall%2C_2024-07_CN-03.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/12/Yosemite_National_Park%2C_Nevada_Fall%2C_2024-07_CN-03.jpg/1920px-Yosemite_National_Park%2C_Nevada_Fall%2C_2024-07_CN-03.jpg",
       "width": 960,
-      "height": 640,
-      "page": "https://commons.wikimedia.org/wiki/File:Four_Mile_Trailhead.jpg",
-      "author": "Alex",
-      "license": "CC BY 3.0"
+      "height": 1440,
+      "page": "https://commons.wikimedia.org/wiki/File:Yosemite_National_Park,_Nevada_Fall,_2024-07_CN-03.jpg",
+      "author": "Steffen Schmitz (more photos)",
+      "license": "CC BY-SA 4.0"
     },
     {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e8/Nevada_Fall_and_Merced_River_0486.jpg/960px-Nevada_Fall_and_Merced_River_0486.jpg",
@@ -6546,13 +6546,13 @@ export const gallery: Record<string, Photo[]> = {
   ],
   "crla-pinnacles": [
     {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/33/View_from_Pinnacles_Overlook_Drive._View_SE._-_Crater_Lake_National_Park_Roads%2C_Klamath_Falls%2C_Klamath_County%2C_OR_HAER_OR-107-40.tif/lossy-page1-960px-View_from_Pinnacles_Overlook_Drive._View_SE._-_Crater_Lake_National_Park_Roads%2C_Klamath_Falls%2C_Klamath_County%2C_OR_HAER_OR-107-40.tif.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/33/View_from_Pinnacles_Overlook_Drive._View_SE._-_Crater_Lake_National_Park_Roads%2C_Klamath_Falls%2C_Klamath_County%2C_OR_HAER_OR-107-40.tif/lossy-page1-960px-View_from_Pinnacles_Overlook_Drive._View_SE._-_Crater_Lake_National_Park_Roads%2C_Klamath_Falls%2C_Klamath_County%2C_OR_HAER_OR-107-40.tif.jpg",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5b/The_Pinnacles_of_Crater_Lake_%2814938121958%29.jpg/960px-The_Pinnacles_of_Crater_Lake_%2814938121958%29.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5b/The_Pinnacles_of_Crater_Lake_%2814938121958%29.jpg/1920px-The_Pinnacles_of_Crater_Lake_%2814938121958%29.jpg",
       "width": 960,
-      "height": 1316,
-      "page": "https://commons.wikimedia.org/wiki/File:View_from_Pinnacles_Overlook_Drive._View_SE._-_Crater_Lake_National_Park_Roads,_Klamath_Falls,_Klamath_County,_OR_HAER_OR-107-40.tif",
-      "author": "https://www.loc.gov/pictures/item/or0474.photos.200177p",
-      "license": "Public domain"
+      "height": 549,
+      "page": "https://commons.wikimedia.org/wiki/File:The_Pinnacles_of_Crater_Lake_(14938121958).jpg",
+      "author": "zoxcleb",
+      "license": "CC BY-SA 2.0"
     },
     {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6e/Crater_Lake_Pinnacles.JPG/960px-Crater_Lake_Pinnacles.JPG",
@@ -6569,15 +6569,6 @@ export const gallery: Record<string, Photo[]> = {
       "width": 960,
       "height": 628,
       "page": "https://commons.wikimedia.org/wiki/File:The_Pinnacles_of_Crater_Lake_(15101699096).jpg",
-      "author": "zoxcleb",
-      "license": "CC BY-SA 2.0"
-    },
-    {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5b/The_Pinnacles_of_Crater_Lake_%2814938121958%29.jpg/960px-The_Pinnacles_of_Crater_Lake_%2814938121958%29.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5b/The_Pinnacles_of_Crater_Lake_%2814938121958%29.jpg/1920px-The_Pinnacles_of_Crater_Lake_%2814938121958%29.jpg",
-      "width": 960,
-      "height": 549,
-      "page": "https://commons.wikimedia.org/wiki/File:The_Pinnacles_of_Crater_Lake_(14938121958).jpg",
       "author": "zoxcleb",
       "license": "CC BY-SA 2.0"
     }
@@ -9904,15 +9895,6 @@ export const gallery: Record<string, Photo[]> = {
   ],
   "noca-ross-lake-overlook": [
     {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/43/Davis_Peak_seen_from_Diablo_Lake_Overlook_in_the_North_Cascades.jpg/960px-Davis_Peak_seen_from_Diablo_Lake_Overlook_in_the_North_Cascades.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/43/Davis_Peak_seen_from_Diablo_Lake_Overlook_in_the_North_Cascades.jpg/1920px-Davis_Peak_seen_from_Diablo_Lake_Overlook_in_the_North_Cascades.jpg",
-      "width": 960,
-      "height": 720,
-      "page": "https://commons.wikimedia.org/wiki/File:Davis_Peak_seen_from_Diablo_Lake_Overlook_in_the_North_Cascades.jpg",
-      "author": "Ron Clausen",
-      "license": "CC BY-SA 4.0"
-    },
-    {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f0/Ross_Lake.jpg/960px-Ross_Lake.jpg",
       "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f0/Ross_Lake.jpg/1280px-Ross_Lake.jpg",
       "width": 960,
@@ -9920,6 +9902,15 @@ export const gallery: Record<string, Photo[]> = {
       "page": "https://commons.wikimedia.org/wiki/File:Ross_Lake.jpg",
       "author": "Steven PavlovUser:Senapa/TemplateFB",
       "license": "CC BY-SA 3.0"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/43/Davis_Peak_seen_from_Diablo_Lake_Overlook_in_the_North_Cascades.jpg/960px-Davis_Peak_seen_from_Diablo_Lake_Overlook_in_the_North_Cascades.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/43/Davis_Peak_seen_from_Diablo_Lake_Overlook_in_the_North_Cascades.jpg/1920px-Davis_Peak_seen_from_Diablo_Lake_Overlook_in_the_North_Cascades.jpg",
+      "width": 960,
+      "height": 720,
+      "page": "https://commons.wikimedia.org/wiki/File:Davis_Peak_seen_from_Diablo_Lake_Overlook_in_the_North_Cascades.jpg",
+      "author": "Ron Clausen",
+      "license": "CC BY-SA 4.0"
     },
     {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c7/Pullout_views_from_Highway_20_%2827_April_2025%29.jpg/960px-Pullout_views_from_Highway_20_%2827_April_2025%29.jpg",
@@ -11386,11 +11377,11 @@ export const gallery: Record<string, Photo[]> = {
   ],
   "yell-tower-fall": [
     {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/65/Sunrise_over_Roosevelt_Arch_at_the_North_Entrance_%2838443679615%29.jpg/960px-Sunrise_over_Roosevelt_Arch_at_the_North_Entrance_%2838443679615%29.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/65/Sunrise_over_Roosevelt_Arch_at_the_North_Entrance_%2838443679615%29.jpg/1920px-Sunrise_over_Roosevelt_Arch_at_the_North_Entrance_%2838443679615%29.jpg",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6a/Morning_light_on_Tower_Fall_%2836694655800%29.jpg/960px-Morning_light_on_Tower_Fall_%2836694655800%29.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6a/Morning_light_on_Tower_Fall_%2836694655800%29.jpg/1920px-Morning_light_on_Tower_Fall_%2836694655800%29.jpg",
       "width": 960,
-      "height": 640,
-      "page": "https://commons.wikimedia.org/wiki/File:Sunrise_over_Roosevelt_Arch_at_the_North_Entrance_(38443679615).jpg",
+      "height": 1440,
+      "page": "https://commons.wikimedia.org/wiki/File:Morning_light_on_Tower_Fall_(36694655800).jpg",
       "author": "Yellowstone National Park",
       "license": "Public domain"
     },
@@ -11978,15 +11969,6 @@ export const gallery: Record<string, Photo[]> = {
   ],
   "yell-lake-yellowstone": [
     {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/28/Sunset_lake_20190714_132237_1.jpg/960px-Sunset_lake_20190714_132237_1.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/28/Sunset_lake_20190714_132237_1.jpg/1920px-Sunset_lake_20190714_132237_1.jpg",
-      "width": 960,
-      "height": 641,
-      "page": "https://commons.wikimedia.org/wiki/File:Sunset_lake_20190714_132237_1.jpg",
-      "author": "G. Edward Johnson",
-      "license": "CC BY 3.0"
-    },
-    {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5c/Yellowstone_Lake_West_Thumb_YNP1.jpg/960px-Yellowstone_Lake_West_Thumb_YNP1.jpg",
       "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5c/Yellowstone_Lake_West_Thumb_YNP1.jpg/1920px-Yellowstone_Lake_West_Thumb_YNP1.jpg",
       "width": 960,
@@ -12046,6 +12028,15 @@ export const gallery: Record<string, Photo[]> = {
       "width": 960,
       "height": 617,
       "page": "https://commons.wikimedia.org/wiki/File:Yellowstone_Lake_(20454237692).jpg",
+      "author": "Yellowstone National Park from Yellowstone NP, USA",
+      "license": "Public domain"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b2/Yellowstone_Lake_%2820462978445%29.jpg/960px-Yellowstone_Lake_%2820462978445%29.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b2/Yellowstone_Lake_%2820462978445%29.jpg/1920px-Yellowstone_Lake_%2820462978445%29.jpg",
+      "width": 960,
+      "height": 602,
+      "page": "https://commons.wikimedia.org/wiki/File:Yellowstone_Lake_(20462978445).jpg",
       "author": "Yellowstone National Park from Yellowstone NP, USA",
       "license": "Public domain"
     }
@@ -13181,15 +13172,6 @@ export const gallery: Record<string, Photo[]> = {
     }
   ],
   "grte-delta-lake": [
-    {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5e/Visitor_photographing_the_Tetons_from_Taggart_Lake_%2853043817870%29.jpg/960px-Visitor_photographing_the_Tetons_from_Taggart_Lake_%2853043817870%29.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5e/Visitor_photographing_the_Tetons_from_Taggart_Lake_%2853043817870%29.jpg/1920px-Visitor_photographing_the_Tetons_from_Taggart_Lake_%2853043817870%29.jpg",
-      "width": 960,
-      "height": 1280,
-      "page": "https://commons.wikimedia.org/wiki/File:Visitor_photographing_the_Tetons_from_Taggart_Lake_(53043817870).jpg",
-      "author": "GrandTetonNPS",
-      "license": "Public domain"
-    },
     {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/eb/Delta_Lake_Gideon_Tsang_July_2020_1.jpg/960px-Delta_Lake_Gideon_Tsang_July_2020_1.jpg",
       "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/eb/Delta_Lake_Gideon_Tsang_July_2020_1.jpg/1920px-Delta_Lake_Gideon_Tsang_July_2020_1.jpg",
@@ -14935,13 +14917,13 @@ export const gallery: Record<string, Photo[]> = {
   ],
   "zion-watchman-trail": [
     {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5c/Zion_National_Park_-_HCP_-_October_02%2C_2022_-_090_-_Road_into_Watchman_Campground.jpg/960px-Zion_National_Park_-_HCP_-_October_02%2C_2022_-_090_-_Road_into_Watchman_Campground.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5c/Zion_National_Park_-_HCP_-_October_02%2C_2022_-_090_-_Road_into_Watchman_Campground.jpg/1920px-Zion_National_Park_-_HCP_-_October_02%2C_2022_-_090_-_Road_into_Watchman_Campground.jpg",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/32/The_Watchman_Trail_%2812323611713%29.jpg/960px-The_Watchman_Trail_%2812323611713%29.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/32/The_Watchman_Trail_%2812323611713%29.jpg/1280px-The_Watchman_Trail_%2812323611713%29.jpg",
       "width": 960,
-      "height": 720,
-      "page": "https://commons.wikimedia.org/wiki/File:Zion_National_Park_-_HCP_-_October_02,_2022_-_090_-_Road_into_Watchman_Campground.jpg",
-      "author": "Vulturesong",
-      "license": "CC0"
+      "height": 1434,
+      "page": "https://commons.wikimedia.org/wiki/File:The_Watchman_Trail_(12323611713).jpg",
+      "author": "ZionNPS",
+      "license": "Public domain"
     },
     {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/19/Zion_National_Park_-_HCP_-_October_03%2C_2022_-_108_-_The_Watchman_Trail.jpg/960px-Zion_National_Park_-_HCP_-_October_03%2C_2022_-_108_-_The_Watchman_Trail.jpg",
@@ -14953,6 +14935,15 @@ export const gallery: Record<string, Photo[]> = {
       "license": "CC0"
     },
     {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/ff/Zion_National_Park_-_HCP_-_October_03%2C_2022_-_110_-_The_Watchman_Trail.jpg/960px-Zion_National_Park_-_HCP_-_October_03%2C_2022_-_110_-_The_Watchman_Trail.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/ff/Zion_National_Park_-_HCP_-_October_03%2C_2022_-_110_-_The_Watchman_Trail.jpg/1920px-Zion_National_Park_-_HCP_-_October_03%2C_2022_-_110_-_The_Watchman_Trail.jpg",
+      "width": 960,
+      "height": 720,
+      "page": "https://commons.wikimedia.org/wiki/File:Zion_National_Park_-_HCP_-_October_03,_2022_-_110_-_The_Watchman_Trail.jpg",
+      "author": "Vulturesong",
+      "license": "CC0"
+    },
+    {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/eb/The_Watchman%2C_Zion_National_Park_-_Flickr_-_Sergiy_Galyonkin.jpg/960px-The_Watchman%2C_Zion_National_Park_-_Flickr_-_Sergiy_Galyonkin.jpg",
       "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/eb/The_Watchman%2C_Zion_National_Park_-_Flickr_-_Sergiy_Galyonkin.jpg/1920px-The_Watchman%2C_Zion_National_Park_-_Flickr_-_Sergiy_Galyonkin.jpg",
       "width": 960,
@@ -14960,15 +14951,6 @@ export const gallery: Record<string, Photo[]> = {
       "page": "https://commons.wikimedia.org/wiki/File:The_Watchman,_Zion_National_Park_-_Flickr_-_Sergiy_Galyonkin.jpg",
       "author": "Sergiy Galyonkin from Raleigh, USA",
       "license": "CC BY-SA 2.0"
-    },
-    {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/32/The_Watchman_Trail_%2812323611713%29.jpg/960px-The_Watchman_Trail_%2812323611713%29.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/32/The_Watchman_Trail_%2812323611713%29.jpg/1280px-The_Watchman_Trail_%2812323611713%29.jpg",
-      "width": 960,
-      "height": 1434,
-      "page": "https://commons.wikimedia.org/wiki/File:The_Watchman_Trail_(12323611713).jpg",
-      "author": "ZionNPS",
-      "license": "Public domain"
     },
     {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f7/Alpenglow_%2815696764814%29.jpg/960px-Alpenglow_%2815696764814%29.jpg",
@@ -15749,13 +15731,13 @@ export const gallery: Record<string, Photo[]> = {
   ],
   "zion-observation-point": [
     {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/66/Scouts_Lookout%2C_on_the_way_up_to_Angels_Landing_%28Zion_National_Park%29_%283443196545%29.jpg/960px-Scouts_Lookout%2C_on_the_way_up_to_Angels_Landing_%28Zion_National_Park%29_%283443196545%29.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/66/Scouts_Lookout%2C_on_the_way_up_to_Angels_Landing_%28Zion_National_Park%29_%283443196545%29.jpg/1920px-Scouts_Lookout%2C_on_the_way_up_to_Angels_Landing_%28Zion_National_Park%29_%283443196545%29.jpg",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/40/Observation_Point_from_East_Mesa_Trail_-_panoramio.jpg/960px-Observation_Point_from_East_Mesa_Trail_-_panoramio.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/40/Observation_Point_from_East_Mesa_Trail_-_panoramio.jpg/1920px-Observation_Point_from_East_Mesa_Trail_-_panoramio.jpg",
       "width": 960,
       "height": 640,
-      "page": "https://commons.wikimedia.org/wiki/File:Scouts_Lookout,_on_the_way_up_to_Angels_Landing_(Zion_National_Park)_(3443196545).jpg",
-      "author": "Alex Proimos from Sydney, Australia",
-      "license": "CC BY 2.0"
+      "page": "https://commons.wikimedia.org/wiki/File:Observation_Point_from_East_Mesa_Trail_-_panoramio.jpg",
+      "author": "Aaron Zhu",
+      "license": "CC BY-SA 3.0"
     },
     {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/85/Observation_Point_from_Angels_Landing_Zion_NP_Utah.jpg/960px-Observation_Point_from_Angels_Landing_Zion_NP_Utah.jpg",
@@ -15765,15 +15747,6 @@ export const gallery: Record<string, Photo[]> = {
       "page": "https://commons.wikimedia.org/wiki/File:Observation_Point_from_Angels_Landing_Zion_NP_Utah.jpg",
       "author": "Aneta Kaluzna",
       "license": "CC BY-SA 2.5"
-    },
-    {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/40/Observation_Point_from_East_Mesa_Trail_-_panoramio.jpg/960px-Observation_Point_from_East_Mesa_Trail_-_panoramio.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/40/Observation_Point_from_East_Mesa_Trail_-_panoramio.jpg/1920px-Observation_Point_from_East_Mesa_Trail_-_panoramio.jpg",
-      "width": 960,
-      "height": 640,
-      "page": "https://commons.wikimedia.org/wiki/File:Observation_Point_from_East_Mesa_Trail_-_panoramio.jpg",
-      "author": "Aaron Zhu",
-      "license": "CC BY-SA 3.0"
     },
     {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/90/Zion_Trail_to_Observation_Point_-_panoramio.jpg/960px-Zion_Trail_to_Observation_Point_-_panoramio.jpg",
@@ -15818,6 +15791,15 @@ export const gallery: Record<string, Photo[]> = {
       "height": 638,
       "page": "https://commons.wikimedia.org/wiki/File:Observation_Point,_Zion.jpg",
       "author": "Alaina McDavid",
+      "license": "CC BY-SA 2.0"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bc/Observation_Point_-_Zion_Canyon_2010-12-31.jpg/960px-Observation_Point_-_Zion_Canyon_2010-12-31.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bc/Observation_Point_-_Zion_Canyon_2010-12-31.jpg/1920px-Observation_Point_-_Zion_Canyon_2010-12-31.jpg",
+      "width": 960,
+      "height": 720,
+      "page": "https://commons.wikimedia.org/wiki/File:Observation_Point_-_Zion_Canyon_2010-12-31.jpg",
+      "author": "Sander Heinsalu",
       "license": "CC BY-SA 2.0"
     }
   ],
@@ -16119,6 +16101,15 @@ export const gallery: Record<string, Photo[]> = {
   ],
   "brca-navajo-queens": [
     {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/Thor%27s_Hammer-Bryce_Canyon.jpg/960px-Thor%27s_Hammer-Bryce_Canyon.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/Thor%27s_Hammer-Bryce_Canyon.jpg/1920px-Thor%27s_Hammer-Bryce_Canyon.jpg",
+      "width": 960,
+      "height": 593,
+      "page": "https://commons.wikimedia.org/wiki/File:Thor%27s_Hammer-Bryce_Canyon.jpg",
+      "author": "Tobias Alt",
+      "license": "CC BY-SA 4.0"
+    },
+    {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/95/Navajo_Loop_and_Queen%E2%80%99s_Garden_Trails%2C_Bryce_Canyon_National_Park%2C_Utah%2C_USA.jpg/960px-Navajo_Loop_and_Queen%E2%80%99s_Garden_Trails%2C_Bryce_Canyon_National_Park%2C_Utah%2C_USA.jpg",
       "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/95/Navajo_Loop_and_Queen%E2%80%99s_Garden_Trails%2C_Bryce_Canyon_National_Park%2C_Utah%2C_USA.jpg/1920px-Navajo_Loop_and_Queen%E2%80%99s_Garden_Trails%2C_Bryce_Canyon_National_Park%2C_Utah%2C_USA.jpg",
       "width": 960,
@@ -16180,15 +16171,6 @@ export const gallery: Record<string, Photo[]> = {
       "page": "https://commons.wikimedia.org/wiki/File:Bryce_Canyon_Parc_national_(29).jpg",
       "author": "PIERRE ANDRE LECLERCQ",
       "license": "CC BY-SA 4.0"
-    },
-    {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d6/Bryce_Canyon_snowy_dusk_1_%2815697003674%29.jpg/960px-Bryce_Canyon_snowy_dusk_1_%2815697003674%29.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d6/Bryce_Canyon_snowy_dusk_1_%2815697003674%29.jpg/1920px-Bryce_Canyon_snowy_dusk_1_%2815697003674%29.jpg",
-      "width": 960,
-      "height": 720,
-      "page": "https://commons.wikimedia.org/wiki/File:Bryce_Canyon_snowy_dusk_1_(15697003674).jpg",
-      "author": "Akos Kokai",
-      "license": "CC BY 2.0"
     }
   ],
   "brca-inspiration-point": [
@@ -17684,13 +17666,13 @@ export const gallery: Record<string, Photo[]> = {
   ],
   "grca-moran-point": [
     {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b9/Le_Grand_Canyon_du_Colorado_panorama_en_2016.JPG/960px-Le_Grand_Canyon_du_Colorado_panorama_en_2016.JPG",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b9/Le_Grand_Canyon_du_Colorado_panorama_en_2016.JPG/1920px-Le_Grand_Canyon_du_Colorado_panorama_en_2016.JPG",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/21/Grand_Canyon_-_Moran_Point_%2852474974469%29.jpg/960px-Grand_Canyon_-_Moran_Point_%2852474974469%29.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/21/Grand_Canyon_-_Moran_Point_%2852474974469%29.jpg/1920px-Grand_Canyon_-_Moran_Point_%2852474974469%29.jpg",
       "width": 960,
-      "height": 638,
-      "page": "https://commons.wikimedia.org/wiki/File:Le_Grand_Canyon_du_Colorado_panorama_en_2016.JPG",
-      "author": "Pierre André",
-      "license": "CC BY-SA 4.0"
+      "height": 600,
+      "page": "https://commons.wikimedia.org/wiki/File:Grand_Canyon_-_Moran_Point_(52474974469).jpg",
+      "author": "Hannes Flo from Austria",
+      "license": "CC BY 2.0"
     },
     {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5c/Grand_Canyon_Moran_Point_2006_09_08.jpg/960px-Grand_Canyon_Moran_Point_2006_09_08.jpg",
@@ -17738,15 +17720,6 @@ export const gallery: Record<string, Photo[]> = {
       "license": "Public domain"
     },
     {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/21/Grand_Canyon_-_Moran_Point_%2852474974469%29.jpg/960px-Grand_Canyon_-_Moran_Point_%2852474974469%29.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/21/Grand_Canyon_-_Moran_Point_%2852474974469%29.jpg/1920px-Grand_Canyon_-_Moran_Point_%2852474974469%29.jpg",
-      "width": 960,
-      "height": 600,
-      "page": "https://commons.wikimedia.org/wiki/File:Grand_Canyon_-_Moran_Point_(52474974469).jpg",
-      "author": "Hannes Flo from Austria",
-      "license": "CC BY 2.0"
-    },
-    {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/16/Grand_Canyon_-_Moran_Point_%2852369640149%29.jpg/960px-Grand_Canyon_-_Moran_Point_%2852369640149%29.jpg",
       "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/16/Grand_Canyon_-_Moran_Point_%2852369640149%29.jpg/1920px-Grand_Canyon_-_Moran_Point_%2852369640149%29.jpg",
       "width": 960,
@@ -17754,6 +17727,15 @@ export const gallery: Record<string, Photo[]> = {
       "page": "https://commons.wikimedia.org/wiki/File:Grand_Canyon_-_Moran_Point_(52369640149).jpg",
       "author": "Hannes Flo from Austria",
       "license": "CC BY 2.0"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/13/View_from_Moran_Point_%2831800470-d4b0-498c-b038-4e019f91118b%29.JPG/960px-View_from_Moran_Point_%2831800470-d4b0-498c-b038-4e019f91118b%29.JPG",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/13/View_from_Moran_Point_%2831800470-d4b0-498c-b038-4e019f91118b%29.JPG/1920px-View_from_Moran_Point_%2831800470-d4b0-498c-b038-4e019f91118b%29.JPG",
+      "width": 960,
+      "height": 720,
+      "page": "https://commons.wikimedia.org/wiki/File:View_from_Moran_Point_(31800470-d4b0-498c-b038-4e019f91118b).JPG",
+      "author": "NPS",
+      "license": "Public domain"
     }
   ],
   "grca-mohave-point": [
@@ -26031,13 +26013,13 @@ export const gallery: Record<string, Photo[]> = {
   ],
   "jasp-maligne-lake": [
     {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a5/Spirit_Island_on_Maligne_Lake1.jpg/960px-Spirit_Island_on_Maligne_Lake1.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a5/Spirit_Island_on_Maligne_Lake1.jpg/1920px-Spirit_Island_on_Maligne_Lake1.jpg",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/03/Sunrise_at_Maligne_lake.jpg/960px-Sunrise_at_Maligne_lake.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/03/Sunrise_at_Maligne_lake.jpg/1920px-Sunrise_at_Maligne_lake.jpg",
       "width": 960,
-      "height": 593,
-      "page": "https://commons.wikimedia.org/wiki/File:Spirit_Island_on_Maligne_Lake1.jpg",
-      "author": "Bernd Thaller",
-      "license": "CC BY 2.0"
+      "height": 641,
+      "page": "https://commons.wikimedia.org/wiki/File:Sunrise_at_Maligne_lake.jpg",
+      "author": "Sergey Pesterev",
+      "license": "CC BY-SA 4.0"
     },
     {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ac/Canada_Boat_House_am_Maligne_Lake%2C_Jasper_NP%2C_Alberta%2C_CA.jpg/960px-Canada_Boat_House_am_Maligne_Lake%2C_Jasper_NP%2C_Alberta%2C_CA.jpg",
@@ -26076,15 +26058,6 @@ export const gallery: Record<string, Photo[]> = {
       "license": "CC BY-SA 4.0"
     },
     {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/03/Sunrise_at_Maligne_lake.jpg/960px-Sunrise_at_Maligne_lake.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/03/Sunrise_at_Maligne_lake.jpg/1920px-Sunrise_at_Maligne_lake.jpg",
-      "width": 960,
-      "height": 641,
-      "page": "https://commons.wikimedia.org/wiki/File:Sunrise_at_Maligne_lake.jpg",
-      "author": "Sergey Pesterev",
-      "license": "CC BY-SA 4.0"
-    },
-    {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7d/Maligne_Lake_-_Jasper.jpg/960px-Maligne_Lake_-_Jasper.jpg",
       "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7d/Maligne_Lake_-_Jasper.jpg/1920px-Maligne_Lake_-_Jasper.jpg",
       "width": 960,
@@ -26101,6 +26074,15 @@ export const gallery: Record<string, Photo[]> = {
       "page": "https://commons.wikimedia.org/wiki/File:Spirit_Island_...Maligne_lake.jpg",
       "author": "Serge Cousineau",
       "license": "CC BY-SA 4.0"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/39/%27Maligne_Lake_Boat_House%27_--_Jasper%2C_Alberta%2C_Canada_September_2019_%2849124100058%29.jpg/960px-%27Maligne_Lake_Boat_House%27_--_Jasper%2C_Alberta%2C_Canada_September_2019_%2849124100058%29.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/39/%27Maligne_Lake_Boat_House%27_--_Jasper%2C_Alberta%2C_Canada_September_2019_%2849124100058%29.jpg/1920px-%27Maligne_Lake_Boat_House%27_--_Jasper%2C_Alberta%2C_Canada_September_2019_%2849124100058%29.jpg",
+      "width": 960,
+      "height": 573,
+      "page": "https://commons.wikimedia.org/wiki/File:%27Maligne_Lake_Boat_House%27_--_Jasper,_Alberta,_Canada_September_2019_(49124100058).jpg",
+      "author": "Ron Cogswell from Arlington, Virginia, USA",
+      "license": "CC BY 2.0"
     }
   ],
   "jasp-spirit-island": [
@@ -30551,13 +30533,13 @@ export const gallery: Record<string, Photo[]> = {
   ],
   "glac-lake-mcdonald": [
     {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/Lake_McDonald_Lodge%2C_Glacier_National_Park%2C_Bellhops%2C_1950s.jpg/960px-Lake_McDonald_Lodge%2C_Glacier_National_Park%2C_Bellhops%2C_1950s.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/Lake_McDonald_Lodge%2C_Glacier_National_Park%2C_Bellhops%2C_1950s.jpg/1920px-Lake_McDonald_Lodge%2C_Glacier_National_Park%2C_Bellhops%2C_1950s.jpg",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0b/The_view_of_Lake_McDonald_from_Apgar_%2812092155856%29.jpg/960px-The_view_of_Lake_McDonald_from_Apgar_%2812092155856%29.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0b/The_view_of_Lake_McDonald_from_Apgar_%2812092155856%29.jpg/1920px-The_view_of_Lake_McDonald_from_Apgar_%2812092155856%29.jpg",
       "width": 960,
-      "height": 640,
-      "page": "https://commons.wikimedia.org/wiki/File:Lake_McDonald_Lodge,_Glacier_National_Park,_Bellhops,_1950s.jpg",
-      "author": "John Lee",
-      "license": "CC BY-SA 4.0"
+      "height": 638,
+      "page": "https://commons.wikimedia.org/wiki/File:The_view_of_Lake_McDonald_from_Apgar_(12092155856).jpg",
+      "author": "GlacierNPS",
+      "license": "Public domain"
     },
     {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/da/Lake_McDonald%2C_Glacier_National_Park%2C_Montana_USA.jpg/960px-Lake_McDonald%2C_Glacier_National_Park%2C_Montana_USA.jpg",
@@ -30614,13 +30596,13 @@ export const gallery: Record<string, Photo[]> = {
       "license": "Public domain"
     },
     {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5c/Lake_McDonald_%2843026255815%29.jpg/960px-Lake_McDonald_%2843026255815%29.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5c/Lake_McDonald_%2843026255815%29.jpg/1920px-Lake_McDonald_%2843026255815%29.jpg",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5b/Lake_McDonald%2C_Glacier_National_Park%2C_Montana_%28crop%29.jpg/960px-Lake_McDonald%2C_Glacier_National_Park%2C_Montana_%28crop%29.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5b/Lake_McDonald%2C_Glacier_National_Park%2C_Montana_%28crop%29.jpg/1920px-Lake_McDonald%2C_Glacier_National_Park%2C_Montana_%28crop%29.jpg",
       "width": 960,
-      "height": 640,
-      "page": "https://commons.wikimedia.org/wiki/File:Lake_McDonald_(43026255815).jpg",
-      "author": "GlacierNPS",
-      "license": "Public domain"
+      "height": 529,
+      "page": "https://commons.wikimedia.org/wiki/File:Lake_McDonald,_Glacier_National_Park,_Montana_(crop).jpg",
+      "author": "TLJones007",
+      "license": "CC BY-SA 4.0"
     }
   ],
   "glac-trail-of-the-cedars": [
@@ -34498,13 +34480,13 @@ export const gallery: Record<string, Photo[]> = {
   ],
   "meve-park-point": [
     {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e5/Mesa_Verde_N.P.%2C_Sun_Point_View%2C_Soda_Canyon_8-2008_%285912503519%29.jpg/960px-Mesa_Verde_N.P.%2C_Sun_Point_View%2C_Soda_Canyon_8-2008_%285912503519%29.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e5/Mesa_Verde_N.P.%2C_Sun_Point_View%2C_Soda_Canyon_8-2008_%285912503519%29.jpg/1280px-Mesa_Verde_N.P.%2C_Sun_Point_View%2C_Soda_Canyon_8-2008_%285912503519%29.jpg",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9e/Park_Point_Lookout_mesa_verde.jpg/960px-Park_Point_Lookout_mesa_verde.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9e/Park_Point_Lookout_mesa_verde.jpg/1920px-Park_Point_Lookout_mesa_verde.jpg",
       "width": 960,
-      "height": 596,
-      "page": "https://commons.wikimedia.org/wiki/File:Mesa_Verde_N.P.,_Sun_Point_View,_Soda_Canyon_8-2008_(5912503519).jpg",
-      "author": "inkknife_2000 (7.5 million views +)",
-      "license": "CC BY-SA 2.0"
+      "height": 641,
+      "page": "https://commons.wikimedia.org/wiki/File:Park_Point_Lookout_mesa_verde.jpg",
+      "author": "Dsdugan",
+      "license": "CC BY-SA 4.0"
     },
     {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4a/Fire-killed_snag%2C_northern_rim_of_Mesa_Verde%2C_Mesa_Verde_National_Park%2C_Montezuma_Co.%2C_CO%2C_USA_-_panoramio.jpg/960px-Fire-killed_snag%2C_northern_rim_of_Mesa_Verde%2C_Mesa_Verde_National_Park%2C_Montezuma_Co.%2C_CO%2C_USA_-_panoramio.jpg",
@@ -36395,13 +36377,13 @@ export const gallery: Record<string, Photo[]> = {
   ],
   "pefo-agate-bridge": [
     {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4b/Culvert_at_Agate_Bridge._Looking_SW._-_Petrified_Forest_National_Park_Roads_and_Bridges%2C_Holbrook%2C_Navajo_County%2C_AZ_HAER_AZ-58-15.tif/lossy-page1-960px-Culvert_at_Agate_Bridge._Looking_SW._-_Petrified_Forest_National_Park_Roads_and_Bridges%2C_Holbrook%2C_Navajo_County%2C_AZ_HAER_AZ-58-15.tif.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4b/Culvert_at_Agate_Bridge._Looking_SW._-_Petrified_Forest_National_Park_Roads_and_Bridges%2C_Holbrook%2C_Navajo_County%2C_AZ_HAER_AZ-58-15.tif/lossy-page1-960px-Culvert_at_Agate_Bridge._Looking_SW._-_Petrified_Forest_National_Park_Roads_and_Bridges%2C_Holbrook%2C_Navajo_County%2C_AZ_HAER_AZ-58-15.tif.jpg",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9c/Agate_Bridge.jpg/960px-Agate_Bridge.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9c/Agate_Bridge.jpg/1920px-Agate_Bridge.jpg",
       "width": 960,
-      "height": 1202,
-      "page": "https://commons.wikimedia.org/wiki/File:Culvert_at_Agate_Bridge._Looking_SW._-_Petrified_Forest_National_Park_Roads_and_Bridges,_Holbrook,_Navajo_County,_AZ_HAER_AZ-58-15.tif",
-      "author": "Grogan, Brian Related names: Bureau of Public Roads; Roosevelt, Theodore; Stevenson, Al; Nelson, William; Pinkley, Frank; Cammerer, Arno B; Atchison, Topeka and Santa Fee Railroad; Mather, Stephen; Edwards, Guy D; Peterson, Charles E; Smith, Charles J; Albright, Horace; Roosevelt, Franklin D; Civilian Conservation Corps; Harvey, Frederick Henry; Einstein, Albert; Wirth, Conrad; Hayden, Carl; Udall, Stewart; Christianson, Justine, transmitter; Fulton, Jean, historian",
-      "license": "Public domain"
+      "height": 640,
+      "page": "https://commons.wikimedia.org/wiki/File:Agate_Bridge.jpg",
+      "author": "Eric Kilby",
+      "license": "CC BY-SA 2.0"
     },
     {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6f/View_of_Agate_Bridge.jpg/960px-View_of_Agate_Bridge.jpg",
@@ -36420,15 +36402,6 @@ export const gallery: Record<string, Photo[]> = {
       "page": "https://commons.wikimedia.org/wiki/File:Agate_Bridge-_Water_Under_Bridge.jpg",
       "author": "daveynin",
       "license": "CC BY 2.0"
-    },
-    {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9c/Agate_Bridge.jpg/960px-Agate_Bridge.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9c/Agate_Bridge.jpg/1920px-Agate_Bridge.jpg",
-      "width": 960,
-      "height": 640,
-      "page": "https://commons.wikimedia.org/wiki/File:Agate_Bridge.jpg",
-      "author": "Eric Kilby",
-      "license": "CC BY-SA 2.0"
     },
     {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b7/Agate_Bridge_in_Petrified_Forest_NP.jpg/960px-Agate_Bridge_in_Petrified_Forest_NP.jpg",
@@ -36465,6 +36438,15 @@ export const gallery: Record<string, Photo[]> = {
       "page": "https://commons.wikimedia.org/wiki/File:Petrified_bridge_-_panoramio.jpg",
       "author": "halfuur",
       "license": "CC BY 3.0"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b5/Petrified_Forest_National_Park%2C_Arizona%2C_USA%2C_2024_2.jpg/960px-Petrified_Forest_National_Park%2C_Arizona%2C_USA%2C_2024_2.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b5/Petrified_Forest_National_Park%2C_Arizona%2C_USA%2C_2024_2.jpg/1920px-Petrified_Forest_National_Park%2C_Arizona%2C_USA%2C_2024_2.jpg",
+      "width": 960,
+      "height": 640,
+      "page": "https://commons.wikimedia.org/wiki/File:Petrified_Forest_National_Park,_Arizona,_USA,_2024_2.jpg",
+      "author": "dconvertini",
+      "license": "CC BY-SA 2.0"
     }
   ],
   "pefo-jasper-forest": [
@@ -36902,6 +36884,17 @@ export const gallery: Record<string, Photo[]> = {
       "license": "Public domain"
     },
     {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/Medano_Creek_at_the_Great_Sand_Dunes_National_Park_and_Preserve_in_Colorado_%2848257161496%29.jpg/960px-Medano_Creek_at_the_Great_Sand_Dunes_National_Park_and_Preserve_in_Colorado_%2848257161496%29.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/Medano_Creek_at_the_Great_Sand_Dunes_National_Park_and_Preserve_in_Colorado_%2848257161496%29.jpg/1920px-Medano_Creek_at_the_Great_Sand_Dunes_National_Park_and_Preserve_in_Colorado_%2848257161496%29.jpg",
+      "width": 960,
+      "height": 720,
+      "page": "https://commons.wikimedia.org/wiki/File:Medano_Creek_at_the_Great_Sand_Dunes_National_Park_and_Preserve_in_Colorado_(48257161496).jpg",
+      "author": "PEO ACWA",
+      "license": "CC BY 2.0"
+    }
+  ],
+  "grsa-medano-creek": [
+    {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1c/Great_Sand_Dunes_National_Park_-_Medano_Creek%2C_dunes_and_Sangre_de_Cristo_Mountains.jpg/960px-Great_Sand_Dunes_National_Park_-_Medano_Creek%2C_dunes_and_Sangre_de_Cristo_Mountains.jpg",
       "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1c/Great_Sand_Dunes_National_Park_-_Medano_Creek%2C_dunes_and_Sangre_de_Cristo_Mountains.jpg/1920px-Great_Sand_Dunes_National_Park_-_Medano_Creek%2C_dunes_and_Sangre_de_Cristo_Mountains.jpg",
       "width": 960,
@@ -36909,17 +36902,6 @@ export const gallery: Record<string, Photo[]> = {
       "page": "https://commons.wikimedia.org/wiki/File:Great_Sand_Dunes_National_Park_-_Medano_Creek,_dunes_and_Sangre_de_Cristo_Mountains.jpg",
       "author": "Pimlico27",
       "license": "CC BY-SA 4.0"
-    }
-  ],
-  "grsa-medano-creek": [
-    {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4e/Great_Sand_Dunes_National_Park_with_Medano_Creek_in_Foreground.tif/lossy-page1-960px-Great_Sand_Dunes_National_Park_with_Medano_Creek_in_Foreground.tif.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4e/Great_Sand_Dunes_National_Park_with_Medano_Creek_in_Foreground.tif/lossy-page1-960px-Great_Sand_Dunes_National_Park_with_Medano_Creek_in_Foreground.tif.jpg",
-      "width": 960,
-      "height": 640,
-      "page": "https://commons.wikimedia.org/wiki/File:Great_Sand_Dunes_National_Park_with_Medano_Creek_in_Foreground.tif",
-      "author": "Eamesheard",
-      "license": "CC BY 4.0"
     },
     {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b2/Springtime_Cottonwoods%2C_Dunes%2C_and_Medano_Creek_%2826644863944%29.jpg/960px-Springtime_Cottonwoods%2C_Dunes%2C_and_Medano_Creek_%2826644863944%29.jpg",
@@ -36958,15 +36940,6 @@ export const gallery: Record<string, Photo[]> = {
       "license": "CC BY-SA 4.0"
     },
     {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/Medano_Creek_at_the_Great_Sand_Dunes_National_Park_and_Preserve_in_Colorado_%2848257161496%29.jpg/960px-Medano_Creek_at_the_Great_Sand_Dunes_National_Park_and_Preserve_in_Colorado_%2848257161496%29.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/Medano_Creek_at_the_Great_Sand_Dunes_National_Park_and_Preserve_in_Colorado_%2848257161496%29.jpg/1920px-Medano_Creek_at_the_Great_Sand_Dunes_National_Park_and_Preserve_in_Colorado_%2848257161496%29.jpg",
-      "width": 960,
-      "height": 720,
-      "page": "https://commons.wikimedia.org/wiki/File:Medano_Creek_at_the_Great_Sand_Dunes_National_Park_and_Preserve_in_Colorado_(48257161496).jpg",
-      "author": "PEO ACWA",
-      "license": "CC BY 2.0"
-    },
-    {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e7/Great_Sand_Dunes_National_Park_August_2021_Medano_Creek.jpg/960px-Great_Sand_Dunes_National_Park_August_2021_Medano_Creek.jpg",
       "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e7/Great_Sand_Dunes_National_Park_August_2021_Medano_Creek.jpg/1920px-Great_Sand_Dunes_National_Park_August_2021_Medano_Creek.jpg",
       "width": 960,
@@ -36983,6 +36956,15 @@ export const gallery: Record<string, Photo[]> = {
       "page": "https://commons.wikimedia.org/wiki/File:Medano_Creek.jpg",
       "author": "Xrzt",
       "license": "CC BY-SA 4.0"
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d0/Blue_medano_%2837587285200%29.jpg/960px-Blue_medano_%2837587285200%29.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d0/Blue_medano_%2837587285200%29.jpg/1920px-Blue_medano_%2837587285200%29.jpg",
+      "width": 960,
+      "height": 640,
+      "page": "https://commons.wikimedia.org/wiki/File:Blue_medano_(37587285200).jpg",
+      "author": "Christian Collins",
+      "license": "CC BY-SA 2.0"
     }
   ],
   "grsa-high-dune": [
@@ -44077,13 +44059,13 @@ export const gallery: Record<string, Photo[]> = {
   ],
   "bibe-river-road": [
     {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6f/View_of_the_Rio_Grande_River_along_Texas_Rt._170%2C_which_runs_through_Big_Bend_Ranch_State_Park%2C_Texas_LCCN2014630283.tif/lossy-page1-960px-View_of_the_Rio_Grande_River_along_Texas_Rt._170%2C_which_runs_through_Big_Bend_Ranch_State_Park%2C_Texas_LCCN2014630283.tif.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6f/View_of_the_Rio_Grande_River_along_Texas_Rt._170%2C_which_runs_through_Big_Bend_Ranch_State_Park%2C_Texas_LCCN2014630283.tif/lossy-page1-960px-View_of_the_Rio_Grande_River_along_Texas_Rt._170%2C_which_runs_through_Big_Bend_Ranch_State_Park%2C_Texas_LCCN2014630283.tif.jpg",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/92/Along_the_River_Road_in_Big_Bend_Ranch_-_panoramio.jpg/960px-Along_the_River_Road_in_Big_Bend_Ranch_-_panoramio.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/92/Along_the_River_Road_in_Big_Bend_Ranch_-_panoramio.jpg/1920px-Along_the_River_Road_in_Big_Bend_Ranch_-_panoramio.jpg",
       "width": 960,
-      "height": 641,
-      "page": "https://commons.wikimedia.org/wiki/File:View_of_the_Rio_Grande_River_along_Texas_Rt._170,_which_runs_through_Big_Bend_Ranch_State_Park,_Texas_LCCN2014630283.tif",
-      "author": "Carol M. Highsmith",
-      "license": "Public domain"
+      "height": 375,
+      "page": "https://commons.wikimedia.org/wiki/File:Along_the_River_Road_in_Big_Bend_Ranch_-_panoramio.jpg",
+      "author": "Todd Dwyer",
+      "license": "CC BY-SA 3.0"
     }
   ],
   "thro-south-unit-vc": [

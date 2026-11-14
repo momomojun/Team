@@ -355,7 +355,7 @@ export const grandTeton: Attraction[] = [
       "高处的积雪通常 7 月才化完，10 月又可能下雪，乱石坡有冰雪时很危险；其他月份可以改走 Taggart Lake 或隐秘瀑布 · 灵感点。",
     summary:
       "Grand Teton 正下方的高山湖（海拔约 2,748 米），湖水被上游 Teton 冰川磨出的岩粉染成青绿色，湖后就是 Grand Teton 和 Mount Owen 的岩壁，是近年最火的步道之一。",
-    photoFile: "Visitor photographing the Tetons from Taggart Lake (53043817870).jpg",
+    photoFile: "Delta Lake Gideon Tsang July 2020 1.jpg",
     tips: [
       "大部分路程走去 Surprise / Amphitheater Lake 的官方步道，一路之字形上坡；最后一段是 NPS 不维护的非正式路线，要翻过乱石坡，需要一点找路能力",
       "Lupine Meadows 停车场不大，夏天早上 7 点前后就可能停满",

@@ -164,7 +164,7 @@ export const grandCanyon: Attraction[] = [
     durationMin: 15,
     bestTime: ["sunset"],
     summary: "以画家 Thomas Moran 命名的观景点，能看到峡谷底部的一段科罗拉多河和 Hance 急流。",
-    photoFile: "Le Grand Canyon du Colorado panorama en 2016.JPG",
+    photoFile: "Grand Canyon - Moran Point (52474974469).jpg",
     tips: ["日落时岩壁颜色变化明显，人比村子附近少"],
   },
   {

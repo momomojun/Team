@@ -100,7 +100,7 @@ export const mesaVerde: Attraction[] = [
     summary:
       "全园最高点（海拔 2,613 米），从停车场沿小路走几分钟上坡到山顶的老火警瞭望台，一圈看过去：北边圣胡安山、西边睡卧尤特山、东边拉普拉塔山，南边是新墨西哥的高原和峡谷。",
     tips: ["瞭望台在防火季仍在使用，用来报告闪电、天气和火情", "山顶风大、比山下凉，带件外套；8 点到日落开放"],
-    photoFile: "Mesa Verde N.P., Sun Point View, Soda Canyon 8-2008 (5912503519).jpg",
+    photoFile: "Park Point Lookout mesa verde.jpg",
   },
   {
     id: "meve-far-view-sites",

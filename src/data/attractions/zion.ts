@@ -33,7 +33,7 @@ export const zion: Attraction[] = [
     hike: { distanceMi: 3.3, gainFt: 368, difficulty: "moderate" },
     summary: "从游客中心直接出发，不用排班车。爬到一处台地上，俯瞰 Springdale 小镇和对面的 Watchman 山峰。",
     tips: ["夏天几乎没有遮阴，早上或傍晚走"],
-    photoFile: "Zion National Park - HCP - October 02, 2022 - 090 - Road into Watchman Campground.jpg",
+    photoFile: "The Watchman Trail (12323611713).jpg",
   },
   {
     id: "zion-canyon-junction",
@@ -230,7 +230,7 @@ export const zion: Attraction[] = [
     trail: {},
     hike: { distanceMi: 6.8, gainFt: 300, difficulty: "moderate" },
     summary: "比天使降临还高的观景台，俯瞰整条锡安峡谷，天使降临在脚下像一道小山脊。从东侧台地走过去，爬升不大。",
-    photoFile: "Scouts Lookout, on the way up to Angels Landing (Zion National Park) (3443196545).jpg",
+    photoFile: "Observation Point from East Mesa Trail - panoramio.jpg",
     tips: [
       "原来从峡谷里 Weeping Rock 上去的路 2019 年落石后关闭，现在从东侧的 East Mesa 步道口进",
       "去步道口要走一段土路，冬春和下雨后会非常泥泞、开不进去，官方说只有高底盘或四驱车能开",
