@@ -1,5 +1,5 @@
 {
- "fetched": "2026-11-13",
+ "fetched": "2026-11-14",
  "prompts": {
   "intake/v1": "79d3b5f861f0",
   "writer/v1": "38f0145930a8",
@@ -8,136 +8,136 @@
   "alerts/v1": "89904d683e08"
  },
  "parks": {
-  "acad": "2026-11-13",
-  "arch": "2026-11-13",
-  "badl": "2026-11-13",
-  "bibe": "2026-11-13",
-  "bisc": "2026-11-13",
-  "blca": "2026-11-13",
-  "brca": "2026-11-13",
-  "cany": "2026-11-13",
-  "care": "2026-11-13",
-  "cave": "2026-11-13",
-  "chir": "2026-11-13",
-  "chis": "2026-11-13",
-  "cong": "2026-11-13",
-  "crla": "2026-11-13",
-  "cuva": "2026-11-13",
-  "dena": "2026-11-13",
-  "deva": "2026-11-13",
-  "drto": "2026-11-13",
-  "ever": "2026-11-13",
-  "gaar": "2026-11-13",
-  "glac": "2026-11-13",
-  "glba": "2026-11-13",
-  "grba": "2026-11-13",
-  "grca": "2026-11-13",
-  "grsa": "2026-11-13",
-  "grsm": "2026-11-13",
-  "grte": "2026-11-13",
-  "gumo": "2026-11-13",
-  "hale": "2026-11-13",
-  "havo": "2026-11-13",
-  "hosp": "2026-11-13",
-  "hsbd": "2026-11-13",
-  "indu": "2026-11-13",
-  "isro": "2026-11-13",
-  "jeff": "2026-11-13",
-  "jotr": "2026-11-13",
-  "katm": "2026-11-13",
-  "kefj": "2026-11-13",
-  "kova": "2026-11-13",
-  "lacl": "2026-11-13",
-  "lavo": "2026-11-13",
-  "maca": "2026-11-13",
-  "meve": "2026-11-13",
-  "mora": "2026-11-13",
-  "neri": "2026-11-13",
-  "noca": "2026-11-13",
-  "npsa": "2026-11-13",
-  "olym": "2026-11-13",
-  "pefo": "2026-11-13",
-  "pinn": "2026-11-13",
-  "redw": "2026-11-13",
-  "romo": "2026-11-13",
-  "sagu": "2026-11-13",
-  "seki": "2026-11-13",
-  "shen": "2026-11-13",
-  "thro": "2026-11-13",
-  "viis": "2026-11-13",
-  "voya": "2026-11-13",
-  "whsa": "2026-11-13",
-  "wica": "2026-11-13",
-  "wrst": "2026-11-13",
-  "yell": "2026-11-13",
-  "yose": "2026-11-13",
-  "zion": "2026-11-13"
+  "acad": "2026-11-14",
+  "arch": "2026-11-14",
+  "badl": "2026-11-14",
+  "bibe": "2026-11-14",
+  "bisc": "2026-11-14",
+  "blca": "2026-11-14",
+  "brca": "2026-11-14",
+  "cany": "2026-11-14",
+  "care": "2026-11-14",
+  "cave": "2026-11-14",
+  "chir": "2026-11-14",
+  "chis": "2026-11-14",
+  "cong": "2026-11-14",
+  "crla": "2026-11-14",
+  "cuva": "2026-11-14",
+  "dena": "2026-11-14",
+  "deva": "2026-11-14",
+  "drto": "2026-11-14",
+  "ever": "2026-11-14",
+  "gaar": "2026-11-14",
+  "glac": "2026-11-14",
+  "glba": "2026-11-14",
+  "grba": "2026-11-14",
+  "grca": "2026-11-14",
+  "grsa": "2026-11-14",
+  "grsm": "2026-11-14",
+  "grte": "2026-11-14",
+  "gumo": "2026-11-14",
+  "hale": "2026-11-14",
+  "havo": "2026-11-14",
+  "hosp": "2026-11-14",
+  "hsbd": "2026-11-14",
+  "indu": "2026-11-14",
+  "isro": "2026-11-14",
+  "jeff": "2026-11-14",
+  "jotr": "2026-11-14",
+  "katm": "2026-11-14",
+  "kefj": "2026-11-14",
+  "kova": "2026-11-14",
+  "lacl": "2026-11-14",
+  "lavo": "2026-11-14",
+  "maca": "2026-11-14",
+  "meve": "2026-11-14",
+  "mora": "2026-11-14",
+  "neri": "2026-11-14",
+  "noca": "2026-11-14",
+  "npsa": "2026-11-14",
+  "olym": "2026-11-14",
+  "pefo": "2026-11-14",
+  "pinn": "2026-11-14",
+  "redw": "2026-11-14",
+  "romo": "2026-11-14",
+  "sagu": "2026-11-14",
+  "seki": "2026-11-14",
+  "shen": "2026-11-14",
+  "thro": "2026-11-14",
+  "viis": "2026-11-14",
+  "voya": "2026-11-14",
+  "whsa": "2026-11-14",
+  "wica": "2026-11-14",
+  "wrst": "2026-11-14",
+  "yell": "2026-11-14",
+  "yose": "2026-11-14",
+  "zion": "2026-11-14"
  },
  "readAt": {
-  "acad": "2026-11-13T07:15:11-08:00",
-  "arch": "2026-11-13T07:15:11-08:00",
-  "badl": "2026-11-13T07:15:11-08:00",
-  "bibe": "2026-11-13T07:15:11-08:00",
-  "bisc": "2026-11-13T07:15:11-08:00",
-  "blca": "2026-11-13T07:15:11-08:00",
-  "brca": "2026-11-13T07:15:11-08:00",
-  "cany": "2026-11-13T07:15:11-08:00",
-  "care": "2026-11-13T07:15:11-08:00",
-  "cave": "2026-11-13T07:15:11-08:00",
-  "chir": "2026-11-13T07:15:11-08:00",
-  "chis": "2026-11-13T07:15:11-08:00",
-  "cong": "2026-11-13T07:15:11-08:00",
-  "crla": "2026-11-13T07:15:11-08:00",
-  "cuva": "2026-11-13T07:15:11-08:00",
-  "dena": "2026-11-13T07:15:11-08:00",
-  "deva": "2026-11-13T07:15:11-08:00",
-  "drto": "2026-11-13T07:15:11-08:00",
-  "ever": "2026-11-13T07:15:11-08:00",
-  "gaar": "2026-11-13T07:15:11-08:00",
-  "glac": "2026-11-13T07:15:11-08:00",
-  "glba": "2026-11-13T07:15:11-08:00",
-  "grba": "2026-11-13T07:15:11-08:00",
-  "grca": "2026-11-13T07:15:11-08:00",
-  "grsa": "2026-11-13T07:15:11-08:00",
-  "grsm": "2026-11-13T07:15:11-08:00",
-  "grte": "2026-11-13T07:15:11-08:00",
-  "gumo": "2026-11-13T07:15:11-08:00",
-  "hale": "2026-11-13T07:15:11-08:00",
-  "havo": "2026-11-13T07:15:11-08:00",
-  "hosp": "2026-11-13T07:15:11-08:00",
-  "hsbd": "2026-11-13T07:15:11-08:00",
-  "indu": "2026-11-13T07:15:11-08:00",
-  "isro": "2026-11-13T07:15:11-08:00",
-  "jeff": "2026-11-13T07:15:11-08:00",
-  "jotr": "2026-11-13T07:15:11-08:00",
-  "katm": "2026-11-13T07:15:11-08:00",
-  "kefj": "2026-11-13T07:15:11-08:00",
-  "kova": "2026-11-13T07:15:11-08:00",
-  "lacl": "2026-11-13T07:15:11-08:00",
-  "lavo": "2026-11-13T07:15:11-08:00",
-  "maca": "2026-11-13T07:15:11-08:00",
-  "meve": "2026-11-13T07:15:11-08:00",
-  "mora": "2026-11-13T07:15:11-08:00",
-  "neri": "2026-11-13T07:15:11-08:00",
-  "noca": "2026-11-13T07:15:11-08:00",
-  "npsa": "2026-11-13T07:15:11-08:00",
-  "olym": "2026-11-13T07:15:11-08:00",
-  "pefo": "2026-11-13T07:15:11-08:00",
-  "pinn": "2026-11-13T07:15:11-08:00",
-  "redw": "2026-11-13T07:15:11-08:00",
-  "romo": "2026-11-13T07:15:11-08:00",
-  "sagu": "2026-11-13T07:15:11-08:00",
-  "seki": "2026-11-13T07:15:11-08:00",
-  "shen": "2026-11-13T07:15:11-08:00",
-  "thro": "2026-11-13T07:15:11-08:00",
-  "viis": "2026-11-13T07:15:11-08:00",
-  "voya": "2026-11-13T07:15:11-08:00",
-  "whsa": "2026-11-13T07:15:11-08:00",
-  "wica": "2026-11-13T07:15:11-08:00",
-  "wrst": "2026-11-13T07:15:11-08:00",
-  "yell": "2026-11-13T07:15:11-08:00",
-  "yose": "2026-11-13T07:15:11-08:00",
-  "zion": "2026-11-13T07:15:11-08:00"
+  "acad": "2026-11-14T06:11:13-08:00",
+  "arch": "2026-11-14T06:11:13-08:00",
+  "badl": "2026-11-14T06:11:13-08:00",
+  "bibe": "2026-11-14T06:11:13-08:00",
+  "bisc": "2026-11-14T06:11:13-08:00",
+  "blca": "2026-11-14T06:11:13-08:00",
+  "brca": "2026-11-14T06:11:13-08:00",
+  "cany": "2026-11-14T06:11:13-08:00",
+  "care": "2026-11-14T06:11:13-08:00",
+  "cave": "2026-11-14T06:11:13-08:00",
+  "chir": "2026-11-14T06:11:13-08:00",
+  "chis": "2026-11-14T06:11:13-08:00",
+  "cong": "2026-11-14T06:11:13-08:00",
+  "crla": "2026-11-14T06:11:13-08:00",
+  "cuva": "2026-11-14T06:11:13-08:00",
+  "dena": "2026-11-14T06:11:13-08:00",
+  "deva": "2026-11-14T06:11:13-08:00",
+  "drto": "2026-11-14T06:11:13-08:00",
+  "ever": "2026-11-14T06:11:13-08:00",
+  "gaar": "2026-11-14T06:11:13-08:00",
+  "glac": "2026-11-14T06:11:13-08:00",
+  "glba": "2026-11-14T06:11:13-08:00",
+  "grba": "2026-11-14T06:11:13-08:00",
+  "grca": "2026-11-14T06:11:13-08:00",
+  "grsa": "2026-11-14T06:11:13-08:00",
+  "grsm": "2026-11-14T06:11:13-08:00",
+  "grte": "2026-11-14T06:11:13-08:00",
+  "gumo": "2026-11-14T06:11:13-08:00",
+  "hale": "2026-11-14T06:11:13-08:00",
+  "havo": "2026-11-14T06:11:13-08:00",
+  "hosp": "2026-11-14T06:11:13-08:00",
+  "hsbd": "2026-11-14T06:11:13-08:00",
+  "indu": "2026-11-14T06:11:13-08:00",
+  "isro": "2026-11-14T06:11:13-08:00",
+  "jeff": "2026-11-14T06:11:13-08:00",
+  "jotr": "2026-11-14T06:11:13-08:00",
+  "katm": "2026-11-14T06:11:13-08:00",
+  "kefj": "2026-11-14T06:11:13-08:00",
+  "kova": "2026-11-14T06:11:13-08:00",
+  "lacl": "2026-11-14T06:11:13-08:00",
+  "lavo": "2026-11-14T06:11:13-08:00",
+  "maca": "2026-11-14T06:11:13-08:00",
+  "meve": "2026-11-14T06:11:13-08:00",
+  "mora": "2026-11-14T06:11:13-08:00",
+  "neri": "2026-11-14T06:11:13-08:00",
+  "noca": "2026-11-14T06:11:13-08:00",
+  "npsa": "2026-11-14T06:11:13-08:00",
+  "olym": "2026-11-14T06:11:13-08:00",
+  "pefo": "2026-11-14T06:11:13-08:00",
+  "pinn": "2026-11-14T06:11:13-08:00",
+  "redw": "2026-11-14T06:11:13-08:00",
+  "romo": "2026-11-14T06:11:13-08:00",
+  "sagu": "2026-11-14T06:11:13-08:00",
+  "seki": "2026-11-14T06:11:13-08:00",
+  "shen": "2026-11-14T06:11:13-08:00",
+  "thro": "2026-11-14T06:11:13-08:00",
+  "viis": "2026-11-14T06:11:13-08:00",
+  "voya": "2026-11-14T06:11:13-08:00",
+  "whsa": "2026-11-14T06:11:13-08:00",
+  "wica": "2026-11-14T06:11:13-08:00",
+  "wrst": "2026-11-14T06:11:13-08:00",
+  "yell": "2026-11-14T06:11:13-08:00",
+  "yose": "2026-11-14T06:11:13-08:00",
+  "zion": "2026-11-14T06:11:13-08:00"
  },
  "closures": [
   {
@@ -154,6 +154,25 @@
    ],
    "strict": [],
    "title": "Cadillac Summit Road closed to all users Nov 9-25 and Dec 1-18",
+   "url": ""
+  },
+  {
+   "alert": "BB189CF6-CB39-4F2A-8E7D-A7F893A0C1E1",
+   "park": "blca",
+   "attractions": [
+    "blca-east-portal"
+   ],
+   "from": null,
+   "reopen": null,
+   "evidence": "East Portal Road is closed",
+   "found_by": [
+    "model",
+    "rules"
+   ],
+   "strict": [
+    "blca-east-portal"
+   ],
+   "title": "East Portal Road closed for winter",
    "url": ""
   },
   {
@@ -204,6 +223,31 @@
    "strict": [],
    "title": "Parts of Santa Rosa Island Closed During Wildfire Recovery",
    "url": "https://www.nps.gov/chis/planyourvisit/santa-rosa-island-fire-recovery.htm"
+  },
+  {
+   "alert": "6C135CCD-9D22-41BB-B03E-3B19BE0172D8",
+   "park": "crla",
+   "attractions": [
+    "crla-rim-village",
+    "crla-garfield-peak",
+    "crla-steel-visitor-center",
+    "crla-snowshoe-walk"
+   ],
+   "from": null,
+   "reopen": null,
+   "evidence": "Road to Rim Village is Temporarily CLOSED.",
+   "found_by": [
+    "model",
+    "rules"
+   ],
+   "strict": [
+    "crla-rim-village",
+    "crla-garfield-peak",
+    "crla-steel-visitor-center",
+    "crla-snowshoe-walk"
+   ],
+   "title": "Road to Rim Village is Temporarily CLOSED.",
+   "url": ""
   },
   {
    "alert": "A4D3DDA6-EBFC-43C2-A5F2-923BE0773B5B",
@@ -324,6 +368,26 @@
    "url": ""
   },
   {
+   "alert": "3A940E2B-945F-437E-B641-EE60D9E728C3",
+   "park": "grsm",
+   "attractions": [
+    "grsm-waterrock-knob",
+    "grsm-craggy-gardens"
+   ],
+   "from": null,
+   "reopen": null,
+   "evidence": "Old Section Foothills Parkway West from Mile Marker 17-31 is closed",
+   "found_by": [
+    "rules"
+   ],
+   "strict": [
+    "grsm-waterrock-knob",
+    "grsm-craggy-gardens"
+   ],
+   "title": "Old Section Foothills Parkway West new section closed",
+   "url": ""
+  },
+  {
    "alert": "A3F9B63A-B7B6-46BA-91C5-1F381D30D921",
    "park": "grsm",
    "attractions": [
@@ -419,22 +483,6 @@
    "url": ""
   },
   {
-   "alert": "AB7B6104-EAA7-4393-B075-27E5FC821878",
-   "park": "meve",
-   "attractions": [
-    "meve-far-view-sites"
-   ],
-   "from": null,
-   "reopen": null,
-   "evidence": "Far View Sites and Cedar Tree Tower are closed for road improvements.",
-   "found_by": [
-    "model"
-   ],
-   "strict": [],
-   "title": "Road Construction",
-   "url": "https://www.nps.gov/meve/planyourvisit/maps.htm"
-  },
-  {
    "alert": "6E34CD95-476A-4DAB-9377-3DE4542F53A4",
    "park": "mora",
    "attractions": [
@@ -489,8 +537,8 @@
     "mora-trail-of-the-shadows",
     "mora-longmire"
    ],
-   "from": "2026-11-12",
-   "reopen": "2026-11-13",
+   "from": null,
+   "reopen": null,
    "evidence": "The gate at Longmire to Paradise is closed for the night",
    "found_by": [
     "rules"
@@ -546,6 +594,29 @@
    "url": ""
   },
   {
+   "alert": "629AAA7F-B63B-45D8-A418-13973A4486A3",
+   "park": "olym",
+   "attractions": [
+    "olym-hurricane-ridge",
+    "olym-hurricane-hill",
+    "olym-visitor-center"
+   ],
+   "from": "2026-11-13",
+   "reopen": null,
+   "evidence": "Hurricane Ridge Road is closed",
+   "found_by": [
+    "model",
+    "rules"
+   ],
+   "strict": [
+    "olym-hurricane-ridge",
+    "olym-hurricane-hill",
+    "olym-visitor-center"
+   ],
+   "title": "Hurricane Ridge Road Closed, Friday 11/13, 4:00pm",
+   "url": ""
+  },
+  {
    "alert": "6136DC5B-D12B-4F2A-95FD-8ED93B595944",
    "park": "pefo",
    "attractions": [
@@ -575,6 +646,46 @@
    "url": ""
   },
   {
+   "alert": "4855BDCC-277F-48DA-BF61-B4E6E174CD0A",
+   "park": "redw",
+   "attractions": [
+    "redw-howland-hill-road"
+   ],
+   "from": "2026-11-12",
+   "reopen": null,
+   "evidence": "Howland Hill Road and Jedediah Smith Camground will be closed",
+   "found_by": [
+    "model",
+    "rules"
+   ],
+   "strict": [
+    "redw-howland-hill-road"
+   ],
+   "title": "Closure: Howland Hill Road and Jedediah Smith Campground",
+   "url": ""
+  },
+  {
+   "alert": "76A6A599-A4B8-49C3-BD32-56620117ECE2",
+   "park": "redw",
+   "attractions": [
+    "redw-newton-b-drury-parkway",
+    "redw-gold-bluffs-beach"
+   ],
+   "from": null,
+   "reopen": null,
+   "evidence": "Newton B. Drury Scenic Parkway is closed due to multiple fallen trees and debris. Davison Road and Gold Bluffs Campground are closed due to flooding.",
+   "found_by": [
+    "model",
+    "rules"
+   ],
+   "strict": [
+    "redw-newton-b-drury-parkway",
+    "redw-gold-bluffs-beach"
+   ],
+   "title": "Closure: Newton B. Drury Scenic Parkway, Davison Road and Gold Bluffs Beach",
+   "url": ""
+  },
+  {
    "alert": "861414DC-48DA-496C-9110-1086D190B4FE",
    "park": "romo",
    "attractions": [
@@ -584,16 +695,27 @@
     "romo-tundra-communities",
     "romo-alpine-visitor-center",
     "romo-gore-range-overlook",
-    "romo-milner-pass"
+    "romo-milner-pass",
+    "romo-old-fall-river-road"
    ],
    "from": null,
    "reopen": null,
-   "evidence": "Trail Ridge Road is closed to through travel",
+   "evidence": "Trail Ridge Road is Closed to Through Travel for the Season",
    "found_by": [
-    "model"
+    "model",
+    "rules"
    ],
-   "strict": [],
-   "title": "Trail Ridge Road Status Update",
+   "strict": [
+    "romo-many-parks-curve",
+    "romo-rainbow-curve",
+    "romo-forest-canyon-overlook",
+    "romo-tundra-communities",
+    "romo-alpine-visitor-center",
+    "romo-gore-range-overlook",
+    "romo-milner-pass",
+    "romo-old-fall-river-road"
+   ],
+   "title": "Trail Ridge Road is Closed to Through Travel for the Season",
    "url": "https://www.nps.gov/romo/planyourvisit/road_status.htm"
   },
   {
@@ -637,19 +759,28 @@
    "url": "https://www.nps.gov/maps/full.html?mapId=98f33b85-31e2-47ac-b0ba-b319e8c5ab92"
   },
   {
-   "alert": "C612A958-DEEC-4BC9-A2E3-45FDC86E1882",
-   "park": "shen",
+   "alert": "87F5BC32-75D2-4CB1-AEDC-4944CBD2E984",
+   "park": "seki",
    "attractions": [
-    "shen-big-meadows"
+    "seki-kings-canyon",
+    "seki-zumwalt-meadow",
+    "seki-mist-falls",
+    "seki-roaring-river-falls"
    ],
-   "from": "2026-11-10",
-   "reopen": "2026-11-13",
-   "evidence": "Big Meadows and Rapidan Road will be closed to the public",
+   "from": null,
+   "reopen": null,
+   "evidence": "Highway 180 to Cedar Grove in Kings Canyon National Park Closed for Winter",
    "found_by": [
-    "model"
+    "model",
+    "rules"
    ],
-   "strict": [],
-   "title": "Prescribed Fire in Big Meadows",
+   "strict": [
+    "seki-kings-canyon",
+    "seki-zumwalt-meadow",
+    "seki-mist-falls",
+    "seki-roaring-river-falls"
+   ],
+   "title": "Highway 180 to Cedar Grove in Kings Canyon National Park Closed for Winter",
    "url": ""
   },
   {
