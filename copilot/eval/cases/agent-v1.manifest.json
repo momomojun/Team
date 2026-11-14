@@ -1,0 +1,14 @@
+{
+ "frozen_at": "2026-11-14T04:58:00+00:00",
+ "commit": "138de85370fa3cf9883061a4fc9e34f3ac1f809a",
+ "note": "search agent 的评测题 v1（11-13 仓库主人：先做 search agent）：44 题，写好期望结果后、写 agent 代码和跑任何模型之前冻结，冻结时的代码和数据 hash 一起记下（hash 按 LF 换行算）。标准答案按 2026-11-13 的网站数据算：开没开、车程、找景点用 scripts/lookup.mjs（lookup-tool.ts），按季节比公园用“什么时候去”页的 monthScore 和分档（5.2 以上最适合、3 以下不太合适），只定了月份、不按具体日期。网站数据以后改了（比如山路多了一年的记录），标准答案要重算、另写一版，不在这一版上改。第一次的分数按这一版报告；看过失败再改代码，之后的分数要另外标明，这一批就不再算没见过的。",
+ "sha256": {
+  "eval/cases/agent-v1.jsonl": "ddba88d0e22a6e0f37c29f84533c240cefd4bb01baab6de07a4cf00e2ab77f50",
+  "src/lib/copilot/lookup-tool.ts": "dd521f7e58a859913e950e78070623aa7feff71b1a16975fe80a7959d70b2272",
+  "src/lib/seasons.ts": "1a093fcea976cf823fde5a58723c562a9ea2cd42fe949122c0ad2f09dddb7236",
+  "src/components/when/season-guide.tsx": "16a5e79d6a18ce878cce12fa1ba7fd66a994af5a5472be7deee9b67603319a1c",
+  "contracts/knowledge.jsonl": "b69e7ba7ef574ab12ac53e4eb62838d7f68f8f0fa04c87cc5501aae6c2a455d8",
+  "nps_copilot/qa.py": "1ee2990676075f333110d23e6c7705f6a5b842907cac902d6d245cc57aa5bb67",
+  "nps_copilot/tools.py": "95b68db3be11f348df5b4fb7640c3d0e3f64a63e2b34bd212a87c228cade3e2d"
+ }
+}

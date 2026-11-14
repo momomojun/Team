@@ -152,11 +152,14 @@ flowchart LR
 | `copilot/eval/cases/conversation-v2.jsonl` | 15 组 34 轮 | 调度员写完以后才写的多轮对话（繁体、粤语、每晚都住某处、公园里没有的地方、“那就加上它”、去掉又加回来、两座公园……），第一次跑 14/15；修了一处，当回归集 | `baseline-conversation-v2.json` |
 | `copilot/eval/cases/retrieval-v1.jsonl`（`eval/retrieval.py`、`eval/rag_answers.py`） | 48 题 | 回答问题前找资料：点名的、只描述不点名的、英文的各 16 个，标准答案是资料 id，10-22 先提交再跑。`retrieval.py` 比关键词、按意思、两样合起来（前 5 条有对的、第 1 条就对、MRR）；按意思找的名单（Gemini 嵌入 + Neon）录在 `recordings/retrieval-<嵌入型号>.jsonl`，CI 回放；`rag_answers.py` 是 A/B/C 三组对照（不给资料 / 关键词 / 按意思），比回答答没答到点子上、引用对不对、编造被拦了几次 | `baseline-retrieval.json` |
 
+| `copilot/eval/cases/agent-v1.jsonl` | 44 题 | search agent（11-13，先写期望、冻结再跑，`agent-v1.manifest.json`）：一个工具就够的 6、一句话问两件事的 8、后一步要用前一步结果的 6、按季节比公园的 9、资料加工具的 4、网站答不了的 6（`needs_web`，以后看要不要接联网搜索）、刁难的 5（注入、过去和不存在的日期、不存在的公园、让它编）；中文 40、英文 4。标准答案是 2026-11-13 按网站的查询工具（`lookup-tool.ts`）和“什么时候去”的打分（`season-guide.tsx` 的 `monthScore`）算出来的 | 还没有，第一次跑完再定 |
+
 - `copilot/eval/run.py`：逐轮跑对话，比较最后的状态和 `TripRequest` 是否符合期望。`--replay` 回放录音（CI 用，不要 GPU）、`--record` 用真模型并录音、`--gate` 低于基线就失败、`--plan` 条件齐了再真的调 plan_trip、`--writer` 加 Writer 的成批评测、`--cases` 换样例文件。报告写到 `copilot/eval/reports/`（不提交）。
 - 录音在 `copilot/eval/recordings/<模型>[-<样例>][-intake_v<n>].jsonl`：默认样例不加后缀，不是默认版本的提示词另加后缀，不会互相覆盖。
 - `copilot/eval/plan_quality.py`：排出来的行程有没有硬问题（关闭、抽签、过了入场时间、太满）。
 - 分开报：对话是否达到期望、追问类型对不对、模型调用次数和耗时、被丢掉的片段数、规则补的条数。成绩是“这一版提示词 + 代码 + 模型”组合的结果，不是模型的通用能力。
 - `copilot/eval/conversation.py`：多轮对话评测，每一轮可以查状态、回复里有没有（`say` / `say_any` / `not_say`）、条件、行程里有没有某个景点、某晚住哪、是不是清掉重来了；`--replay`、`--record`、`--gate`、`--cases` 和 `run.py` 一样。录音在 `recordings/<模型>-conversation-v<n>.jsonl`。
+- **search agent 的判分**（`agent-v1`，评测脚本和 agent 一起做）：`tools` 每组是几个都算对的工具，每组至少调了一个；`args` 是那个工具至少有一次调用带着这些参数（列表只要包含）；`min_calls` / `max_calls` 是调用次数；`facts` 每组是几种都算对的说法，回答去掉空格以后每组至少出现一种；`relevant` 是查资料时应该找到的资料 id；`recommend` 是至少点到其中 `min` 个，`not_recommend` 是这些名字出现时同一句里要有“不建议、不太合适、关、封、太冷、太热”这类否定，不然算推荐错了；`found: false` 是要老实说网站资料里没有、不能编（回答里的数字、时间照旧过 `qa.unsupported`）；`forbid` 是回答里不能出现的字。每题再记查了几步、耗时、花费，和现在“找一次就答”的做法对照。
 - **新样例先写期望、提交，再第一次跑**；看过失败再修代码的那一批就不再是没见过的数据，当回归门禁用，下一批要另写。
 
 - **故障测试**（`copilot/tests/test_faults.py`，10-20）：模型超时、额度用完、服务忙、返回乱码，NPS 公告接口挂了，行程引擎拒绝请求，Copilot 要换下一个模型、退回规则或者给一句清楚的话，不让整轮报错。所有模型都出错时摘条件只靠规则读（`intake.py` 接住 `ProviderError`）。
