@@ -1291,7 +1291,7 @@ async function candidatesFor(attraction) {
     if (candidates.size < FEW_CANDIDATES) await nearby(attraction, WIDE_RADIUS_M);
   }
   const main = attraction.photoFile ? (await query({ titles: `File:${attraction.photoFile}` }))[0] : undefined;
-  if (attraction.photoFile && !main?.imageinfo?.[0]) {
+  if (!process.env.ONLY && attraction.photoFile && !main?.imageinfo?.[0]) {
     throw new Error(`指定封面不存在或没有图片数据：${attraction.id} / ${attraction.photoFile}`);
   }
   return { main, ranked: [...candidates.values()].sort((a, b) => b.value - a.value).map((item) => item.page) };
