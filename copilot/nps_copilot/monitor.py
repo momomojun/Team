@@ -327,6 +327,16 @@ def daily(rows: list[dict]) -> list[dict]:
     return out
 
 
+def retrieval_of(row: dict) -> dict | None:
+    """这一轮回答问题时怎么找的资料（11-13）：how 是 bm25 / vector / hybrid，fallback 是退回关键词的原因，ms 是找资料花的时间。
+    这一轮没回答问题（只是排行程、追问）就是 None。一轮里问了几个问题的，取第一个"""
+    qa = row.get("qa")
+    for item in qa if isinstance(qa, list) else [qa] if isinstance(qa, dict) else []:
+        if isinstance(item, dict) and item.get("retrieval"):
+            return {"how": item["retrieval"], "fallback": item.get("retrieval_fallback"), "ms": item.get("retrieval_ms")}
+    return None
+
+
 def recent(rows: list[dict], limit: int = 30) -> list[dict]:
     """最近几轮：说了什么（截短）、结果、耗时、用了哪些模型、有没有退到备用的、调度员和 Writer 出没出问题"""
     out = []
@@ -343,6 +353,7 @@ def recent(rows: list[dict], limit: int = 30) -> list[dict]:
             "tokens": sum((call.get("prompt_tokens") or 0) + (call.get("output_tokens") or 0) + (call.get("thinking_tokens") or 0) for call in calls),
             "dropped": len((row.get("intake") or {}).get("dropped_spans", [])) + len((row.get("dispatch") or {}).get("dropped", [])),
             "writer_fallback": bool((row.get("writer") or {}).get("fallback")),
+            "retrieval": retrieval_of(row),
         })
     return out
 
