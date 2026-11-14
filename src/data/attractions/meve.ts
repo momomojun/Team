@@ -100,7 +100,7 @@ export const mesaVerde: Attraction[] = [
     summary:
       "全园最高点（海拔 2,613 米），从停车场沿小路走几分钟上坡到山顶的老火警瞭望台，一圈看过去：北边圣胡安山、西边睡卧尤特山、东边拉普拉塔山，南边是新墨西哥的高原和峡谷。",
     tips: ["瞭望台在防火季仍在使用，用来报告闪电、天气和火情", "山顶风大、比山下凉，带件外套；8 点到日落开放"],
-    photoFile: "Park Point Lookout mesa verde.jpg",
+    photoFile: "Mesa Verde N.P., Sun Point View, Soda Canyon 8-2008 (5912503519).jpg",
   },
   {
     id: "meve-far-view-sites",
@@ -159,7 +159,7 @@ export const mesaVerde: Attraction[] = [
     summary:
       "全园第三大、保存最完整的崖居，约 130 个房间和 8 个地穴（kiva），墙面、木梁和灰泥大多是 13 世纪的原物。2015 年起岩洞顶部有落石危险，禁止进入，只能在博物馆后面的观景台隔着小峡谷看。",
     tips: ["从博物馆走几分钟到上层观景台；去下层观景台的小路短但陡，冬天常结冰", "NPS 正在做加固岩拱的工程，重新开放日期未定"],
-    photoFile: "16 21 2245 mesa verde.jpg",
+    photoFile: "Mesa Verde-Spruce Tree House-02-Ueberblick-1982-gje.jpg",
   },
   {
     id: "meve-petroglyph-point",
@@ -232,7 +232,7 @@ export const mesaVerde: Attraction[] = [
       "想下去近看要报 Square Tower House 护林员徒步团：2026 年 5 月 4 日到 10 月 21 日每天只有 8:45 一团、限 10 人，每人 $25，同样提前 14 天在 Recreation.gov 开票，要攀石、爬梯子、走崖边窄道",
       "停车位少，满了可以停旁边的纳瓦霍峡谷观景点（Navajo Canyon View）走过来",
     ],
-    photoFile: "Square Tower House-Mesa Verde.jpg",
+    photoFile: "2025-05-28 Mesa Verde Square Tower House - 011.jpg",
   },
   {
     id: "meve-sun-point-view",
@@ -270,7 +270,7 @@ export const mesaVerde: Attraction[] = [
       "Mesa Top Loop 全年开放；冬天 Cliff Palace Loop 封路、导览停办时，这里是看悬崖宫殿最好的位置",
       "附近的停车点还能看到对面崖壁上的橡树屋（Oak Tree House）和火神庙（Fire Temple）",
     ],
-    photoFile: "Sun Temple by RO.JPG",
+    photoFile: "Sun Temple View, Mesa Verde - panoramio.jpg",
   },
   {
     id: "meve-cliff-palace",
@@ -296,7 +296,7 @@ export const mesaVerde: Attraction[] = [
       "每团限 50 人，旺季和周末常订满；有人退票会放回 Recreation.gov，开团前 2 小时都能捡漏。订不到还可以报 Far View Lodge 出发的 700 Years Tour 大巴团（含悬崖宫殿导览）",
       "崖居里只能带白开水，不能带吃的和含糖饮料；小孩要能自己爬梯子，婴儿要背在背带里",
     ],
-    photoFile: "Cliff Palace-Colorado-Mesa Verde NP.jpg",
+    photoFile: "Cliff Palace Mesa Verde National Park.jpg",
   },
   {
     id: "meve-cliff-palace-overlook",
@@ -341,7 +341,7 @@ export const mesaVerde: Attraction[] = [
       "开团前 15 分钟到停车场的遮阳棚集合，从公园入口开过来要留 75 分钟；每团限 35 人",
       "2026 年 9 月 8 日以后只有下午的团；早上的梯子被太阳晒得发烫，可以戴手套",
     ],
-    photoFile: "Balcony House Tour at Mesa Verde National Park (4851540885).jpg",
+    photoFile: "Balcony House, Mesa Verde National Park, Mancos, CO.jpg",
   },
   {
     id: "meve-soda-canyon-overlook",
@@ -388,7 +388,7 @@ export const mesaVerde: Attraction[] = [
       "Wetherill Mesa Road 约 19 公里、弯多坡陡，车长超过 7.6 米或总重超过 8,000 磅（约 3.6 吨）不能开，也不能骑车上去；闸门 8:30 开、14:00 后不能再进，16:00 前必须出来",
       "连走路全程约 3.6 公里，2000 年山火后几乎没有树荫，带足水；停车场旁的小卖部 11:00–14:00 营业",
     ],
-    photoFile: "Long House 8-11 (14971014448).jpg",
+    photoFile: "Mesa Verde-Long House-02-1982-gje.jpg",
   },
   {
     id: "meve-step-house",
@@ -412,6 +412,6 @@ export const mesaVerde: Attraction[] = [
       "9:00–15:00 开放，14:45 以后不能再进；步道往返约 1.6 公里、高差约 50 米，台阶多",
       "时间多可以走铺装的 Long House Loop，去獾屋社区（Badger House）遗址和长屋、柯达屋观景台，全程约 8 公里，可以骑自行车（车要载上来）",
     ],
-    photoFile: "Step House, Wetherill Mesa, Mesa Verde National Park (4852277394).jpg",
+    photoFile: "Hike to Step House, Wetherill Mesa, Mesa Verde National Park (4851644531).jpg",
   },
 ];

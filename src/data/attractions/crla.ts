@@ -26,7 +26,7 @@ export const craterLake: Attraction[] = [
       "湖面常被云遮住，出发前可以看 NPS 网站上的 Rim Village 实时摄像头",
       "园内没有加油站，进园前在 Prospect（62 号公路）、Crater Lake Junction（97 号公路）或 Diamond Lake 加满",
     ],
-    photoFile: "Crater Lake winter pano2.jpg",
+    photoFile: "Crater Lake from Rim Village Trail.jpg",
   },
   {
     id: "crla-garfield-peak",
@@ -47,6 +47,7 @@ export const craterLake: Attraction[] = [
     mustSee: true,
     summary:
       "从火山口湖酒店背后出发，沿之字形山路爬上海拔 2,455 米（8,054 英尺）的山顶，一路俯瞰湖面，山顶还能从高处看到湖东南角的幽灵船岛。",
+    photoFile: "Crater Lake Garfield Peak Trail View South.jpg",
     tips: [
       "积雪常到 6 月底甚至 7 月才化完，早季山顶附近的残雪坡很滑，出发前查 NPS 步道状况",
       "碎石坡上常见鼠兔和黄腹旱獭；有几段贴着崖边，注意脚下",
@@ -111,7 +112,7 @@ export const craterLake: Attraction[] = [
       "日落时人非常多，提前一小时到找车位；下山带头灯",
       "积雪可能到 7 月初才化完；不爬山的话，路边的 Watchman Overlook 也能近看巫师岛",
     ],
-    photoFile: "Crater Lake October 2019 015.jpg",
+    photoFile: "Crater Lake NP, OR, Wizard Island and The Watchman 8-28-13 (9859756835).jpg",
   },
   {
     id: "crla-discovery-point",
@@ -152,6 +153,7 @@ export const craterLake: Attraction[] = [
     mustSee: true,
     summary:
       "东环湖路一条 1.6 公里支路尽头的观景台，海拔 2,397 米（7,865 英尺），这条支路是俄勒冈州最高的铺装公路。从东岸隔湖望向巫师岛和西岸，日落时很好看。",
+    photoFile: "From Cloudcap Overlook (4105425371).jpg",
     tips: [
       "风很大，崖边的白皮松被吹得又矮又扭曲；带件外套",
       "从支路口往幽灵船方向约 1.8 公里，路边有个没有标牌的 Pumice Castle 观景点，橙色浮石被侵蚀成城堡的样子",
@@ -176,6 +178,7 @@ export const craterLake: Attraction[] = [
       "步道口在东环湖路上，冬季道路关闭（通常 11 月 1 日到次年 7 月前后），山上积雪常到 6 月底甚至 7 月（以 NPS 公告为准）；这段时间可以去 Steel 游客中心看介绍影片，冬季参加护林员雪鞋徒步。",
     summary:
       "公园最高峰（海拔 2,721 米 / 8,929 英尺）的步道，坡度平缓但一路爬升约 380 米。山顶有防火瞭望塔，是园内唯一能把整个湖尽收眼底的地方。",
+    photoFile: "Crater Lake Mt Scott Trail 11.jpg",
     tips: ["湖在山的西边，上午光线最适合看湖", "积雪常到 6 月底甚至 7 月；山顶风大，带外套和足够的水"],
   },
   {
@@ -194,6 +197,7 @@ export const craterLake: Attraction[] = [
     openMonths: [7, 8, 9],
     summary:
       "唯一能合法下到湖边的步道：1.7 公里内下降约 210 米到湖岸，可以游泳、钓鱼，坐游船环湖或登巫师岛。2026–2028 年步道和码头整体重建、全线关闭，这期间没有湖上游船，也去不了巫师岛，预计 2029 年恢复。",
+    photoFile: "Crater Lake National Park - HCP - October 13, 2022 - 052 - Cleetwood Cove Trail.jpg",
     tips: [
       "施工期间步道口停车场也关闭，重新开放时间以 NPS 公告为准",
       "重开后：下去容易上来难，回程相当于爬 60 多层楼；夏季湖水表面约 14°C",
@@ -236,6 +240,7 @@ export const craterLake: Attraction[] = [
       "步道口在 Pinnacles Road 上，冬季和东环湖路一起关闭、积雪很深，通常 7 月前后才能去（以 NPS 公告为准），2026 年整季 Pinnacles Road 因施工只能步行或骑车进入；冬春可以去 Rim Village 看湖。",
     bestMonths: [7, 8],
     summary: "穿过老龄林的平缓步道，尽头是一道由融雪汇成的瀑布（水不是从火山口湖流出来的），盛夏沿途野花很多。",
+    photoFile: "Plaikni Falls, Crater Lake National Park, Oregon - 4.jpg",
     tips: [
       "步道口在 Pinnacles Road 上，离东环湖路约 1.9 公里，停车位不多",
       "前 3/4 路段全地形轮椅在协助下可以通行，最后一段较陡",
@@ -258,6 +263,7 @@ export const craterLake: Attraction[] = [
     openMonths: SUMMER,
     closedNote: "在东环湖路南段，这段路通常 11 月 1 日或更早关闭，次年 7 月中旬前后清雪通车（以 NPS 公告为准）；冬春可以在 Rim Village 看湖，或参加护林员雪鞋徒步。",
     summary: "从东环湖路穿过一片草甸，走一小段上坡到火山口边缘，从高处近看幽灵船岛。这个 U 形山口是冰川沿马扎马火山流下时刻出来的。",
+    photoFile: "The Phantom Ship, Crater Lake National Park.jpg",
     tips: ["环线约 1.3 公里，全地形轮椅在协助下可以走", "别越过崖边：火山口内壁陡峭松散，禁止往下走"],
   },
   {
@@ -273,6 +279,7 @@ export const craterLake: Attraction[] = [
     openMonths: SUMMER,
     closedNote: "在东环湖路南段，冬季道路关闭、瀑布被积雪覆盖，通常 7 月中旬前后通车后才能看到（以 NPS 公告为准）；冬春可以去 Steel 游客中心和 Rim Village。",
     summary: "东环湖路边的泉水瀑布，从冰川刻出的崖壁上沿乱石坡跌落约 30 米（100 英尺），开车经过时停一下就能看。",
+    photoFile: "Vidae Falls - Crater Lake National Park (20421450080).jpg",
     tips: ["由泉水补给，整个夏天都有水", "在公园总部以东约 5 公里，附近的 Vidae Falls 野餐区也是 Crater Peak 步道的起点"],
   },
   {
@@ -291,6 +298,7 @@ export const craterLake: Attraction[] = [
       "Pinnacles Road 从东环湖路分出，冬季和东环湖路一起关闭（通常 11 月 1 日或更早，次年 7 月前后重开，以 NPS 公告为准），2026 年 9 月时还因施工只能步行或骑车进入；冬春只能在 Rim Village 一带看湖。",
     summary:
       "Pinnacles Road 尽头的峡谷里立着一排约 30 米高的彩色尖塔：马扎马火山喷发后，热火山灰里的气体往上冒，把周围的灰烬胶结变硬，侵蚀后留下这些“化石喷气孔”。",
+    photoFile: "View from Pinnacles Overlook Drive. View SE. - Crater Lake National Park Roads, Klamath Falls, Klamath County, OR HAER OR-107-40.tif",
     tips: ["离东环湖路约 10 公里；沿峡谷边的平坦步道可以走到公园边界，往返约 1.3 公里", PINNACLES_ROAD_TIP],
   },
 ];

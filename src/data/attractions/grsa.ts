@@ -78,7 +78,7 @@ export const greatSandDunes: Attraction[] = [
       "5 月下旬到 6 月初的周末最挤，入口排长队、停车场爆满，尽量工作日去；刚从山上下来的水很凉，太阳晒几个小时后暖一些",
       "6 月中旬水变浅变暖后蚊子很多，到对岸没有树丛的沙地上会好一些；水大的年份小孩可以趴在充气垫上顺浪漂一小段",
     ],
-    photoFile: "Surge Flow in Medano Creek (51876816519).jpg",
+    photoFile: "Great Sand Dunes National Park with Medano Creek in Foreground.tif",
   },
   {
     id: "grsa-high-dune",
@@ -110,7 +110,7 @@ export const greatSandDunes: Attraction[] = [
       "夏天天亮就出发、上午早点下来：午后沙面滚烫，还常有雷暴，沙脊是附近最高的地方，听到雷声立刻下撤回车里",
       "没有步道，沿沙脊的棱线走最省力；带足水、防晒和墨镜，风大扬沙时戴护目镜",
     ],
-    photoFile: "Panorama of the Dunefield (52536947906).jpg",
+    photoFile: "Climbing a high dune, Great Sand Dunes National Park, 2009.jpg",
   },
   {
     id: "grsa-star-dune",
@@ -133,7 +133,7 @@ export const greatSandDunes: Attraction[] = [
       "沿河床走过去比先爬高沙丘再翻过去少很多上上下下；沙丘每年都在移动，手机徒步 App 的路线常常不准",
       "夏天中午前要从顶上下来，避开滚烫的沙面和午后雷暴；另一座最高的 Hidden Dune 在停车场西北，往返约 11 公里、6 小时",
     ],
-    photoFile: "Star Dune and Crestone Peaks (51985120756).jpg",
+    photoFile: "Dunes - Great Sand Dunes National Park.jpg",
   },
   {
     id: "grsa-sandboarding",

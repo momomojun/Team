@@ -59,8 +59,7 @@ export const saguaro: Attraction[] = [
       "Bajada 环线封路期间，西区开车能到的巨人柱步道主要就是这条",
       "傍晚逆光拍巨人柱剪影很好看；夏天白天太热，只适合清早或日落前来",
     ],
-    photoFile:
-      "View of the start of Desert Discovery Nature Trail, showing lush vegetation and a shaded ramada. (3d73c866-ef80-4868-9703-e8e025d5501c).jpg",
+    photoFile: "View of the start of Desert Discovery Nature Trail, showing lush vegetation and a shaded ramada. (3d73c866-ef80-4868-9703-e8e025d5501c).jpg",
   },
   {
     id: "sagu-valley-view-overlook",
@@ -84,7 +83,7 @@ export const saguaro: Attraction[] = [
       "步道口在 Hohokam Road（单行砂石路）边，车位只有十来个，停满了就先去环线上别的地方转一圈再回来",
       "看完日落天很快就黑，带头灯；环线只在白天让车开",
     ],
-    photoFile: "Saguaro National Park West, Arizona, USA 2024-5 2.jpg",
+    photoFile: "Saguaro - Flickr - Joe Parks.jpg",
   },
   {
     id: "sagu-signal-hill",
@@ -107,7 +106,7 @@ export const saguaro: Attraction[] = [
       "只能看、不能摸，也不要踩到刻着画的石头上；石阶不平，不能推轮椅",
       "10 月下旬的周五下午有护林员讲岩画（看 NPS 活动日历，封路的话会取消）",
     ],
-    photoFile: "Petroglyph on Signal Hill - panoramio.jpg",
+    photoFile: "Saguaro National Park Petroglyph at Saguaro NP 9813.jpg",
   },
   {
     id: "sagu-bajada-loop",
@@ -245,7 +244,7 @@ export const saguaro: Attraction[] = [
       "单行道、弯多坡陡，骑车的人很多，超车小心；车长超过 40 英尺（约 12 米）的房车不能进",
       "门票在环线入口的收费亭或自助机买，只收卡；7 天内西区也能用",
     ],
-    photoFile: "Cactus Forest Drive (50614551188).jpg",
+    photoFile: "Cactus Forest Drive, Saguaro National Park (East), Arizona (14115049386).jpg",
   },
   {
     id: "sagu-javelina-rocks",
@@ -266,7 +265,7 @@ export const saguaro: Attraction[] = [
       "爬石头自己当心，石缝里常有蛇；日落后天很快黑，记得环线 20:30 关门",
       "往前一点的 Rincon Mountains Overlook 路边小停车点只能停两辆车，也是看日落的地方",
     ],
-    photoFile: "Saguaro National Park East, Arizona, USA 2024 6.jpg",
+    photoFile: "Saguaro National Park East, Arizona, USA 2024 3.jpg",
   },
   {
     id: "sagu-freeman-homestead",

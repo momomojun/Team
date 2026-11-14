@@ -90,7 +90,7 @@ export const badlands: Attraction[] = [
       "下雨时和雨后泥岩又黏又滑，非常危险，雨天别走",
       "夏天正午岩壁反光很热，早上去，每人至少带 1 升水",
     ],
-    photoFile: "Notch Trail Badlands NP South Dakota 2024.jpg",
+    photoFile: "Prairie from Notch and Door Trails, Badlands National Park, Wall, SD.jpg",
   },
   {
     id: "badl-cliff-shelf",

@@ -31,6 +31,7 @@ export const redwood: Attraction[] = [
     mustSee: true,
     summary:
       "Bald Hills Road 山腰上的一片原始红杉林，1969 年尼克松总统在这里把它献给前第一夫人伯德·约翰逊。约 2.4 公里的环线起伏不大，走一圈 45–60 分钟，是园区里最轻松的看红杉步道之一。",
+    photoFile: "REDWOOD NATIONAL PARK, CALIFORNIA.jpg",
     tips: [
       "Bald Hills Road 窄、弯多、坡陡，还有重型卡车；房车、大巴和拖车不能停这个停车场",
       "夏天上午 11 点到下午 4 点停车场基本是满的，尽量早上去",
@@ -55,6 +56,7 @@ export const redwood: Attraction[] = [
       "需要免费的步道口许可证，在 Redwood Parks Conservancy 网站预约：每天 45 个名额可提前 180 天订，另有 20 个半天名额在前一天放出，大门密码会发到邮箱。",
     summary:
       "红杉溪谷底的一片原始林，不少红杉超过 106 米，曾经的世界最高树 Libbey Tree 就在这里。步道从停车场一路下降约 240 米到溪边，绕林子一圈再原路回来。",
+    photoFile: "Redwood Creek Valley 25.jpg",
     tips: [
       "开过大门还有约 6 英里（10 公里）窄土路才到停车场；超过 21 英尺（约 6.4 米）的房车和拖车停不下",
       "去程一路下坡，回程要爬约 240 米；连开车在内至少留出 4 小时",
@@ -107,6 +109,7 @@ export const redwood: Attraction[] = [
     mustSee: true,
     summary:
       "与 101 公路平行、穿过 Prairie Creek 原始红杉林的约 16 公里铺装公路，两旁巨树夹道，沿途有大树、Prairie Creek 游客中心、马鹿草原和不少步道口。",
+    photoFile: "Newton B. Drury Parkway, Prairie Creek Redwoods State Park.jpg",
     tips: [
       "单纯开过去约 20–30 分钟，边停边看留 1 小时",
       "禁止商用车通行，房车可以走",
@@ -155,6 +158,7 @@ export const redwood: Attraction[] = [
     mustSee: true,
     summary:
       "Crescent City 东边一条约 16 公里的窄路，有一段曾是马车驿道，大部分没铺装，穿过 Jedediah Smith 州立公园的原始红杉林，巨树几乎贴着车身；Stout Grove、泰坦巨人林和童子军树步道都从这条路出发。",
+    photoFile: "Howland Hill Road, Jedediah Smith Redwoods State Park.jpg",
     tips: [
       "路窄，房车、卡车和拖车都过不去；全程留 1 小时左右",
       "夏天尘土大、雨后坑洼多，春季常因修路短时封闭，出发前查 NPS 路况",
@@ -228,6 +232,7 @@ export const redwood: Attraction[] = [
     durationMin: 20,
     summary:
       "牛顿·德鲁里风景道边的一棵巨大红杉，树龄估计超过 1,500 年，从停车场走约 70 米平路就到，是园区里看巨树最省力的一站。",
+    photoFile: "2010-03-21, Big Tree Wayside (Prairie Creek Redwoods State Park, California), 113613.jpg",
     tips: [
       "路面平坦，可以推轮椅；停车场在 Prairie Creek 游客中心以北约 1.2 公里",
       "旁边有约 15 分钟的 Circle Trail 小环线，也可以接 Cathedral Trees、Foothills 等步道走得更远",
@@ -246,6 +251,7 @@ export const redwood: Attraction[] = [
     permit: DAVISON_ROAD_PERMIT,
     summary:
       "Davison Road 尽头绵延数公里的灰色沙滩，背后是橙黄色的崖壁，19 世纪中叶曾引来淘金者，海滩也因此得名；沙丘草地上常能看到罗斯福马鹿。",
+    photoFile: "Redwood NSP Gold Bluffs 5.jpg",
     tips: [
       "浪大水冷，小心突然涌上岸的“疯狗浪”，不要背对大海，也别爬浪里的漂流木",
       "马鹿常在沙丘和露营地附近活动，保持距离",
@@ -266,6 +272,7 @@ export const redwood: Attraction[] = [
     bestMonths: [3, 4, 11, 12],
     summary:
       "海拔约 200 米的崖顶观景台，俯瞰流经 400 多公里的克拉马斯河在这里汇入太平洋；河口沙洲上常有海豹，这里也是园区里看灰鲸迁徙最好的地方之一。",
+    photoFile: "Visitors at Klamath River Overlook (644659a0-1dd8-b71b-0b96-82c4a28d0954).jpg",
     tips: [
       "从 101 公路转 Requa Road 上坡约 3.6 公里，路窄坡陡，不适合大房车和拖车",
       "灰鲸迁徙高峰是 11–12 月和 3–4 月，带上望远镜；没雾的傍晚日落很好看",
@@ -305,6 +312,7 @@ export const redwood: Attraction[] = [
     hike: { distanceMi: 1.5, difficulty: "easy" },
     summary:
       "这里有几棵世界上最大、最古老的海岸红杉，位置多年没有公开；2022 年修好约 400 米（1,300 英尺）的高架栈道后正式开放，既能走近巨树，又不会踩坏林地。",
+    photoFile: "Lost Monarch 560.jpg",
     tips: [
       "从 Howland Hill Road 东段的步道口出发，先走一段 Mill Creek Trail，途中有不少金属台阶",
       "夏天路边停车位很少，尽量早到；房车和拖车不能开 Howland Hill Road",
@@ -326,6 +334,7 @@ export const redwood: Attraction[] = [
     hike: { distanceMi: 5.6, difficulty: "moderate" },
     summary:
       "Jedediah Smith 州立公园里一条安静的原始林步道，单程约 4.5 公里，终点是小小的 Fern Falls，快到终点时有岔路通往一棵双干巨红杉，就是童子军树。",
+    photoFile: "Redwood trees on the Boy Scout Tree Trail - Flickr - chris.rycroft.jpg",
     tips: [
       "NPS 路况：8 月 4 日起离步道口约 1.75 英里（2.8 公里）处有倒树挡路，只能走前半段，出发前查最新公告",
       "步道口车辆被撬的事件很多，贵重物品别留在车里",
@@ -367,6 +376,7 @@ export const redwood: Attraction[] = [
     outsidePark: true,
     summary:
       "Humboldt Redwoods 州立公园里与 101 公路平行的旧公路，约 50 公里，穿过世界上面积最大的原始红杉林；中段的 Founders Grove 有一条约 0.8 公里的平坦环线，能看到 Founders Tree 和 1991 年倒下的 Dyerville Giant。",
+    photoFile: "Avenue of the Giants - Humboldt Redwoods State Park - DSC02376.JPG",
     tips: [
       "在国家公园以南，Eureka 往南约 45 英里，从 Orick 开过来约 1.5–2 小时；从旧金山北上正好顺路",
       "州立公园游客中心在 Weott 和 Myers Flat 之间，5–9 月 9:00–17:00，10–4 月 10:00–16:00",

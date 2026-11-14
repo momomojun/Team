@@ -81,7 +81,7 @@ export const petrifiedForest: Attraction[] = [
       "有些日子 10:00–15:00 有纳瓦霍艺人现场做银饰、串珠、织毯，日程按月在官网公布",
       "卡奇纳观景点也是下到北区荒野（Onyx Bridge 路线）的步道口",
     ],
-    photoFile: "Painted Desert Inn NHL 02.jpg",
+    photoFile: "Painted Desert Inn 2013.JPG",
   },
   {
     id: "pefo-pintado-point",
@@ -164,7 +164,7 @@ export const petrifiedForest: Attraction[] = [
     summary:
       "普埃科河边一座约 100 个房间的古普韦布洛村落，600 多年前有人居住，现在能看到加固过的矮墙和地穴。步道南端的巨石上刻满岩画，其中一个小螺旋在夏至早晨会被一道光斑照中，是古人的历法标记。",
     tips: ["环线约 0.5 公里、铺装平路，可以推婴儿车；半路的小展室讲村落历史", "不要爬墙、坐墙，也不要摸岩画"],
-    photoFile: "Puerco Pueblo ruins.jpg",
+    photoFile: "Petrified Forest National Park, Arizona, Puerco Pueblo, USA - 54344107175.jpg",
   },
   {
     id: "pefo-newspaper-rock",
@@ -181,7 +181,7 @@ export const petrifiedForest: Attraction[] = [
     mustSee: true,
     summary: "崖下几块深色砂岩巨石的表面刻满了人物、动物、螺旋和几何图案，很多和附近的普埃科村落同一时期，像一块写满留言的布告板。",
     tips: ["观景台在崖边，离岩画有一段距离，带望远镜或长焦镜头看得更清楚", "不能下到岩画旁边"],
-    photoFile: "Newspaper Rock, Petrified Forest NP 03.jpg",
+    photoFile: "Petrified Forest National Park pano 05 - Newspaper Rock area.jpg",
   },
   {
     id: "pefo-tepees",
@@ -217,7 +217,7 @@ export const petrifiedForest: Attraction[] = [
     summary:
       "从主路岔出的环形支路开上台地顶，沿途几个观景点俯瞰蓝、紫、灰、白条纹的膨润土荒地。环路中段的步道下到荒地底部绕一圈，走在蓝灰色土丘和散落的化石木之间。",
     tips: ["步道开头一段下坡很陡，回程要爬上来", "下雨后膨润土又湿又滑，别离开步道", "夏天荒地里反射热，尽量上午去"],
-    photoFile: "Petrified Forest National Park, Blue Mesa, Arizona, USA.jpg",
+    photoFile: "Lower Blue Mesa Trail in the Petrified Forest National Park, Arizona.jpg",
   },
   {
     id: "pefo-agate-bridge",
@@ -234,7 +234,7 @@ export const petrifiedForest: Attraction[] = [
     summary:
       "一根约 30 米长的化石树干横跨在一条砂岩冲沟上，自己成了一座“桥”。19 世纪末就是这里最有名的景点，1917 年在底下加了一道混凝土梁防止断裂。",
     tips: ["不能走上去，在旁边的观景台看"],
-    photoFile: "Agate Bridge.jpg",
+    photoFile: "Culvert at Agate Bridge. Looking SW. - Petrified Forest National Park Roads and Bridges, Holbrook, Navajo County, AZ HAER AZ-58-15.tif",
   },
   {
     id: "pefo-jasper-forest",
@@ -273,7 +273,7 @@ export const petrifiedForest: Attraction[] = [
       "环线约 1.2 公里、基本平坦",
       "带走化石木违法，哪怕一小块也不行；园内外礼品店卖的是私人土地上合法采集的",
     ],
-    photoFile: "Petrified Forest National Park, Arizona, USA, 2024 18.jpg",
+    photoFile: "Petrified Log in Crystal Forest- Petrified Forest National Park (16116299333).jpg",
   },
   {
     id: "pefo-rainbow-forest-museum",

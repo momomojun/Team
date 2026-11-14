@@ -27,7 +27,7 @@ export const banff: Attraction[] = [
       "2026 年起湖边停车场不接待长超过 6 米或宽超过 2 米的私人车辆，开房车的请停 Park and Ride 坐班车",
       "湖面通常 6 月才完全解冻，冬天可以在城堡酒店前清出的冰场溜冰；夏季酒店船屋出租独木舟，价格很高",
     ],
-    photoFile: "Lake Louise, Banff National Park, Canada.jpg",
+    photoFile: "Lake Louise, Banff National Park, Alberta, Canada.jpg",
   },
   {
     id: "banf-moraine-lake",
@@ -54,7 +54,7 @@ export const banff: Attraction[] = [
       "Rockpile 环线约 0.7 公里、爬升 35 米，湖边步道单程约 1.3 公里；湖边的 Moraine Lake Lodge 夏季出租独木舟",
       "湖面海拔约 1,890 米，清晨和阴天很冷，夏天也要带外套",
     ],
-    photoFile: "Lake Moraine-Banff National Park.jpg",
+    photoFile: "Lake Moraine Banff (244844671).jpg",
   },
   {
     id: "banf-lake-agnes",
@@ -231,7 +231,7 @@ export const banff: Attraction[] = [
       "从上瀑布继续走到墨水壶（Ink Pots）——几个冒泉水的彩色小池，从停车场单程约 5.5 公里、往返约 4 小时",
       "冬天栈道结冰，穿冰爪或跟冰上徒步团走，能看到冻住的瀑布",
     ],
-    photoFile: "Johnston Canyon-Lower Falls.jpg",
+    photoFile: "Lower Falls, Johnston Canyon, Banff National Park, Alberta, 2025-07-12.jpg",
   },
   {
     id: "banf-bow-lake",
@@ -276,7 +276,7 @@ export const banff: Attraction[] = [
       "离露易丝湖约 41 公里（约 40 分钟），湖面 6 月下旬到 7 月初才解冻，7–9 月颜色最好",
       "冬天停车场和步道积雪，要穿雪鞋或冰爪走上去",
     ],
-    photoFile: "Peyto Lake viewed from Bow Summit in Banff National Park.jpg",
+    photoFile: "Peyto Lake panoramic view.jpg",
   },
   {
     id: "banf-mistaya-canyon",
@@ -435,7 +435,7 @@ export const banff: Attraction[] = [
       "湖边步道到斯图尔特峡谷单程约 1.6 公里；夏末（约 7 月中到 9 月中）这一带常因熊活动要求 4 人以上结伴、禁止骑车",
       "Lake Minnewanka 环线顺路能看双杰克湖和 Cascade 池塘，环线有一段冬季（11 月到次年 5 月）对车辆关闭",
     ],
-    photoFile: "Lake Minnewanka and Mount Inglismaldie, south view 20240821 1.jpg",
+    photoFile: "Lake Minnewanka Banff National Park.jpg",
   },
   {
     id: "banf-two-jack-lake",

@@ -37,7 +37,7 @@ export const theWave: Attraction[] = [
       "要先开约 13 公里的 House Rock Valley Road 土路到步道口，雨后可能泥泞到四驱车也过不去，而许可证不能改期",
       "每日抽签中签的人要在徒步前一天早上 8:30 到 Kanab 游客中心或 Page 的 Lake Powell Hub 听现场安全说明",
     ],
-    photoFile: "The Wave - Coyote Buttes North (49995874171).jpg",
+    photoFile: "The Wave - Coyote Buttes North (49995905456).jpg",
   },
   {
     id: "wave-wire-pass",

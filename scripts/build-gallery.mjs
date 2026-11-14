@@ -8,7 +8,7 @@ import { attractions, parks, sleep, USER_AGENT } from "./load-data.mjs";
 const OUTPUT = new URL("../src/data/attractions/gallery.generated.ts", import.meta.url);
 const API = "https://commons.wikimedia.org/w/api.php";
 const THUMB_WIDTH = 960;
-const PER_ATTRACTION = 6;
+const PER_ATTRACTION = 8;
 const MAX_PER_AUTHOR = 2;
 const GEO_RADIUS_M = 500;
 /** 候选太少时，附近照片放宽到这个半径 */

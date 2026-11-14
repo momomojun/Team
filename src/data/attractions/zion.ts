@@ -33,7 +33,7 @@ export const zion: Attraction[] = [
     hike: { distanceMi: 3.3, gainFt: 368, difficulty: "moderate" },
     summary: "从游客中心直接出发，不用排班车。爬到一处台地上，俯瞰 Springdale 小镇和对面的 Watchman 山峰。",
     tips: ["夏天几乎没有遮阴，早上或傍晚走"],
-    photoFile: "The Watchman Trail (12323611713).jpg",
+    photoFile: "Zion National Park - HCP - October 02, 2022 - 090 - Road into Watchman Campground.jpg",
   },
   {
     id: "zion-canyon-junction",
@@ -80,7 +80,7 @@ export const zion: Attraction[] = [
     hike: { distanceMi: 1.2, gainFt: 150, difficulty: "easy" },
     summary: "从 Zion Lodge 过桥出发，走到小瀑布后面的下翡翠池；体力好可以继续爬到中、上池。",
     tips: ["春季水量大时瀑布最好看", "可以经 Kayenta Trail 走到 The Grotto，接天使降临步道"],
-    photoFile: "Emerald Pools Color.jpg",
+    photoFile: "Waterfall at lower Emerald Pool, Zion National Park - panoramio.jpg",
   },
   {
     id: "zion-angels-landing",
@@ -101,7 +101,7 @@ export const zion: Attraction[] = [
     summary:
       "锡安最有名的步道。先爬 21 道之字弯 Walter's Wiggles，最后约 800 米沿着两侧都是悬崖的窄脊抓铁链前进。",
     tips: ["没有许可证也可以走到 Scout Lookout，景色已经很壮观", "恐高、下雨或结冰时不要上铁链段"],
-    photoFile: "Angels Landing - Zion Canyon.jpg",
+    photoFile: "Angels Landing and the Great White Throne.jpg",
   },
   {
     id: "zion-narrows",
@@ -149,7 +149,7 @@ export const zion: Attraction[] = [
       "不在班车路线上，可以自驾；停车位很少，早去",
       "从峡谷过来要穿过 Zion–Mt. Carmel 隧道；2026 年起，长超过 35 英尺 9 英寸（10.9 米）、宽超过 7 英尺 10 英寸（2.39 米）或高超过 11 英尺 4 英寸（3.45 米）的房车等大车不能走 Canyon Junction 到东入口这一段，原来的隧道通行证取消了",
     ],
-    photoFile: "Overlook trail view - Zion Canyon.jpg",
+    photoFile: "Cross-bedded Navajo Sandstone, Canyon Overlook Trail, Zion National Park, Utah.jpg",
   },
   {
     id: "zion-kolob",
@@ -230,6 +230,7 @@ export const zion: Attraction[] = [
     trail: {},
     hike: { distanceMi: 6.8, gainFt: 300, difficulty: "moderate" },
     summary: "比天使降临还高的观景台，俯瞰整条锡安峡谷，天使降临在脚下像一道小山脊。从东侧台地走过去，爬升不大。",
+    photoFile: "Scouts Lookout, on the way up to Angels Landing (Zion National Park) (3443196545).jpg",
     tips: [
       "原来从峡谷里 Weeping Rock 上去的路 2019 年落石后关闭，现在从东侧的 East Mesa 步道口进",
       "去步道口要走一段土路，冬春和下雨后会非常泥泞、开不进去，官方说只有高底盘或四驱车能开",

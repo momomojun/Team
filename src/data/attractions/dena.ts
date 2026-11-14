@@ -36,7 +36,7 @@ export const denali: Attraction[] = [
     hike: { distanceMi: 2, difficulty: "easy" },
     summary: "入口区的湖边步道，能看到河狸坝和河狸小屋，偶尔有驼鹿在湖里吃水草。",
     tips: ["最后一段下到湖边比较陡", "驼鹿看起来温顺，其实很危险，保持距离"],
-    photoFile: "Horseshoe Lake in Fall (272e3912-c3aa-4731-b2d2-8c72a4407ef4).JPG",
+    photoFile: "A moose eats dinner around 5-30 p.m. near the beaver dams off of the Horseshoe Lake Trail on Sunday, June 11, 2017. The moose (96178eca-6cb2-4039-89ef-d685ed559a66).JPG",
   },
   {
     id: "dena-mount-healy",

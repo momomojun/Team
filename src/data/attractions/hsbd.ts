@@ -29,7 +29,7 @@ export const horseshoeBend: Attraction[] = [
       "停车费归佩吉市收（小汽车 $10、摩托车 $5），国家公园年卡不管用；路上只有两处遮阳棚，夏天正午很晒，带足水",
       "只有观景台一小段有栏杆，其余崖边都没有护栏，拍照别站到边缘",
     ],
-    photoFile: "Horseshoe Bend Arizona dllu.jpg",
+    photoFile: "Horseshoe Bend 3.jpg",
   },
   {
     id: "hsbd-glen-canyon-dam-overlook",

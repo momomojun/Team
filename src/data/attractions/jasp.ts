@@ -142,7 +142,7 @@ export const jasper: Attraction[] = [
       "离贾斯珀镇约 30 分钟车程，在冰原大道和 93A 公路的路口旁；停车免费，中午前后常满",
       "步道只有几百米，冬天栈道结冰要小心；千万别翻过护栏，这里发生过多起落水事故",
     ],
-    photoFile: "Free falling Athabasca Falls.jpg",
+    photoFile: "Athabasca Falls Jasper National Park.jpg",
   },
   {
     id: "jasp-maligne-canyon",
@@ -199,7 +199,7 @@ export const jasper: Attraction[] = [
       "精灵岛在湖中段，只能坐游船去看，湖边走不到",
       "旁边的驼鹿湖环线（Moose Lake Loop）约 2.7 公里，有时能在湖边看到驼鹿",
     ],
-    photoFile: "Sunrise at Maligne lake.jpg",
+    photoFile: "Spirit Island on Maligne Lake1.jpg",
   },
   {
     id: "jasp-spirit-island",

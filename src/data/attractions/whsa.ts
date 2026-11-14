@@ -218,7 +218,7 @@ export const whiteSands: Attraction[] = [
       "高温警报时取消；因天气取消一般在开始前 30 分钟内才决定，可以打 575-479-6124 转 236 问",
       "公园日落后 30 分钟关门，看完日落直接往外开；太阳一下山气温掉得很快，带件外套",
     ],
-    photoFile: "Fiery Sunset (fc23769a-155d-451f-6730-d0c4f7a8fd04).JPG",
+    photoFile: "White Sands National Park, New Mexico, USA 5-2024 38.jpg",
   },
   {
     id: "whsa-moonlight-hike",
