@@ -1,0 +1,17 @@
+{
+  "agent": {
+    "min_passed": 36,
+    "min_by_kind": {
+      "single": 6,
+      "multi": 6,
+      "chain": 5,
+      "season": 6,
+      "mixed": 2,
+      "out_of_scope": 6,
+      "adversarial": 5
+    }
+  },
+  "qa": {
+    "min_passed": 19
+  }
+}

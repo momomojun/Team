@@ -33,7 +33,7 @@ jobs:
   copilot:
     name: Copilot (tests, replay eval gate)
     runs-on: ubuntu-latest
-    # 把九组门禁的成绩贴到 PR 评论（只改自己那一条）
+    # 把十组门禁的成绩贴到 PR 评论（只改自己那一条）
     permissions:
       contents: read
       pull-requests: write
@@ -83,6 +83,9 @@ jobs:
       - if: ${{ !cancelled() }}
         name: Replay eval gate (retrieval for Q&A, semantic rankings recorded with Gemini embeddings + Neon)
         run: python copilot/eval/retrieval.py --replay copilot/eval/recordings/retrieval-gemini-embedding-2.jsonl --gate copilot/eval/baseline-retrieval.json
+      - if: ${{ !cancelled() }}
+        name: Replay eval gate (search agent vs retrieve-once Q&A, answers recorded with Gemini 3.5 Flash Lite)
+        run: python copilot/eval/agent.py --replay copilot/eval/recordings/agent-v1-gemini-3.5-flash-lite.jsonl --gate copilot/eval/baseline-agent.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:

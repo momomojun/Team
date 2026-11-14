@@ -1,4 +1,4 @@
-"""CI 跑完九组回放门禁以后，把成绩整理成一张 Markdown 表：贴到 PR 评论和这次 CI 的摘要页。
+"""CI 跑完十组回放门禁以后，把成绩整理成一张 Markdown 表：贴到 PR 评论和这次 CI 的摘要页。
 
   python copilot/eval/pr_summary.py copilot/eval/reports > summary.md
 
@@ -25,6 +25,8 @@ SUITES = [
     (f"{MODEL}-alerts-2026-10-19", "baseline-alerts.json", "NPS 公告提取", "NPS alert extraction"),
     # 回答问题前找资料（11-10）：按意思找的名单是 Gemini 嵌入 + Neon 录好的，关键词现算
     ("retrieval-gemini-embedding-2", "baseline-retrieval.json", "找资料（按意思 · 关键词）", "Retrieval (semantic · keyword)"),
+    # search agent（11-14）：Gemini 3.5 Flash Lite 录好的回答，自己查 vs 找一次就答
+    ("agent-v1-gemini-3.5-flash-lite", "baseline-agent.json", "回答问题：自己查 · 找一次就答", "Q&A: search agent · retrieve-once"),
 ]
 
 
@@ -43,6 +45,11 @@ def score(report: dict, baseline: dict) -> tuple[str, str, bool]:
         ok = report["cases"] >= baseline["cases"] and report["turns"] >= baseline["turns"]
         return (f"{report['cases']}/{report['total_cases']} 组 · {report['turns']}/{report['total_turns']} 轮",
                 f"≥ {baseline['cases']} 组 · {baseline['turns']} 轮", ok)
+    if "rows" in report and "table" in report:  # search agent（agent.py）：每种做法全对的题数
+        configs = [config for config in ("agent", "qa") if config in baseline and config in report["table"]]
+        got = " · ".join(f"{config} {report['table'][config]['all']['passed']}/{report['table'][config]['all']['cases']}" for config in configs)
+        want = " · ".join(f"≥ {baseline[config]['min_passed']}" for config in configs)
+        return got, want, all(report["table"][config]["all"]["passed"] >= baseline[config]["min_passed"] for config in configs)
     if "table" in report:  # 找资料（retrieval.py）：和 retrieval.py --gate 一样，按 baseline 的 min 逐项比“全部”那一栏
         checks = [(method, key, report["table"][method]["all"][key], minimum)
                   for method, limits in baseline["min"].items() for key, minimum in limits.items()]
@@ -73,7 +80,7 @@ def table(reports: Path) -> str:
         "<!-- copilot-eval-summary -->",
         f"### Copilot 回放评测 / Replay eval gates：{verdict}",
         "",
-        "本机 Qwen3.5 4B 录好的回答回放（找资料那组回放 Gemini 嵌入 + Neon 录好的名单），不调云端模型；低于基线不能合并。/ Replays of answers recorded with the local Qwen3.5 4B (the retrieval suite replays rankings recorded with Gemini embeddings + Neon), no cloud calls; anything below baseline blocks the merge.",
+        "本机 Qwen3.5 4B 录好的回答回放（找资料那组回放 Gemini 嵌入 + Neon 录好的名单，search agent 那组回放 Gemini 3.5 Flash Lite 录好的回答），不调云端模型；低于基线不能合并。/ Replays of answers recorded with the local Qwen3.5 4B (the retrieval suite replays rankings recorded with Gemini embeddings + Neon; the search agent suite replays answers recorded with Gemini 3.5 Flash Lite), no cloud calls; anything below baseline blocks the merge.",
         "",
         "| 评测组 / Suite | 这次 / This run | 基线 / Baseline | |",
         "|---|---|---|---|",
