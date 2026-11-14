@@ -4,5 +4,6 @@
   "qa": "v2",
   "dispatch": "v1",
   "alerts": "v1",
-  "judge": "v1"
+  "judge": "v1",
+  "agent": "v1"
 }
