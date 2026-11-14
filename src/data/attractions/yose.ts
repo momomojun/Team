@@ -353,7 +353,7 @@ export const yosemite: Attraction[] = [
     bestTime: ["sunset"],
     summary:
       "出山谷路上的河边观景点（又叫 Gates of the Valley）：左边酋长岩，右边教堂岩和新娘面纱瀑布，默塞德河就在脚下，水静时有倒影。",
-    photoFile: "Panoramic Overview from Glacier Point over Yosemite Valley 2013 Alternative.jpg",
+    photoFile: "Valley View Yosemite August 2013 002.jpg",
     tips: ["在出谷方向的单行道 Northside Drive 上，进谷时不经过", "路边停车位不多，停好再过马路"],
   },
   {
@@ -425,7 +425,7 @@ export const yosemite: Attraction[] = [
     bestMonths: [4, 5, 6],
     summary:
       "优胜美地最古老的步道之一，一路之字形爬到北美最高瀑布之一的顶端，中途的哥伦比亚岩就能俯瞰整个山谷。",
-    photoFile: "Yosemite National Park - Sentinel Rock.jpg'S MEADOW. - Yosemite National Park Roads and Bridges, Yosemite Village, Mariposa County, CA HAER CAL,22-YOSEM,5-19.tif'S MEADOW. - Yosemite National Park Roads and Bridges, Yosemite Village, Mariposa County, CA HAER CAL,22-YOSEM,5-19.tif",
+    photoFile: "Yosemite Falls Trail May 2011 003.jpg",
     tips: [
       "只想看风景可以走到哥伦比亚岩（往返约 3.2 公里、爬升约 300 米）就折返",
       "夏天午后很晒，一早出发，带足 4 升水",
@@ -467,7 +467,7 @@ export const yosemite: Attraction[] = [
     bestMonths: [4, 5, 6],
     summary:
       "雾径的完整版：过了弗纳尔瀑布继续往上，爬到约 180 米高的内华达瀑布顶，回程可以走约翰·缪尔步道绕一圈。",
-    photoFile: "Four Mile Trailhead.jpg",
+    photoFile: "Yosemite National Park, Nevada Fall, 2024-07 CN-03.jpg",
     tips: [
       "2026 年 10 月底前修步道：雾径从约翰·缪尔步道路口到弗纳尔瀑布顶这一段，周五到周日和节假日全天开放，周一到周四只在 15:30 到次日 7:00 开放，其余时间要走约翰·缪尔步道绕行",
       "上山走雾径、下山走约翰·缪尔步道，膝盖压力小一些",

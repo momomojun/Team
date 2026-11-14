@@ -422,7 +422,7 @@ export const yellowstone: Attraction[] = [
       "Tower Junction 到这里的路通常 5 月上旬才开通，再往南翻 Dunraven Pass 去峡谷村要到 5 月下旬",
       "往北不远的 Calcite Springs 观景台能看到黄石大峡谷的下游段和玄武岩柱",
     ],
-    photoFile: "Sunrise over Roosevelt Arch at the North Entrance (38443679615).jpg",
+    photoFile: "Morning light on Tower Fall (36694655800).jpg",
   },
   {
     id: "yell-mount-washburn",
@@ -590,7 +590,7 @@ export const yellowstone: Attraction[] = [
       "湖区公路冬季不通私家车，通常 5 月上旬开通（2026 年峡谷村和东门方向 5 月 1 日、南门和 West Thumb 方向 5 月 8 日）、10 月底关闭，湖面一般 5 月底到 6 月初才解冻，湖畔酒店约 5 月中旬到 10 月上旬营业；冬季只能坐雪地车来，可以改去全年通车的猛犸温泉和拉马尔谷。",
     summary:
       "北美海拔 2,100 米以上最大的湖，面积约 341 平方公里，天气好时能望见东南边的阿布萨罗卡山脉。沿湖公路有多处湖景停车点，湖区村（Lake Village）一带的湖岸最方便。",
-    photoFile: "Sunset lake 20190714 132237 1.jpg",
+    photoFile: "Yellowstone Lake West Thumb YNP1.jpg",
     tips: [
       "湖水夏天也很冷，不建议游泳",
       "东边的 Fishing Bridge 是黄石河流出湖口的地方，桥上禁止钓鱼，初夏能看到切喉鳟",

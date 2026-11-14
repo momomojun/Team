@@ -298,7 +298,7 @@ export const craterLake: Attraction[] = [
       "Pinnacles Road 从东环湖路分出，冬季和东环湖路一起关闭（通常 11 月 1 日或更早，次年 7 月前后重开，以 NPS 公告为准），2026 年 9 月时还因施工只能步行或骑车进入；冬春只能在 Rim Village 一带看湖。",
     summary:
       "Pinnacles Road 尽头的峡谷里立着一排约 30 米高的彩色尖塔：马扎马火山喷发后，热火山灰里的气体往上冒，把周围的灰烬胶结变硬，侵蚀后留下这些“化石喷气孔”。",
-    photoFile: "View from Pinnacles Overlook Drive. View SE. - Crater Lake National Park Roads, Klamath Falls, Klamath County, OR HAER OR-107-40.tif",
+    photoFile: "The Pinnacles of Crater Lake (14938121958).jpg",
     tips: ["离东环湖路约 10 公里；沿峡谷边的平坦步道可以走到公园边界，往返约 1.3 公里", PINNACLES_ROAD_TIP],
   },
 ];

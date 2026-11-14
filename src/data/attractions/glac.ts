@@ -57,7 +57,7 @@ export const glacier: Attraction[] = [
       "湖东北岸 Lake McDonald Lodge 的码头有 1 小时的历史木船游湖（2026 年 5 月 20 日到 9 月 26 日，成人 $27.80），傍晚那班可以看日落",
       "湖水夏天也很冷，下水要小心",
     ],
-    photoFile: "Lake McDonald Lodge, Glacier National Park, Bellhops, 1950s.jpg",
+    photoFile: "The view of Lake McDonald from Apgar (12092155856).jpg",
   },
   {
     id: "glac-trail-of-the-cedars",

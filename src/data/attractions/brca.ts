@@ -57,7 +57,7 @@ export const bryceCanyon: Attraction[] = [
       "2026 年 8 月底一场暴雨后 Wall Street 一侧关闭、重开时间未定（看 NPS 公告），Navajo 段改走 Two Bridges 一侧；平常冬季 Wall Street 也常因落石或结冰关闭",
       "海拔约 2,400 米，上坡慢慢走",
     ],
-    photoFile: "Thor's Hammer-Bryce Canyon.jpg's Hammer-Bryce Canyon.jpg",
+    photoFile: "Thor's Hammer-Bryce Canyon.jpg",
   },
   {
     id: "brca-inspiration-point",

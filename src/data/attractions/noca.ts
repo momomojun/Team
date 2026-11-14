@@ -281,7 +281,7 @@ export const northCascades: Attraction[] = [
       "罗斯湖观景点在 20 号公路冬季封闭段内（MP 134 以东），公路通常 11 月下旬到 12 月初封闭、次年 4 月或 5 月初开通（2026 年 6 月 14 日才通）；封路期间可以去 MP 134 以西的迪亚布洛湖观景台。",
     summary:
       "20 号公路 MP 135–136 一带的路边观景点，俯瞰 Ross 湖南端的 Ruby Arm 湖湾；Ross 湖是 Ross 大坝蓄出的长湖，一直延伸到加拿大边境。",
-    photoFile: "Davis Peak seen from Diablo Lake Overlook in the North Cascades.jpg",
+    photoFile: "Ross Lake.jpg",
     tips: [
       "往西一两英里的 Ross Dam 步道口（MP 134）可以下到大坝顶：往返约 1.5 英里（再走过大坝往返约 2.5 英里），回程是上坡",
       "旁边 MP 134.3 的 Happy Creek 森林木栈道很短，十几分钟就能走完",
