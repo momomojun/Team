@@ -169,6 +169,15 @@ def resolve_place(name: str, parks: list[str], kinds: tuple[str, ...]) -> tuple[
         fuzzy = _fuzzy(raw, [park_hit.id] if park_hit else parks, kinds, only=park_hit.id if park_hit else None, docs=docs)
         if fuzzy:
             return fuzzy.type, fuzzy.id, fuzzy.title
+    # 去掉公园名只剩一两个字（“大峡谷村”剩“村”）：这座公园里名字带这几个字的景点、住处只有一个，就是它（11-14，E04）
+    if kinds != ("park",) and park_hit and leftover and (len(leftover) >= 3 or not leftover.isascii()):
+        holders = {doc.id: doc for doc in docs if doc.type in kinds and doc.type not in ("park", "airport")
+                   and doc.park == park_hit.id and any(leftover in normalize(alias).lower() for alias in doc.names)}
+        # 几个都带（大峡谷村历史街区、南缘村酒店）：其中只有一家住处就是它，“村子”“小镇”多半说的是住的地方
+        stays = [doc for doc in holders.values() if doc.type == "lodging"]
+        pick = next(iter(holders.values())) if len(holders) == 1 else stays[0] if len(stays) == 1 else None
+        if pick:
+            return pick.type, pick.id, pick.title
     if park_hit and "park" in kinds:
         return "park", park_hit.id, catalog.parks()[park_hit.id].name_zh
     return None
@@ -306,6 +315,9 @@ def build_request(tool: str, args: dict, ctx: Ctx) -> tuple[dict | None, list[st
                 return None, notes, unknown("、".join(names))
             if codes:
                 rank["parks"] = list(dict.fromkeys(codes))
+            elif named := [code for code, _ in catalog.find_all(ctx.question, catalog.parks())]:
+                # 排所有公园、问题里又点了名的（“7 月去拱门会不会太热”）：另给这几座的细节，不太合适的也看得到为什么（11-14，D03、D05）
+                rank["focus"] = list(dict.fromkeys(named))[:4]
             if args.get("limit"):
                 rank["limit"] = args["limit"]
             return rank, notes, ""
@@ -399,6 +411,30 @@ def _opening(opening: dict, zh: bool) -> str:
     return "，".join(parts) if zh else ", ".join(parts)
 
 
+def _found_lines(request: dict, result: dict, zh: bool) -> list[str]:
+    """按条件找到的景点，一个一行：来回多远（公里和英里都写）、难度、要不要抽签或预约、同行的人要不要注意（11-14：
+    原来一行写完、不写“不用抽签”，C01 模型看不出哪几条不用抽签）"""
+    hits = result.get("results") or []
+    total = result.get("total", len(hits))
+    head = (f"按条件找到 {total} 个，按必去和热度排的前 {len(hits)} 个" + ("（都不用抽签、不用预约）" if request.get("noPermit") else "") + "：") if zh else         f"{total} matches; top {len(hits)}" + (" (no permit or reservation needed)" if request.get("noPermit") else "") + ":"
+    lines = [head]
+    for hit in hits:
+        bits = []
+        hike = hit.get("hike") or {}
+        if hike.get("miles") is not None:
+            bits.append(f"来回约 {round(hike['miles'] * 1.609, 1)} 公里（{hike['miles']} 英里）" if zh else f"{hike['miles']} mi round trip")
+        if hike.get("difficulty"):
+            bits.append({"easy": "简单", "moderate": "中等", "hard": "难"}[hike["difficulty"]] if zh else hike["difficulty"])
+        permit = hit.get("permit")
+        bits.append(("要抽签" if permit == "lottery" else "要预约" if permit else "不用抽签、不用预约") if zh else
+                    ("lottery permit" if permit == "lottery" else "reservation" if permit else "no permit"))
+        if hit.get("caution"):
+            bits.append("同行的人要注意" if zh else "use caution for your group")
+        name = hit["nameZh"] if zh else hit["nameEn"]
+        lines.append(f"- {name}（{'，'.join(bits)}）" if zh else f"- {name} ({', '.join(bits)})")
+    return lines
+
+
 def format_result(tool: str, request: dict, result: dict, zh: bool) -> list[str]:
     if result.get("error"):
         return [f"查不到（{result['error']}）" if zh else f"no result ({result['error']})"]
@@ -408,8 +444,10 @@ def format_result(tool: str, request: dict, result: dict, zh: bool) -> list[str]
         head = f"{name} {result['date']}：{tools.VERDICT_ZH[result['verdict']]}" if zh else \
             f"{name} on {result['date']}: {tools.VERDICT_EN[result['verdict']]}"
         return [head, *(f"依据：{fact['zh']}" if zh else f"because: {fact['en']}" for fact in result.get("facts", []))]
-    if tool in ("drive_time", "find_attractions"):
+    if tool == "drive_time":
         return [line.removeprefix("- ") for line in tools.format_lines([request], [result], zh)]
+    if tool == "find_attractions":
+        return _found_lines(request, result, zh)
     if tool == "season_rank":
         window = result["window"]
         span = (f"从 {window['from']} 起 {window['days']} 天" if "from" in window else f"{window['month']} 月") if zh else \
@@ -420,6 +458,9 @@ def format_result(tool: str, request: dict, result: dict, zh: bool) -> list[str]
         lines = [f"按{span}，所有国家公园里最适合 {counts['great']} 座、可以去 {counts['ok']} 座、不太合适 {counts['poor']} 座。最适合的（按分数排）：" if zh else
                  f"For {span}: {counts['great']} best, {counts['ok']} fine, {counts['poor']} not ideal. Best (by score):"]
         lines += [_season_row(row, zh) for row in result["great"]]
+        if result.get("focus"):
+            lines.append("问题里点了名的公园：" if zh else "parks named in the question:")
+            lines += [_season_row(row, zh) for row in result["focus"]]
         key = "nameZh" if zh else "nameEn"
         if result.get("moreGreat"):
             lines.append(("也最适合：" if zh else "also best: ") + ("、" if zh else ", ").join(row[key] for row in result["moreGreat"]))

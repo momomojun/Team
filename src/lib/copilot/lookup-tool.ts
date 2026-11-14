@@ -58,8 +58,9 @@ export type LookupRequest =
       month?: number;
       limit?: number;
     }
-  /** month（整个月）或 start（出发那天起十天，和“什么时候去”页一样）选一个；parks 给了就只比这几座 */
-  | { tool: "season_rank"; month?: number; start?: string; parks?: string[]; today?: string; limit?: number }
+  /** month（整个月）或 start（出发那天起十天，和“什么时候去”页一样）选一个；parks 给了就只比这几座；
+   *  focus：不给 parks、排所有公园时，另外给这几座的细节（问题里点了名的公园，不太合适的也看得到为什么） */
+  | { tool: "season_rank"; month?: number; start?: string; parks?: string[]; focus?: string[]; today?: string; limit?: number }
   | { tool: "fees"; park: string }
   /** park 或 attraction 选一个 */
   | { tool: "sun_times"; park?: string; attraction?: string; date: string }
@@ -356,10 +357,14 @@ export function seasonRank(request: Extract<LookupRequest, { tool: "season_rank"
   const great = ranked.filter((item) => item.verdict === "great");
   const ok = ranked.filter((item) => item.verdict === "ok");
   const poor = ranked.filter((item) => item.verdict === "poor");
+  const focus = request.focus?.length
+    ? rankSeasons(seasonsOn(request.today).filter((park) => request.focus!.includes(park.code)), pick).map(seasonRow)
+    : undefined;
   return {
     tool: "season_rank" as const,
     window,
     counts: { great: great.length, ok: ok.length, poor: poor.length },
+    ...(focus ? { focus } : {}),
     great: great.slice(0, limit).map(seasonRow),
     moreGreat: names(great.slice(limit)),
     ok: names(ok),

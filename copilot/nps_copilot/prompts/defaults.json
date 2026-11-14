@@ -5,5 +5,5 @@
   "dispatch": "v1",
   "alerts": "v1",
   "judge": "v1",
-  "agent": "v1"
+  "agent": "v2"
 }

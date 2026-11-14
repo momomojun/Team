@@ -16,6 +16,7 @@
     python eval/agent.py --record                      # 真调 Gemini（默认 gemini-3.5-flash-lite），录到 recordings/agent-v1-<模型>.jsonl
     python eval/agent.py --replay eval/recordings/agent-v1-gemini-3.5-flash-lite.jsonl --gate eval/baseline-agent.json
     python eval/agent.py --replay ... --only A0,B0     # 只跑几题
+    python eval/agent.py --replay eval/recordings/agent-v1-gemini-3.5-flash-lite.jsonl --fill   # 只补录缺的调用（改了 agent 那一半时）
 """
 from __future__ import annotations
 
@@ -205,6 +206,8 @@ def main() -> int:
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--record", action="store_true")
     mode.add_argument("--replay", type=Path)
+    parser.add_argument("--fill", action="store_true", help="和 --replay 一起用：录音里没有的调用用真 Gemini 补录进同一个文件，别的照旧回放"
+                        "（改了 agent 的提示词、工具，qa 的那一半不用重录）")
     parser.add_argument("--configs", default=",".join(CONFIGS), help="跑哪几种做法（qa,agent）")
     parser.add_argument("--only", help="只跑这几题（逗号分隔的 id 前缀）")
     parser.add_argument("--gate", type=Path, help="基线：agent 至少过几题、每类至少几题、qa 不比基线差")
@@ -221,8 +224,9 @@ def main() -> int:
         provider = Counting(RecordingProvider(StopEarly(GeminiProvider(model=args.model)), recording))
         label = f"record:{recording.stem}"
     else:
-        provider = Counting(ReplayProvider(args.replay))
-        label = f"replay:{args.replay.stem}"
+        fill = RecordingProvider(StopEarly(GeminiProvider(model=args.model)), args.replay) if args.fill else None
+        provider = Counting(ReplayProvider(args.replay, fallback=fill))
+        label = f"replay:{args.replay.stem}" + ("+fill" if args.fill else "")
     rows: dict[str, list[dict]] = {config: [] for config in configs}
     for case in cases:
         for config in configs:

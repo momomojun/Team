@@ -108,8 +108,9 @@ def unsupported(answer: str, context: str) -> list[str]:
     """回答里的时间、数字在行程和资料里都找不到的（空 = 没发现编造）"""
     problems = [clock for clock in TIME_RE.findall(answer) if clock not in context and clock.zfill(5) not in context]
     # 按整个数比（“5”不能因为资料里有“25”就算对上）
-    numbers = set(NUMBER_RE.findall(TIME_RE.sub(" ", context)))
-    problems += [number for number in NUMBER_RE.findall(TIME_RE.sub(" ", answer)) if number not in numbers]
+    # 前面补的 0 不算（资料里“2026-12-04”，回答说“12 月 4 日”）：11-14 search agent 评测 B04 被这个当成了编造
+    numbers = {number.lstrip("0") or "0" for number in NUMBER_RE.findall(TIME_RE.sub(" ", context))}
+    problems += [number for number in NUMBER_RE.findall(TIME_RE.sub(" ", answer)) if (number.lstrip("0") or "0") not in numbers]
     return sorted(set(problems))
 
 

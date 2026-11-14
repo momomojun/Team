@@ -235,9 +235,31 @@ def test_pipeline_uses_the_agent_only_when_switched_on(monkeypatch):
 
 def test_agent_prompt_is_versioned():
     prompt = prompts.load("agent")
-    assert prompt.id == "agent/v1" and "\r" not in prompt.text
+    assert prompt.id == f"agent/{prompts.defaults()['agent']}" and "\r" not in prompt.text
     for name in agent.TOOLS:
         assert name in prompt.text
+
+
+def test_fixes_after_the_first_recording():
+    """11-14 第一次录完 agent-v1 以后修的几处"""
+    ctx = agent.Ctx(["grca"], agent.dt.date(2026, 11, 13), True, None, None, "7月去拱门会不会太热")
+    # 排所有公园时，问题里点了名的公园另给细节
+    request, _, _ = agent.build_request("season_rank", {"month": 7}, ctx)
+    assert request["focus"] == ["arch"] and "parks" not in request
+    request, _, _ = agent.build_request("season_rank", {"month": 7, "parks": ["拱门"]}, ctx)
+    assert request["parks"] == ["arch"] and "focus" not in request
+    # “大峡谷村”：去掉公园名只剩“村”，带“村”的有住处也有景点，认成住处
+    assert agent.resolve_place("大峡谷村", ["grca"], ("attraction", "lodging", "park", "airport"))[1] == "grca-stay-village"
+    assert agent.resolve_place("大峡谷", ["grca"], ("attraction", "lodging", "park", "airport"))[1] == "grca"
+    # 找到的景点写明要不要抽签
+    lines = agent.format_result("find_attractions", {"tool": "search", "noPermit": True},
+                                {"total": 2, "results": [
+                                    {"nameZh": "帕鲁斯步道", "nameEn": "Pa'rus", "hike": {"miles": 3.5, "difficulty": "easy"}},
+                                    {"nameZh": "天使降临", "nameEn": "Angels Landing", "permit": "lottery"}]}, True)
+    assert "都不用抽签" in lines[0] and "不用抽签、不用预约" in lines[1] and "3.5 英里" in lines[1] and "要抽签" in lines[2]
+    # 数字前面补的 0 不算对不上
+    assert qa.unsupported("前一天（12 月 4 日）抽签", "开订 2026-12-04 00:01") == []
+    assert qa.unsupported("要 5 天", "开订 2026-12-04") == ["5"]
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="要 Node 跑网站的查询工具")

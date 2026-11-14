@@ -36,6 +36,15 @@ test("season_rank：只比给的几座，带气温和去不了的必去景点；
   assert.equal(seasonRank({ tool: "season_rank" }).error, "need_month_or_start");
 });
 
+test("season_rank：排所有公园时，focus 另给点了名的几座的细节（不太合适的也说为什么）", () => {
+  const july = seasonRank({ tool: "season_rank", month: 7, focus: ["arch"], today: "2026-11-13" });
+  assert.ok("focus" in july && july.focus);
+  assert.equal(july.focus.length, 1);
+  assert.equal(july.focus[0].code, "arch");
+  assert.equal(typeof july.focus[0].climate?.hottestC, "number");
+  assert.ok(!("focus" in seasonRank({ tool: "season_rank", month: 7, today: "2026-11-13" })));
+});
+
 test("season_rank：按出发那天起十天算，跨月的两个月都算进去", () => {
   const { weights, dates } = windowOf({ start: "2026-11-27" });
   assert.equal(dates?.length, 10);
