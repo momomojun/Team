@@ -18,6 +18,8 @@ const FEW_CANDIDATES = 12;
 /** 人工看过、不合适的照片（按文件名开头匹配）。"*" 对所有景点生效，公园代码对这座公园的景点生效，其余只对该景点生效 */
 const EXCLUDE = {
   "*": [
+    "Glacier-Point-Hotel-Snowshoe",
+    "Coast Redwood near Redwood Deck Loop, Pfeiffer Big Sur State Park",
     // 一组“人名, 地点”的游客合影，在犹他几个公园反复出现
     "Ken, ",
     "Ken and Alicia",
@@ -1289,6 +1291,9 @@ async function candidatesFor(attraction) {
     if (candidates.size < FEW_CANDIDATES) await nearby(attraction, WIDE_RADIUS_M);
   }
   const main = attraction.photoFile ? (await query({ titles: `File:${attraction.photoFile}` }))[0] : undefined;
+  if (attraction.photoFile && !main?.imageinfo?.[0]) {
+    throw new Error(`指定封面不存在或没有图片数据：${attraction.id} / ${attraction.photoFile}`);
+  }
   return { main, ranked: [...candidates.values()].sort((a, b) => b.value - a.value).map((item) => item.page) };
 }
 

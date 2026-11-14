@@ -109,7 +109,7 @@ export const redwood: Attraction[] = [
     mustSee: true,
     summary:
       "与 101 公路平行、穿过 Prairie Creek 原始红杉林的约 16 公里铺装公路，两旁巨树夹道，沿途有大树、Prairie Creek 游客中心、马鹿草原和不少步道口。",
-    photoFile: "Newton B. Drury Parkway, Prairie Creek Redwoods State Park.jpg",
+    photoFile: "Newton B Drury Scenic Byway - Redwood National Forest (35734205073).jpg",
     tips: [
       "单纯开过去约 20–30 分钟，边停边看留 1 小时",
       "禁止商用车通行，房车可以走",
@@ -158,7 +158,7 @@ export const redwood: Attraction[] = [
     mustSee: true,
     summary:
       "Crescent City 东边一条约 16 公里的窄路，有一段曾是马车驿道，大部分没铺装，穿过 Jedediah Smith 州立公园的原始红杉林，巨树几乎贴着车身；Stout Grove、泰坦巨人林和童子军树步道都从这条路出发。",
-    photoFile: "Howland Hill Road, Jedediah Smith Redwoods State Park.jpg",
+    photoFile: "Visitor on Howland Hill Road (647d3dcf-1dd8-b71b-0bc4-e57559d5f290).jpg",
     tips: [
       "路窄，房车、卡车和拖车都过不去；全程留 1 小时左右",
       "夏天尘土大、雨后坑洼多，春季常因修路短时封闭，出发前查 NPS 路况",

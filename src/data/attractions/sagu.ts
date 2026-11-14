@@ -244,7 +244,7 @@ export const saguaro: Attraction[] = [
       "单行道、弯多坡陡，骑车的人很多，超车小心；车长超过 40 英尺（约 12 米）的房车不能进",
       "门票在环线入口的收费亭或自助机买，只收卡；7 天内西区也能用",
     ],
-    photoFile: "Cactus Forest Drive, Saguaro National Park (East), Arizona (14115049386).jpg",
+    photoFile: "USA - Arizona - Saguaro National Park.jpg",
   },
   {
     id: "sagu-javelina-rocks",

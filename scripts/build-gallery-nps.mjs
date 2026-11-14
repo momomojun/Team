@@ -11,6 +11,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { attractions, sleep, USER_AGENT } from "./load-data.mjs";
+import { nameKeys, names, matchesPlace } from "./lib/nps-photo-match.ts";
 
 // sharp 是 Next 自带的图片库：用来量宽高、认黑白照片；万一没有就只按 JPEG 头读宽高、不认黑白
 const sharp = await import("sharp").then((mod) => mod.default).catch(() => null);
@@ -20,9 +21,8 @@ if (existsSync(ENV_FILE)) process.loadEnvFile(fileURLToPath(ENV_FILE));
 const API_KEY = process.env.DATA_GOV_API_KEY || "DEMO_KEY";
 const API = "https://developer.nps.gov/api/v1";
 const OUTPUT = new URL("../src/data/attractions/gallery-nps.generated.ts", import.meta.url);
-/** 每个景点最多补几张（Commons 的在前面，合起来最多 8 张，见 gallery.ts） */
+/** 每个景点最多补几张（Commons 的在前面，合起来最多 12 张，见 gallery.ts） */
 const PER_ATTRACTION = 4;
-const NEAR_M = 150;
 const PAGE = 500;
 /** 接口返回的原始数据存一份（系统临时目录），调过滤规则重跑时不用再花接口次数；REFRESH=1 重新取 */
 const CACHE = process.env.NPS_CACHE ?? join(tmpdir(), "nps-gallery-cache");
@@ -31,6 +31,8 @@ mkdirSync(CACHE, { recursive: true });
 /** 人工看过、不合适的（按照片标题或地点名开头匹配，带“/”的按网址里的一段）。公园代码对这座公园的景点生效，景点 id 只对那个景点 */
 // 10-21 逐张看过（全部公园约 1200 张）：导览牌和告示亭、监控相机拍的熊、油画、明信片、地图、墓碑、拼图、工作人员、礼品店、剪彩、狗、垃圾桶、重复的（按网址里的一段排除）
 const EXCLUDE = {
+  "yose-washburn-point": ["Wawona Grey Barn"],
+  "noca-visitor-center": ["North Cascades Lodge at Stehekin", "Rainbow Falls"],
   hosp: ["GetAsset/0C9F3816-1218-4398-AB35-121541FEE5CD", "GetAsset/B774B105-A308-45A7-9081-243193955AC9", "GetAsset/E0234257-7A00-4402-9883-D7C68AD8B38A", "GetAsset/FD9B7FA5-5099-4FAC-9633-B802B03ADDD8", "GetAsset/45B38E36-565F-4B39-AB16-BBCECC2064BA", "GetAsset/ED2B8FE7-A6DD-42D8-9BCA-CD2A5372D6E4"],
   cuva: ["/C5EB50A6-9F37-D0CE-55BC8DF7B9D37FB6", "/8F18DFA9-D10E-D1D8-ACA90C6AA876E4EC", "/BED78ACC-D23D-4C95-44DDCB2E3CABF376", "/004F0793-C0D1-EEF5-8C783912363F9E48", "/966B5F82-EF2C-07DD-1AE8307204C64992", "/C6637E9F-C62C-E58B-84FD74991F718CC3", "/8526C1FB-C824-2966-0C3BF88C119D9C48", "/0146560B-E5F0-F135-E0A9276717ED8677", "/6997ED14-F8F6-AD9D-0567F42CA1F4FDC1", "/263B3761-A766-2D1E-FBED7F8FAEC52117", "/FADA0A99-0AA3-4CCA-0F44F6E0D5A6CC6D", "/FDAD8BF6-FE4E-CEAB-75195BF530593442", "/CEBA8501-F027-2148-E82306E2B39D4112", "GetAsset/46D35E59-3A32-4708-A3B6-A835C6C1BA19", "GetAsset/621A5CED-5950-4270-8C81-F6F221A25C4B"],
   indu: ["GetAsset/B1E705E7-F025-442F-8B60-EAABBE0330D1", "GetAsset/0B8C5433-155D-4519-3ED6-7C243379784A", "GetAsset/0C06E5CE-155D-4519-3E06-0C34488A717E", "/F0486D14-C38B-3466-52F14B64190F3CBD", "GetAsset/686F64F6-155D-4519-3EF0-F15C3B59942E", "GetAsset/6600C978-155D-4519-3E76-6BD59D35ADBD"],
@@ -73,11 +75,6 @@ const CATALOG = /\b[A-Z]{4}\s?\d{3,}\b/;
 /** 黑白照片（多半是档案里的老照片）：缩成 24×24 看每个像素的颜色差，平均不到这么多就算黑白 */
 const GRAY_SPREAD = 14;
 
-/** 名字里不算数的词：只剩这些的名字（“Visitor Center”）要整个名字出现才算对上 */
-const WEAK = new Set(
-  "the a an of and at on in to trail trails loop tour tours overlook center visitor visitors point drive road area park national state historic site view views walk river lake creek beach bay".split(" "),
-);
-
 const parks = (process.env.PARKS ?? "").split(",").filter(Boolean);
 if (parks.length === 0) {
   console.error("用 PARKS=公园代码,… 指定要补照片的公园（比如 PARKS=maca,cong）");
@@ -110,35 +107,6 @@ async function fetchAll(path) {
     if (page.data.length < PAGE || items.length >= Number(page.total)) return items;
     await sleep(300);
   }
-}
-
-const plain = (text) =>
-  (text ?? "")
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
-
-/** 景点英文名 → 整个名字和有分量的词（去掉括号里的补充） */
-function nameKeys(stop) {
-  const phrase = plain(stop.nameEn.replace(/\(.*?\)/g, " "));
-  const strong = phrase.split(" ").filter((word) => word.length >= 3 && !WEAK.has(word));
-  return { phrase, strong };
-}
-
-function names(text, keys) {
-  const hay = ` ${plain(text)} `;
-  if (keys.phrase && hay.includes(` ${keys.phrase} `)) return true;
-  return keys.strong.length > 0 && keys.strong.every((word) => hay.includes(` ${word} `));
-}
-
-function meters(a, b) {
-  const rad = Math.PI / 180;
-  const dLat = (b.lat - a.lat) * rad;
-  const dLon = (b.lon - a.lon) * rad;
-  const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLon / 2) ** 2;
-  return 2 * 6371000 * Math.asin(Math.sqrt(h));
 }
 
 /** title 可以是照片标题、地点名或者照片网址（按网址里的一段排除） */
@@ -205,12 +173,7 @@ for (const park of parks) {
 
   // 1. 地点自带的照片：名字对上，或者离景点（和出发点）很近
   for (const place of places) {
-    const at = { lat: Number(place.latitude), lon: Number(place.longitude) };
-    const owners = stops.filter((stop) => {
-      if (names(place.title, nameKeys(stop))) return true;
-      if (!Number.isFinite(at.lat) || !at.lat) return false;
-      return [stop, stop.start].filter(Boolean).some((point) => meters(point, at) <= NEAR_M);
-    });
+    const owners = stops.filter((stop) => matchesPlace(stop, place));
     for (const image of place.images ?? []) {
       if (!/^NPS/i.test(image.credit ?? "") || /courtesy/i.test(image.credit) || used.has(image.url)) continue;
       if (BAD_TEXT.test(`${image.title} ${image.altText} ${image.caption}`) || CATALOG.test(`${image.title} ${image.credit}`)) continue;
