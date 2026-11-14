@@ -639,15 +639,6 @@ export const gallery: Record<string, Photo[]> = {
       "page": "https://commons.wikimedia.org/wiki/File:Pika_Fire_from_Glacier_Point_Yosemite_CA_2023-07-15_18-43-14_1.jpg",
       "author": "G. Edward Johnson",
       "license": "CC BY 4.0"
-    },
-    {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/Glacier-Point-Hotel-Snowshoe.jpg/960px-Glacier-Point-Hotel-Snowshoe.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/Glacier-Point-Hotel-Snowshoe.jpg/1920px-Glacier-Point-Hotel-Snowshoe.jpg",
-      "width": 960,
-      "height": 668,
-      "page": "https://commons.wikimedia.org/wiki/File:Glacier-Point-Hotel-Snowshoe.jpg",
-      "author": "Person: Archivist Organization: US National Park Service Address: Yosemite National Park Archives, PO Box 700-W, El Portal, CA 95318 Email: yose_archives@nps.gov",
-      "license": "Public domain"
     }
   ],
   "yose-taft-point": [
@@ -3042,6 +3033,15 @@ export const gallery: Record<string, Photo[]> = {
   ],
   "seki-big-trees-trail": [
     {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/22/The_Big_Trees_Trail%2C_Sequoia_National_Park.jpg/960px-The_Big_Trees_Trail%2C_Sequoia_National_Park.jpg",
+      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/22/The_Big_Trees_Trail%2C_Sequoia_National_Park.jpg/1920px-The_Big_Trees_Trail%2C_Sequoia_National_Park.jpg",
+      "width": 960,
+      "height": 720,
+      "page": "https://commons.wikimedia.org/wiki/File:The_Big_Trees_Trail,_Sequoia_National_Park.jpg",
+      "author": "Pimlico27",
+      "license": "CC BY-SA 4.0"
+    },
+    {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2c/Sequoia_National_Park_-_Big_Trees_Trail_-_glacial_erratic_with_Giant_Sequoia_growing_around_it.JPG/960px-Sequoia_National_Park_-_Big_Trees_Trail_-_glacial_erratic_with_Giant_Sequoia_growing_around_it.JPG",
       "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2c/Sequoia_National_Park_-_Big_Trees_Trail_-_glacial_erratic_with_Giant_Sequoia_growing_around_it.JPG/1920px-Sequoia_National_Park_-_Big_Trees_Trail_-_glacial_erratic_with_Giant_Sequoia_growing_around_it.JPG",
       "width": 960,
@@ -3058,15 +3058,6 @@ export const gallery: Record<string, Photo[]> = {
       "page": "https://commons.wikimedia.org/wiki/File:Sequoia_National_Park_-_Big_Trees_Trail_-_inside_dead_tree.JPG",
       "author": "Daniel Mayer (mav)",
       "license": "CC BY-SA 3.0"
-    },
-    {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/22/The_Big_Trees_Trail%2C_Sequoia_National_Park.jpg/960px-The_Big_Trees_Trail%2C_Sequoia_National_Park.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/22/The_Big_Trees_Trail%2C_Sequoia_National_Park.jpg/1920px-The_Big_Trees_Trail%2C_Sequoia_National_Park.jpg",
-      "width": 960,
-      "height": 720,
-      "page": "https://commons.wikimedia.org/wiki/File:The_Big_Trees_Trail,_Sequoia_National_Park.jpg",
-      "author": "Pimlico27",
-      "license": "CC BY-SA 4.0"
     },
     {
       "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ae/Sierra_redwoods%2C_Big_Trees_Trail%2C_Sequoia_National_Park.jpg/960px-Sierra_redwoods%2C_Big_Trees_Trail%2C_Sequoia_National_Park.jpg",
@@ -3103,15 +3094,6 @@ export const gallery: Record<string, Photo[]> = {
       "page": "https://commons.wikimedia.org/wiki/File:Sequoia_National_Park_-_Big_Trees_Trail_-_Big_Trees_Trail_-_granitic_exfoliation.JPG",
       "author": "Daniel Mayer",
       "license": "CC BY-SA 3.0"
-    },
-    {
-      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/da/Coast_Redwood_near_Redwood_Deck_Loop%2C_Pfeiffer_Big_Sur_State_Park%2C_CA_-_July_2023.jpg/960px-Coast_Redwood_near_Redwood_Deck_Loop%2C_Pfeiffer_Big_Sur_State_Park%2C_CA_-_July_2023.jpg",
-      "large": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/da/Coast_Redwood_near_Redwood_Deck_Loop%2C_Pfeiffer_Big_Sur_State_Park%2C_CA_-_July_2023.jpg/1920px-Coast_Redwood_near_Redwood_Deck_Loop%2C_Pfeiffer_Big_Sur_State_Park%2C_CA_-_July_2023.jpg",
-      "width": 960,
-      "height": 1309,
-      "page": "https://commons.wikimedia.org/wiki/File:Coast_Redwood_near_Redwood_Deck_Loop,_Pfeiffer_Big_Sur_State_Park,_CA_-_July_2023.jpg",
-      "author": "Marty Aligata",
-      "license": "CC BY-SA 4.0"
     }
   ],
   "seki-mist-falls": [

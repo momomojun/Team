@@ -308,7 +308,7 @@ export const northCascades: Attraction[] = [
     outsidePark: true,
     summary:
       "从 Washington Pass 附近出发，穿过森林和草甸爬到 Early Winters Spires 脚下的高山湖，湖水清澈，四周是花岗岩尖峰，秋天落叶松金黄。",
-    photoFile: "Blue Lake, North Cascades.jpg",
+    photoFile: "Paraglider in Blue Lake basin.jpg",
     tips: [
       "步道口在 Washington Pass 观景台以西不到 1 英里的公路边，有旱厕",
       USFS_PARKING,

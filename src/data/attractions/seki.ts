@@ -202,7 +202,7 @@ export const sequoiaKingsCanyon: Attraction[] = [
     trail: { via: [{ lat: 36.56621, lon: -118.7695 }], loop: true },
     hike: { distanceMi: 0.75, difficulty: "easy", loop: true },
     summary: "绕圆草甸一圈的无障碍步道，巨杉围着草甸生长，沿途的解说牌讲巨杉为什么离不开火和水。",
-    photoFile: "Round Meadow, Giant Forest, Sequoia National Park.jpg",
+    photoFile: "The Big Trees Trail, Sequoia National Park.jpg",
     tips: ["全程铺装加栈道，坡度中等，适合带老人小孩", "夏天停车位紧张，可以坐园区免费班车"],
   },
   {

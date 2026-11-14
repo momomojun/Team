@@ -27,7 +27,7 @@ export const banff: Attraction[] = [
       "2026 年起湖边停车场不接待长超过 6 米或宽超过 2 米的私人车辆，开房车的请停 Park and Ride 坐班车",
       "湖面通常 6 月才完全解冻，冬天可以在城堡酒店前清出的冰场溜冰；夏季酒店船屋出租独木舟，价格很高",
     ],
-    photoFile: "Lake Louise, Banff National Park, Alberta, Canada.jpg",
+    photoFile: "Lake Louise 03.jpg",
   },
   {
     id: "banf-moraine-lake",
