@@ -40,8 +40,7 @@ export const canyonlands: Attraction[] = [
   },
   {
     id: "cany-mesa-arch",
-    photoFile: "Mesa Arch Canyonlands National Park 2014.jpg",
-    park: "cany",
+        park: "cany",
     nameZh: "梅萨拱门",
     nameEn: "Mesa Arch",
     kind: "hike",
