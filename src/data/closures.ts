@@ -273,4 +273,58 @@ export const tempClosures: TempClosure[] = [
     source: "https://www.nps.gov/cuva/planyourvisit/conditions.htm",
     checked: "2026-10-20",
   },
+  {
+    // 2026-11-14 每晚读公告自动提议（公告 BB189CF6-CB39-4F2A-8E7D-A7F893A0C1E1）：核对公告原文，把 reasonZh 改成中文说明再合并
+    attractions: ["blca-east-portal"],
+    from: "2026-11-14",
+    reopen: null,
+    reasonZh: "NPS 公告：East Portal Road closed for winter（每晚读公告自动提议，机器读取；合并前改成中文说明、写上替代办法）",
+    source: "",
+    checked: "2026-11-14",
+  },
+  {
+    // 2026-11-14 每晚读公告自动提议（公告 6C135CCD-9D22-41BB-B03E-3B19BE0172D8）：核对公告原文，把 reasonZh 改成中文说明再合并
+    attractions: ["crla-rim-village","crla-garfield-peak","crla-steel-visitor-center","crla-snowshoe-walk"],
+    from: "2026-11-14",
+    reopen: null,
+    reasonZh: "NPS 公告：Road to Rim Village is Temporarily CLOSED.（每晚读公告自动提议，机器读取；合并前改成中文说明、写上替代办法）",
+    source: "",
+    checked: "2026-11-14",
+  },
+  {
+    // 2026-11-14 每晚读公告自动提议（公告 3A940E2B-945F-437E-B641-EE60D9E728C3）：核对公告原文，把 reasonZh 改成中文说明再合并
+    attractions: ["grsm-waterrock-knob","grsm-craggy-gardens"],
+    from: "2026-11-14",
+    reopen: null,
+    reasonZh: "NPS 公告：Old Section Foothills Parkway West new section closed（每晚读公告自动提议，机器读取；合并前改成中文说明、写上替代办法）",
+    source: "",
+    checked: "2026-11-14",
+  },
+  {
+    // 2026-11-14 每晚读公告自动提议（公告 4855BDCC-277F-48DA-BF61-B4E6E174CD0A）：核对公告原文，把 reasonZh 改成中文说明再合并
+    attractions: ["redw-howland-hill-road"],
+    from: "2026-11-12",
+    reopen: null,
+    reasonZh: "NPS 公告：Closure: Howland Hill Road and Jedediah Smith Campground（每晚读公告自动提议，机器读取；合并前改成中文说明、写上替代办法）",
+    source: "",
+    checked: "2026-11-14",
+  },
+  {
+    // 2026-11-14 每晚读公告自动提议（公告 76A6A599-A4B8-49C3-BD32-56620117ECE2）：核对公告原文，把 reasonZh 改成中文说明再合并
+    attractions: ["redw-gold-bluffs-beach"],
+    from: "2026-11-14",
+    reopen: null,
+    reasonZh: "NPS 公告：Closure: Newton B. Drury Scenic Parkway, Davison Road and Gold Bluffs Beach（每晚读公告自动提议，机器读取；合并前改成中文说明、写上替代办法）",
+    source: "",
+    checked: "2026-11-14",
+  },
+  {
+    // 2026-11-14 每晚读公告自动提议（公告 87F5BC32-75D2-4CB1-AEDC-4944CBD2E984）：核对公告原文，把 reasonZh 改成中文说明再合并
+    attractions: ["seki-kings-canyon","seki-zumwalt-meadow","seki-mist-falls","seki-roaring-river-falls"],
+    from: "2026-11-14",
+    reopen: null,
+    reasonZh: "NPS 公告：Highway 180 to Cedar Grove in Kings Canyon National Park Closed for Winter（每晚读公告自动提议，机器读取；合并前改成中文说明、写上替代办法）",
+    source: "",
+    checked: "2026-11-14",
+  },
 ];
