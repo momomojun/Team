@@ -295,3 +295,25 @@ def test_completion_object_shape_is_what_the_loop_reads():
     # 真的 provider 返回 Completion；ScriptedProvider 也一样（防止以后改了 Completion 字段这里没跟上）
     completion = ScriptedProvider([final("x")]).complete_json("agent", "", "", {})
     assert isinstance(completion, Completion) and completion.data["action"] == "answer"
+
+
+def test_fixes_after_the_second_recording():
+    """11-14 第二次录完（agent_v2）以后修的两处"""
+    today = agent.dt.date(2026, 11, 13)
+    # 问题里没写年份、模型写成了过去的日子：按下一次的这一天查（A05）
+    date, note = agent.check_date("2026-01-10", today, True, "1月10日去拉马尔谷能看到动物吗")
+    assert date == "2027-01-10" and "没写年份" in note
+    date, note = agent.check_date("2026-11-20", today, True, "冰川点11月20日开着吗")
+    assert date == "2026-11-20" and note == ""
+    # 写了年份、说了去年的，照用过去的日子、只提醒（G02）
+    for question in ("2025年1月10日冰川点开着吗", "去年1月10日冰川点开着吗", "Was it open on Jan 10 last year?"):
+        date, note = agent.check_date("2025-01-10", today, True, question)
+        assert date == "2025-01-10" and "已经过去" in note
+    # 2 月 29 日：下一次在 2028 年
+    assert agent.check_date("2024-02-29", today, True, "2月29日去拱门")[0] == "2028-02-29"
+    # 不存在的日子照旧不查（G03）
+    assert agent.check_date("2027-02-30", today, True, "2月30日去拱门行吗")[0] is None
+    # 正是最适合的月份时也列出全部最适合的月份（D04）
+    row = {"nameZh": "冰川", "nameEn": "Glacier", "verdict": "great", "inBestMonths": True, "bestMonths": [7, 8, 9], "openShare": 0.93}
+    assert "最适合的是 7 月、8 月、9 月" in agent._season_row(row, True)
+    assert "in its best months (7, 8, 9)" in agent._season_row(row, False)

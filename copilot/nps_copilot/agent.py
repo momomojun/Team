@@ -213,8 +213,13 @@ def resolve_park(name: str | None, parks: list[str]) -> str | None:
     return place[1] if place else None
 
 
-def check_date(value: str | None, reference: dt.date, zh: bool) -> tuple[str | None, str]:
-    """(YYYY-MM-DD, 提醒) 或 (None, 为什么不行)"""
+# 问题里写了哪一年（“2025年”“去年”“last year”），过去的日期就照用、只提醒
+YEAR_SAID = re.compile(r"(?<!\d)(?:19|20)\d{2}(?!\d)|去年|前年|上一年|last year", re.IGNORECASE)
+
+
+def check_date(value: str | None, reference: dt.date, zh: bool, question: str = "") -> tuple[str | None, str]:
+    """(YYYY-MM-DD, 提醒) 或 (None, 为什么不行)。
+    问题里没写年份、模型写成了已经过去的日子（11 月问“1 月 10 日”写成今年 1 月）：按下一次的这一天算（11-14，A05）"""
     if not value:
         return None, "没给日期" if zh else "no date given"
     match = re.fullmatch(r"(\d{4})-(\d{1,2})-(\d{1,2})", value.strip())
@@ -226,6 +231,15 @@ def check_date(value: str | None, reference: dt.date, zh: bool) -> tuple[str | N
     except ValueError:
         return None, (f"{year} 年没有 {month} 月 {day} 日这一天" if zh else f"{value} is not a real date")
     note = ""
+    if date < reference and question and not YEAR_SAID.search(question):
+        for later in range(reference.year, reference.year + 5):
+            try:
+                ahead = dt.date(later, month, day)
+            except ValueError:  # 2 月 29 日
+                continue
+            if ahead >= reference:
+                return ahead.isoformat(), (f"问题里没写年份，{date.isoformat()} 已经过去了，按下一次的 {month} 月 {day} 日（{ahead.isoformat()}）查" if zh else
+                                           f"the question gives no year and {date.isoformat()} is past, so checked the next {ahead.isoformat()}")
     if date < reference:
         note = (f"注意：{date.isoformat()} 已经过去了（今天是 {reference.isoformat()}）" if zh else
                 f"note: {date.isoformat()} is in the past (today is {reference.isoformat()})")
@@ -253,7 +267,7 @@ def build_request(tool: str, args: dict, ctx: Ctx) -> tuple[dict | None, list[st
         return f"网站上没有叫“{name}”的地方" if zh else f"no place called {name!r} on the site"
 
     def need_date(key: str = "date") -> str | None:
-        value, note = check_date(args.get(key), ctx.reference, zh)
+        value, note = check_date(args.get(key), ctx.reference, zh, ctx.question)
         if value is None:
             raise ValueError(note)
         if note:
@@ -365,7 +379,9 @@ def _season_row(row: dict, zh: bool) -> str:
     name = row["nameZh"] if zh else row["nameEn"]
     bits = [VERDICT[row["verdict"]][0 if zh else 1]]
     if zh:
-        bits.append("正是最适合的月份" if row.get("inBestMonths") else f"最适合的月份是 {'、'.join(f'{m} 月' for m in row.get('bestMonths') or [])}")
+        # 正是最适合的月份时也列出全部（“几月去最好”只查了 7 月，也看得到是 7–9 月，11-14，D04）
+        months = "、".join(f"{m} 月" for m in row.get("bestMonths") or [])
+        bits.append(f"正是最适合的月份（最适合的是 {months}）" if row.get("inBestMonths") else f"最适合的月份是 {months}")
         bits.append(f"能去的景点约 {round(row['openShare'] * 100)}%")
         if row.get("closedMustSee"):
             bits.append("去不了的必去景点：" + "、".join(row["closedMustSee"]))
@@ -379,7 +395,8 @@ def _season_row(row: dict, zh: bool) -> str:
         if crowd := row.get("crowd"):
             bits.append(f"{CROWD[crowd['level']][0]}（平均每天约 {crowd['perDay']} 人次）")
         return f"- {name}：" + "；".join(bits)
-    bits.append("in its best months" if row.get("inBestMonths") else "best months " + ", ".join(map(str, row.get("bestMonths") or [])))
+    best = ", ".join(map(str, row.get("bestMonths") or []))
+    bits.append(f"in its best months ({best})" if row.get("inBestMonths") else f"best months {best}")
     bits.append(f"about {round(row['openShare'] * 100)}% of sights open")
     if row.get("closedMustSee"):
         bits.append("must-sees closed: " + ", ".join(row["closedMustSee"]))
