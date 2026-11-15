@@ -42,7 +42,7 @@ export const arches: Attraction[] = [
       "从停车场这头下去要走一长段台阶；想少走台阶可以请同伴开车到北头的 Courthouse Towers 停车场接，单程约 1.6 公里",
       "往返请走原路，别沿着公路走回来",
     ],
-    photoFile: "Park Avenue in Arches National Park kz02.jpg",
+    photoFile: "Primitive Park Avenue (10802684195).jpg",
   },
   {
     id: "arch-la-sal-viewpoint",
@@ -123,7 +123,7 @@ export const arches: Attraction[] = [
     mustSee: true,
     summary: "两道拱在一端连在一起，高约 34 米，是园内最高的拱门。一条平缓的小路走到拱脚下，可以站在两道拱的正下方往上看。",
     tips: ["可以爬到拱下的岩石上，但往下爬比往上难，看好路线再上"],
-    photoFile: "USA 10439 Arches National Park Luca Galuzzi 2007.jpg",
+    photoFile: "Double Arch.jpg",
   },
   {
     id: "arch-delicate-arch",
@@ -146,7 +146,7 @@ export const arches: Attraction[] = [
       "快到拱门前有一段约 180 米的窄岩架，冬天常结冰，要带冰爪；看日落的话每人带头灯",
       "步道起点有 1906 年的 Wolfe 牧场小屋，再走几分钟有一面尤特人的岩画",
     ],
-    photoFile: "Delicate Arch sunset.jpg",
+    photoFile: "Delicate Arch, Arches National Park (15468451289).jpg",
   },
   {
     id: "arch-delicate-arch-viewpoint",
@@ -209,7 +209,7 @@ export const arches: Attraction[] = [
       "自助许可证至少提前 2 天订，领证时全员要到游客中心看安全影片（8:00–10:00、14:00–15:30 的整点和半点）",
       "只想看看的话，停车场边的观景点不用许可证",
     ],
-    photoFile: "Fiery Furnace kz01.jpg",
+    photoFile: "Fiery Furnace, Arches National Park.jpg",
   },
   {
     id: "arch-sand-dune-arch",
@@ -338,7 +338,7 @@ export const arches: Attraction[] = [
       "全程约 12.7 公里（含各条岔路），原始步道段要在岩坡上攀爬、走窄岩架，标记少，要自己找路",
       "岩石湿了或结冰时别走原始步道；每人至少带 3 升水，带头灯以防天黑",
     ],
-    photoFile: "Arches Nationalpark Dark Angel.jpg",
+    photoFile: "Landscape Arch 2023.jpg",
   },
   {
     id: "arch-tower-arch",
@@ -358,6 +358,6 @@ export const arches: Attraction[] = [
       "步道口要走约 13 公里的 Salt Valley 土路，路干的时候普通轿车小心开一般能到，雨后泥泞甚至不能通行，出发前问游客中心",
       "没有手机信号、几乎没有遮阴，沙丘段很费力",
     ],
-    photoFile: "Tower Arch (6836150162).jpg",
+    photoFile: "Tower Arch (Arches National Park, eastern Utah, USA) (15512633303).jpg",
   },
 ];

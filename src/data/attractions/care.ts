@@ -79,7 +79,7 @@ export const capitolReef: Attraction[] = [
       "停车场小，旺季上午很快停满；沿途几乎没有遮阴，夏天早去",
       "停车场边往北看就是国会圆顶（Capitol Dome）：公园的名字就来自这些像国会大厦穹顶的白色砂岩圆顶",
     ],
-    photoFile: "Hickman Bridge Capitol Reef National Park USA.jpg",
+    photoFile: "Hickman Bridge, Capitol Reef National Park.jpg",
   },
   {
     id: "care-rim-overlook",
@@ -139,7 +139,7 @@ export const capitolReef: Attraction[] = [
       "从 24 号公路边的步道口走到窄缝往返约 3.6 公里；也可以从景观道那头的 Grand Wash 土路尽头进来，全程单程约 3.6 公里，顺路接卡西迪拱门",
       "下雨或有山洪预警时千万别进，7–9 月午后雷暴多",
     ],
-    photoFile: "Grand Wash (6366478727).jpg",
+    photoFile: "Cassady Arch Trail Capitol Reef National Park UT 20220405 202207771.jpg",
   },
   {
     id: "care-cassidy-arch",
@@ -180,7 +180,7 @@ export const capitolReef: Attraction[] = [
       "NPS 路况表从 2026 年 9 月下旬到 10 月 15 日一直显示国会峡谷土路关闭，没写原因和重开时间（雨季常因山洪冲坏路面临时封闭），出发前查路况；关闭期间可以改走大冲沟",
       "从景观道尽头开进约 3.9 公里土路，平时普通车能开；雷雨天别进峡谷",
     ],
-    photoFile: "Capitol Gorge - 2016-07-01.jpg",
+    photoFile: "Capitol Reef NP Tanks off the Gorge Trail (47507796652).jpg",
   },
   {
     id: "care-panorama-point",
@@ -199,7 +199,7 @@ export const capitolReef: Attraction[] = [
       "每年 9 月有 Heritage Starfest 星空节（2026 年是 9 月 11–12 日，已结束），平时也可以自己来看，新月前后最暗",
       "从这里岔进约 1.6 公里的土路，就是鹅颈观景点和日落点",
     ],
-    photoFile: "Panorama Point, Capitol Reef National Park, Utah (118898614).jpg",
+    photoFile: "Panorama Point, Capitol Reef National Park, Utah (118898321).jpg",
   },
   {
     id: "care-goosenecks-sunset-point",

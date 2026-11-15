@@ -11197,22 +11197,6 @@ export const npsGallery: Record<string, Photo[]> = {
       "page": "https://www.nps.gov/media/photo/gallery-item.htm?pg=1&id=EDE17776-155D-4519-3E76-992F56EAF4FA&gid=0C2CF075-1DD8-B71B-0B4D-686C0F955EBF",
       "author": "NPS",
       "license": "Public domain (NPS)"
-    },
-    {
-      "url": "https://www.nps.gov/common/uploads/cropped_image/C61AE1CD-0712-A811-A975BD9BD641D186.jpg",
-      "width": 2304,
-      "height": 3456,
-      "page": "https://www.nps.gov/places/north-cascades-lodge-at-stehekin.htm",
-      "author": "NPS / Bender",
-      "license": "Public domain (NPS)"
-    },
-    {
-      "url": "https://www.nps.gov/common/uploads/cropped_image/C82A896A-C4CD-F0EF-E2378DEBDFAC1522.jpg",
-      "width": 4000,
-      "height": 6000,
-      "page": "https://www.nps.gov/places/rainbow-falls-north-cascades.htm",
-      "author": "NPS/Bryanna Plog",
-      "license": "Public domain (NPS)"
     }
   ],
   "noca-washington-pass-overlook": [
@@ -16367,16 +16351,7 @@ export const npsGallery: Record<string, Photo[]> = {
       "license": "Public domain (NPS)"
     }
   ],
-  "yose-washburn-point": [
-    {
-      "url": "https://www.nps.gov/common/uploads/cropped_image/A88107BF-BE4D-0D83-86B27007093DB3BC.jpg",
-      "width": 4118,
-      "height": 2735,
-      "page": "https://www.nps.gov/places/000/wawona-grey-barn-washburn-barn.htm",
-      "author": "NPS Image / Sheree Peshlakai",
-      "license": "Public domain (NPS)"
-    }
-  ],
+  "yose-washburn-point": [],
   "yose-yosemite-falls": [
     {
       "url": "https://www.nps.gov/npgallery/GetAsset/20B51E7B-155D-4519-3E27-9EE83F22409A/proxy/hires",

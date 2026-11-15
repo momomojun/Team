@@ -53,7 +53,7 @@ export const carlsbadCaverns: Attraction[] = [
       "坡很陡、地面潮湿，穿抓地好的包头鞋；心脏和呼吸系统不好的人不建议走",
       "洞里常年约 13°C，带件薄外套；婴儿车、三脚架都不能带进洞",
     ],
-    photoFile: "Natural Entrance Trail.jpg",
+    photoFile: "Carlsbad Caverns Entrance P1011759mod.jpg",
   },
   {
     id: "cave-big-room",
@@ -77,7 +77,7 @@ export const carlsbadCaverns: Attraction[] = [
       "洞里很暗也很安静，说话声能传出几百米；可以用闪光灯，但不能用三脚架",
       "出洞时都要踩过消毒垫，防止蝙蝠的白鼻综合征传进来；去过别的洞穴的鞋子、衣服不要穿进来",
     ],
-    photoFile: "Big Room, Carlsbad Cavern (51203204939).jpg",
+    photoFile: "Big Room, Carlsbad Cavern (51202483276).jpg",
   },
   {
     id: "cave-kings-palace",

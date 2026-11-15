@@ -54,7 +54,7 @@ export const deathValley: Attraction[] = [
     bestMonths: COOL_SEASON,
     summary: "走进金黄色岩壁的峡谷，尽头是红色的 Red Cathedral 岩壁；也可以一路走到 Zabriskie Point。",
     tips: ["夏天（大约 5–9 月）上午 10 点以后不要徒步", "全程没有遮阴，每人至少带 2 升水"],
-    photoFile: "Red Cathedral from Golden Canyon, Death Valley National Park, California.jpg",
+    photoFile: "Wash in Golden Canyon, Death Valley National Park, California.jpg",
   },
   {
     id: "deva-badwater",
@@ -75,7 +75,7 @@ export const deathValley: Attraction[] = [
       "回头看停车场上方的山崖，有一块“海平面”标志牌",
       "夏天中午地面温度极高，只在清晨或傍晚去",
     ],
-    photoFile: "Badwater Basin from Dante's View Overlook.JPG",
+    photoFile: "Boardwalk at Badwater Basin, Death Valley National Park, California.jpg",
   },
   {
     id: "deva-devils-golf-course",
@@ -129,7 +129,7 @@ export const deathValley: Attraction[] = [
       "从 190 号公路拐进约 21 公里的山路，最后一段很陡，房车和拖挂车不适合",
       "气温明显比谷底低，带件外套",
     ],
-    photoFile: "Death Valley,19820817,Dante's View,Salt shoreline.jpg",
+    photoFile: "Badwater Basin seen from Dante's View, Death Valley National Park, California.jpg",
   },
   {
     id: "deva-mesquite-dunes",

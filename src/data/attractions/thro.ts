@@ -123,7 +123,7 @@ export const theodoreRoosevelt: Attraction[] = [
       "环路北段这一带常有野马群，傍晚边走边看",
       "冬天下雪结冰时环路部分路段会临时封闭，先在游客中心问路况",
     ],
-    photoFile: "Theodore Roosevelt National Park, ND, US, 2024 1.jpg",
+    photoFile: "Theodore Roosevelt National Park from Wind Canyon Trail.jpg",
   },
   {
     id: "thro-boicourt",
@@ -257,7 +257,7 @@ export const theodoreRoosevelt: Attraction[] = [
       "游客中心只在夏秋开（2026 年 10 月 24 日起冬季关闭、到 2027 年 6 月中再开，每天 9:00–16:30），关门时观景步道一般照样能走",
       "野牛常在休息区附近活动，下车前先看一圈",
     ],
-    photoFile: "Painted Canyon - Theodore Roosevelt National Park 01.jpg",
+    photoFile: "Painted Canyon overlook Theodore Roosevelt NP ND 3.jpg",
   },
   {
     id: "thro-painted-canyon-trail",

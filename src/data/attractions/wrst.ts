@@ -181,7 +181,7 @@ export const wrangellStElias: Attraction[] = [
       "途中要过季节性的 Amazon Creek，雨后可能湿脚；2026 年 7 月起原来下到冰面的那段路因地面不稳不再安全，NPS 让改走过了 Amazon Creek 以后的新路，出发前在 Kennecott 游客中心问清楚",
       "整条路都有熊出没，结伴走、出声",
     ],
-    photoFile: "Backpackers Stepping onto the Root Glacier (20977719713).jpg",
+    photoFile: "Kennicott and Root Glacier, Wrangell-St.Elias National Park (10106069636).jpg",
   },
   {
     id: "wrst-glacier-hike",

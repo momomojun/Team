@@ -45,7 +45,7 @@ export const mountRainier: Attraction[] = [
       "7 月中旬以前高处常有残雪、路迹不清，带防滑装备；午后容易起云，尽量早上出发",
       "夏季晴天和周末 Paradise 停车场上午就可能停满，早点到",
     ],
-    photoFile: "Mount Rainier behind the flowering meadows of Paradise Park (18 August 2012).jpg",
+    photoFile: "Skyline trail looking south.jpg",
   },
   {
     id: "mora-myrtle-falls",
@@ -71,7 +71,7 @@ export const mountRainier: Attraction[] = [
       "有积雪时下观景台那段很滑，小心",
       "7 月下旬到 8 月两旁草甸野花最多",
     ],
-    photoFile: "Myrtle Falls 02.jpg",
+    photoFile: "2024-10-12 Myrtle Falls (Mount Rainier National Park) IMG 6615.jpg",
   },
   {
     id: "mora-reflection-lakes",
@@ -95,7 +95,7 @@ export const mountRainier: Attraction[] = [
       "禁止划船和钓鱼；岸边草甸娇嫩，只走步道",
       "路对面的 Pinnacle Peak 步道 2026 年 8 月因 Plummer Peak 山火关闭过，8 月 31 日已重新开放",
     ],
-    photoFile: "Mt Rainier & Reflection Lakes (8082913563).jpg",
+    photoFile: "Mount Rainier - HCP - October 17, 2022 - 048 - Reflection Lake.jpg",
   },
   {
     id: "mora-narada-falls",
@@ -113,7 +113,7 @@ export const mountRainier: Attraction[] = [
       "停车场在瀑布顶上的石桥边，沿陡坡小路下行几分钟到观景台；水雾大，地面湿滑",
       "冬季小路积雪结冰，不好走",
     ],
-    photoFile: "Narada Falls (14619883043).jpg",
+    photoFile: "Mount Rainier - Narada Falls pano 01.jpg",
   },
   {
     id: "mora-sunrise-visitor-center",
@@ -213,6 +213,7 @@ export const mountRainier: Attraction[] = [
     openMonths: PARADISE_TRAILS,
     closedNote: "步道在 Paradise，积雪常到 7 月才化完，11 月起又被雪覆盖，冬季步道埋在雪下（以 NPS 步道状况为准）；冬季可以参加护林员雪鞋徒步，天气好时在游客中心附近就能看到冰川。",
     summary: "从下停车场出发的短环线，穿过草甸走到观景点，看尼斯阔利冰川和冰川融水冲出的河谷。人比天际线步道少，不赶时间的老人小孩也能走。",
+    photoFile: "Mount Rainier and Nisqually Glacier (2015-01-07).jpg",
     tips: ["起点在下停车场最左边，一开始就是台阶，接着一长段陡坡，婴儿车、轮椅不好走（NPS 无障碍页面）", "7 月以前常有积雪"],
   },
   {
@@ -226,6 +227,7 @@ export const mountRainier: Attraction[] = [
     lon: -121.77963,
     durationMin: 15,
     summary: "去 Paradise 路上的路边瀑布，约 18 米高，水流正好从一座历史石拱桥下穿过，桥和瀑布一起入画。",
+    photoFile: "Christine Falls & Bridge, Mount Rainier National Park 01.jpg",
     tips: [
       "石桥两侧各有一处小停车点，只能停几辆车；沿约 30 米长的小路稍微往下走就到桥下的观景点",
       "不要在桥上停车，也不要走上桥拍照，车流很近",

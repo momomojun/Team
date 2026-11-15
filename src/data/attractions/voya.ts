@@ -225,6 +225,7 @@ export const voyageurs: Attraction[] = [
   },
   {
     id: "voya-ice-road",
+    
     park: "voya",
     nameZh: "冰上公路",
     nameEn: "Rainy Lake & Kabetogama Ice Roads",

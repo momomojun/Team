@@ -291,7 +291,7 @@ export const joshuaTree: Attraction[] = [
     summary:
       "从骷髅岩出发，穿过巨石阵（Jumbo Rocks）露营地再绕回来的约 2.7 公里环线，一路在一堆堆圆滚滚的花岗岩巨石之间穿行，可以爬上矮石头看风景。",
     tips: ["露营地只给有预约的营友停车，一日游从骷髅岩停车场出发", "沙地和碎石多，穿抓地好的鞋；夏天早上走"],
-    photoFile: "Jumbo Rocks Campground - 1.jpg",
+    photoFile: "Skull Rock, Joshua Tree National Park.jpg",
   },
   {
     id: "jotr-arch-rock",

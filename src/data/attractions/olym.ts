@@ -28,7 +28,7 @@ export const olympic: Attraction[] = [
       "山顶的日间旅舍（Day Lodge）2023 年 5 月烧毁，重建最早 2028 年动工；现在只有临时厕所拖车，没有餐饮和饮用水，上山前备好",
       "夏季周末停车场常满，满了会在 Heart O' the Hills 入口站拦车等车位，早上或傍晚去；入口站只收卡不收现金",
     ],
-    photoFile: "Hurricane Ridge - Olympic National Park, Washington.jpg",
+    photoFile: "Hurricane Ridge Olympic National Park.jpg",
   },
   {
     id: "olym-hurricane-hill",
@@ -104,6 +104,7 @@ export const olympic: Attraction[] = [
     trail: {},
     hike: { distanceMi: 1.8, gainFt: 400, difficulty: "easy" },
     summary: "从湖边穿过古老的针叶林、沿 Barnes Creek 走到约 27 米高的瀑布，是新月湖边最受欢迎的步道。",
+    photoFile: "Marymere Falls 01.jpg",
     tips: [
       "步道从 101 号公路下的人行隧道穿过去；最后是一段上下台阶的小环线，有两个观瀑平台",
       "夏天中午前后停车场常满，也可以从 Lake Crescent Lodge 出发走过去",
@@ -170,7 +171,7 @@ export const olympic: Attraction[] = [
       "在 Sol Duc 路尽头，路上经过温泉度假村和 Salmon Cascades，秋天能看到银鲑逆流跳跃",
       "Sol Duc 路冬季常因冰雪封闭，以 NPS 路况为准；夏天中午前后停车场常满",
     ],
-    photoFile: "Sol Duc Falls 2022.jpg",
+    photoFile: "Sol Duc Falls Olympic National Park.jpg",
   },
   {
     id: "olym-sol-duc-hot-springs",
@@ -206,6 +207,7 @@ export const olympic: Attraction[] = [
     mustSee: true,
     summary:
       "堆满巨大漂流木的砾石海滩，海上立着一排海蚀柱。沿海滩往北走约 2.4 公里到 Hole-in-the-Wall 海蚀拱门，退潮时能从拱门下穿过，周围礁石上有潮池。",
+    photoFile: "Rialto Beach - 54018508812.jpg",
     tips: [
       "只有低潮时才能穿过拱门、看潮池，出发前查潮汐表，别被涨潮困在岬角另一侧",
       "浪能卷动海滩上的巨木，涨潮时不要在漂流木上攀爬",
@@ -277,7 +279,7 @@ export const olympic: Attraction[] = [
     summary:
       "霍河雨林最经典的环线：大叶枫的枝干上挂满厚厚的苔藓，像一道道绿色帘幕，四周是高大的锡特卡云杉和铁杉。这里年均降水量约 3.6 米。",
     tips: ["步道口就在游客中心旁", "常见罗斯福马鹿，保持距离", "霍河雨林的步道都不准带宠物"],
-    photoFile: "Hoh Rain Forest Olympic June 2018 001.jpg",
+    photoFile: "Hoh Rain Forest Olympic June 2018 002.jpg",
   },
   {
     id: "olym-spruce-nature-trail",
@@ -340,7 +342,7 @@ export const olympic: Attraction[] = [
       "就在 101 号公路边，Kalaloch 以北约 12 公里；停车场旁有无障碍观景点和厕所",
       "退潮时礁石上有潮池，能看到海星和海葵",
     ],
-    photoFile: "Ruby Beach, Washington.jpg",
+    photoFile: "Rocks seen from Ruby Beach. Olympic National Park.jpg",
   },
   {
     id: "olym-tree-of-life",
@@ -396,6 +398,7 @@ export const olympic: Attraction[] = [
     outsidePark: true,
     summary:
       "奥林匹克半岛西南角的冰川湖，四周都是温带雨林，常有低云贴着湖面。1937 年罗斯福总统到这一带考察森林，第二年签署法案设立了奥林匹克国家公园。",
+    photoFile: "Olympic National Park, 2023 - 037.jpg",
     tips: [
       "2026 年 10 月 13–19 日 101 号公路 Hoh River 桥夜间封路（具体时段看 NPS 公告），封路时没有绕行路线，从天使港、Forks 过不来，要绕半岛东侧多开 4 小时以上",
       "湖北岸属于国家公园，南岸属于奥林匹克国家森林；南岸老旅馆前的草坪一直通到湖边，是看湖最方便的地方",

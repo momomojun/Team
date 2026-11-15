@@ -4,7 +4,7 @@ import type { Photo } from "./types";
 import { gallery as commons } from "./gallery.generated";
 import { npsGallery } from "./gallery-nps.generated";
 
-const MAX = 8;
+const MAX = 12;
 
 export const gallery: Record<string, Photo[]> = Object.fromEntries(
   [...new Set([...Object.keys(commons), ...Object.keys(npsGallery)])].map((id) => [

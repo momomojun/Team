@@ -27,7 +27,7 @@ export const yoho: Attraction[] = [
       "独木舟出租通常 5 月中到 10 月上旬、先到先得不能预约；2027 年 3 月 31 日前幽鹤的湖泊禁止自带船只下水，只有这里的租船可以划",
       "翡翠湖路全年通车，冬天湖面结冰，可以沿湖走雪地步道",
     ],
-    photoFile: "Emerald Lake - Yoho National Park.JPG",
+    photoFile: "The Alluvial Field at Emerald Lake in Yoho National Park, BC.jpg",
   },
   {
     id: "yoho-natural-bridge",
@@ -72,7 +72,7 @@ export const yoho: Attraction[] = [
       "6 月下旬到 7 月融雪期水量最大，晴天午后比早上水量大",
       "停车场旁是冰线步道和幽鹤谷步道的起点",
     ],
-    photoFile: "Takakkaw Falls, west view 20240825 3.jpg",
+    photoFile: "Yoho Valley from base of Takakkaw Falls, Yoho National Park, British Columbia, 2025-07-11.jpg",
   },
   {
     id: "yoho-spiral-tunnels",

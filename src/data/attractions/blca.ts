@@ -194,7 +194,7 @@ export const blackCanyon: Attraction[] = [
     summary:
       "看峡谷又窄又深的最好位置：两岸崖顶只隔约 335 米，脚下到河面约 555 米，对面就是北缘几乎垂直的崖壁；往下游还能看到彩绘崖壁的侧面。",
     tips: ["从停车场走几十米就到，有护栏", "夜里离公路车灯远，是 NPS 推荐的观星点之一"],
-    photoFile: "Chasm View, Black Canyon Of The Gunnison.jpg",
+    photoFile: "Chasm View, Black Canyon of the Gunnison.jpg",
   },
   {
     id: "blca-painted-wall-view",
@@ -252,7 +252,7 @@ export const blackCanyon: Attraction[] = [
     summary:
       "彩绘崖壁西边一块伸出去的岩嘴，从侧面看崖壁上的条纹和下游一层层的岩壁，人比前面几个观景台少；傍晚斜阳照在岩壁上颜色最暖。",
     tips: ["从停车场走几分钟土路", "离公路远、没有车灯，是 NPS 推荐的观星点之一"],
-    photoFile: "Dragon Point (31e4409e-bb80-4c78-9443-ac98b5acf65f).jpg",
+    photoFile: "Dragon Point, Black Canyon of the Gunnison - 48834822701.jpg",
   },
   {
     id: "blca-sunset-view",
@@ -272,7 +272,7 @@ export const blackCanyon: Attraction[] = [
     summary:
       "观景路西段视野最开阔的观景台，往西能看到峡谷一路伸向远处，傍晚夕阳照亮对面岩壁、谷底的河一点点暗下去；有野餐桌和厕所，从停车场过去是无障碍小路。",
     tips: ["日落后天黑得很快，回程路上常有鹿横穿，开慢一点", "也是 NPS 推荐的观星点之一"],
-    photoFile: "Sunset View, Black Canyon of the Gunnison.jpg",
+    photoFile: "Sunset View Overlook at Black Canyon of the Gunnison National Park dyeclan.com - panoramio.jpg",
   },
   {
     id: "blca-warner-point",
@@ -318,7 +318,7 @@ export const blackCanyon: Attraction[] = [
       "2026 年 7 月 16 日泥石流冲毁路面和营地，9 月 4 日才重开，9 月 14–19 日又因暴雨预报临时封路；山火烧过的山坡遇大雨还可能塌方，下雨天先看 NPS 路况",
       "严格说这里属于 Curecanti 国家休闲区，但只能从黑峡谷南缘入口进来；谷底有野餐区、厕所和小营地，在河边钓鳟鱼要科罗拉多州钓鱼证",
     ],
-    photoFile: "Gunnison Diversion Dam (5932698332).jpg",
+    
   },
   {
     id: "blca-north-rim-drive",
