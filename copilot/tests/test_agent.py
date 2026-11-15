@@ -34,9 +34,11 @@ class FakeTools:
     def __init__(self, *results):
         self.results = list(results)
         self.batches: list[list[dict]] = []
+        self.timeouts: list[float] = []
 
-    def __call__(self, requests):
+    def __call__(self, requests, timeout=60):
         self.batches.append(requests)
+        self.timeouts.append(timeout)
         return [self.results.pop(0) for _ in requests]
 
 
@@ -317,3 +319,28 @@ def test_fixes_after_the_second_recording():
     row = {"nameZh": "冰川", "nameEn": "Glacier", "verdict": "great", "inBestMonths": True, "bestMonths": [7, 8, 9], "openShare": 0.93}
     assert "最适合的是 7 月、8 月、9 月" in agent._season_row(row, True)
     assert "in its best months (7, 8, 9)" in agent._season_row(row, False)
+
+
+def test_fixes_from_the_pr_review(fake, monkeypatch):
+    """PR #110 的审阅意见（CodeRabbit）"""
+    monkeypatch.setenv("COPILOT_AGENT_BUDGET_S", "20")  # 评测脚本被导入时会设成 600
+    # 说找到了却一条出处都没给：按对不上处理，直接给查到的
+    stub = fake(OPEN_RESULT)
+    provider = ScriptedProvider([step(call("is_open", place="冰川点", date="2026-11-20")), final("多半去不了。", sources=[])])
+    text, trace = ask(provider)
+    assert trace["answer"] == "fallback" and trace["fallback"] == "unfaithful"
+    # node 查询的超时按这一圈剩下的时间给（默认 20 秒，不会是 60）
+    assert 5 <= stub.timeouts[0] <= 20
+    # 极昼、极夜
+    place = {"nameZh": "北极之门", "nameEn": "Gates of the Arctic"}
+    day = {"place": place, "date": "2027-06-21", "polar": "polar-day"}
+    assert "极昼" in agent.format_result("sun_times", {}, day, True)[0]
+    assert "polar day" in agent.format_result("sun_times", {}, day, False)[0]
+    assert "极夜" in agent.format_result("sun_times", {}, {**day, "polar": "polar-night"}, True)[0]
+    # 没有人次排名的（加拿大的公园）不写“第 None”
+    lines = agent.format_result("crowd", {}, {"park": {"nameZh": "班夫", "nameEn": "Banff"}, "latestYear": 2025, "latestVisits": 4000000}, True)
+    assert "None" not in lines[0] and "第" not in lines[0]
+    # 最热的那个数是最热片区的平均最高气温，不是最热的一天
+    row = {"nameZh": "拱门", "nameEn": "Arches", "verdict": "poor", "inBestMonths": False, "bestMonths": [4, 5], "openShare": 1,
+           "climate": {"highC": 35, "lowC": 19, "hottestC": 36, "wetDays": 3, "snowDays": 0}}
+    assert "最热的片区平均最高约 36°C" in agent._season_row(row, True)

@@ -386,7 +386,7 @@ def _season_row(row: dict, zh: bool) -> str:
         if row.get("closedMustSee"):
             bits.append("去不了的必去景点：" + "、".join(row["closedMustSee"]))
         if climate := row.get("climate"):
-            bits.append(f"往年同期平均最高 {climate['highC']}°C、最低 {climate['lowC']}°C、最热的日子约 {climate['hottestC']}°C，"
+            bits.append(f"往年同期平均最高 {climate['highC']}°C、最低 {climate['lowC']}°C、最热的片区平均最高约 {climate['hottestC']}°C，"
                         f"一个月里下雨约 {climate['wetDays']} 天、下雪约 {climate['snowDays']} 天")
         if row.get("events"):
             bits.append("特别活动：" + "、".join(row["events"]))
@@ -512,8 +512,8 @@ def format_result(tool: str, request: dict, result: dict, zh: bool) -> list[str]
         place = result["place"]
         name = place.get("nameZh" if zh else "nameEn", "")
         if result.get("polar"):
-            return [f"{name} {result['date']}：{'极昼，太阳不落' if result['polar'] == 'day' else '极夜，太阳不升'}" if zh else
-                    f"{name} on {result['date']}: polar {result['polar']}"]
+            return [f"{name} {result['date']}：{'极昼，太阳不落' if result['polar'] == 'polar-day' else '极夜，太阳不升'}" if zh else
+                    f"{name} on {result['date']}: {result['polar'].replace('-', ' ')}"]
         return [f"{name} {result['date']}：日出 {result['sunrise']}，日落 {result['sunset']}（{result['timeZone']} 当地时间，误差一两分钟）" if zh else
                 f"{name} on {result['date']}: sunrise {result['sunrise']}, sunset {result['sunset']} ({result['timeZone']} local time)"]
     if tool == "booking":
@@ -531,8 +531,9 @@ def format_result(tool: str, request: dict, result: dict, zh: bool) -> list[str]
         name = result["park"]["nameZh" if zh else "nameEn"]
         lines = []
         if result.get("latestVisits"):
-            lines.append(f"{name} {result['latestYear']} 年游客 {result['latestVisits']} 人次，美国国家公园第 {result['rank']}" if zh else
-                         f"{name}: {result['latestVisits']} visits in {result['latestYear']}, rank {result['rank']}")
+            rank = result.get("rank")
+            lines.append(f"{name} {result['latestYear']} 年游客 {result['latestVisits']} 人次" + (f"，美国国家公园第 {rank}" if rank else "") if zh else
+                         f"{name}: {result['latestVisits']} visits in {result['latestYear']}" + (f", rank {rank}" if rank else ""))
         if result.get("months"):
             if zh:
                 lines.append(f"最挤 {result['busiestMonth']} 月、最冷清 {result['quietestMonth']} 月（按 {result['years']} 年平均）")
@@ -622,6 +623,8 @@ def answer(question: str, parks: list[str], plan_text: str, provider: Provider |
         trace["steps"].append(record)
         calls = data.get("calls") or []
         if data.get("action") == "call" and calls and steps_left > 1:
+            if time.monotonic() - started >= limit:  # 模型这一步就把时间用完了：不再查
+                return stop("timeout")
             record["calls"] = []
             pending: list[tuple[Observation, str]] = []
             for raw in calls[:MAX_CALLS]:
@@ -666,7 +669,7 @@ def answer(question: str, parks: list[str], plan_text: str, provider: Provider |
             if pending:
                 tool_start = time.monotonic()
                 try:
-                    results = tools.call([obs.request for obs, _ in pending])
+                    results = tools.call([obs.request for obs, _ in pending], timeout=min(60.0, max(5.0, limit - (time.monotonic() - started))))
                 except Exception as error:  # node 出错、超时：这几条算没查成，模型看得到
                     results = []
                     record["tool_error"] = f"{type(error).__name__}: {str(error)[:120]}"
@@ -694,7 +697,7 @@ def answer(question: str, parks: list[str], plan_text: str, provider: Provider |
                      elapsed_ms=round((time.monotonic() - started) * 1000))
         if data.get("action") != "answer" or not text:
             return stop("no_answer")
-        if problems or bad or leaked:
+        if problems or bad or leaked or (data.get("found") and not sources):
             return stop("unfaithful")
         if not data.get("found"):
             # 网站答不了（餐馆、签证、不存在的日期）：用模型这句老实话，不附出处

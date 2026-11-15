@@ -49,7 +49,12 @@ def score(report: dict, baseline: dict) -> tuple[str, str, bool]:
         configs = [config for config in ("agent", "qa") if config in baseline and config in report["table"]]
         got = " · ".join(f"{config} {report['table'][config]['all']['passed']}/{report['table'][config]['all']['cases']}" for config in configs)
         want = " · ".join(f"≥ {baseline[config]['min_passed']}" for config in configs)
-        return got, want, all(report["table"][config]["all"]["passed"] >= baseline[config]["min_passed"] for config in configs)
+        # 和 agent.py --gate 一样：总数、每类（min_by_kind）都不能低于基线
+        ok = bool(configs) and all(report["table"][config]["all"]["passed"] >= baseline[config]["min_passed"]
+                                   and all(report["table"][config].get(kind, {}).get("passed", 0) >= minimum
+                                           for kind, minimum in baseline[config].get("min_by_kind", {}).items())
+                                   for config in configs)
+        return got, want, ok
     if "table" in report:  # 找资料（retrieval.py）：和 retrieval.py --gate 一样，按 baseline 的 min 逐项比“全部”那一栏
         checks = [(method, key, report["table"][method]["all"][key], minimum)
                   for method, limits in baseline["min"].items() for key, minimum in limits.items()]

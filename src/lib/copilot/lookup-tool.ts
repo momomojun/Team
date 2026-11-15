@@ -428,7 +428,13 @@ export function booking(request: Extract<LookupRequest, { tool: "booking" }>) {
   const stops = request.attraction
     ? [request.attraction]
     : attractions.filter((stop) => stop.park === request.park).map((stop) => stop.id);
-  const items = bookingsForTrip([{ day: 0, date: request.date, parks: [request.park], stops, lodging: request.lodging }], bookingRules);
+  // 只按地名登记的规则（营地这类网站没收录成景点的）：行程页对不上就跳过；问整座公园要订什么时也列出来
+  const placesOnly = request.attraction
+    ? []
+    : bookingRules.filter((rule) => rule.park === request.park && rule.targets.length === 0 && rule.places?.length);
+  const rules = [...bookingRules, ...placesOnly.map((rule) => ({ ...rule, places: undefined }))];
+  const items = bookingsForTrip([{ day: 0, date: request.date, parks: [request.park], stops, lodging: request.lodging }], rules);
+  const placesOf = new Map(placesOnly.map((rule) => [rule.id, rule.places ?? []]));
   return {
     tool: "booking" as const,
     park: { code: park.code, nameZh: park.nameZh, nameEn: park.nameEn },
@@ -437,9 +443,12 @@ export function booking(request: Extract<LookupRequest, { tool: "booking" }>) {
       id: item.rule.id,
       titleZh: item.rule.titleZh,
       kind: item.rule.kind,
-      for: item.rule.targets
-        .filter((id) => stops.includes(id) || id === request.lodging)
-        .map((id) => stopById.get(id)?.nameZh ?? stayById.get(id)?.nameZh ?? id),
+      for: [
+        ...item.rule.targets
+          .filter((id) => stops.includes(id) || id === request.lodging)
+          .map((id) => stopById.get(id)?.nameZh ?? stayById.get(id)?.nameZh ?? id),
+        ...(placesOf.get(item.rule.id) ?? []),
+      ],
       openings: item.openings.map((opening) => ({
         type: opening.window.type,
         opens: opening.opens,
