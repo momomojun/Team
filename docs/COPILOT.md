@@ -52,7 +52,7 @@ flowchart LR
     - `booking`（要提前订什么）：那天去这座公园（或某个景点、某家住处）要订的许可、抽签、入园预约、船票、园内住宿，按“要提前订的”同一套规则算哪天开订、截止、出结果；给了 `today` 再说现在是还没开始、能订还是已经截止。
     - `crowd`（人多不多）：NPS 近 3 年每个月平均每天多少人次、和最挤的月份比是哪一档，最挤、最冷清是几月；加拿大的公园、园外名胜没有按月的数字。
   - 认问题、认地方、认日期都是代码：问题按正则分（开没开 / 多远多久 / 有哪些适合）；地方按资料里的名字，最长的优先、这次行程的公园优先；日期按原话（“1月15号”“下周六”，只说月份按 15 号）→“第 3 天”→这个景点排在行程哪天→行程第一天。trace 的 `qa.tools` 记下查了什么、几行、多久。`COPILOT_TOOLS=0` 关掉。
-- **会自己查的问答（search agent）**（`agent.py`、提示词 `agent_v1`，11-14，GOALS O93；`COPILOT_QA_AGENT=1` 才打开，默认关着，评测比过“找一次就答”再决定要不要默认打开）：模型看问题，自己决定调哪几个查询工具、填什么参数，看了结果再决定还要不要查，查够了带着出处回答。
+- **会自己查的问答（search agent）**（`agent.py`、提示词 `agent_v2`（`agent_v1` 留着对照），11-14，GOALS O93；`COPILOT_QA_AGENT=1` 才打开，默认关着，评测比过“找一次就答”再决定要不要默认打开）：模型看问题，自己决定调哪几个查询工具、填什么参数，看了结果再决定还要不要查，查够了带着出处回答。
   - 每一步模型只输出一个 JSON：`{"action": "call", "calls": [...]}`（一步最多 3 个，互相不依赖的一起查；同一步要调网站查询工具的几个一起交给 node，只起一次）或 `{"action": "answer", "found", "answer", "sources"}`。最多调 4 次模型（最后一次的 schema 只能回答）、整圈 20 秒（`COPILOT_AGENT_BUDGET_S`）。
   - 9 个工具：`search_knowledge`（网站资料，`vectors.retrieve`，和 QA 一样按 `COPILOT_RETRIEVAL`）、`is_open`、`drive_time`、`find_attractions`（就是查询工具的 `search`）、`season_rank`、`fees`、`sun_times`、`booking`、`crowd`。
   - 模型只出“查什么”，不出事实：参数里的地方写名字，代码对成网站的 id（先认 id 和机场代码，再按资料里的名字，再按字面：“山谷酒店”→优胜美地山谷酒店、“沙漠观景点”→沙漠观景塔、“Zion Visitor Center”只认出了公园名时在这座公园里找景点），对不上的不查、把“网站上没有叫 X 的地方”告诉模型；日期代码检查格式、存不存在（“2027 年没有 2 月 30 日这一天”）、是不是已经过了（照查，附一句提醒）；同样的查询不查第二遍。
@@ -118,7 +118,7 @@ flowchart LR
 | `copilot/nps_copilot/graph.py` | 一轮对话按 LangGraph 的流程图跑（10-22）：understand（`Session.begin` + 调度员）→ dispatch（按调度员给的几件事做）或 legacy（原来的规则）→ finish（写日志、存档）。每个节点调 `pipeline.py` 同一套代码，评测直接调 `Session.send` 测到的就是这里跑的。对话状态（`Session.snapshot`）存进 LangGraph 的 SQLite 检查点（`copilot/data/sessions.sqlite`），Copilot 重启以后用原来的会话 id 接着说。`python -m nps_copilot graph` 打出 Mermaid 流程图。没装 langgraph（`pip install "copilot[graph]"`）或 `COPILOT_GRAPH=0` 就直接调 `Session.send`、会话只在内存里。Docker 镜像和 Hugging Face Space 里没装（免费 Space 重启会清空磁盘，存档本来也留不住） |
 | `copilot/eval/tracking.py`、`copilot/eval/retrieval.py` | 评测记到 MLflow（`COPILOT_MLFLOW=1`，本机 `copilot/mlruns/` 的 SQLite，`mlflow ui --backend-store-uri sqlite:///copilot/mlruns/mlflow.db` 看）；检索对照实验（关键词 vs Chroma 向量 vs 混合，结果在 RESULTS.md） |
 | `copilot/nps_copilot/tts.py`、`src/app/api/copilot/tts/route.ts` | 讲解版的配音（10-21）：本机跑 Kokoro（开源 TTS，ONNX 版，CPU 上一句一秒左右），中文用 v1.1-zh（读音按 misaki 的 v1.1 规则转成注音，“11:04”先改成“11点04分”、间隔号去掉），英文用 v1.0；`GET /tts?text=&lang=` 返回 MP3，按“文字 + 声音 + 模型”存在 `copilot/data/tts/`，同一句只生成一次；没装模型时 503，网站退回浏览器自带的声音。`/health` 的 `tts` 写着能不能用 |
-| `copilot/nps_copilot/agent.py`、`prompts/agent_v1.txt` | 会自己查的问答（search agent，11-14）：工具说明和输出格式、名字和日期对成网站的 id、一步步调模型和查询工具、检查回答；`COPILOT_QA_AGENT=1` 打开 |
+| `copilot/nps_copilot/agent.py`、`prompts/agent_v1.txt`、`agent_v2.txt` | 会自己查的问答（search agent，11-14）：工具说明和输出格式、名字和日期对成网站的 id、一步步调模型和查询工具、检查回答；`COPILOT_QA_AGENT=1` 打开 |
 | `copilot/nps_copilot/tools.py`、`src/lib/copilot/lookup-tool.ts`、`scripts/lookup.mjs` | 查询工具（is_open、drive_time、search，11-13 加了 season_rank、fees、sun_times、booking、crowd）：Python 认问题、地方和日期，调 Node 命令行 `npm run copilot:lookup`（读 JSON 请求，一个或一组），结果写成给 QA 模型看的几行 |
 | `copilot/nps_copilot/providers.py` | 模型提供方：本机 Ollama（默认）、回放录好的输出（CI 用，没录到的请求直接报错）、录音、测试用的脚本、Gemini、OpenAI、OpenRouter、Groq 的 API（10-19；聊天按 `chat_provider()` 的顺序用 Gemini → MiniMax（OpenRouter）→ Qwen（Groq）→ 本机，`ProviderChain`，OpenAI 要明确设 `COPILOT_PROVIDER=openai` 才用；按免费档的每分钟次数放慢，服务忙会重试，当天额度用完直接报错；模型不认的思考、推理设置自动换下一档）、退回本机（`FallbackProvider`） |
 | `copilot/nps_copilot/prompts.py`、`prompts/` | 提示词版本，见下一节 |
@@ -165,7 +165,7 @@ flowchart LR
 | `copilot/eval/cases/conversation-v2.jsonl` | 15 组 34 轮 | 调度员写完以后才写的多轮对话（繁体、粤语、每晚都住某处、公园里没有的地方、“那就加上它”、去掉又加回来、两座公园……），第一次跑 14/15；修了一处，当回归集 | `baseline-conversation-v2.json` |
 | `copilot/eval/cases/retrieval-v1.jsonl`（`eval/retrieval.py`、`eval/rag_answers.py`） | 48 题 | 回答问题前找资料：点名的、只描述不点名的、英文的各 16 个，标准答案是资料 id，10-22 先提交再跑。`retrieval.py` 比关键词、按意思、两样合起来（前 5 条有对的、第 1 条就对、MRR）；按意思找的名单（Gemini 嵌入 + Neon）录在 `recordings/retrieval-<嵌入型号>.jsonl`，CI 回放；`rag_answers.py` 是 A/B/C 三组对照（不给资料 / 关键词 / 按意思），比回答答没答到点子上、引用对不对、编造被拦了几次 | `baseline-retrieval.json` |
 
-| `copilot/eval/cases/agent-v1.jsonl` | 44 题 | search agent（11-13，先写期望、冻结再跑，`agent-v1.manifest.json`）：一个工具就够的 6、一句话问两件事的 8、后一步要用前一步结果的 6、按季节比公园的 9、资料加工具的 4、网站答不了的 6（`needs_web`，以后看要不要接联网搜索）、刁难的 5（注入、过去和不存在的日期、不存在的公园、让它编）；中文 40、英文 4。标准答案是 2026-11-13 按网站的查询工具（`lookup-tool.ts`）和“什么时候去”的打分（当时在 `season-guide.tsx`，现在挪到 `src/lib/season-score.ts`，算法没变）算出来的 | `baseline-agent.json`（11-14 Gemini 3.5 Flash Lite 录的：自己查 36 / 44、找一次就答 19 / 44，见 RESULTS.md） |
+| `copilot/eval/cases/agent-v1.jsonl` | 44 题 | search agent（11-13，先写期望、冻结再跑，`agent-v1.manifest.json`）：一个工具就够的 6、一句话问两件事的 8、后一步要用前一步结果的 6、按季节比公园的 9、资料加工具的 4、网站答不了的 6（`needs_web`，以后看要不要接联网搜索）、刁难的 5（注入、过去和不存在的日期、不存在的公园、让它编）；中文 40、英文 4。标准答案是 2026-11-13 按网站的查询工具（`lookup-tool.ts`）和“什么时候去”的打分（当时在 `season-guide.tsx`，现在挪到 `src/lib/season-score.ts`，算法没变）算出来的 | `baseline-agent.json`（11-14 Gemini 3.5 Flash Lite 录的，提示词 `agent_v2`：自己查 38 / 44、找一次就答 19 / 44，见 RESULTS.md） |
 
 - `copilot/eval/run.py`：逐轮跑对话，比较最后的状态和 `TripRequest` 是否符合期望。`--replay` 回放录音（CI 用，不要 GPU）、`--record` 用真模型并录音、`--gate` 低于基线就失败、`--plan` 条件齐了再真的调 plan_trip、`--writer` 加 Writer 的成批评测、`--cases` 换样例文件。报告写到 `copilot/eval/reports/`（不提交）。
 - 录音在 `copilot/eval/recordings/<模型>[-<样例>][-intake_v<n>].jsonl`：默认样例不加后缀，不是默认版本的提示词另加后缀，不会互相覆盖。
