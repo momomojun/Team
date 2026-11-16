@@ -64,15 +64,17 @@ export interface ParkSeason {
 
 const round1 = (value: number) => Math.round(value * 10) / 10;
 
-/** 这个月下一次到来时的 15 号（这个月已经过了一半就算明年） */
-function midMonth(month: number): string {
-  const now = new Date();
-  const thisMonth = now.getMonth() + 1;
-  const year = month > thisMonth || (month === thisMonth && now.getDate() <= 15) ? now.getFullYear() : now.getFullYear() + 1;
+/** 这个月下一次到来时的 15 号（这个月已经过了一半就算明年）；today 是 "YYYY-MM-DD"，不给就按现在 */
+function midMonth(month: number, today?: string): string {
+  const [nowYear, thisMonth, nowDay] = today
+    ? today.split("-").map(Number)
+    : [new Date().getFullYear(), new Date().getMonth() + 1, new Date().getDate()];
+  const year = month > thisMonth || (month === thisMonth && nowDay <= 15) ? nowYear : nowYear + 1;
   return `${year}-${String(month).padStart(2, "0")}-15`;
 }
 
-export function parkSeason(park: Park): ParkSeason {
+/** today：按哪天看临时关闭（Copilot 的工具固定成参考日期，同样的输入每次结果一样）；不给就按现在 */
+export function parkSeason(park: Park, today?: string): ParkSeason {
   const stops = attractions.filter((a) => a.park === park.code && !a.outsidePark && a.kind !== "visitor");
   // 片区按景点数加权
   const areas = Object.entries(climate[park.code] ?? {}).map(([key, area]) => ({
@@ -90,7 +92,7 @@ export function parkSeason(park: Park): ParkSeason {
     for (const stop of stops) {
       const weight = stop.mustSee ? 2 : 1;
       // 临时关闭（施工、山洪……）按这个月下一次到来时的 15 号看
-      const isOpen = (!stop.openMonths || stop.openMonths.includes(month)) && !closureOn(stop.id, midMonth(month))?.certain;
+      const isOpen = (!stop.openMonths || stop.openMonths.includes(month)) && !closureOn(stop.id, midMonth(month, today))?.certain;
       total += weight;
       if (isOpen) open += weight;
       else if (stop.mustSee) closedMustSee.push(stop.nameZh);
