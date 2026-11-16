@@ -1,95 +1,144 @@
 {
- "fetched": "2026-11-15",
+ "fetched": "2026-11-16",
  "prompts": {
   "intake/v1": "79d3b5f861f0",
   "writer/v1": "38f0145930a8",
   "qa/v2": "26e84186b1cb",
   "dispatch/v1": "172d6eaf1298",
-  "alerts/v1": "89904d683e08"
+  "alerts/v1": "89904d683e08",
+  "agent/v2": "6e4fc2c65e2b"
  },
  "parks": {
-  "acad": "2026-11-15",
-  "bisc": "2026-11-15",
-  "blca": "2026-11-15",
-  "chis": "2026-11-15",
-  "cong": "2026-11-15",
-  "crla": "2026-11-15",
-  "dena": "2026-11-15",
-  "deva": "2026-11-15",
-  "drto": "2026-11-15",
-  "ever": "2026-11-15",
-  "gaar": "2026-11-15",
-  "glac": "2026-11-15",
-  "glba": "2026-11-15",
-  "grsa": "2026-11-15",
-  "grsm": "2026-11-15",
-  "grte": "2026-11-15",
-  "hosp": "2026-11-15",
-  "isro": "2026-11-15",
-  "jotr": "2026-11-15",
-  "katm": "2026-11-15",
-  "kefj": "2026-11-15",
-  "kova": "2026-11-15",
-  "lavo": "2026-11-15",
-  "maca": "2026-11-15",
-  "meve": "2026-11-15",
-  "mora": "2026-11-15",
-  "neri": "2026-11-15",
-  "noca": "2026-11-15",
-  "olym": "2026-11-15",
-  "pinn": "2026-11-15",
-  "redw": "2026-11-15",
-  "romo": "2026-11-15",
-  "seki": "2026-11-15",
-  "shen": "2026-11-15",
-  "viis": "2026-11-15",
-  "voya": "2026-11-15",
-  "wrst": "2026-11-15",
-  "yell": "2026-11-15",
-  "yose": "2026-11-15",
-  "zion": "2026-11-15"
+  "acad": "2026-11-16",
+  "arch": "2026-11-16",
+  "badl": "2026-11-16",
+  "bibe": "2026-11-16",
+  "bisc": "2026-11-16",
+  "blca": "2026-11-16",
+  "brca": "2026-11-16",
+  "cany": "2026-11-16",
+  "care": "2026-11-16",
+  "cave": "2026-11-16",
+  "chir": "2026-11-16",
+  "chis": "2026-11-16",
+  "cong": "2026-11-16",
+  "crla": "2026-11-16",
+  "cuva": "2026-11-16",
+  "dena": "2026-11-16",
+  "deva": "2026-11-16",
+  "drto": "2026-11-16",
+  "ever": "2026-11-16",
+  "gaar": "2026-11-16",
+  "glac": "2026-11-16",
+  "glba": "2026-11-16",
+  "grba": "2026-11-16",
+  "grca": "2026-11-16",
+  "grsa": "2026-11-16",
+  "grsm": "2026-11-16",
+  "grte": "2026-11-16",
+  "gumo": "2026-11-16",
+  "hale": "2026-11-16",
+  "havo": "2026-11-16",
+  "hosp": "2026-11-16",
+  "hsbd": "2026-11-16",
+  "indu": "2026-11-16",
+  "isro": "2026-11-16",
+  "jeff": "2026-11-16",
+  "jotr": "2026-11-16",
+  "katm": "2026-11-16",
+  "kefj": "2026-11-16",
+  "kova": "2026-11-16",
+  "lacl": "2026-11-16",
+  "lavo": "2026-11-16",
+  "maca": "2026-11-16",
+  "meve": "2026-11-16",
+  "mora": "2026-11-16",
+  "neri": "2026-11-16",
+  "noca": "2026-11-16",
+  "npsa": "2026-11-16",
+  "olym": "2026-11-16",
+  "pefo": "2026-11-16",
+  "pinn": "2026-11-16",
+  "redw": "2026-11-16",
+  "romo": "2026-11-16",
+  "sagu": "2026-11-16",
+  "seki": "2026-11-16",
+  "shen": "2026-11-16",
+  "thro": "2026-11-16",
+  "viis": "2026-11-16",
+  "voya": "2026-11-16",
+  "whsa": "2026-11-16",
+  "wica": "2026-11-16",
+  "wrst": "2026-11-16",
+  "yell": "2026-11-16",
+  "yose": "2026-11-16",
+  "zion": "2026-11-16"
  },
  "readAt": {
-  "acad": "2026-11-15T06:57:40-08:00",
-  "bisc": "2026-11-15T06:57:40-08:00",
-  "blca": "2026-11-15T06:57:40-08:00",
-  "chis": "2026-11-15T06:57:40-08:00",
-  "cong": "2026-11-15T06:57:40-08:00",
-  "crla": "2026-11-15T06:57:40-08:00",
-  "dena": "2026-11-15T06:57:40-08:00",
-  "deva": "2026-11-15T06:57:40-08:00",
-  "drto": "2026-11-15T06:57:40-08:00",
-  "ever": "2026-11-15T06:57:40-08:00",
-  "gaar": "2026-11-15T06:57:40-08:00",
-  "glac": "2026-11-15T06:57:40-08:00",
-  "glba": "2026-11-15T06:57:40-08:00",
-  "grsa": "2026-11-15T06:57:40-08:00",
-  "grsm": "2026-11-15T06:57:40-08:00",
-  "grte": "2026-11-15T06:57:40-08:00",
-  "hosp": "2026-11-15T06:57:40-08:00",
-  "isro": "2026-11-15T06:57:40-08:00",
-  "jotr": "2026-11-15T06:57:40-08:00",
-  "katm": "2026-11-15T06:57:40-08:00",
-  "kefj": "2026-11-15T06:57:40-08:00",
-  "kova": "2026-11-15T06:57:40-08:00",
-  "lavo": "2026-11-15T06:57:40-08:00",
-  "maca": "2026-11-15T06:57:40-08:00",
-  "meve": "2026-11-15T06:57:40-08:00",
-  "mora": "2026-11-15T06:57:40-08:00",
-  "neri": "2026-11-15T06:57:40-08:00",
-  "noca": "2026-11-15T06:57:40-08:00",
-  "olym": "2026-11-15T06:57:40-08:00",
-  "pinn": "2026-11-15T06:57:40-08:00",
-  "redw": "2026-11-15T06:57:40-08:00",
-  "romo": "2026-11-15T06:57:40-08:00",
-  "seki": "2026-11-15T06:57:40-08:00",
-  "shen": "2026-11-15T06:57:40-08:00",
-  "viis": "2026-11-15T06:57:40-08:00",
-  "voya": "2026-11-15T06:57:40-08:00",
-  "wrst": "2026-11-15T06:57:40-08:00",
-  "yell": "2026-11-15T06:57:40-08:00",
-  "yose": "2026-11-15T06:57:40-08:00",
-  "zion": "2026-11-15T06:57:40-08:00"
+  "acad": "2026-11-16T08:58:39-08:00",
+  "arch": "2026-11-16T08:58:39-08:00",
+  "badl": "2026-11-16T08:58:39-08:00",
+  "bibe": "2026-11-16T08:58:39-08:00",
+  "bisc": "2026-11-16T08:58:39-08:00",
+  "blca": "2026-11-16T08:58:39-08:00",
+  "brca": "2026-11-16T08:58:39-08:00",
+  "cany": "2026-11-16T08:58:39-08:00",
+  "care": "2026-11-16T08:58:39-08:00",
+  "cave": "2026-11-16T08:58:39-08:00",
+  "chir": "2026-11-16T08:58:39-08:00",
+  "chis": "2026-11-16T08:58:39-08:00",
+  "cong": "2026-11-16T08:58:39-08:00",
+  "crla": "2026-11-16T08:58:39-08:00",
+  "cuva": "2026-11-16T08:58:39-08:00",
+  "dena": "2026-11-16T08:58:39-08:00",
+  "deva": "2026-11-16T08:58:39-08:00",
+  "drto": "2026-11-16T08:58:39-08:00",
+  "ever": "2026-11-16T08:58:39-08:00",
+  "gaar": "2026-11-16T08:58:39-08:00",
+  "glac": "2026-11-16T08:58:39-08:00",
+  "glba": "2026-11-16T08:58:39-08:00",
+  "grba": "2026-11-16T08:58:39-08:00",
+  "grca": "2026-11-16T08:58:39-08:00",
+  "grsa": "2026-11-16T08:58:39-08:00",
+  "grsm": "2026-11-16T08:58:39-08:00",
+  "grte": "2026-11-16T08:58:39-08:00",
+  "gumo": "2026-11-16T08:58:39-08:00",
+  "hale": "2026-11-16T08:58:39-08:00",
+  "havo": "2026-11-16T08:58:39-08:00",
+  "hosp": "2026-11-16T08:58:39-08:00",
+  "hsbd": "2026-11-16T08:58:39-08:00",
+  "indu": "2026-11-16T08:58:39-08:00",
+  "isro": "2026-11-16T08:58:39-08:00",
+  "jeff": "2026-11-16T08:58:39-08:00",
+  "jotr": "2026-11-16T08:58:39-08:00",
+  "katm": "2026-11-16T08:58:39-08:00",
+  "kefj": "2026-11-16T08:58:39-08:00",
+  "kova": "2026-11-16T08:58:39-08:00",
+  "lacl": "2026-11-16T08:58:39-08:00",
+  "lavo": "2026-11-16T08:58:39-08:00",
+  "maca": "2026-11-16T08:58:39-08:00",
+  "meve": "2026-11-16T08:58:39-08:00",
+  "mora": "2026-11-16T08:58:39-08:00",
+  "neri": "2026-11-16T08:58:39-08:00",
+  "noca": "2026-11-16T08:58:39-08:00",
+  "npsa": "2026-11-16T08:58:39-08:00",
+  "olym": "2026-11-16T08:58:39-08:00",
+  "pefo": "2026-11-16T08:58:39-08:00",
+  "pinn": "2026-11-16T08:58:39-08:00",
+  "redw": "2026-11-16T08:58:39-08:00",
+  "romo": "2026-11-16T08:58:39-08:00",
+  "sagu": "2026-11-16T08:58:39-08:00",
+  "seki": "2026-11-16T08:58:39-08:00",
+  "shen": "2026-11-16T08:58:39-08:00",
+  "thro": "2026-11-16T08:58:39-08:00",
+  "viis": "2026-11-16T08:58:39-08:00",
+  "voya": "2026-11-16T08:58:39-08:00",
+  "whsa": "2026-11-16T08:58:39-08:00",
+  "wica": "2026-11-16T08:58:39-08:00",
+  "wrst": "2026-11-16T08:58:39-08:00",
+  "yell": "2026-11-16T08:58:39-08:00",
+  "yose": "2026-11-16T08:58:39-08:00",
+  "zion": "2026-11-16T08:58:39-08:00"
  },
  "closures": [
   {
@@ -126,6 +175,39 @@
    ],
    "title": "East Portal Road closed for winter",
    "url": ""
+  },
+  {
+   "alert": "FC27643B-95B4-4158-9028-BEB8E235FF66",
+   "park": "brca",
+   "attractions": [
+    "brca-peekaboo-loop"
+   ],
+   "from": null,
+   "reopen": null,
+   "evidence": "The Bryce Connector Trail (Bryce Point to Peekaboo Loop Trail) is closed until further notice.",
+   "found_by": [
+    "model"
+   ],
+   "strict": [],
+   "title": "Trail Closure Due to Recent Weather",
+   "url": ""
+  },
+  {
+   "alert": "AB6D9AA5-0899-4E4F-A6B5-A28365367388",
+   "park": "cave",
+   "attractions": [
+    "cave-walnut-canyon-drive",
+    "cave-slaughter-canyon-cave"
+   ],
+   "from": null,
+   "reopen": null,
+   "evidence": "Closures Due to Flood Damage",
+   "found_by": [
+    "model"
+   ],
+   "strict": [],
+   "title": "Closures Due to Flood Damage",
+   "url": "https://www.nps.gov/cave/planyourvisit/conditions.htm#flood"
   },
   {
    "alert": "C09D6CAE-1916-4981-B9C2-6AD984FCDD60",
@@ -205,6 +287,22 @@
    "url": "https://www.nps.gov/crla/planyourvisit/cleetwood-cove-trail-and-marina-rehabilitation.htm"
   },
   {
+   "alert": "9B677849-F0F1-43FB-9A71-384E23A34144",
+   "park": "cuva",
+   "attractions": [
+    "cuva-towpath-bike"
+   ],
+   "from": "2026-08-24",
+   "reopen": "2026-11-21",
+   "evidence": "Closed from Boston Trailhead to Lock 29",
+   "found_by": [
+    "model"
+   ],
+   "strict": [],
+   "title": "Towpath Trail between Boston and Peninsula",
+   "url": "https://www.nps.gov/cuva/planyourvisit/conditions.htm#onthisPage-0"
+  },
+  {
    "alert": "4541E136-7CAC-4E12-B72E-8D98A49FB93B",
    "park": "glac",
    "attractions": [
@@ -224,52 +322,65 @@
    "url": "https://www.nps.gov/glac/planyourvisit/directions.htm"
   },
   {
-   "alert": "3A940E2B-945F-437E-B641-EE60D9E728C3",
-   "park": "grsm",
+   "alert": "8B9456B8-ADD5-4E68-82C7-250AA299991E",
+   "park": "grba",
    "attractions": [
-    "grsm-waterrock-knob",
-    "grsm-craggy-gardens"
+    "grba-baker-creek",
+    "grba-great-basin-vc"
    ],
    "from": null,
    "reopen": null,
-   "evidence": "Old Section Foothills Parkway West from Mile Marker 17-31 is closed",
-   "found_by": [
-    "rules"
-   ],
-   "strict": [
-    "grsm-waterrock-knob",
-    "grsm-craggy-gardens"
-   ],
-   "title": "Old Section Foothills Parkway West new section closed",
-   "url": ""
-  },
-  {
-   "alert": "A3F9B63A-B7B6-46BA-91C5-1F381D30D921",
-   "park": "grsm",
-   "attractions": [
-    "grsm-newfound-gap",
-    "grsm-kuwohi",
-    "grsm-andrews-bald",
-    "grsm-alum-cave",
-    "grsm-chimney-tops",
-    "grsm-charlies-bunion"
-   ],
-   "from": null,
-   "reopen": null,
-   "evidence": "US 441 / Newfound Gap Road Closed",
+   "evidence": "Baker Creek, and Baker Lake. Call the park for up to date information.",
    "found_by": [
     "model",
     "rules"
    ],
    "strict": [
-    "grsm-newfound-gap",
-    "grsm-kuwohi",
-    "grsm-andrews-bald",
-    "grsm-alum-cave",
-    "grsm-chimney-tops",
-    "grsm-charlies-bunion"
+    "grba-baker-creek",
+    "grba-great-basin-vc"
    ],
-   "title": "US 441 / Newfound Gap Road Closed",
+   "title": "Prescribed Fire Area Closure - Baker Creek",
+   "url": ""
+  },
+  {
+   "alert": "9E20F6D6-A4D8-4705-BF04-7A2F0F933144",
+   "park": "grba",
+   "attractions": [
+    "grba-scenic-drive",
+    "grba-alpine-lakes",
+    "grba-bristlecone-grove",
+    "grba-wheeler-peak"
+   ],
+   "from": null,
+   "reopen": null,
+   "evidence": "Wheeler Peak Scenic Drive is closed",
+   "found_by": [
+    "model",
+    "rules"
+   ],
+   "strict": [
+    "grba-scenic-drive",
+    "grba-alpine-lakes",
+    "grba-bristlecone-grove",
+    "grba-wheeler-peak"
+   ],
+   "title": "Wheeler Peak Scenic Drive Winter Closure",
+   "url": ""
+  },
+  {
+   "alert": "907E400B-1B5B-4B9E-AEA4-F51FE4B07B06",
+   "park": "grsm",
+   "attractions": [
+    "grsm-kuwohi"
+   ],
+   "from": null,
+   "reopen": null,
+   "evidence": "KUWOHI Road Closed Due To Snow And Ice",
+   "found_by": [
+    "model"
+   ],
+   "strict": [],
+   "title": "KUWOHI Road Closed Due To Snow And Ice",
    "url": "https://www.nps.gov/grsm/planyourvisit/conditions.htm"
   },
   {
@@ -288,6 +399,38 @@
    "strict": [],
    "title": "Winter Seasonal Road Closures",
    "url": "https://www.nps.gov/grte/planyourvisit/roads.htm"
+  },
+  {
+   "alert": "8A75DF70-5B3C-4878-8E33-C3EFBBA3204D",
+   "park": "havo",
+   "attractions": [
+    "havo-mauna-loa-road"
+   ],
+   "from": null,
+   "reopen": null,
+   "evidence": "Kīpukapuaulu Trail remains closed",
+   "found_by": [
+    "model"
+   ],
+   "strict": [],
+   "title": "Kīpukapuaulu Trail Closed Due to Hazardous Trees and Hanging Limbs",
+   "url": ""
+  },
+  {
+   "alert": "9EA3FC4B-73DA-4CD9-BB0D-6A1F3DFF7407",
+   "park": "havo",
+   "attractions": [
+    "havo-kahuku"
+   ],
+   "from": null,
+   "reopen": null,
+   "evidence": "Upper Kahuku Road Closed Beyond Boot Decontamination Station",
+   "found_by": [
+    "model"
+   ],
+   "strict": [],
+   "title": "Upper Kahuku Road Closed Beyond Boot Decontamination Station",
+   "url": ""
   },
   {
    "alert": "621B78C8-6C0E-4ACA-81AE-752FB46EB647",
@@ -363,42 +506,6 @@
    "url": "https://www.nps.gov/mora/learn/news/fire.htm"
   },
   {
-   "alert": "8B02938E-D0B2-4BF7-9025-E04E4D6327B3",
-   "park": "mora",
-   "attractions": [
-    "mora-skyline-trail",
-    "mora-myrtle-falls",
-    "mora-reflection-lakes",
-    "mora-narada-falls",
-    "mora-paradise-visitor-center",
-    "mora-nisqually-vista",
-    "mora-christine-falls",
-    "mora-comet-falls",
-    "mora-trail-of-the-shadows",
-    "mora-longmire"
-   ],
-   "from": null,
-   "reopen": null,
-   "evidence": "The gate at Longmire to Paradise is closed for the night",
-   "found_by": [
-    "rules"
-   ],
-   "strict": [
-    "mora-skyline-trail",
-    "mora-myrtle-falls",
-    "mora-reflection-lakes",
-    "mora-narada-falls",
-    "mora-paradise-visitor-center",
-    "mora-nisqually-vista",
-    "mora-christine-falls",
-    "mora-comet-falls",
-    "mora-trail-of-the-shadows",
-    "mora-longmire"
-   ],
-   "title": "Paradise Road Status: Gate closed at Longmire: projected to open tomorrow",
-   "url": ""
-  },
-  {
    "alert": "0D951550-3606-4DF5-AE92-0AA3904191A8",
    "park": "noca",
    "attractions": [
@@ -416,6 +523,22 @@
    ],
    "title": "Cascade River Road Closed for the Winter Season",
    "url": "https://www.nps.gov/noca/planyourvisit/winter-safety.htm"
+  },
+  {
+   "alert": "77FB8896-4A62-4B7C-971A-182AE991288B",
+   "park": "npsa",
+   "attractions": [
+    "npsa-mount-alava"
+   ],
+   "from": null,
+   "reopen": null,
+   "evidence": "Mount Alava trail and Fatifati trail from the Fagasa pass to the summit is closed",
+   "found_by": [
+    "model"
+   ],
+   "strict": [],
+   "title": "Alava Trail Closure",
+   "url": ""
   },
   {
    "alert": "629AAA7F-B63B-45D8-A418-13973A4486A3",
@@ -441,6 +564,35 @@
    "url": ""
   },
   {
+   "alert": "6136DC5B-D12B-4F2A-95FD-8ED93B595944",
+   "park": "pefo",
+   "attractions": [
+    "pefo-painted-desert-vc",
+    "pefo-tiponi-point",
+    "pefo-tawa-point",
+    "pefo-painted-desert-inn",
+    "pefo-pintado-point",
+    "pefo-onyx-bridge"
+   ],
+   "from": null,
+   "reopen": null,
+   "evidence": "Painted Desert Visitor Center Closed for Construction",
+   "found_by": [
+    "model",
+    "rules"
+   ],
+   "strict": [
+    "pefo-painted-desert-vc",
+    "pefo-tiponi-point",
+    "pefo-tawa-point",
+    "pefo-painted-desert-inn",
+    "pefo-pintado-point",
+    "pefo-onyx-bridge"
+   ],
+   "title": "Painted Desert Visitor Center Closed for Construction",
+   "url": ""
+  },
+  {
    "alert": "4855BDCC-277F-48DA-BF61-B4E6E174CD0A",
    "park": "redw",
    "attractions": [
@@ -457,27 +609,6 @@
     "redw-howland-hill-road"
    ],
    "title": "Closure: Howland Hill Road and Jedediah Smith Campground",
-   "url": ""
-  },
-  {
-   "alert": "76A6A599-A4B8-49C3-BD32-56620117ECE2",
-   "park": "redw",
-   "attractions": [
-    "redw-newton-b-drury-parkway",
-    "redw-gold-bluffs-beach"
-   ],
-   "from": null,
-   "reopen": null,
-   "evidence": "Newton B. Drury Scenic Parkway is closed due to multiple fallen trees and debris. Davison Road and Gold Bluffs Campground are closed due to flooding.",
-   "found_by": [
-    "model",
-    "rules"
-   ],
-   "strict": [
-    "redw-newton-b-drury-parkway",
-    "redw-gold-bluffs-beach"
-   ],
-   "title": "Closure: Newton B. Drury Scenic Parkway, Davison Road and Gold Bluffs Beach",
    "url": ""
   },
   {
@@ -512,6 +643,25 @@
    ],
    "title": "Trail Ridge Road is Closed to Through Travel for the Season",
    "url": "https://www.nps.gov/romo/planyourvisit/road_status.htm"
+  },
+  {
+   "alert": "700E0B4F-8D50-4E99-919E-230FEA508A20",
+   "park": "sagu",
+   "attractions": [
+    "sagu-bajada-loop"
+   ],
+   "from": null,
+   "reopen": null,
+   "evidence": "Bajada Loop Drive is currently closed",
+   "found_by": [
+    "model",
+    "rules"
+   ],
+   "strict": [
+    "sagu-bajada-loop"
+   ],
+   "title": "Bajada Loop Drive Closure in West District",
+   "url": ""
   },
   {
    "alert": "13B2A38C-C7D9-4FE4-9F5D-BFCB471BCE00",
@@ -560,6 +710,54 @@
    "url": ""
   },
   {
+   "alert": "2AAE7B44-FBB7-45ED-9F33-181E5F82F1D1",
+   "park": "whsa",
+   "attractions": [
+    "whsa-interdune-boardwalk"
+   ],
+   "from": null,
+   "reopen": null,
+   "evidence": "Interdune Boardwalk is closed",
+   "found_by": [
+    "model"
+   ],
+   "strict": [],
+   "title": "Interdune Boardwalk Closed",
+   "url": ""
+  },
+  {
+   "alert": "A6BD6AE1-329B-4722-8CB0-6E1EE0D1D244",
+   "park": "whsa",
+   "attractions": [
+    "whsa-backcountry-loop"
+   ],
+   "from": null,
+   "reopen": null,
+   "evidence": "Backcountry Camping Closed",
+   "found_by": [
+    "model"
+   ],
+   "strict": [],
+   "title": "Backcountry Camping Closed",
+   "url": ""
+  },
+  {
+   "alert": "973BDD5B-01D0-43BB-8940-53035FAB205F",
+   "park": "wica",
+   "attractions": [
+    "wica-natural-entrance-tour"
+   ],
+   "from": "2026-10-01",
+   "reopen": null,
+   "evidence": "Natural Entrance Tour Route Closes For Season",
+   "found_by": [
+    "model"
+   ],
+   "strict": [],
+   "title": "Natural Entrance Tour Route Closes For Season October 1, 2026",
+   "url": ""
+  },
+  {
    "alert": "865FD22E-8924-4941-8112-EB03F3FB5F39",
    "park": "yose",
    "attractions": [
@@ -600,6 +798,25 @@
     "yose-pothole-dome"
    ],
    "title": "Tioga Road and Glacier Point Road are temporarily closed",
+   "url": ""
+  },
+  {
+   "alert": "A9A62666-54C0-41A3-A682-49D721E9DEBB",
+   "park": "zion",
+   "attractions": [
+    "zion-narrows"
+   ],
+   "from": null,
+   "reopen": null,
+   "evidence": "The Virgin River Narrows closed to top-down travel",
+   "found_by": [
+    "model",
+    "rules"
+   ],
+   "strict": [
+    "zion-narrows"
+   ],
+   "title": "The Virgin River Narrows closed to top-down travel",
    "url": ""
   },
   {
