@@ -330,7 +330,7 @@ def test_fixes_from_the_pr_review(fake, monkeypatch):
     text, trace = ask(provider)
     assert trace["answer"] == "fallback" and trace["fallback"] == "unfaithful"
     # node 查询的超时按这一圈剩下的时间给（默认 20 秒，不会是 60）
-    assert 5 <= stub.timeouts[0] <= 20
+    assert 0 < stub.timeouts[0] <= 20
     # 极昼、极夜
     place = {"nameZh": "北极之门", "nameEn": "Gates of the Arctic"}
     day = {"place": place, "date": "2027-06-21", "polar": "polar-day"}
@@ -344,3 +344,15 @@ def test_fixes_from_the_pr_review(fake, monkeypatch):
     row = {"nameZh": "拱门", "nameEn": "Arches", "verdict": "poor", "inBestMonths": False, "bestMonths": [4, 5], "openShare": 1,
            "climate": {"highC": 35, "lowC": 19, "hottestC": 36, "wetDays": 3, "snowDays": 0}}
     assert "最热的片区平均最高约 36°C" in agent._season_row(row, True)
+
+
+def test_sources_pointing_at_empty_lookups_do_not_count(fake, monkeypatch):
+    """PR #113 审阅：出处指向找资料没找到的那一条，不算给了出处"""
+    fake(OPEN_RESULT)
+    monkeypatch.setattr(agent, "retrieve", lambda *args, **kwargs: ([], {"retrieval": "bm25"}))
+    provider = ScriptedProvider([
+        step(call("search_knowledge", query="冰川点 冬天"), call("is_open", place="冰川点", date="2026-11-20")),
+        final("多半去不了。", sources=[1]),  # 1 是什么都没找到的那次找资料
+    ])
+    text, trace = ask(provider)
+    assert trace["fallback"] == "unfaithful" and trace["answer"] == "fallback" and "18 年" in text

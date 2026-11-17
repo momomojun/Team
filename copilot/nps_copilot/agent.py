@@ -407,6 +407,11 @@ def _season_row(row: dict, zh: bool) -> str:
     return f"- {name}: " + "; ".join(bits)
 
 
+def _empty(obs: Observation) -> bool:
+    """这一条什么都没查到：找资料一篇都没找到，或者没查成"""
+    return bool(obs.error) or (obs.tool == "search_knowledge" and not obs.docs)
+
+
 def _opening(opening: dict, zh: bool) -> str:
     when = opening.get("opens") or ("先到先得" if zh else "first come")
     if opening.get("time"):
@@ -604,7 +609,7 @@ def answer(question: str, parks: list[str], plan_text: str, provider: Provider |
         if lines or docs:
             # 已经查到了东西：直接把查到的给用户（和 qa.fallback 一样），不再调一次模型
             trace["answer"] = "fallback"
-            return qa.fallback(question, docs, zh, [f"- {line}" for line in lines] or None), trace
+            return qa.fallback(question, docs, zh, [line if line.startswith("- ") else f"- {line}" for line in lines] or None), trace
         return None, trace
 
     for step in range(MAX_STEPS):
@@ -667,9 +672,12 @@ def answer(question: str, parks: list[str], plan_text: str, provider: Provider |
                 observations.append(obs)
                 record["calls"].append(entry)
             if pending:
+                left = limit - (time.monotonic() - started)
+                if left <= 0:
+                    return stop("timeout")
                 tool_start = time.monotonic()
                 try:
-                    results = tools.call([obs.request for obs, _ in pending], timeout=min(60.0, max(5.0, limit - (time.monotonic() - started))))
+                    results = tools.call([obs.request for obs, _ in pending], timeout=min(60.0, left))
                 except Exception as error:  # node 出错、超时：这几条算没查成，模型看得到
                     results = []
                     record["tool_error"] = f"{type(error).__name__}: {str(error)[:120]}"
@@ -691,6 +699,8 @@ def answer(question: str, parks: list[str], plan_text: str, provider: Provider |
         sources = [i for i in data.get("sources") or [] if isinstance(i, int)]
         problems = qa.unsupported(text, user)
         bad = [i for i in sources if i < 0 or i > len(observations)]
+        # 指向什么都没查到的那一条（找资料没找到、查询出错）的出处不算（PR #113 审阅）
+        sources = [i for i in sources if i == 0 or i in bad or not _empty(observations[i - 1])]
         leaked = TOOL_WORD.findall(text)
         record.update(found=data.get("found"), sources=sources, draft=text, unsupported=problems, leaked=leaked)
         trace.update(found=data.get("found"), sources=sources, unsupported=problems,

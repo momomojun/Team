@@ -5,6 +5,7 @@ import { campgrounds } from "../../data/campgrounds";
 import { lodgingOptions } from "../../data/lodging";
 import { parks } from "../../data/parks";
 import { closureOn } from "../closures";
+import { lodgingOpenOn } from "../lodging-season";
 import { popularRank } from "../popularity";
 import { seasonalRoads, type SeasonalRoad } from "../../data/roads";
 import { roadDecides, roadFor, roadStatus } from "../roads";
@@ -428,13 +429,22 @@ export function booking(request: Extract<LookupRequest, { tool: "booking" }>) {
   const stops = request.attraction
     ? [request.attraction]
     : attractions.filter((stop) => stop.park === request.park).map((stop) => stop.id);
-  // 只按地名登记的规则（营地这类网站没收录成景点的）：行程页对不上就跳过；问整座公园要订什么时也列出来
+  // 只按地名登记的规则（营地这类网站没收录成景点的）：行程页对不上就跳过；问整座公园要订什么时也列出来。
+  // 名字对得上网站营地的，按核对过的营业季节（lodging-seasons.ts）去掉那天不营业的；都不营业就整条不列（PR #113 审阅）
+  const campId = new Map(campgrounds.filter((camp) => camp.park === request.park).map((camp) => [camp.nameEn.toLowerCase(), camp.id]));
+  const openPlaces = (places: string[]) =>
+    places.filter((name) => {
+      const id = campId.get(name.toLowerCase());
+      return !id || lodgingOpenOn(id, request.date);
+    });
   const placesOnly = request.attraction
     ? []
-    : bookingRules.filter((rule) => rule.park === request.park && rule.targets.length === 0 && rule.places?.length);
+    : bookingRules.filter(
+        (rule) => rule.park === request.park && rule.targets.length === 0 && rule.places?.length && openPlaces(rule.places).length > 0,
+      );
   const rules = [...bookingRules, ...placesOnly.map((rule) => ({ ...rule, places: undefined }))];
   const items = bookingsForTrip([{ day: 0, date: request.date, parks: [request.park], stops, lodging: request.lodging }], rules);
-  const placesOf = new Map(placesOnly.map((rule) => [rule.id, rule.places ?? []]));
+  const placesOf = new Map(placesOnly.map((rule) => [rule.id, openPlaces(rule.places ?? [])]));
   return {
     tool: "booking" as const,
     park: { code: park.code, nameZh: park.nameZh, nameEn: park.nameEn },
