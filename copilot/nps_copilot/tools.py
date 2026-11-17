@@ -213,8 +213,8 @@ def plan_requests(question: str, parks: list[str], request: dict | None, result:
     return out, trace
 
 
-def call(requests: list[dict]) -> list[dict]:
-    """调网站的查询工具（命令行，不联网）；出错返回空"""
+def call(requests: list[dict], timeout: float = 60) -> list[dict]:
+    """调网站的查询工具（命令行，不联网）；出错返回空。timeout：search agent 按这一圈剩下的时间给"""
     node = shutil.which("node")
     if not node or not requests:
         return []
@@ -222,7 +222,7 @@ def call(requests: list[dict]) -> list[dict]:
     completed = subprocess.run(
         [node, "--disable-warning=ExperimentalWarning", "--disable-warning=MODULE_TYPELESS_PACKAGE_JSON",
          "--import", "./tests/register.mjs", "scripts/lookup.mjs", "-"],
-        input=json.dumps(clean, ensure_ascii=False).encode("utf-8"), cwd=ROOT, capture_output=True, env={**os.environ}, timeout=60,
+        input=json.dumps(clean, ensure_ascii=False).encode("utf-8"), cwd=ROOT, capture_output=True, env={**os.environ}, timeout=timeout,
     )
     if completed.returncode != 0:
         return []

@@ -1,11 +1,11 @@
 {
   "agent": {
-    "min_passed": 38,
+    "min_passed": 39,
     "min_by_kind": {
       "single": 6,
       "multi": 4,
       "chain": 6,
-      "season": 7,
+      "season": 8,
       "mixed": 4,
       "out_of_scope": 6,
       "adversarial": 5

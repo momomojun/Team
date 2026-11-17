@@ -87,6 +87,26 @@ test("booking：4 月去锡安要抽天使降临，给了 today 算出还有几�
   assert.ok("items" in only && only.items?.every((item) => item.for.length === 0 || item.for.includes("天使降临")));
 });
 
+test("booking：问整座公园时，只按地名登记的规则（营地）也列出来；只问一个景点时不列", () => {
+  const zion = booking({ tool: "booking", park: "zion", date: "2027-04-10" });
+  assert.ok("items" in zion && zion.items);
+  const watchman = zion.items.find((item) => item.for.includes("Watchman Campground"));
+  assert.ok(watchman, "Watchman 营地");
+  assert.ok(watchman.openings.length > 0);
+  const only = booking({ tool: "booking", park: "zion", date: "2027-04-10", attraction: "zion-angels-landing" });
+  assert.ok("items" in only && !only.items?.some((item) => item.for.includes("Watchman Campground")));
+});
+
+test("booking：只按地名登记的营地按营业季节过滤，12 月不列优胜美地的夏季营地", () => {
+  const summer = "yose-summer-campgrounds-2-weeks";
+  const september = booking({ tool: "booking", park: "yose", date: "2027-09-01" });
+  const row = "items" in september ? september.items?.find((item) => item.id === summer) : undefined;
+  assert.ok(row && row.for.includes("White Wolf Campground"));
+  assert.ok(!row.for.includes("Bridalveil Creek Campground"), "Bridalveil Creek 2026 年只开 7 月 3 日到 8 月 13 日");
+  const december = booking({ tool: "booking", park: "yose", date: "2026-12-10" });
+  assert.ok("items" in december && !december.items?.some((item) => item.id === summer));
+});
+
 test("crowd：黄石 7 月最挤、11 月最冷清；加拿大的没有按月的数字", () => {
   const yell = crowd("yell");
   assert.ok("months" in yell);

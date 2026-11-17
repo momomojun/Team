@@ -56,6 +56,8 @@ NEGATION = re.compile(r"不建议|不太建议|不推荐|不太推荐|不太合�
                       r"去不了|不开|not ideal|not recommended|avoid|skip|closed|too cold|too hot|not the best|poor|not a good", re.I)
 HONEST = re.compile(r"没有|没写|不存在|查不到|没查到|不知道|无法|不能回答|只能回答|没收录|没有收录|不在网站|"
                     r"not in|isn.t in|don.t have|doesn.t have|no information|not available|can.t|cannot|only answer", re.I)
+# qa.fallback 什么都没查到时的套话
+NO_DATA = ("这个网站的资料里没写", "That isn't in the site's data", "I couldn't answer that reliably")
 SENTENCE = re.compile(r"[。！？；;\n]|(?<=[a-z0-9])\.\s")
 
 
@@ -143,7 +145,8 @@ def judge(case: dict, text: str, trace: dict) -> dict:
     kind = trace.get("answer")
     honest = kind == "not_found" or bool(HONEST.search(text))
     if expect["found"]:
-        checks["found"] = kind in ("model", "fallback") and not (kind == "fallback" and "没写" in text)
+        # 退回来的：查到了东西直接给的算答了；只说了“资料里没有”的那句套话（中英文都算）不算
+        checks["found"] = kind == "model" or (kind == "fallback" and not text.startswith(NO_DATA))
     else:
         # 模型自己说 found=false（not_found），或者退回来的话里老实说了没有；模型说“找到了”就算没老实
         checks["found"] = kind == "not_found" or (kind != "model" and honest)
@@ -216,7 +219,9 @@ def main() -> int:
     cases = [json.loads(line) for line in args.cases.read_text(encoding="utf-8").splitlines() if line.strip()]
     if args.only:
         cases = [case for case in cases if any(case["id"].startswith(prefix) for prefix in args.only.split(","))]
-    configs = [config for config in args.configs.split(",") if config in CONFIGS]
+    configs = [config.strip() for config in args.configs.split(",") if config.strip()]
+    if not configs or any(config not in CONFIGS for config in configs):
+        sys.exit(f"--configs 只能是 {','.join(CONFIGS)} 里的，收到 {args.configs!r}")
     if args.record:
         recording = RECORDINGS / f"{args.cases.stem}-{safe_name(args.model)}.jsonl"
         if not args.only:

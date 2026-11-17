@@ -386,7 +386,7 @@ def _season_row(row: dict, zh: bool) -> str:
         if row.get("closedMustSee"):
             bits.append("去不了的必去景点：" + "、".join(row["closedMustSee"]))
         if climate := row.get("climate"):
-            bits.append(f"往年同期平均最高 {climate['highC']}°C、最低 {climate['lowC']}°C、最热的日子约 {climate['hottestC']}°C，"
+            bits.append(f"往年同期平均最高 {climate['highC']}°C、最低 {climate['lowC']}°C、最热的片区平均最高约 {climate['hottestC']}°C，"
                         f"一个月里下雨约 {climate['wetDays']} 天、下雪约 {climate['snowDays']} 天")
         if row.get("events"):
             bits.append("特别活动：" + "、".join(row["events"]))
@@ -405,6 +405,11 @@ def _season_row(row: dict, zh: bool) -> str:
     if crowd := row.get("crowd"):
         bits.append(CROWD[crowd["level"]][1])
     return f"- {name}: " + "; ".join(bits)
+
+
+def _empty(obs: Observation) -> bool:
+    """这一条什么都没查到：找资料一篇都没找到，或者没查成"""
+    return bool(obs.error) or (obs.tool == "search_knowledge" and not obs.docs)
 
 
 def _opening(opening: dict, zh: bool) -> str:
@@ -512,8 +517,8 @@ def format_result(tool: str, request: dict, result: dict, zh: bool) -> list[str]
         place = result["place"]
         name = place.get("nameZh" if zh else "nameEn", "")
         if result.get("polar"):
-            return [f"{name} {result['date']}：{'极昼，太阳不落' if result['polar'] == 'day' else '极夜，太阳不升'}" if zh else
-                    f"{name} on {result['date']}: polar {result['polar']}"]
+            return [f"{name} {result['date']}：{'极昼，太阳不落' if result['polar'] == 'polar-day' else '极夜，太阳不升'}" if zh else
+                    f"{name} on {result['date']}: {result['polar'].replace('-', ' ')}"]
         return [f"{name} {result['date']}：日出 {result['sunrise']}，日落 {result['sunset']}（{result['timeZone']} 当地时间，误差一两分钟）" if zh else
                 f"{name} on {result['date']}: sunrise {result['sunrise']}, sunset {result['sunset']} ({result['timeZone']} local time)"]
     if tool == "booking":
@@ -531,8 +536,9 @@ def format_result(tool: str, request: dict, result: dict, zh: bool) -> list[str]
         name = result["park"]["nameZh" if zh else "nameEn"]
         lines = []
         if result.get("latestVisits"):
-            lines.append(f"{name} {result['latestYear']} 年游客 {result['latestVisits']} 人次，美国国家公园第 {result['rank']}" if zh else
-                         f"{name}: {result['latestVisits']} visits in {result['latestYear']}, rank {result['rank']}")
+            rank = result.get("rank")
+            lines.append(f"{name} {result['latestYear']} 年游客 {result['latestVisits']} 人次" + (f"，美国国家公园第 {rank}" if rank else "") if zh else
+                         f"{name}: {result['latestVisits']} visits in {result['latestYear']}" + (f", rank {rank}" if rank else ""))
         if result.get("months"):
             if zh:
                 lines.append(f"最挤 {result['busiestMonth']} 月、最冷清 {result['quietestMonth']} 月（按 {result['years']} 年平均）")
@@ -603,7 +609,7 @@ def answer(question: str, parks: list[str], plan_text: str, provider: Provider |
         if lines or docs:
             # 已经查到了东西：直接把查到的给用户（和 qa.fallback 一样），不再调一次模型
             trace["answer"] = "fallback"
-            return qa.fallback(question, docs, zh, [f"- {line}" for line in lines] or None), trace
+            return qa.fallback(question, docs, zh, [line if line.startswith("- ") else f"- {line}" for line in lines] or None), trace
         return None, trace
 
     for step in range(MAX_STEPS):
@@ -622,6 +628,8 @@ def answer(question: str, parks: list[str], plan_text: str, provider: Provider |
         trace["steps"].append(record)
         calls = data.get("calls") or []
         if data.get("action") == "call" and calls and steps_left > 1:
+            if time.monotonic() - started >= limit:  # 模型这一步就把时间用完了：不再查
+                return stop("timeout")
             record["calls"] = []
             pending: list[tuple[Observation, str]] = []
             for raw in calls[:MAX_CALLS]:
@@ -664,9 +672,12 @@ def answer(question: str, parks: list[str], plan_text: str, provider: Provider |
                 observations.append(obs)
                 record["calls"].append(entry)
             if pending:
+                left = limit - (time.monotonic() - started)
+                if left <= 0:
+                    return stop("timeout")
                 tool_start = time.monotonic()
                 try:
-                    results = tools.call([obs.request for obs, _ in pending])
+                    results = tools.call([obs.request for obs, _ in pending], timeout=min(60.0, left))
                 except Exception as error:  # node 出错、超时：这几条算没查成，模型看得到
                     results = []
                     record["tool_error"] = f"{type(error).__name__}: {str(error)[:120]}"
@@ -688,13 +699,15 @@ def answer(question: str, parks: list[str], plan_text: str, provider: Provider |
         sources = [i for i in data.get("sources") or [] if isinstance(i, int)]
         problems = qa.unsupported(text, user)
         bad = [i for i in sources if i < 0 or i > len(observations)]
+        # 指向什么都没查到的那一条（找资料没找到、查询出错）的出处不算（PR #113 审阅）
+        sources = [i for i in sources if i == 0 or i in bad or not _empty(observations[i - 1])]
         leaked = TOOL_WORD.findall(text)
         record.update(found=data.get("found"), sources=sources, draft=text, unsupported=problems, leaked=leaked)
         trace.update(found=data.get("found"), sources=sources, unsupported=problems,
                      elapsed_ms=round((time.monotonic() - started) * 1000))
         if data.get("action") != "answer" or not text:
             return stop("no_answer")
-        if problems or bad or leaked:
+        if problems or bad or leaked or (data.get("found") and not sources):
             return stop("unfaithful")
         if not data.get("found"):
             # 网站答不了（餐馆、签证、不存在的日期）：用模型这句老实话，不附出处
