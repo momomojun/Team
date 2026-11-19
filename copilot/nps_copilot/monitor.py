@@ -337,6 +337,18 @@ def retrieval_of(row: dict) -> dict | None:
     return None
 
 
+def qa_mode_of(row: dict) -> str | None:
+    """这一轮回答问题用的哪种做法（11-19）：agent 是模型自己查（COPILOT_QA_AGENT=1）、agent→qa 是自己查出了问题退回找一次就答、
+    qa 是找一次就答；没回答问题是 None"""
+    qa = row.get("qa")
+    for item in qa if isinstance(qa, list) else [qa] if isinstance(qa, dict) else []:
+        if isinstance(item, dict):
+            if item.get("mode") == "agent":
+                return "agent"
+            return "agent→qa" if item.get("agent") else "qa"
+    return None
+
+
 def recent(rows: list[dict], limit: int = 30) -> list[dict]:
     """最近几轮：说了什么（截短）、结果、耗时、用了哪些模型、有没有退到备用的、调度员和 Writer 出没出问题"""
     out = []
@@ -354,6 +366,7 @@ def recent(rows: list[dict], limit: int = 30) -> list[dict]:
             "dropped": len((row.get("intake") or {}).get("dropped_spans", [])) + len((row.get("dispatch") or {}).get("dropped", [])),
             "writer_fallback": bool((row.get("writer") or {}).get("fallback")),
             "retrieval": retrieval_of(row),
+            "qa_mode": qa_mode_of(row),
         })
     return out
 

@@ -100,3 +100,13 @@ def test_questions_about_left_out_places_get_the_full_list():
     provider = ScriptedProvider([{"found": False, "answer": "没写", "sources": []}])
     qa.answer("冰川点几点日落？", ["lavo"], "第 1 天……", provider, True, skipped=skipped)
     assert "没排进去的景点" not in provider.calls[0][1]
+
+
+def test_found_but_says_not_written_counts_as_not_found():
+    """11-19 线上：模型勾了找到了，回答却是“网站的资料里没写这个”，后面还附了一串资料"""
+    provider = ScriptedProvider([{"found": True, "answer": "网站的资料里没写这个", "sources": [1]}])
+    text, trace = qa.answer("这个季节的话去哪里好", ["jotr"], "", provider, True)
+    assert trace["answer"] == "not_found" and "（资料：" not in text
+    # 说了“没写具体温度”但前面有正经回答的，照旧算答了
+    assert not qa.says_not_written("拱门 7 月很热，资料里没写具体温度")
+    assert qa.says_not_written("That isn't in the site's data.")

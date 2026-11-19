@@ -31,3 +31,16 @@ def test_recent_shows_how_each_turn_found_its_docs():
     assert oldest["retrieval"] is None
     assert middle["retrieval"] == {"how": "vector", "fallback": None, "ms": 412}
     assert newest["retrieval"]["how"] == "bm25" and newest["retrieval"]["fallback"].startswith("QuotaError")
+
+
+def test_recent_shows_which_way_each_question_was_answered():
+    """11-19：后台看得出这一轮是模型自己查（agent）、自己查退回了找一次就答，还是找一次就答"""
+    from nps_copilot import monitor
+
+    rows = [
+        {"session": "a", "turn": 1, "message": "6 月去锡安", "status": "planned"},
+        {"session": "a", "turn": 2, "message": "这个季节去哪", "qa": {"retrieval": "vector"}},
+        {"session": "a", "turn": 3, "message": "冰川点开吗", "qa": [{"mode": "agent", "steps": []}]},
+        {"session": "a", "turn": 4, "message": "冰川点开吗", "qa": {"retrieval": "bm25", "agent": {"mode": "agent", "fallback": "timeout"}}},
+    ]
+    assert [row["qa_mode"] for row in monitor.recent(rows)] == ["agent→qa", "agent", "qa", None]

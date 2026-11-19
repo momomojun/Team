@@ -709,7 +709,7 @@ def answer(question: str, parks: list[str], plan_text: str, provider: Provider |
             return stop("no_answer")
         if problems or bad or leaked or (data.get("found") and not sources):
             return stop("unfaithful")
-        if not data.get("found"):
+        if not data.get("found") or qa.says_not_written(text):
             # 网站答不了（餐馆、签证、不存在的日期）：用模型这句老实话，不附出处
             trace["answer"] = "not_found"
             return text, trace
