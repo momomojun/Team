@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { buttonPrimary, buttonSecondary } from "@/components/ui";
-import { ArchitectureDiagram, type AdminLang } from "./architecture-diagram";
+import { type AdminLang } from "./architecture-diagram";
+import { SystemDiagrams } from "./system-diagrams";
 
 /**
  * 后台页面：读 /api/copilot/admin（Copilot 服务的 /health、/stats 和 GitHub 上每晚读公告的结果），标签页看得见时每 30 秒刷新一次。
@@ -205,8 +206,8 @@ const TEXT = {
     cost: "花费（估算）",
     costUnpriced: (n: number) => `${n} 次调用的模型估不了价`,
     costFree: "付费的按实际，免费档按付费档的价，本机按电费",
-    archTitle: "模型调用架构",
-    archNote: "每一步调不调模型、按什么顺序换模型；模型顺序是服务现在报的",
+    archTitle: "架构图",
+    archNote: "整个网站怎么搭的、一句话经过哪几步、search agent 怎么一步步查、代码怎么上线；模型顺序是服务现在报的",
     daily: "每天",
     noLogs: "这段时间没有日志。",
     chartLabel: "每天的对话轮数和花费",
@@ -330,8 +331,8 @@ const TEXT = {
     cost: "Cost (estimated)",
     costUnpriced: (n: number) => `${n} calls used a model we can't price`,
     costFree: "paid models at actual price, free tiers at their paid-tier price, the local model at its electricity cost",
-    archTitle: "Model call architecture",
-    archNote: "Which steps call a model and in what order models are tried; the order comes from the running service",
+    archTitle: "Architecture",
+    archNote: "How the whole site is built, the steps one message takes, how the search agent looks things up, and how code reaches production; the model order comes from the running service",
     daily: "By day",
     noLogs: "No logs in this period.",
     chartLabel: "Turns and cost per day",
@@ -775,7 +776,7 @@ export function AdminDashboard({ lang = "zh" }: { lang?: AdminLang }) {
       </div>
 
       <Section title={t.archTitle} note={t.archNote}>
-        <ArchitectureDiagram lang={lang} chain={data?.available && !health?.error ? health?.chain : null} />
+        <SystemDiagrams lang={lang} chain={data?.available && !health?.error ? health?.chain : null} />
       </Section>
 
       {stats && totals && (
