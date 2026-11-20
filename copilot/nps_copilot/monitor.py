@@ -349,6 +349,26 @@ def qa_mode_of(row: dict) -> str | None:
     return None
 
 
+def agent_of(row: dict) -> dict | None:
+    """模型自己查的那一圈（11-20）：走了几步、每步查了什么、没查成的原因、node 查询一共花了多久、为什么停下。
+    staging 上“自己查”答不出来，后台只看得到调用次数，看不出卡在哪"""
+    qa = row.get("qa")
+    for item in qa if isinstance(qa, list) else [qa] if isinstance(qa, dict) else []:
+        if not isinstance(item, dict):
+            continue
+        trace = item if item.get("mode") == "agent" else item.get("agent")
+        if not isinstance(trace, dict):
+            continue
+        steps = trace.get("steps") or []
+        tools = [call.get("tool") for step in steps for call in step.get("calls") or []]
+        errors = [str(call.get("error"))[:80] for step in steps for call in step.get("calls") or [] if call.get("error")]
+        errors += [str(step["tool_error"])[:80] for step in steps if step.get("tool_error")]
+        return {"steps": len(steps), "tools": tools, "errors": errors[:4],
+                "tool_ms": sum(step.get("tool_ms") or 0 for step in steps),
+                "answer": trace.get("answer"), "fallback": trace.get("fallback")}
+    return None
+
+
 def recent(rows: list[dict], limit: int = 30) -> list[dict]:
     """最近几轮：说了什么（截短）、结果、耗时、用了哪些模型、有没有退到备用的、调度员和 Writer 出没出问题"""
     out = []
@@ -367,6 +387,7 @@ def recent(rows: list[dict], limit: int = 30) -> list[dict]:
             "writer_fallback": bool((row.get("writer") or {}).get("fallback")),
             "retrieval": retrieval_of(row),
             "qa_mode": qa_mode_of(row),
+            "agent": agent_of(row),
         })
     return out
 

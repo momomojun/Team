@@ -44,3 +44,18 @@ def test_recent_shows_which_way_each_question_was_answered():
         {"session": "a", "turn": 4, "message": "冰川点开吗", "qa": {"retrieval": "bm25", "agent": {"mode": "agent", "fallback": "timeout"}}},
     ]
     assert [row["qa_mode"] for row in monitor.recent(rows)] == ["agent→qa", "agent", "qa", None]
+
+
+def test_recent_shows_the_agent_steps():
+    """11-20：staging 上“自己查”答不出来，后台要看得到走了几步、查了什么、没查成的原因、为什么停下"""
+    from nps_copilot import monitor
+
+    trace = {"mode": "agent", "answer": "not_found", "fallback": None, "steps": [
+        {"action": "call", "calls": [{"tool": "season_rank"}], "tool_ms": 9500, "tool_error": "TimeoutExpired: node"},
+        {"action": "call", "calls": [{"tool": "find_attractions", "error": "没说是哪座公园"}]},
+        {"action": "answer"},
+    ]}
+    row = monitor.recent([{"session": "a", "turn": 1, "message": "推荐公园", "qa": [trace]}])[0]
+    assert row["agent"] == {"steps": 3, "tools": ["season_rank", "find_attractions"], "tool_ms": 9500, "answer": "not_found",
+                            "fallback": None, "errors": ["没说是哪座公园", "TimeoutExpired: node"]}
+    assert monitor.recent([{"session": "a", "turn": 1, "message": "6 月去锡安"}])[0]["agent"] is None
