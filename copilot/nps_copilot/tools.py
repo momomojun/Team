@@ -225,7 +225,10 @@ def call(requests: list[dict], timeout: float = 60) -> list[dict]:
         input=json.dumps(clean, ensure_ascii=False).encode("utf-8"), cwd=ROOT, capture_output=True, env={**os.environ}, timeout=timeout,
     )
     if completed.returncode != 0:
-        return []
+        # 不再悄悄返回空：把 node 的报错（最后一行带 Error 的）带出去，回答问题的两条路都会记进记录、后台看得到（11-20）
+        lines = completed.stderr.decode("utf-8", "replace").strip().splitlines()
+        reason = next((line for line in reversed(lines) if "Error" in line), lines[-1] if lines else "")
+        raise subprocess.SubprocessError(f"lookup exited {completed.returncode}: {reason.strip()[:200]}")
     return json.loads(completed.stdout.decode("utf-8"))
 
 
