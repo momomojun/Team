@@ -124,5 +124,8 @@ jobs:
             -e COPILOT_PROVIDER=replay -e COPILOT_REPLAY=/app/copilot/eval/recordings/qwen3.5_4b-q4_K_M.jsonl \
             team-copilot:ci
           python3 copilot/scripts/smoke.py http://127.0.0.1:8765 --expect-version repo
+      # 网站的查询工具在镜像里也要跑得起来（11-20：引到了镜像里没有的 npm 包，所有查询都报错，上面那条只排行程、没拦住）
+      - name: Smoke test the lookup tools inside the image
+        run: docker exec copilot python copilot/scripts/smoke_lookup.py
       - if: failure()
         run: docker logs copilot
