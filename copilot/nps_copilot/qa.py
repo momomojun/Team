@@ -34,6 +34,15 @@ ABOUT_TRIP = re.compile(r"这些|这几个|行程|安排的|排的|哪个|哪些
 SNIPPET = 260
 # 问的是没排进去的景点（“没排进去的都是哪个公园的”“为什么没去 XX”）：把完整的没排进去的清单（按公园分）给模型。
 # 回复里只写了前 6 个“等 26 处”，10-21 仓库主人问“这些没排进去的地方都是哪个国家公园”，模型答不上来
+# 模型勾了“找到了”，回答却一开头就说资料里没写（11-19 线上：“网站的资料里没写这个”后面还附了一串资料）：按没找到处理
+NOT_WRITTEN = re.compile(r"^\W*(这个|这些)?(网站的?)?资料里(面)?(没写|没有写|没有提到|没提到|没有相关|没有这方面|没有)|"
+                         r"^\W*(the )?site'?s? (data|notes?) (doesn'?t|does not|don'?t|has no)|^\W*(that|this) isn'?t in the site", re.I)
+
+
+def says_not_written(text: str) -> bool:
+    return bool(NOT_WRITTEN.search(text.strip()))
+
+
 SKIPPED_Q = re.compile(r"没排|没去|没安排|没有排|没放|排不进|去不了|不能去|为什么不去|为什么没|skipp|left out|not included|didn.?t (make|include)|can.?t (go|visit)", re.I)
 
 
@@ -176,7 +185,7 @@ def answer(question: str, parks: list[str], plan_text: str, provider: Provider |
     if problems or bad_sources or not text:
         trace.update(answer="fallback", fallback="unfaithful" if problems or bad_sources else "empty")
         return fallback(question, docs, zh, looked), trace
-    if not data.get("found"):
+    if not data.get("found") or says_not_written(text):
         trace["answer"] = "not_found"
         return fallback(question, docs, zh, looked), trace
     cited = [docs[i - 1] for i in sources if i >= 1]

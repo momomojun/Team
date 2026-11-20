@@ -76,6 +76,10 @@ interface Turn {
   logged?: boolean;
   /** 回答问题时怎么找的资料（11-13 起）；这一轮没回答问题是 null，旧版本的服务没有这一项 */
   retrieval?: { how: string; fallback: string | null; ms: number | null } | null;
+  /** 回答问题用的哪种做法（11-19）：agent 模型自己查、agent→qa 自己查退回了找一次就答、qa 找一次就答 */
+  qa_mode?: "agent" | "agent→qa" | "qa" | null;
+  /** 模型自己查的那一圈（11-20）：几步、查了什么、没查成的原因、node 查询花了多久、为什么停下 */
+  agent?: { steps: number; tools: string[]; errors: string[]; tool_ms: number; answer: string | null; fallback: string | null } | null;
 }
 
 interface AlertsStatus {
@@ -281,6 +285,10 @@ const TEXT = {
     writerFallback: "说明退回模板",
     retrieval: { vector: "按意思找资料", hybrid: "关键词 + 按意思找资料", bm25: "按关键词找资料" } as Record<string, string>,
     retrievalFallback: (reason: string) => `按意思找没成，退回关键词（${reason}）`,
+    qaMode: { agent: "模型自己查", "agent→qa": "自己查出了问题，退回找一次就答", qa: "找一次就答" } as Record<string, string>,
+    agentSteps: (steps: number, tools: string, toolMs: string) => `${steps} 步：${tools || "没查"}；查询共 ${toolMs}`,
+    agentStop: (reason: string) => `停下的原因：${reason}`,
+    agentErrors: (errors: string) => `没查成：${errors}`,
     sep: "；",
     listSep: "、",
     recentEmpty: "这段时间没有对话。",
@@ -402,6 +410,10 @@ const TEXT = {
     writerFallback: "writer used the template",
     retrieval: { vector: "semantic retrieval", hybrid: "keyword + semantic retrieval", bm25: "keyword retrieval" } as Record<string, string>,
     retrievalFallback: (reason: string) => `semantic retrieval failed, fell back to keywords (${reason})`,
+    qaMode: { agent: "search agent", "agent→qa": "search agent failed, fell back to retrieve-once", qa: "retrieve-once" } as Record<string, string>,
+    agentSteps: (steps: number, tools: string, toolMs: string) => `${steps} steps: ${tools || "no lookups"}; lookups took ${toolMs}`,
+    agentStop: (reason: string) => `stopped because: ${reason}`,
+    agentErrors: (errors: string) => `failed lookups: ${errors}`,
     sep: "; ",
     listSep: ", ",
     recentEmpty: "No turns in this period.",
@@ -935,6 +947,14 @@ export function AdminDashboard({ lang = "zh" }: { lang?: AdminLang }) {
                   ]
                     .filter(Boolean)
                     .join(t.sep)}
+                  {turn.qa_mode && <span className="block text-mute">{t.qaMode[turn.qa_mode] ?? turn.qa_mode}</span>}
+                  {turn.agent && (
+                    <span className="block text-mute">
+                      {t.agentSteps(turn.agent.steps, turn.agent.tools.join(t.listSep), ms(turn.agent.tool_ms))}
+                      {turn.agent.fallback && <span className="block">{t.agentStop(turn.agent.fallback)}</span>}
+                      {turn.agent.errors.length > 0 && <span className="block">{t.agentErrors(turn.agent.errors.join(t.listSep))}</span>}
+                    </span>
+                  )}
                   {turn.retrieval && !turn.retrieval.fallback && (
                     <span className="block text-mute">
                       {t.retrieval[turn.retrieval.how] ?? turn.retrieval.how}

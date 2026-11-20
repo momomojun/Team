@@ -682,6 +682,8 @@ def answer(question: str, parks: list[str], plan_text: str, provider: Provider |
                     results = []
                     record["tool_error"] = f"{type(error).__name__}: {str(error)[:120]}"
                 record["tool_ms"] = round((time.monotonic() - tool_start) * 1000)
+                if len(results) < len(pending) and "tool_error" not in record:  # node 报错退出、超时以外的没返回（后台看得到）
+                    record["tool_error"] = f"lookup returned {len(results)} of {len(pending)}"
                 for i, (obs, tool) in enumerate(pending):
                     if i >= len(results):
                         obs.error = "查询工具出错了" if zh else "lookup failed"
@@ -709,7 +711,7 @@ def answer(question: str, parks: list[str], plan_text: str, provider: Provider |
             return stop("no_answer")
         if problems or bad or leaked or (data.get("found") and not sources):
             return stop("unfaithful")
-        if not data.get("found"):
+        if not data.get("found") or qa.says_not_written(text):
             # 网站答不了（餐馆、签证、不存在的日期）：用模型这句老实话，不附出处
             trace["answer"] = "not_found"
             return text, trace
