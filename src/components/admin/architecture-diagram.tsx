@@ -33,8 +33,8 @@ const TEXT = {
     plan: ["plan_trip 行程引擎", "TypeScript · 同输入同结果"],
     critic: ["Critic 检查", "太满、赶不上就放松一次"],
     writer: ["Writer 写说明", "模型出错就用模板"],
-    tools: ["查询工具", "开没开、车程、找景点"],
-    qa: ["回答问题", "BM25 检索网站资料，只按资料说"],
+    tools: ["查资料 · 查询工具", "按意思找资料；开没开、车程……"],
+    qa: ["回答问题", "自己查（见“search agent”）或找一次就答"],
     finish: ["收尾", "JSONL 日志 · 检查点（SQLite）"],
     stream: "每一步报给网站：进度条",
     llm: "模型",
@@ -48,7 +48,7 @@ const TEXT = {
     alertsTitle: "每晚读 NPS 公告（GitHub Actions）",
     alertsFlow: ["NPS API 公告", "读公告：关了哪个景点", "关闭清单", "两周内出发的行程不排"],
     alertsNote: "推理开 high；只读新出现、改过的几条",
-    observe: "日志 → /stats → 本后台；CI 用本机模型录好的回答回放 8 组评测，分数低于基线不让合并；评测成绩记到 MLflow",
+    observe: "日志 → /stats → 本后台；CI 回放 10 组录好的回答（本机模型、Gemini），分数低于基线不让合并；评测成绩记到 MLflow",
   },
   en: {
     title: "Model call architecture",
@@ -62,8 +62,8 @@ const TEXT = {
     plan: ["plan_trip engine", "TypeScript · deterministic"],
     critic: ["Critic", "Too packed? Relax once"],
     writer: ["Writer", "Template if the model fails"],
-    tools: ["Lookup tools", "Open? Drive time? Find sights"],
-    qa: ["Q&A", "BM25 over site data, cites sources"],
+    tools: ["Notes · lookup tools", "Semantic search; open? drive?"],
+    qa: ["Q&A", "Search agent (see its tab) or retrieve-once"],
     finish: ["Finish", "JSONL log · checkpoint (SQLite)"],
     stream: "Each step is streamed to the site's progress bar",
     llm: "LLM",
@@ -77,16 +77,16 @@ const TEXT = {
     alertsTitle: "Nightly NPS alerts (GitHub Actions)",
     alertsFlow: ["NPS API alerts", "Which sight is closed?", "Closure list", "Trips within 2 weeks skip it"],
     alertsNote: "High reasoning effort; only new or changed alerts are read",
-    observe: "Logs → /stats → this dashboard. CI replays 8 eval sets recorded with the local model and blocks merges that fall below baseline; eval scores go to MLflow",
+    observe: "Logs → /stats → this dashboard. CI replays 10 recorded eval sets (local model, Gemini) and blocks merges below baseline; eval scores go to MLflow",
   },
 } as const;
 
-const CLAY = "#a04c2e";
-const INK = "#1c1b18";
-const PINE = "#4f6b3f";
-const MUTE = "#68615a";
+export const CLAY = "#a04c2e";
+export const INK = "#1c1b18";
+export const PINE = "#4f6b3f";
+export const MUTE = "#68615a";
 
-function Box({
+export function Box({
   x,
   y,
   w,
@@ -119,16 +119,17 @@ function Box({
       <text x={x + 14} y={y + 27} fontSize={16} fill={INK} style={{ fontFamily: "var(--font-serif)" }}>
         {lines[0]}
       </text>
-      {lines[1] && (
-        <text x={x + 14} y={y + 48} fontSize={12} fill={MUTE}>
-          {lines[1]}
+      {/* 第二行起是小字，一行 18 像素（四行的框 h 给 110） */}
+      {lines.slice(1).map((line, i) => (
+        <text key={i} x={x + 14} y={y + 48 + i * 18} fontSize={12} fill={MUTE}>
+          {line}
         </text>
-      )}
+      ))}
     </g>
   );
 }
 
-function Arrow({ d, dashed, color = INK }: { d: string; dashed?: boolean; color?: string }) {
+export function Arrow({ d, dashed, color = INK }: { d: string; dashed?: boolean; color?: string }) {
   return <path d={d} fill="none" stroke={color} strokeWidth={1.3} strokeDasharray={dashed ? "5 4" : undefined} markerEnd={`url(#arrow-${color === CLAY ? "clay" : color === PINE ? "pine" : "ink"})`} />;
 }
 
@@ -170,6 +171,23 @@ function Chain({ x, y, models, width, lang }: { x: number; y: number; models: st
   );
 }
 
+/** 箭头的三种颜色（几张图共用；同一页里 id 重复也没关系，样子一样） */
+export function Markers() {
+  return (
+    <defs>
+      {[
+        ["ink", INK],
+        ["clay", CLAY],
+        ["pine", PINE],
+      ].map(([id, color]) => (
+        <marker key={id} id={`arrow-${id}`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" fill={color} />
+        </marker>
+      ))}
+    </defs>
+  );
+}
+
 export function ArchitectureDiagram({ lang, chain }: { lang: AdminLang; chain?: string[] | null }) {
   const t = TEXT[lang];
   // 图上总是画设计的顺序；服务报的实际顺序不一样（比如本机只开了 Ollama、某一家没配 key）就在下面另写一行
@@ -179,17 +197,7 @@ export function ArchitectureDiagram({ lang, chain }: { lang: AdminLang; chain?: 
     <figure className="mt-6">
       <div className="no-scrollbar overflow-x-auto">
         <svg viewBox="0 0 1200 760" className="block h-auto w-full min-w-[920px]" role="img" aria-label={t.title}>
-          <defs>
-            {[
-              ["ink", INK],
-              ["clay", CLAY],
-              ["pine", PINE],
-            ].map(([id, color]) => (
-              <marker key={id} id={`arrow-${id}`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                <path d="M0 0 L10 5 L0 10 z" fill={color} />
-              </marker>
-            ))}
-          </defs>
+          <Markers />
 
           {/* 网站这一头 */}
           <Box x={20} y={20} w={230} lines={t.user} kind="plain" />
@@ -315,7 +323,7 @@ export function ArchitectureDiagram({ lang, chain }: { lang: AdminLang; chain?: 
 }
 
 /** 短框里的字按字数换行（中文按字，英文按词） */
-function wrap(text: string, max: number): string[] {
+export function wrap(text: string, max: number): string[] {
   if (/[一-鿿]/.test(text)) {
     const out: string[] = [];
     for (let i = 0; i < text.length; i += max) out.push(text.slice(i, i + max));
