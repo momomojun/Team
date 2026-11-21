@@ -1,4 +1,6 @@
-# 每天读一次 NPS 公告（计划书的 fast-changing data）：抓所有公园的公告快照，以前没报过的关闭公告开一个 issue（标签 nps-alerts）。
+# 每天读一次 NPS 公告（计划书的 fast-changing data）：抓所有公园的公告快照，以前没报过的关闭公告记进同一个一直开着的 issue（标签 nps-alerts）。
+# 11-20 起不再每晚开一个新 issue、一个新分支（一个多月堆了 26 个 issue、22 个分支没人看）：只有一个 issue（正文里有 <!-- nps-alerts-rolling -->），
+# 每晚改正文（现在还要不要改 closures.ts）、有新公告时在下面加一条评论；提议只推到一个 bot/closures 分支、每晚覆盖；每周集中处理一次。
 # 仓库设置里有模型的 secret（OPENROUTER_API_KEY、GEMINI_API_KEY、GROQ_API_KEY、DEEPSEEK_API_KEY）时，用模型读公告提取关闭，只读新出现、
 # 改过的几条（读过的记在 actions/cache 里）；一把都没有就只用规则。关闭清单（closures-latest.json）和快照一起存成 artifact。
 # 新的关闭公告是模型没见过的数据，可以标好答案做下一版提示词的评测。
@@ -6,7 +8,7 @@
 #   1. 抽查：读完再让同一串模型读 26 条标好答案的旧公告，分数掉到门槛以下就开 alerts-quality issue（模型换了、NPS 改了写法都能发现）；
 #      每周一（加州）跑一次、手动触发也跑，多约 26 次调用（10-26 仓库主人定的：OpenRouter 免费档一天约 50 次，每晚抽查会挤掉读新公告的额度）；
 #      仓库变量 ALERTS_CANARY 设成 0 就不抽查
-#   2. 提议：模型和规则都认、closures.ts 里还没有的关闭写进 closures.ts，推到 bot/closures-<日期> 分支，issue 里给开 PR 的链接；
+#   2. 提议：今天还有效、模型和规则都认、closures.ts 里还没有的关闭写进 closures.ts，推到 bot/closures 分支（每晚覆盖），issue 里给开 PR 的链接；
 #      GitHub 不让工作流自己开 PR（仓库设置里没开），而且机器人开的 PR 不会跑 CI，所以由人点链接开 PR
 #   3. 发布：当晚的关闭清单推到 data/alerts-live 分支，网站行程页按它排两周内出发的行程（src/lib/alerts-live.ts）；
 #      当晚调用模型的计费总账并进同一个分支的 usage.json，后台看（copilot/scripts/publish_usage.py）
@@ -145,6 +147,10 @@ jobs:
         run: |
           gh label create nps-alerts --color a04c2e --description "每晚读 NPS 公告发现的新关闭" 2>/dev/null || true
           gh issue list --label nps-alerts --state all --limit 500 --json body --jq '.[].body' > known.txt
+          # 一直开着的那个 issue：报过的公告 id 写在每晚的评论里，也要算进“报过了”
+          rolling=$(gh issue list --label nps-alerts --state open --limit 50 --json number,body --jq '[.[] | select(.body | contains("<!-- nps-alerts-rolling -->"))][0].number // empty')
+          echo "ROLLING=${rolling}" >> "$GITHUB_OUTPUT"
+          if [ -n "$rolling" ]; then gh api --paginate "repos/${{ github.repository }}/issues/${rolling}/comments" --jq '.[].body' >> known.txt; fi
           python copilot/scripts/alerts_report.py copilot/data/alerts/latest.json --known known.txt --closures copilot/data/alerts/closures-latest.json --cache copilot/data/alerts/extracted.json --out report.md | tee report.log
           grep -m1 '^NEW=' report.log >> "$GITHUB_OUTPUT"
       - name: Propose changes to closures.ts
@@ -155,29 +161,49 @@ jobs:
         run: |
           npm run --silent check:closures > check.json || true
           node -e "JSON.parse(require('fs').readFileSync('check.json','utf8'))" 2>/dev/null || echo '{}' > check.json
-          npm run --silent alerts:propose -- copilot/data/alerts/closures-latest.json --known known.txt --check check.json --out proposal.md | tee propose.log
+          # --all：今天还有效、数据里还没有的都提议一遍（不看以前报没报过），分支每晚覆盖
+          npm run --silent alerts:propose -- copilot/data/alerts/closures-latest.json --all --check check.json --out proposal.md | tee propose.log
           grep -m1 '^CHANGES=' propose.log >> "$GITHUB_OUTPUT"
-      - name: Push the proposal to a branch
+      - name: Push the proposal to the bot/closures branch
         id: branch
-        if: steps.propose.outputs.CHANGES != '' && steps.propose.outputs.CHANGES != '0'
+        if: steps.propose.outputs.CHANGES != ''
         run: |
-          branch="bot/closures-$(date +%F)"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git switch -c "$branch"
+          if [ "${{ steps.propose.outputs.CHANGES }}" = "0" ]; then
+            # 没有要改的：昨晚的分支也删掉，免得有人照着过期的提议合并
+            git push origin --delete bot/closures 2>/dev/null || true
+            exit 0
+          fi
+          git switch -c bot/closures
           git add src/data/closures.ts src/i18n/en/content/conditions.ts
           git commit -m "每晚读公告提议的临时关闭（$(date +%F)）/ Closures proposed from tonight's NPS alerts"
-          git push origin "$branch"
-          echo "url=https://github.com/${{ github.repository }}/compare/main...${branch}?expand=1" >> "$GITHUB_OUTPUT"
-      - name: Open an issue
-        if: steps.report.outputs.NEW != '0' || steps.branch.outputs.url != ''
+          git push --force origin bot/closures
+          echo "url=https://github.com/${{ github.repository }}/compare/main...bot/closures?expand=1" >> "$GITHUB_OUTPUT"
+      - name: Update the rolling issue
+        if: steps.report.outputs.NEW != ''
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [ -n "${{ steps.branch.outputs.url }}" ]; then
-            { echo; cat proposal.md; echo; echo "**看过、改好说明以后点这里开 PR 合并：${{ steps.branch.outputs.url }}**"; } >> report.md
+          {
+            echo "<!-- nps-alerts-rolling -->"
+            echo "每晚读 NPS 公告自动更新（最后更新 $(date +%F)，加州时间）。新出现的关闭公告记在下面的评论里；这里只放**现在**还要不要改 \`src/data/closures.ts\`。"
+            echo "每周集中处理一次：看过公告原文、改好中文说明和替代办法，合成一个 PR；处理完这个 issue 不用关，下一晚接着更新。"
+            echo "Updated nightly from NPS alerts. New closure alerts are listed in the comments below; this body only shows what should change in \`src/data/closures.ts\` right now. Reviewed and merged once a week."
+            echo
+            if [ -f proposal.md ]; then cat proposal.md; else echo "今晚没有提议（没读到关闭清单）。"; fi
+            if [ -n "${{ steps.branch.outputs.url }}" ]; then echo; echo "**提议已经写在 \`bot/closures\` 分支里（每晚覆盖）：${{ steps.branch.outputs.url }}**"; fi
+          } > body.md
+          rolling="${{ steps.report.outputs.ROLLING }}"
+          if [ -z "$rolling" ]; then
+            gh issue create --label nps-alerts --title "NPS 公告：新的关闭和要改的数据（每晚更新）/ NPS closure alerts (updated nightly)" --body-file body.md > created.txt
+            rolling=$(grep -o '[0-9]*$' created.txt)
+          else
+            gh issue edit "$rolling" --body-file body.md
           fi
-          gh issue create --label nps-alerts --title "NPS 公告：${{ steps.report.outputs.NEW }} 条新的关闭（$(date +%F)）/ New NPS closure alerts" --body-file report.md
+          if [ "${{ steps.report.outputs.NEW }}" != "0" ]; then
+            gh issue comment "$rolling" --body-file report.md
+          fi
       - name: Publish tonight's closures for the website
         if: hashFiles('copilot/data/alerts/closures-latest.json') != ''
         run: |
