@@ -85,7 +85,7 @@ export function FamilyFit({
       {fit && fit.reasons.length > 0 && (
         <p
           className={`mt-2 text-sm leading-6 ${
-            fit.serious ? "bg-clay-700 px-3 py-2 font-medium text-paper" : fit.level === "no" ? "text-clay-800" : "text-clay-700"
+            fit.serious ? "bg-alert px-3 py-2 font-medium text-white" : fit.level === "no" ? "text-clay-800" : "text-clay-700"
           }`}
         >
           {fill(fit.serious ? f.seriousLine : f.yourPartyLine, {

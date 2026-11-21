@@ -24,8 +24,7 @@ export function GuidesSection({
 
   return (
     <>
-        <p className="eyebrow text-mute">{text.eyebrow}</p>
-        <h2 className="mt-5 font-serif text-[clamp(2rem,3.5vw,3.2rem)] leading-tight">{text.title}</h2>
+        <h2 className="section-title">{text.title}</h2>
         <p className="mt-5 max-w-2xl text-sm leading-7 text-ink-soft">{text.intro}</p>
 
         {data === undefined ? (

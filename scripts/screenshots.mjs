@@ -35,14 +35,6 @@ const HIDE_DEV_UI = 'nextjs-portal,[aria-label="回到顶部"]{display:none!impo
 async function openPage(browser, { width, height, scale = 1, mobile = false }) {
   const page = await browser.newPage();
   await page.setViewport({ width, height, deviceScaleFactor: scale, isMobile: mobile, hasTouch: mobile });
-  // 跳过开场动画（记成刚播过）
-  await page.evaluateOnNewDocument(() => {
-    try {
-      localStorage.setItem("nps-intro", String(Date.now()));
-    } catch {
-      // 忽略
-    }
-  });
   return page;
 }
 
@@ -129,7 +121,8 @@ const shots = {
   async home(browser) {
     const page = await openPage(browser, DESKTOP);
     await go(page, "/zh-Hans");
-    await page.waitForFunction(() => document.documentElement.dataset.heroReady === "1", { timeout: 30000 }).catch(() => {});
+    // 首屏第一张大图下载好了（commons-image.tsx 会给它加 data-loaded）
+    await page.waitForFunction(() => Boolean(document.querySelector("section img[data-loaded]")), { timeout: 30000 }).catch(() => {});
     await sleep(2600);
     await shot(page, "home.jpg");
     await page.close();
@@ -207,7 +200,8 @@ const shots = {
   async mobile(browser) {
     const page = await openPage(browser, { ...PHONE, scale: 2, mobile: true });
     await go(page, "/zh-Hans");
-    await page.waitForFunction(() => document.documentElement.dataset.heroReady === "1", { timeout: 30000 }).catch(() => {});
+    // 首屏第一张大图下载好了（commons-image.tsx 会给它加 data-loaded）
+    await page.waitForFunction(() => Boolean(document.querySelector("section img[data-loaded]")), { timeout: 30000 }).catch(() => {});
     await sleep(2600);
     const home = await page.screenshot({ type: "jpeg", quality: QUALITY });
     // 手机上行程要有内容：沿用 plan 截图时排好的行程；单独截手机版时现排一个
@@ -243,7 +237,7 @@ const shots = {
     const phones = readFileSync(file("mobile.jpg")).toString("base64");
     const page = await openPage(browser, { width: 1280, height: 640, scale: 1 });
     await go(page, "/zh-Hans/routes");
-    // 借用网站自己加载好的字体（Cormorant Garamond、思源宋体、Jost）
+    // 借用网站自己加载好的字体（Spectral、思源宋体、Jost）
     const fonts = await page.evaluate(() => {
       const style = getComputedStyle(document.body);
       const serif = getComputedStyle(document.querySelector("h1")).fontFamily;

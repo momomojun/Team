@@ -17,7 +17,7 @@ const isScrolled = () => window.scrollY > 24;
 
 function NavLink({ href, label, active }: { href: string; label: string; active: boolean }) {
   return (
-    <Link href={href} className={`hover:opacity-60 ${active ? "link-line" : ""}`}>
+    <Link href={href} className={`nav-line ${active ? "is-active" : ""}`}>
       {label}
     </Link>
   );
@@ -37,8 +37,13 @@ export function SiteHeader({
 }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
-  // 首页和公园页顶部是全屏大图：页头先透明压在图上，往下滚再变成纸色
-  const overHero = pathname === `/${locale}` || pathname.startsWith(`/${locale}/parks/`);
+  // 顶上是整屏宽大图的页面（首页、全部公园、公园概览、什么时候去、灵感、榜单、价格）：页头先透明压在图上，往下滚再变成白底。
+  // 公园的分页（景点、徒步……）没有大图
+  const segments = pathname.split("/").filter(Boolean);
+  const overHero =
+    segments.length === 1 ||
+    (segments[1] === "parks" && segments.length <= 3) ||
+    ["when", "routes", "rankings", "prices"].includes(segments[1] ?? "");
   const scrolled = useSyncExternalStore(subscribe, isScrolled, () => false);
   const solid = !overHero || scrolled || menuOpen;
 
@@ -47,34 +52,36 @@ export function SiteHeader({
       <header
         // 换页过渡时页头固定不动（globals.css 的 site-header）
         style={{ viewTransitionName: "site-header" }}
-        className={`fixed inset-x-0 top-0 z-50 transition-[background-color,color,border-color] duration-500 print:hidden ${
+        className={`fixed inset-x-0 top-0 z-50 transition-[background-color,color,border-color] duration-300 ease-(--ease-soft) print:hidden ${
           solid
-            ? "border-b border-line bg-paper/92 text-ink backdrop-blur-md"
-            : "border-b border-transparent bg-gradient-to-b from-black/35 to-transparent text-white"
+            ? "border-b border-line bg-paper text-ink"
+            : "border-b border-transparent bg-gradient-to-b from-black/30 to-transparent text-white"
         }`}
       >
-        {/* 11-20 改版：导航只留 4 项（公园、什么时候去、灵感、榜单），价格放进手机菜单和页脚；行程就是右边的金色按钮（带景点数）。
-            手机和平板上：左边标志，右边行程、简繁和菜单；宽屏：左导航、中间标志、右边账号、简繁和按钮 */}
-        <div className="mx-auto flex h-16 max-w-[1600px] items-center justify-between px-5 whitespace-nowrap sm:px-10 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:gap-x-6">
-          <nav className="hidden items-center gap-7 text-[13px] tracking-[0.14em] lg:flex xl:gap-10">
-            <ParksMenu locale={locale} regions={regions} text={text} onOpenChange={setMenuOpen} />
-            <NavLink href={`/${locale}/when`} label={text.when} active={pathname === `/${locale}/when`} />
-            <NavLink href={`/${locale}/routes`} label={text.routes} active={pathname === `/${locale}/routes`} />
-            <NavLink href={`/${locale}/rankings`} label={text.rankings} active={pathname === `/${locale}/rankings` || pathname.startsWith(`/${locale}/rankings/`)} />
-          </nav>
+        {/* 11-21 改版第二批，照着 Wabunka：左边站名、紧跟着 4 项导航（公园、什么时候去、灵感、榜单），右边账号、简繁、菜单和金色的“开始规划”（带景点数）。
+            压在大图上时透明、白字；往下滚或者在内页，变成白底墨字 */}
+        <div className="mx-auto flex h-16 max-w-[1600px] items-center justify-between gap-6 px-5 whitespace-nowrap sm:px-10">
+          <div className="flex items-center gap-10 xl:gap-12">
+            <Link href={`/${locale}`} className="font-serif text-xl tracking-[0.12em] sm:text-[26px]">
+              {wordmark}
+            </Link>
+            <nav className="hidden items-center gap-7 font-serif text-[15px] tracking-[0.04em] lg:flex xl:gap-9">
+              <ParksMenu locale={locale} regions={regions} text={text} onOpenChange={setMenuOpen} />
+              <NavLink href={`/${locale}/when`} label={text.when} active={pathname === `/${locale}/when`} />
+              <NavLink href={`/${locale}/routes`} label={text.routes} active={pathname === `/${locale}/routes`} />
+              <NavLink
+                href={`/${locale}/rankings`}
+                label={text.rankings}
+                active={pathname === `/${locale}/rankings` || pathname.startsWith(`/${locale}/rankings/`)}
+              />
+            </nav>
+          </div>
 
-          <Link
-            href={`/${locale}`}
-            className="font-serif text-base tracking-[0.3em] uppercase sm:text-xl sm:tracking-[0.42em] lg:text-lg lg:tracking-[0.34em] xl:text-xl xl:tracking-[0.42em]"
-          >
-            {wordmark}
-          </Link>
-
-          <div className="flex items-center justify-end gap-5 sm:gap-6">
-            <span className="hidden text-[13px] tracking-[0.12em] sm:inline lg:hidden">
+          <div className="flex items-center justify-end gap-5 text-[13px] tracking-[0.06em] sm:gap-6">
+            <span className="hidden sm:inline lg:hidden">
               <TripNavLink href={`/${locale}/plan`} label={text.plan} />
             </span>
-            <span className="hidden text-[13px] tracking-[0.12em] lg:inline">
+            <span className="hidden lg:inline">
               <NavLink href={`/${locale}/account`} label={text.account} active={pathname === `/${locale}/account`} />
             </span>
             <LocaleSwitcher current={locale} />
@@ -82,8 +89,8 @@ export function SiteHeader({
             <TripNavLink
               href={`/${locale}/plan`}
               label={text.start}
-              className={`hidden items-baseline gap-1.5 px-5 py-2.5 text-xs tracking-[0.16em] transition-colors duration-300 md:inline-flex ${
-                solid ? "bg-clay-500 text-paper hover:bg-clay-600" : "border border-white/60 hover:bg-white hover:text-[#0d1520]"
+              className={`hidden h-10 items-center gap-1.5 px-5 font-serif text-[15px] tracking-[0.04em] transition-colors duration-300 md:inline-flex ${
+                solid ? "bg-gold text-on-gold hover:bg-gold-deep" : "border border-white/60 hover:bg-white hover:text-[#1a150e]"
               }`}
             />
           </div>

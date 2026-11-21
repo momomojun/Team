@@ -20,9 +20,8 @@ export default async function TimelinePage({ params }: PageProps<"/[locale]/rank
   const { dict, t, text, latest, dateOf, pendingPark, total, nationalParks, canadianParks } = view;
 
   return (
-    <div className="mx-auto max-w-[1600px] px-5 py-20 sm:px-10 lg:py-24">
-      <p className="eyebrow text-mute">{t.timeline.eyebrow}</p>
-      <h2 className="mt-5 font-serif text-[clamp(2rem,3.5vw,3.2rem)] leading-tight">
+    <div className="mx-auto max-w-[1296px] px-5 py-20 sm:px-10 lg:py-24">
+      <h2 className="section-title">
         {fill(t.timeline.title, { year: latest.established.slice(0, 4), name: text(latest.nameZh) })}
       </h2>
       <p className="mt-5 max-w-3xl text-sm leading-7 text-ink-soft">{t.timeline.intro}</p>
