@@ -272,8 +272,7 @@ export function PriceCenter({
     <div>
       {section === "flights" && (
       <section>
-        <p className="eyebrow text-mute">{text.flightsEyebrow}</p>
-        <h2 className="mt-4 flex items-center gap-3 font-serif text-3xl">
+        <h2 className="section-title">
           <IconPlane className="text-2xl text-mute" /> {text.flightsTitle}
         </h2>
         <p className="mt-3 max-w-3xl text-sm leading-7 text-ink-soft">{text.flightsIntro}</p>
@@ -459,8 +458,7 @@ export function PriceCenter({
 
       {section === "car" && (
       <section>
-        <p className="eyebrow text-mute">{text.carEyebrow}</p>
-        <h2 className="mt-4 flex items-center gap-3 font-serif text-3xl">
+        <h2 className="section-title">
           <IconCar className="text-2xl text-mute" /> {text.carTitle}
         </h2>
         <p className="mt-3 max-w-3xl text-sm leading-7 text-ink-soft">{text.carIntro}</p>
@@ -590,8 +588,7 @@ export function PriceCenter({
 
       {section === "gas" && (
       <section>
-        <p className="eyebrow text-mute">{text.gasEyebrow}</p>
-        <h2 className="mt-4 font-serif text-3xl">{text.gasTitle}</h2>
+        <h2 className="section-title">{text.gasTitle}</h2>
         <p className="mt-3 max-w-3xl text-sm leading-7 text-ink-soft">{text.gasIntro}</p>
         <p className="mt-2 text-xs text-mute">
           {fill(gas.live ? text.gasLive : text.gasSnapshot, { date: gas.date })}

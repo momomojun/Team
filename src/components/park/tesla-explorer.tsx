@@ -38,7 +38,7 @@ export interface TeslaLodgingRow {
 const SUPER_COLOR = "#a04c2e";
 const DEST_COLOR = "#b8862b";
 const LODGING_COLOR = "#6b6459";
-const GATEWAY_COLOR = "#5d6b7a";
+const GATEWAY_COLOR = "#1c1b18";
 /** 数据整理那天往前一年内开的算新开 */
 const NEW_DAYS = 365;
 

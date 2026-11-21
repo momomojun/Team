@@ -1,9 +1,8 @@
 import type { ReactNode } from "react";
 import { CommonsImage } from "@/components/commons-image";
-import { Reveal } from "@/components/site/reveal";
 
 export interface HeaderPhoto {
-  /** Commons 缩略图地址（1280 宽） */
+  /** Commons 缩略图地址（1920 宽） */
   src: string;
   /** Commons 文件页，署名链接到这里 */
   href: string;
@@ -14,8 +13,8 @@ export interface HeaderPhoto {
 }
 
 /**
- * 内页的页头：左边小标签、大标题和说明，右边一张照片（从下往上揭开）。
- * 手机上不放照片，工具页往下就是内容。
+ * 内页的页头（照着 Wabunka 的目的地页）：整屏宽的照片慢慢平移，左下是小标签、大标题和说明，右下是照片署名；
+ * 页头压在照片上是透明的（site-header.tsx 的 overHero）。没有照片时退回深色底。
  */
 export function PageHeader({
   eyebrow,
@@ -32,33 +31,30 @@ export function PageHeader({
   children?: ReactNode;
 }) {
   return (
-    <header className="grid gap-10 pb-10 lg:grid-cols-12 lg:gap-16 lg:pb-14">
-      <div className="flex flex-col justify-end lg:col-span-7">
-        <p className="eyebrow text-mute">{eyebrow}</p>
+    // 所在的容器有左右内边距：用负边距撑满整个屏幕宽（body 设了 overflow-x: clip，不会出横向滚动条）
+    <header className="relative mx-[calc(50%-50vw)] flex min-h-[440px] overflow-hidden bg-night text-white h-[64svh] print:h-auto print:min-h-0 print:bg-transparent print:text-ink">
+      {photo && (
+        <CommonsImage src={photo.src} alt="" fill priority sizes="100vw" className="animate-drift object-cover print:hidden" />
+      )}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/35 print:hidden" />
+      <div className="relative mx-auto flex w-full max-w-[1296px] flex-col justify-end px-5 pb-12 sm:px-10 md:pb-14">
+        <p className="hero-fade text-[13px] tracking-[0.08em] text-white/80 print:text-mute">{eyebrow}</p>
         {/* 中文标题只在标点处换行，不会剩一个字在下一行 */}
-        <h1 className="mt-6 font-serif text-[clamp(2.4rem,4.8vw,4.4rem)] leading-[1.12] text-balance [word-break:keep-all]">{title}</h1>
-        {intro && <div className="mt-6 max-w-2xl text-[15px] leading-8 text-ink-soft">{intro}</div>}
+        <h1 className="mt-4 max-w-4xl overflow-hidden pb-1 font-serif text-[clamp(2.1rem,4.4vw,3.6rem)] leading-[1.18] font-normal text-balance [word-break:keep-all]">
+          <span className="hero-rise block">{title}</span>
+        </h1>
+        {intro && <div className="hero-fade mt-5 max-w-2xl text-[15px] leading-8 text-white/85 print:text-ink-soft">{intro}</div>}
         {children}
       </div>
       {photo && (
-        <figure className="hidden sm:block lg:col-span-5">
-          <Reveal image className="relative aspect-[16/9] overflow-hidden bg-paper-deep lg:aspect-[4/3]">
-            <CommonsImage
-              src={photo.src}
-              alt=""
-              fill
-              priority
-              sizes="(min-width: 1024px) 40vw, 100vw"
-              className="object-cover"
-            />
-          </Reveal>
-          <figcaption className="mt-3 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-[11px] text-mute">
-            <span className="tracking-[0.08em]">{photo.caption}</span>
-            <a href={photo.href} target="_blank" rel="noreferrer" className="hover:text-ink">
-              {photo.credit}
-            </a>
-          </figcaption>
-        </figure>
+        <a
+          href={photo.href}
+          target="_blank"
+          rel="noreferrer"
+          className="absolute right-5 bottom-3 z-10 hidden text-[10px] text-white/55 hover:text-white sm:right-10 sm:block print:hidden"
+        >
+          {photo.caption} · {photo.credit}
+        </a>
       )}
     </header>
   );

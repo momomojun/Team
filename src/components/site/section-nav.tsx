@@ -40,10 +40,13 @@ export function SectionNav({
   label,
   actions,
   inset = false,
+  narrow = false,
 }: {
   items: SectionLink[];
   /** 放在已经有左右内边距的容器里（行程页） */
   inset?: boolean;
+  /** 和内页的版心对齐（内容最宽 1216px，榜单这些页面） */
+  narrow?: boolean;
   /** 给读屏用的导航名称 */
   label: string;
   /** 右边的按钮，比如“生成这个公园的攻略” */
@@ -89,10 +92,10 @@ export function SectionNav({
   return (
     <nav
       aria-label={label}
-      className={`sticky top-16 z-40 border-b border-line bg-paper/95 backdrop-blur-md print:hidden ${inset ? "-mx-5 px-5 sm:-mx-10 sm:px-10" : ""}`}
+      className={`sticky top-16 z-40 border-b border-line bg-paper print:hidden ${inset ? "-mx-5 px-5 sm:-mx-10 sm:px-10" : ""}`}
     >
-      <div className={`flex items-center gap-6 ${inset ? "" : "mx-auto max-w-[1600px] px-5 sm:px-10"}`}>
-        <ul ref={listRef} className="no-scrollbar flex min-w-0 flex-1 gap-x-6 overflow-x-auto text-[13px] whitespace-nowrap">
+      <div className={`flex items-center gap-6 ${inset ? "" : `mx-auto px-5 sm:px-10 ${narrow ? "max-w-[1296px]" : "max-w-[1600px]"}`}`}>
+        <ul ref={listRef} className="no-scrollbar flex min-w-0 flex-1 gap-x-7 overflow-x-auto font-serif text-[14px] tracking-[0.03em] whitespace-nowrap">
           {items.map((item) => {
             const current = item.id === active;
             return (
@@ -102,8 +105,8 @@ export function SectionNav({
                     href={item.href}
                     data-section={item.id}
                     aria-current={current ? "page" : undefined}
-                    className={`flex items-center gap-1.5 border-b-2 py-3 transition-colors ${
-                      current ? "border-ink text-ink" : "border-transparent text-mute hover:text-ink"
+                    className={`flex items-center gap-1.5 border-b-2 py-3.5 transition-colors duration-300 ${
+                      current ? "border-clay-500 text-ink" : "border-transparent text-mute hover:text-ink"
                     }`}
                   >
                     {item.color && <span aria-hidden className="inline-block h-[3px] w-3" style={{ backgroundColor: item.color }} />}
@@ -114,8 +117,8 @@ export function SectionNav({
                     href={`#${item.id}`}
                     data-section={item.id}
                     aria-current={current ? "location" : undefined}
-                    className={`flex items-center gap-1.5 border-b-2 py-3 transition-colors ${
-                      current ? "border-ink text-ink" : "border-transparent text-mute hover:text-ink"
+                    className={`flex items-center gap-1.5 border-b-2 py-3.5 transition-colors duration-300 ${
+                      current ? "border-clay-500 text-ink" : "border-transparent text-mute hover:text-ink"
                     }`}
                   >
                     {item.color && <span aria-hidden className="inline-block h-[3px] w-3" style={{ backgroundColor: item.color }} />}

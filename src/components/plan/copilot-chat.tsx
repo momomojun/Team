@@ -87,6 +87,13 @@ export function CopilotChat({
   const trip = useTrip();
   const [messages, setMessages] = useState<Message[]>([]);
   const [draft, setDraft] = useState("");
+  // 从首页搜索框、“照这句话排”过来的（?q=一句话）：先填进输入框，等用户按发送（Copilot 可能还在唤醒）
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search).get("q")?.trim();
+    if (!q) return;
+    const timer = setTimeout(() => setDraft(q.slice(0, 2000)));
+    return () => clearTimeout(timer);
+  }, []);
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState<Progress | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -245,10 +252,10 @@ export function CopilotChat({
   const status = available === null ? t.waking : available === false ? t.unavailable : null;
 
   return (
-    <section id="plan-copilot" className="relative -mx-5 scroll-mt-16 overflow-hidden bg-night text-white sm:-mx-10 print:hidden">
-      {photo && <CommonsImage src={photo.src} alt="" fill priority sizes="100vw" className="object-cover opacity-50" />}
+    <section id="plan-copilot" className="theme-dark relative -mx-5 scroll-mt-16 overflow-hidden bg-night text-white sm:-mx-10 print:hidden">
+      {photo && <CommonsImage src={photo.src} alt="" fill priority sizes="100vw" className="animate-drift object-cover" />}
       {/* 照片上压一层夜色，保证字看得清 */}
-      <div aria-hidden className="absolute inset-0 bg-night/55" />
+      <div aria-hidden className="absolute inset-0 bg-black/55" />
       <div className="relative mx-auto flex min-h-[560px] max-w-4xl flex-col items-center justify-center px-5 py-16 text-center sm:px-10 sm:py-24">
         <p className="eyebrow text-clay-600">{t.eyebrow}</p>
         <h1 className="mt-6 font-serif text-[clamp(2.4rem,5vw,4.4rem)] leading-[1.12] text-balance [word-break:keep-all]">{t.title}</h1>
@@ -326,13 +333,13 @@ export function CopilotChat({
               rows={1}
               maxLength={2000}
               placeholder={messages.length === 0 ? t.placeholder : t.followUp}
-              className="block min-h-14 w-full resize-none bg-[#f4efe6] px-5 py-4 text-left text-base leading-6 text-[#1c1b18] placeholder:text-[#6b645c] focus:outline-none"
+              className="block min-h-14 w-full resize-none bg-white px-5 py-4 text-left font-serif text-base leading-6 text-[#1a150e] placeholder:text-[#8a8278] focus:outline-none"
             />
           </label>
           <button
             type="submit"
             disabled={busy || !draft.trim() || !available}
-            className={`${buttonLarge} min-h-14 justify-center bg-clay-500 text-paper hover:bg-clay-600 disabled:opacity-60`}
+            className={`${buttonLarge} min-h-14 justify-center bg-gold text-on-gold hover:bg-gold-deep disabled:opacity-60`}
           >
             {t.send}
             <IconArrowRight className="text-base" />

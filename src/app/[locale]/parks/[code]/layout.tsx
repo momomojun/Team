@@ -26,52 +26,68 @@ export default async function ParkLayout({ children, params }: LayoutProps<"/[lo
   const hasHikes = view.attractions.some((a) => a.hike);
   const hasTesla = (teslaChargers[code]?.stations.length ?? 0) > 0;
 
+  // 照着 Wabunka 的目的地页：全屏大图慢慢平移，左下是名字和一句话，底下一条半透明的白条写几项基本情况，右边金色按钮
   const hero = (
-    <section className="relative h-[88svh] min-h-[620px] overflow-hidden bg-night text-white">
-      {heroPhoto && (
-        <ViewTransition name={`park-photo-${park.code}`} share="park-morph" default="none">
-          <div className="absolute inset-0">
-            <CommonsImage
-              src={heroPhoto.url.replace("/960px-", "/1920px-")}
-              alt=""
-              fill
-              priority
-              sizes="100vw"
-              className="animate-kenburns object-cover"
-            />
-          </div>
-        </ViewTransition>
-      )}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40" />
-      <div className="relative z-10 mx-auto flex h-full max-w-[1600px] flex-col justify-end px-5 pb-10 sm:px-10 lg:pb-14">
-        <nav className="eyebrow flex items-center gap-3 text-white/70">
-          <Link href={`/${locale}${site ? "#places" : "#parks"}`} className="hover:text-white">
-            {site ? dict.common.sites : dict.common.allParks}
-          </Link>
-          <span className="text-white/40">/</span>
-          <span>{dict.regions[park.region]}</span>
-        </nav>
-        <h1 className="mt-7 font-serif text-[clamp(3.2rem,9vw,8rem)] leading-none font-normal tracking-[0.04em]">{park.nameZh}</h1>
-        <p className="eyebrow mt-6 text-white/80">
-          {fullNameEn(park)} · {park.stateEn}
-          {canada && " · Canada"}
-        </p>
-        <p className="mt-6 max-w-xl font-serif text-xl text-white/85 sm:text-2xl">{park.tagline}</p>
-        <dl className="mt-12 grid grid-cols-2 gap-x-8 gap-y-6 border-t border-white/25 pt-6 md:grid-cols-4">
-          {facts.map(([label, value]) => (
-            <div key={label} className="flex flex-col-reverse">
-              <dt className="eyebrow mt-2 text-white/55">{label}</dt>
-              <dd className="font-serif text-lg sm:text-xl">{value}</dd>
+    <section className="relative overflow-hidden bg-night text-white">
+      {/* 手机上底下那条基本情况放在照片下面（压在照片上会挡住名字），宽屏上压在照片底部 */}
+      <div className="relative h-[78svh] min-h-[520px] md:h-[100svh] md:min-h-[640px]">
+        {heroPhoto && (
+          <ViewTransition name={`park-photo-${park.code}`} share="park-morph" default="none">
+            <div className="absolute inset-0">
+              <CommonsImage
+                src={heroPhoto.url.replace("/960px-", "/1920px-")}
+                alt=""
+                fill
+                priority
+                sizes="100vw"
+                className="animate-drift object-cover"
+              />
             </div>
-          ))}
-        </dl>
+          </ViewTransition>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/30" />
+        <div className="relative z-10 mx-auto flex h-full max-w-[1216px] flex-col justify-end px-5 pb-10 sm:px-10 md:pb-32">
+          <nav className="hero-fade flex items-center gap-3 text-[13px] tracking-[0.06em] text-white/75">
+            <Link href={`/${locale}/parks${site ? "#places" : ""}`} className="nav-line hover:text-white">
+              {site ? dict.common.sites : dict.common.allParks}
+            </Link>
+            <span className="text-white/40">/</span>
+            <span>{dict.regions[park.region]}</span>
+          </nav>
+          <h1 className="mt-5 flex flex-wrap items-baseline gap-x-5 gap-y-2 font-serif font-normal">
+            <span className="text-[clamp(2.6rem,6vw,4.6rem)] leading-none tracking-[0.04em]">{park.nameZh}</span>
+            <span className="text-[clamp(1rem,1.6vw,1.35rem)] tracking-[0.06em] text-white/80">
+              {fullNameEn(park)}
+              {canada && " · Canada"}
+            </span>
+          </h1>
+          <p className="hero-fade mt-5 max-w-2xl font-serif text-lg leading-8 text-white/85">{park.tagline}</p>
+        </div>
+      </div>
+      <div className="z-10 bg-white text-[#1a150e] md:absolute md:inset-x-0 md:bottom-0 md:bg-white/88 md:backdrop-blur-sm">
+        <div className="mx-auto flex max-w-[1216px] flex-wrap items-center justify-between gap-x-8 gap-y-3 px-5 py-4 sm:px-10">
+          <dl className="flex flex-wrap gap-x-8 gap-y-2 text-[13px]">
+            {facts.map(([label, value]) => (
+              <div key={label} className="flex items-baseline gap-2">
+                <dt className="text-[#6b645b]">{label}</dt>
+                <dd className="font-serif text-[15px]">{value}</dd>
+              </div>
+            ))}
+          </dl>
+          <Link
+            href={`/${locale}/plan?park=${park.code}`}
+            className="inline-flex h-12 min-w-56 items-center justify-center bg-gold px-6 font-serif text-[16px] text-on-gold transition-colors duration-300 hover:bg-gold-deep"
+          >
+            {t.nav.generate}
+          </Link>
+        </div>
       </div>
       {heroPhoto && (
         <a
           href={heroPhoto.page}
           target="_blank"
           rel="noreferrer"
-          className="absolute right-5 bottom-3 z-10 text-[10px] text-white/45 hover:text-white/80 sm:right-10"
+          className="absolute top-20 right-5 z-10 text-[10px] text-white/50 hover:text-white/80 sm:right-10"
         >
           {fill(dict.attraction.photoCredit, { author: heroPhoto.author, license: heroPhoto.license })}
         </a>
@@ -98,7 +114,7 @@ export default async function ParkLayout({ children, params }: LayoutProps<"/[lo
       actions={
         <Link
           href={`/${locale}/plan?park=${park.code}`}
-          className="inline-flex items-center gap-2 bg-clay-500 px-4 py-2 text-xs tracking-[0.12em] text-paper transition-colors hover:bg-clay-600"
+          className="inline-flex items-center gap-2 bg-gold px-4 py-2 text-xs tracking-[0.12em] text-on-gold transition-colors hover:bg-gold-deep"
         >
           {t.nav.generate}
         </Link>

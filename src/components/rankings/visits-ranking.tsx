@@ -50,7 +50,7 @@ export function VisitsRanking({
 
   const chip = (active: boolean) =>
     `border px-3 py-1.5 text-xs transition-colors ${
-      active ? "border-clay-500 bg-clay-500 text-paper" : "border-ink/20 text-ink hover:border-ink"
+      active ? "border-gold bg-gold text-on-gold" : "border-ink/20 text-ink hover:border-ink"
     }`;
   const display = (row: RankingRow) =>
     metric === "visits" ? formatBig(row.visits, text.units) : fill(text.units.km2, { n: formatCount(row.areaKm2), sqmi: formatCount(Math.round(row.areaKm2 * 0.3861)) });

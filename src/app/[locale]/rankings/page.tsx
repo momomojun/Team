@@ -21,9 +21,8 @@ export default async function VisitsPage({ params }: PageProps<"/[locale]/rankin
   const canadaYear = canada[0].visits?.lastYear ?? 0;
 
   return (
-    <div className="mx-auto max-w-[1600px] px-5 py-20 sm:px-10 lg:py-24">
-      <p className="eyebrow text-mute">{t.visits.eyebrow}</p>
-      <h2 className="mt-5 font-serif text-[clamp(2rem,3.5vw,3.2rem)] leading-tight">{t.visits.title}</h2>
+    <div className="mx-auto max-w-[1296px] px-5 py-20 sm:px-10 lg:py-24">
+      <h2 className="section-title">{t.visits.title}</h2>
       <p className="mt-5 max-w-3xl text-sm leading-7 text-ink-soft">{fill(t.visits.intro, { year: visitsLastYear })}</p>
       <div className="mt-10">
         <VisitsRanking

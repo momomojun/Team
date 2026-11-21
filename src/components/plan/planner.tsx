@@ -1369,8 +1369,7 @@ export function Planner({
       <section id="plan-wizard" className="scroll-mt-32 border-t border-ink pt-6 print:hidden">
         <div className="flex flex-wrap items-baseline justify-between gap-4">
           <div className="max-w-2xl">
-            <p className="eyebrow text-mute">{t.wizard.eyebrow}</p>
-            <h2 className="mt-4 font-serif text-2xl leading-snug">{t.wizard.title}</h2>
+            <h2 className="section-title">{t.wizard.title}</h2>
             {showWizard && <p className="mt-3 text-sm leading-7 text-ink-soft">{t.wizard.intro}</p>}
           </div>
           <button type="button" className="link-line text-xs tracking-[0.1em]" onClick={() => setWizardOpen(!showWizard)}>

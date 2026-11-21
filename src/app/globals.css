@@ -1,57 +1,117 @@
 @import "tailwindcss";
 
 /*
- * 设计基调（11-20 改版，方向 A，参考 Wabunka、Explora 这类高端旅行网站的风格）：深藏青底、米白字、哑光金点缀、照片说话；
- * 标题用衬线（英文 Cormorant Garamond + 中文思源宋体），正文用 Jost + 系统黑体；
- * 细线代替卡片边框，直角按钮。
- * 颜色的名字沿用原来的（paper 是底、ink 是字），值换成深色：paper 深藏青、ink 米白；
- * clay（原来的砂岩红强调色）换成哑光金，pine 换成浅一点的绿，两组都倒过来排：50 最深（当底色），600、700 最亮（当字色），
- * 所以原来“浅底深字”的写法（bg-clay-50 text-clay-700）在深色底上照样成立。打印时换回浅色（见 @media print）。
+ * 设计基调（11-21 改版第二批，照着 Wabunka 的观感）：
+ * - 两种底：首页和大图首屏是深藏青（.theme-dark），内页（公园、景点、行程、价格……）是白底墨字、米色衬底，和 Wabunka 的列表、详情页一样；
+ * - 哑光金：区块标题配一条细金线，主按钮金底深字，选中的选项金色；
+ * - 字体：标题和正文都用衬线（英文 Spectral + 中文思源宋体），导航、小标签用 Jost + 系统黑体；
+ * - 照片说话：首屏大图交叉淡入、慢慢平移；照片拼贴的格子之间留几像素的缝；悬停时照片慢慢放大一点；
+ * - 直角，不用阴影卡片。
+ * 颜色的名字沿用原来的（paper 是底、ink 是字、clay 是强调色），深色主题里同名变量换值，clay、pine 两组倒过来排，组件里的写法不用分两套。
  */
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
+  /* 小字、导航、按钮用无衬线；标题和正文都用衬线（Wabunka 的做法：整页是书的气质） */
   --font-sans: var(--font-jost), var(--font-sans-cjk);
-  --font-serif: var(--font-cormorant), var(--font-serif-cjk), serif;
+  --font-serif: var(--font-spectral), var(--font-serif-cjk), Georgia, serif;
 }
 
 @theme {
-  --color-paper: #0d1520;
-  --color-paper-deep: #152130;
-  --color-ink: #efe9de;
-  --color-ink-soft: #cdc6b8;
-  /* 灰字在深藏青、深一点的面板上对比度都要到 4.5:1（WCAG AA） */
-  --color-mute: #9ba4b1;
-  --color-line: #283646;
-  /* 夜色：开场、页脚、大图底这些本来就是深色的区块（不跟着 paper / ink 换，打印时也不变） */
-  --color-night: #070b11;
+  /* 默认是浅色：内页（公园、景点、行程、价格……）白底墨字，和 Wabunka 的列表、详情页一样；
+     首页、大图首屏这些展示的区块套 .theme-dark（深藏青） */
+  --color-paper: #ffffff;
+  --color-paper-deep: #f4f1ed;
+  --color-ink: #1a150e;
+  --color-ink-soft: #4a443c;
+  /* 灰字在白底、米色底上对比度都要到 4.5:1（WCAG AA） */
+  --color-mute: #6b645b;
+  --color-line: #e2dcd2;
+  /* 夜色：大图首屏、开场的底，不跟着主题换 */
+  --color-night: #000815;
+  /* 页脚：炭灰 */
+  --color-coal: #222222;
 
-  /* 哑光金：强调色（热度、选中、步道、按钮）。50–300 是深色底上的金色调底，500–900 越来越亮 */
-  --color-clay-50: #1b1f24;
-  --color-clay-100: #23272b;
-  --color-clay-200: #393630;
-  --color-clay-300: #5e5340;
-  --color-clay-400: #8f7a52;
-  --color-clay-500: #b8975c;
-  --color-clay-600: #c9a96e;
-  --color-clay-700: #d8bd88;
-  --color-clay-800: #e6d2a8;
-  --color-clay-900: #f2e6cc;
+  /* 金：按钮、选中，两种主题都一样（金底配深色字） */
+  --color-gold: #c6a86c;
+  --color-gold-deep: #a48953;
+  --color-on-gold: #1a150e;
+  /* “请务必慎重考虑”这类最醒目的提醒：深红底白字，两种主题都一样 */
+  --color-alert: #8e2a1b;
 
-  /* 松绿：完成、可用（同样倒过来排） */
-  --color-pine-50: #142019;
-  --color-pine-100: #1a2a21;
-  --color-pine-200: #24402f;
-  --color-pine-300: #3a6149;
-  --color-pine-400: #578a68;
-  --color-pine-500: #74a684;
-  --color-pine-600: #8fbf9d;
-  --color-pine-700: #a9d1b4;
-  --color-pine-800: #c4e2cc;
-  --color-pine-900: #dff0e3;
+  /* 强调色（金）：50 最浅当底，600、700 当字；深色主题里倒过来排（见 .theme-dark），写法不用改 */
+  --color-clay-50: #faf6ee;
+  --color-clay-100: #f3ebdc;
+  --color-clay-200: #e7d8bb;
+  --color-clay-300: #d7c094;
+  --color-clay-400: #c2a46a;
+  --color-clay-500: #a48953;
+  --color-clay-600: #826b3d;
+  --color-clay-700: #6a5630;
+  --color-clay-800: #534427;
+  --color-clay-900: #3f331e;
+
+  /* 松绿：完成、可用 */
+  --color-pine-50: #f1f5f2;
+  --color-pine-100: #dde8e0;
+  --color-pine-200: #bcd1c2;
+  --color-pine-300: #8fb29a;
+  --color-pine-400: #5f8b6d;
+  --color-pine-500: #436f53;
+  --color-pine-600: #345a42;
+  --color-pine-700: #2a4836;
+  --color-pine-800: #233a2d;
+  --color-pine-900: #1d3026;
+
+  /* 写死在 SVG 里的几种颜色（线描地图的州界、提醒的黄、下雪的蓝），也跟着主题换 */
+  --color-map-state: #dcd3c5;
+  --color-map-state-focus: #b8ac97;
+  --color-caution: #835816;
+  --color-snow: #5b7a99;
 
   --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Wabunka 的页头、菜单用的缓动 */
+  --ease-soft: cubic-bezier(0.43, 0.05, 0.17, 1);
   --animate-kenburns: kenburns 11s cubic-bezier(0.25, 0.6, 0.3, 1) both;
+  --animate-drift: drift 9s linear both;
+}
+
+/* 深色主题：首页、展示的区块。同样的颜色名，值换成深藏青底、米白字；clay、pine 两组倒过来排 */
+@layer base {
+  .theme-dark {
+    --color-paper: #000815;
+    --color-paper-deep: #08142a;
+    --color-ink: #f1ece3;
+    --color-ink-soft: #cdc6b8;
+    --color-mute: #9aa3b0;
+    --color-line: #1f2c3d;
+    --color-clay-50: #14181d;
+    --color-clay-100: #1c2026;
+    --color-clay-200: #34312b;
+    --color-clay-300: #5e5340;
+    --color-clay-400: #8f7a52;
+    --color-clay-500: #a48953;
+    --color-clay-600: #c6a86c;
+    --color-clay-700: #d8bd88;
+    --color-clay-800: #e6d2a8;
+    --color-clay-900: #f2e6cc;
+    --color-pine-50: #142019;
+    --color-pine-100: #1a2a21;
+    --color-pine-200: #24402f;
+    --color-pine-300: #3a6149;
+    --color-pine-400: #578a68;
+    --color-pine-500: #74a684;
+    --color-pine-600: #8fbf9d;
+    --color-pine-700: #a9d1b4;
+    --color-pine-800: #c4e2cc;
+    --color-pine-900: #dff0e3;
+    --color-map-state: #22324a;
+    --color-map-state-focus: #4b5f7a;
+    --color-caution: #e0b25a;
+    --color-snow: #9dbad4;
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+  }
 }
 
 html {
@@ -72,35 +132,36 @@ html:lang(zh-Hant) {
 }
 
 body {
-  font-family: var(--font-jost), var(--font-sans-cjk);
+  font-family: var(--font-serif);
+  letter-spacing: 0.01em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 ::selection {
-  background: var(--color-clay-300);
+  background: var(--color-clay-200);
   color: var(--color-ink);
 }
 
-/* 打印、存 PDF：换回浅色（深色底打出来费墨、也看不清） */
-@media print {
-  :root {
+/* 深色区块里夹一段浅色（首页中间米色的两段）：变量换回浅色 */
+@layer base {
+  .theme-light {
     --color-paper: #ffffff;
-    --color-paper-deep: #f4efe7;
-    --color-ink: #1c1b18;
-    --color-ink-soft: #45413a;
-    --color-mute: #5f5952;
-    --color-line: #d9cfbf;
-    --color-clay-50: #fbf4f0;
-    --color-clay-100: #f5e4da;
-    --color-clay-200: #eac6b3;
-    --color-clay-300: #dca186;
-    --color-clay-400: #a98747;
-    --color-clay-500: #8f6e33;
-    --color-clay-600: #7a5c27;
-    --color-clay-700: #634a1f;
-    --color-clay-800: #4d3a19;
-    --color-clay-900: #3a2c13;
+    --color-paper-deep: #f4f1ed;
+    --color-ink: #1a150e;
+    --color-ink-soft: #4a443c;
+    --color-mute: #6b645b;
+    --color-line: #e2dcd2;
+    --color-clay-50: #faf6ee;
+    --color-clay-100: #f3ebdc;
+    --color-clay-200: #e7d8bb;
+    --color-clay-300: #d7c094;
+    --color-clay-400: #c2a46a;
+    --color-clay-500: #a48953;
+    --color-clay-600: #826b3d;
+    --color-clay-700: #6a5630;
+    --color-clay-800: #534427;
+    --color-clay-900: #3f331e;
     --color-pine-50: #f1f5f2;
     --color-pine-100: #dde8e0;
     --color-pine-200: #bcd1c2;
@@ -111,6 +172,48 @@ body {
     --color-pine-700: #2a4836;
     --color-pine-800: #233a2d;
     --color-pine-900: #1d3026;
+    --color-map-state: #dcd3c5;
+    --color-map-state-focus: #b8ac97;
+    --color-caution: #835816;
+    --color-snow: #5b7a99;
+    background-color: var(--color-paper-deep);
+    color: var(--color-ink);
+  }
+}
+
+/* 打印、存 PDF：深色的区块也换回浅色（深色底打出来费墨、也看不清） */
+@media print {
+  .theme-dark {
+    --color-paper: #ffffff;
+    --color-paper-deep: #f4f1ed;
+    --color-ink: #1a150e;
+    --color-ink-soft: #4a443c;
+    --color-mute: #6b645b;
+    --color-line: #e2dcd2;
+    --color-clay-50: #faf6ee;
+    --color-clay-100: #f3ebdc;
+    --color-clay-200: #e7d8bb;
+    --color-clay-300: #d7c094;
+    --color-clay-400: #c2a46a;
+    --color-clay-500: #a48953;
+    --color-clay-600: #826b3d;
+    --color-clay-700: #6a5630;
+    --color-clay-800: #534427;
+    --color-clay-900: #3f331e;
+    --color-pine-50: #f1f5f2;
+    --color-pine-100: #dde8e0;
+    --color-pine-200: #bcd1c2;
+    --color-pine-300: #8fb29a;
+    --color-pine-400: #5f8b6d;
+    --color-pine-500: #436f53;
+    --color-pine-600: #345a42;
+    --color-pine-700: #2a4836;
+    --color-pine-800: #233a2d;
+    --color-pine-900: #1d3026;
+    --color-map-state: #dcd3c5;
+    --color-map-state-focus: #b8ac97;
+    --color-caution: #835816;
+    --color-snow: #5b7a99;
   }
 }
 
@@ -138,6 +241,52 @@ body {
   &:hover {
     background-size: 0 1px;
     background-position: 100% 100%;
+  }
+}
+
+/* 区块标题（照着 Wabunka）：金色衬线字，后面一条细金线拉到右边（section-title.tsx 也用它） */
+@utility section-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-family: var(--font-serif);
+  font-size: 22px;
+  line-height: 1.3;
+  letter-spacing: 0.03em;
+  color: var(--color-clay-600);
+  @media (width >= 48rem) {
+    font-size: 30px;
+  }
+  &::after {
+    content: "";
+    flex: 1;
+    min-width: 2rem;
+    height: 1px;
+    background: color-mix(in srgb, var(--color-clay-500) 70%, transparent);
+    transform: scaleY(0.5);
+  }
+}
+
+/* 导航链接：悬停时下面一条细线从左往右长出来（Wabunka 的做法），当前页一直有 */
+@utility nav-line {
+  position: relative;
+  padding-block: 4px;
+  &::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.6s var(--ease-soft);
+  }
+  &:hover::after,
+  &.is-active::after,
+  &[aria-expanded="true"]::after {
+    transform: scaleX(1);
+    transform-origin: left;
   }
 }
 
@@ -201,124 +350,58 @@ body {
   }
 }
 
-/* ── 开场动画 ── */
-/* 公园名：从下面滚上来，停一下，再往上滚走；下一个紧跟着滚上来 */
-@keyframes intro-roll {
-  0% {
-    opacity: 0;
-    transform: translateY(75%);
-  }
-  30%,
-  62% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-75%);
-  }
-}
-
-/* 站名：淡入，字距慢慢收紧 */
-@keyframes intro-track {
+/* 首屏大图：Wabunka 那样，放大一点、慢慢往左平移，换下一张时交叉淡入 */
+@keyframes drift {
   from {
-    opacity: 0;
-    letter-spacing: 0.72em;
+    transform: scale(1.06) translateX(0);
   }
   to {
-    opacity: 1;
-    letter-spacing: 0.5em;
+    transform: scale(1.06) translateX(-3%);
   }
 }
 
-@keyframes intro-open-up {
-  to {
-    transform: translateY(-100%);
-  }
-}
-
-@keyframes intro-open-down {
-  to {
-    transform: translateY(100%);
-  }
-}
-
-/* 中线：先向两边亮开，幕布分开时淡掉。用 scale 拉长（16rem 拉到整个屏幕宽，倍数 --seam-scale 在 intro.tsx 里按屏幕宽算），
-   不改 width：改宽度每一帧都要重新排版，scale 交给显卡 */
-@keyframes intro-seam-open {
-  0% {
-    scale: 1 1;
-    opacity: 1;
-  }
-  35% {
-    scale: var(--seam-scale, 6) 1;
-    opacity: 1;
-  }
-  100% {
-    scale: var(--seam-scale, 6) 1;
-    opacity: 0;
-  }
-}
-
-.intro-wordmark {
-  /* 字距的动画每帧都要重新排这一行字：排版只在这一行里，不牵动整个开场画面 */
-  contain: layout;
-  letter-spacing: 0.5em;
-  /* 字距加在每个字后面，末尾多出来的一截用负边距抵掉，看起来才居中 */
-  margin-right: -0.5em;
-  animation: intro-track 1.4s var(--ease-expo) both;
-}
-/* 公园名上下两头渐隐，像从一道缝里进出 */
-.intro-words {
-  mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
-}
-
-/*
- * 拉开：首屏大图加载好（或者最晚 2.6 秒、用户跳过）时由 Intro 组件加上 intro-lift。
- * 中线先向两边亮开，上下两半再从中线分开（只动 transform），文字跟着淡掉。
- */
-.intro-lift .intro-half {
-  will-change: transform;
-}
-.intro-lift .intro-top {
-  animation: intro-open-up 1s var(--ease-expo) 0.15s forwards;
-}
-.intro-lift .intro-bottom {
-  animation: intro-open-down 1s var(--ease-expo) 0.15s forwards;
-}
-.intro-lift .intro-seam {
-  animation: intro-seam-open 0.75s var(--ease-expo) forwards;
-}
-.intro-lift .intro-seam > span {
-  background-color: color-mix(in oklab, var(--color-paper) 85%, transparent);
-  transition: background-color 0.2s ease;
-}
-.intro-lift .intro-text {
-  opacity: 0;
-  transition: opacity 0.45s ease;
-}
-.intro-seen .intro {
-  display: none;
-}
-
-/*
- * 首屏文字：开场动画播放时（html 带 intro-playing）先停在起点，幕布拉开时一起出来；
- * 本次会话看过开场就直接出来。--i 是同一组里的顺序，用来错开。
- */
-:root {
-  --intro-delay: 0.15s;
-}
-.intro-playing .hero-rise,
-.intro-playing .hero-fade {
-  animation-play-state: paused;
-}
+/* 首屏文字：打开页面时依次浮上来、淡入；--i 是同一组里的顺序，用来错开 */
 .hero-rise {
   animation: rise 1.3s var(--ease-expo) both;
-  animation-delay: calc(var(--intro-delay) + var(--i, 0) * 0.12s);
+  animation-delay: calc(0.15s + var(--i, 0) * 0.12s);
 }
 .hero-fade {
   animation: fade 1.6s var(--ease-expo) both;
-  animation-delay: calc(var(--intro-delay) + 0.4s + var(--i, 0) * 0.12s);
+  animation-delay: calc(0.55s + var(--i, 0) * 0.12s);
+}
+
+/* “往下滚”的竖线：一道光从上往下流 */
+@keyframes scroll-cue {
+  0% {
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+  45% {
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+  55% {
+    transform: scaleY(1);
+    transform-origin: bottom;
+  }
+  100% {
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+}
+.scroll-cue {
+  animation: scroll-cue 2.4s var(--ease-soft) infinite;
+}
+
+/* 照片下载好了再淡出来（commons-image.tsx 加 data-loaded），不会一块一块地往下画 */
+.js img.fade-img {
+  opacity: 0;
+  transition:
+    opacity 0.9s ease,
+    scale 0.7s var(--ease-soft);
+}
+.js img.fade-img[data-loaded] {
+  opacity: 1;
 }
 
 /* ── 滚动渐显：只在 JS 可用时先藏起来，进入视野后显示 ── */
@@ -342,8 +425,9 @@ body {
   transform: scale(1.15);
   /* scale 留给悬停放大（Tailwind 的 scale-105 用的是 scale 属性，和这里的 transform 互不干扰） */
   transition:
+    opacity 0.9s ease,
     transform 1.8s var(--ease-expo),
-    scale 0.7s var(--ease-expo);
+    scale 0.7s var(--ease-soft);
 }
 .js .reveal-image[data-shown] {
   clip-path: inset(0 0 0 0);
@@ -355,9 +439,6 @@ body {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
-  }
-  .intro {
-    display: none;
   }
   *,
   *::before,

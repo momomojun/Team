@@ -257,7 +257,7 @@ function captionElement(label: string, caption: string, lodging: boolean, color:
   wrap.className = "pointer-events-none relative flex flex-col items-center";
   const card = document.createElement("div");
   card.className = `tour-pop flex items-center gap-2 whitespace-nowrap border py-1 pr-2.5 pl-1 text-[11px] leading-4 ${
-    lodging ? "border-clay-500 bg-clay-500 text-paper" : "border-ink/15 bg-paper text-ink"
+    lodging ? "border-gold bg-gold text-on-gold" : "border-ink/15 bg-paper text-ink"
   }`;
   const number = document.createElement("span");
   number.className = "flex size-5 shrink-0 items-center justify-center rounded-full text-[10px] font-medium text-white";
@@ -2077,7 +2077,7 @@ export function ParkMap({
   const trackTotal = track ? (track.starts[track.starts.length - 1] ?? 0) || 1 : 1;
   const trackBars = (solid: boolean) =>
     track?.timeline.map((segment, index) => {
-      const color = segment.kind === "intro" || segment.kind === "outro" ? "#c9a96e" : track.days[segment.day].color;
+      const color = segment.kind === "intro" || segment.kind === "outro" ? "#1c1b18" : track.days[segment.day].color;
       return (
         <span
           key={index}
@@ -2120,7 +2120,7 @@ export function ParkMap({
     tourUi && tourUi.heading && !tourUi.finale ? tourDays.find((day) => day.day === tourUi.days[tourUi.index]?.day)?.weather : undefined;
   const beatMs = (beatSpeech ?? []).reduce((sum, line) => sum + readingMs(line), 0);
   const toggle = (active: boolean) =>
-    `px-3 py-1.5 transition-colors ${active ? "bg-clay-500 text-paper" : "text-ink hover:bg-paper-deep"}`;
+    `px-3 py-1.5 transition-colors ${active ? "bg-gold text-on-gold" : "text-ink hover:bg-paper-deep"}`;
   const hasTrails = (trails?.length ?? 0) > 0;
   const hasCamps = points.some((point) => point.shape === "camp");
   const hasRoad = legs?.some((leg) => !leg.straight && leg.path.length > 1) ?? false;
@@ -2296,7 +2296,7 @@ export function ParkMap({
         >
           <div
             className={`border-l-[3px] pl-4 transition-transform duration-700 ${tourUi.card || tourUi.finale ? "translate-x-0" : "-translate-x-2"}`}
-            style={{ borderColor: tourUi.finale ? "#c9a96e" : tourUi.color }}
+            style={{ borderColor: tourUi.finale ? "#1c1b18" : tourUi.color }}
           >
             {tourUi.finale ? (
               <>

@@ -61,8 +61,7 @@ export default async function TeslaPage({ params }: PageProps<"/[locale]/parks/[
     <div className={`${parkContainer} py-20 lg:py-28`}>
       <div className="mb-12 grid gap-8 lg:grid-cols-12">
         <div className="lg:col-span-7">
-          <p className="eyebrow text-mute">{tt.eyebrow}</p>
-          <h2 className="mt-5 font-serif text-[clamp(2rem,3.5vw,3.2rem)] leading-tight">{tt.title}</h2>
+          <h2 className="section-title">{tt.title}</h2>
           <p className="mt-5 max-w-2xl text-sm leading-7 text-ink-soft">{tt.intro}</p>
           {!data.osm && <p className="mt-4 max-w-2xl border-l border-clay-600 pl-4 text-sm leading-7 text-clay-800">{tt.noOsm}</p>}
         </div>

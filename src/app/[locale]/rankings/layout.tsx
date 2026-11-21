@@ -24,7 +24,7 @@ export default async function RankingsLayout({ children, params }: LayoutProps<"
   return (
     <>
       <RankingsHashRedirect />
-      <div className="mx-auto max-w-[1600px] px-5 pt-14 pb-14 sm:px-10">
+      <div className="mx-auto max-w-[1296px] px-5 pb-14 sm:px-10">
         <PageHeader
           eyebrow={t.eyebrow}
           title={t.title}
@@ -44,6 +44,7 @@ export default async function RankingsLayout({ children, params }: LayoutProps<"
         </dl>
       </div>
       <SectionNav
+        narrow
         label={t.nav.label}
         items={[
           { id: "visits", label: t.nav.visits, href: base },

@@ -98,7 +98,7 @@ export function CreatorRoutes({
   };
 
   const chip = (active: boolean) =>
-    `border px-3 py-1.5 text-xs transition-colors ${active ? "border-clay-500 bg-clay-500 text-paper" : "border-ink/20 text-ink hover:border-ink"}`;
+    `border px-3 py-1.5 text-xs transition-colors ${active ? "border-gold bg-gold text-on-gold" : "border-ink/20 text-ink hover:border-ink"}`;
 
   return (
     <div>
@@ -166,7 +166,7 @@ export function CreatorRoutes({
                     className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 flex items-center justify-center bg-black/25 opacity-0 transition-opacity group-hover:opacity-100">
-                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-clay-700/90 text-paper shadow-lg transition-transform group-hover:scale-110">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-clay-700/90 text-white shadow-lg transition-transform group-hover:scale-110">
                       <span className="ml-0.5 text-base leading-none" aria-hidden>▶</span>
                     </span>
                   </div>
@@ -180,7 +180,7 @@ export function CreatorRoutes({
               <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-mute">
                 <span
                   className={`px-1.5 py-0.5 text-[11px] tracking-[0.08em] ${
-                    route.platform === "youtube" ? "bg-clay-700 text-paper" : "bg-[#2f6f9f] text-white"
+                    route.platform === "youtube" ? "bg-clay-700 text-white" : "bg-[#2f6f9f] text-white"
                   }`}
                 >
                   {text.platforms[route.platform]}
@@ -276,8 +276,9 @@ export function CreatorRoutes({
                     <span className="text-base leading-none text-mute transition-transform duration-300 group-open/notes:rotate-45">+</span>
                   </summary>
                   <ul className="mt-3 space-y-2 text-sm leading-6 text-ink-soft">
-                    {route.notes.map((note) => (
-                      <li key={note.stop}>
+                    {/* 同一站可能有几条评价（比如班夫大道），key 带上序号 */}
+                    {route.notes.map((note, i) => (
+                      <li key={`${note.stop}-${i}`}>
                         <span className="text-ink">{stopNames[note.stop]?.nameZh ?? note.stop}</span>
                         {text.colon}
                         {note.text}

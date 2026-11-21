@@ -60,7 +60,7 @@ const LODGING_PREFS: LodgingPref[] = ["any", "hotel", "rental", "camp"];
 
 const chip = (active: boolean) =>
   `border px-3 py-1.5 text-xs transition-colors ${
-    active ? "border-clay-500 bg-clay-500 text-paper" : "border-ink/20 text-ink hover:border-ink"
+    active ? "border-gold bg-gold text-on-gold" : "border-ink/20 text-ink hover:border-ink"
   }`;
 
 /** 机场当出发地：“盐湖城国际机场（SLC）”，括号按当前语言 */
@@ -455,11 +455,11 @@ export function TripWizard({
               aria-pressed={pace === option}
               onClick={() => setPace(option)}
               className={`border p-4 text-left transition-colors ${
-                pace === option ? "border-clay-500 bg-clay-500 text-paper" : "border-ink/20 hover:border-ink"
+                pace === option ? "border-gold bg-gold text-on-gold" : "border-ink/20 hover:border-ink"
               }`}
             >
               <span className="block font-serif text-lg">{t.paces[option]}</span>
-              <span className={`mt-1 block text-xs ${pace === option ? "text-paper/70" : "text-mute"}`}>{t.paceHints[option]}</span>
+              <span className={`mt-1 block text-xs ${pace === option ? "text-on-gold/70" : "text-mute"}`}>{t.paceHints[option]}</span>
             </button>
           ))}
         </div>
@@ -524,7 +524,7 @@ export function TripWizard({
       </div>
 
       <div className="flex flex-wrap items-center gap-6">
-        <button type="submit" disabled={busy || !originValue} className={`${buttonLarge} bg-clay-500 text-paper hover:bg-clay-600 disabled:opacity-50`}>
+        <button type="submit" disabled={busy || !originValue} className={`${buttonLarge} bg-gold text-on-gold hover:bg-gold-deep disabled:opacity-50`}>
           {busy ? t.generating : t.generate}
           {!busy && <IconArrowRight className="text-base" />}
         </button>

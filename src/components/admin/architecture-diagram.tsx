@@ -195,7 +195,7 @@ export function ArchitectureDiagram({ lang, chain }: { lang: AdminLang; chain?: 
   const differs = live !== null && live.join("|") !== CHAT_DEFAULT.join("|");
   return (
     <figure className="mt-6">
-      <div className="no-scrollbar overflow-x-auto bg-[#f4efe7] p-3 [--color-paper:#f4efe7] [--color-paper-deep:#ebe4d8]">
+      <div className="no-scrollbar overflow-x-auto">
         <svg viewBox="0 0 1200 760" className="block h-auto w-full min-w-[920px]" role="img" aria-label={t.title}>
           <Markers />
 

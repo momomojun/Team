@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { IconChevronRight } from "@/components/icons";
 import { googleSnapshotDate } from "@/data/attractions/google";
 import { isSite, parks, regionOrder } from "@/data/parks";
 import type { Locale } from "@/i18n/config";
@@ -26,47 +27,40 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
   ];
 
   return (
-    <footer className="cv-auto [--cv-h:900px] bg-night text-white print:hidden">
-      <div className="mx-auto max-w-[1600px] px-5 pt-24 pb-10 sm:px-10">
-        <div className="grid gap-14 lg:grid-cols-12">
-          <div className="lg:col-span-5">
-            <Link href={`/${locale}`} className="font-serif text-3xl tracking-[0.42em] uppercase sm:text-4xl">
-              {dict.site.wordmark}
-            </Link>
-            <p className="mt-6 max-w-sm text-sm leading-7 text-white/60">{t.tagline}</p>
-          </div>
-          <nav className="lg:col-span-3" aria-label={t.pagesTitle}>
-            <p className="eyebrow text-white/60">{t.pagesTitle}</p>
-            <ul className="mt-6 space-y-3">
-              {pages.map((page) => (
-                <li key={page.href}>
-                  <Link href={page.href} className="font-serif text-xl transition-colors hover:text-clay-600">
-                    {page.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-          <div className="lg:col-span-4">
-            <p className="eyebrow text-white/60">{t.dataTitle}</p>
-            <p className="mt-6 text-sm leading-7 text-white/60">{t.sources}</p>
-            <p className="mt-3 text-sm leading-7 text-white/60">{fill(t.googleNote, { date: googleSnapshotDate })}</p>
-          </div>
+    <footer className="cv-auto [--cv-h:900px] bg-coal text-white print:hidden">
+      {/* 照着 Wabunka：炭灰底，中间是站名，下面一行页面链接；公园按片区分栏排在下面，最后是数据来源和声明 */}
+      <div className="mx-auto max-w-[1216px] px-5 pt-20 pb-10 sm:px-10">
+        <div className="text-center">
+          <Link href={`/${locale}`} className="font-serif text-4xl tracking-[0.12em] sm:text-5xl">
+            {dict.site.wordmark}
+          </Link>
+          <p className="mx-auto mt-5 max-w-md text-sm leading-7 text-white/60">{t.tagline}</p>
         </div>
+        <nav aria-label={t.pagesTitle} className="mt-12">
+          <ul className="flex flex-wrap justify-center gap-x-9 gap-y-4 font-serif text-[15px]">
+            {pages.map((page) => (
+              <li key={page.href}>
+                <Link href={page.href} className="nav-line inline-flex items-center gap-2 text-white/85 hover:text-white">
+                  {page.label}
+                  <IconChevronRight className="text-[10px] text-white/50" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
 
-        <div className="mt-20 border-t border-white/15 pt-10">
-          <p className="eyebrow text-white/60">{t.parksTitle}</p>
-          <div className="mt-8 columns-2 gap-10 sm:columns-3 lg:columns-5 xl:columns-6">
+        <div className="mt-16 border-t border-white/12 pt-10">
+          <div className="columns-2 gap-10 sm:columns-3 lg:columns-5 xl:columns-6">
             {groups.map((group) => (
-              <div key={group.title} className="mb-9 break-inside-avoid">
-                <p className="text-[11px] tracking-[0.14em] text-white/60">{group.title}</p>
-                <ul className="mt-3 space-y-2">
+              <div key={group.title} className="mb-8 break-inside-avoid">
+                <p className="text-[11px] tracking-[0.14em] text-white/50">{group.title}</p>
+                <ul className="mt-3 space-y-1.5">
                   {group.parks.map((park) => (
                     <li key={park.code}>
                       <Link
                         href={`/${locale}/parks/${park.code}`}
                         title={park.nameEn}
-                        className="font-serif text-[15px] text-white/85 transition-colors hover:text-clay-600"
+                        className="font-serif text-[14px] text-white/75 transition-colors duration-300 hover:text-gold"
                       >
                         {park.nameZh}
                       </Link>
@@ -78,9 +72,13 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
           </div>
         </div>
 
-        <div className="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-white/15 pt-6 text-xs tracking-[0.06em] text-white/60">
-          <p>{t.disclaimer}</p>
-          <p>© 2026 {dict.site.name}</p>
+        <div className="mt-10 border-t border-white/12 pt-8 text-center text-xs leading-6 text-white/50">
+          <p className="tracking-[0.14em] text-white/70">{t.dataTitle}</p>
+          <p className="mx-auto mt-2 max-w-3xl">
+            {t.sources} {fill(t.googleNote, { date: googleSnapshotDate })}
+          </p>
+          <p className="mt-4">{t.disclaimer}</p>
+          <p className="mt-2">© 2026 {dict.site.name}</p>
         </div>
       </div>
     </footer>

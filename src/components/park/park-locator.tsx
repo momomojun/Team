@@ -155,8 +155,7 @@ export function ParkLocator({ park, locale, dict }: { park: Park; locale: string
     <section className="border-t border-line">
       <div className="mx-auto grid max-w-[1600px] gap-12 px-5 py-20 sm:px-10 lg:grid-cols-12 lg:py-28">
         <div className="lg:col-span-7">
-          <p className="eyebrow text-mute">{t.where.eyebrow}</p>
-          <h2 className="mt-5 font-serif text-[clamp(1.9rem,3vw,2.8rem)] leading-tight">{t.where.title}</h2>
+          <h2 className="section-title">{t.where.title}</h2>
           <figure className="mt-10 border border-line bg-paper">
             <svg viewBox={`${x0} ${y0} ${width} ${height}`} className="block h-auto w-full" role="img" aria-label={fill(t.where.mapLabel, { park: name(park) })}>
               {view.states.map((state) => (
@@ -164,7 +163,7 @@ export function ParkLocator({ park, locale, dict }: { park: Park; locale: string
                   key={state.name}
                   d={state.d}
                   fill={state.focus ? "var(--color-paper-deep)" : "none"}
-                  stroke={state.focus ? "#5c6e82" : "#33424f"}
+                  stroke={state.focus ? "var(--color-map-state-focus)" : "var(--color-map-state)"}
                   strokeWidth={1}
                   vectorEffect="non-scaling-stroke"
                   strokeLinejoin="round"

@@ -18,9 +18,8 @@ export default async function HonorsPage({ params }: PageProps<"/[locale]/rankin
   const { dict, t, text, worldHeritage, darkSky, names, checked } = view;
 
   return (
-    <div className="mx-auto max-w-[1600px] px-5 py-20 sm:px-10 lg:py-24">
-      <p className="eyebrow text-mute">{t.honors.eyebrow}</p>
-      <h2 className="mt-5 font-serif text-[clamp(2rem,3.5vw,3.2rem)] leading-tight">{t.honors.title}</h2>
+    <div className="mx-auto max-w-[1296px] px-5 py-20 sm:px-10 lg:py-24">
+      <h2 className="section-title">{t.honors.title}</h2>
       <div className="mt-12">
         <HonorsSection
           units={dict.units}

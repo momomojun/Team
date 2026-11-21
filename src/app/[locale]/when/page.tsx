@@ -42,7 +42,7 @@ export default async function WhenPage({ params }: PageProps<"/[locale]/when">) 
   });
 
   return (
-    <div className="mx-auto max-w-[1600px] px-5 pt-14 pb-28 sm:px-10">
+    <div className="mx-auto max-w-[1296px] px-5 pb-28 sm:px-10">
       <PageHeader
         eyebrow={t.eyebrow}
         title={t.title}

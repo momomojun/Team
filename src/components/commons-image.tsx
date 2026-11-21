@@ -1,7 +1,7 @@
 "use client";
 
 import Image, { type ImageLoaderProps, type ImageProps } from "next/image";
-import { useState, type Ref } from "react";
+import { useCallback, useState, type Ref, type RefCallback } from "react";
 
 /** Wikimedia 的标准缩略图宽度：这些宽度 CDN 上多半已经有现成的，别的宽度要现生成、还可能被限流 */
 const WIDTHS = [120, 250, 330, 500, 960, 1280, 1920];
@@ -25,19 +25,42 @@ export function commonsSrc(src: string, width: number): string {
   return commonsLoader({ src, width, quality: undefined });
 }
 
-/** Wikimedia Commons 照片：按尺寸挑标准缩略图；万一这个宽度的缩略图加载失败，退回传进来的那张 */
-export function CommonsImage({ alt, onError, src, ref, ...props }: ImageProps & { ref?: Ref<HTMLImageElement> }) {
+/** 照片下载好了：加 data-loaded，globals.css 的 fade-img 让它淡出来 */
+function markLoaded(image: HTMLImageElement | null) {
+  if (image && image.complete && image.naturalWidth > 0) image.dataset.loaded = "1";
+}
+
+/**
+ * Wikimedia Commons 照片：按尺寸挑标准缩略图；万一这个宽度的缩略图加载失败，退回传进来的那张。
+ * 下载好了才淡出来（Wabunka 那样，照片不会一块一块往下画）；React 接手前就从缓存里加载好了的，挂上时直接显示。
+ */
+export function CommonsImage({ alt, onError, onLoad, src, ref, className, ...props }: ImageProps & { ref?: Ref<HTMLImageElement> }) {
   const [fallback, setFallback] = useState(false);
+  const attach: RefCallback<HTMLImageElement> = useCallback(
+    (image) => {
+      markLoaded(image);
+      if (typeof ref === "function") ref(image);
+      else if (ref) ref.current = image;
+    },
+    [ref],
+  );
   return (
     <Image
       alt={alt}
       {...props}
-      ref={ref}
+      ref={attach}
       src={src}
+      className={`fade-img ${className ?? ""}`}
       loader={fallback ? undefined : commonsLoader}
       unoptimized={fallback}
+      onLoad={(event) => {
+        event.currentTarget.dataset.loaded = "1";
+        onLoad?.(event);
+      }}
       onError={(event) => {
-        if (!fallback) setFallback(true);
+        // 退回原图还是失败：也别一直藏着
+        if (fallback) event.currentTarget.dataset.loaded = "1";
+        else setFallback(true);
         onError?.(event);
       }}
     />

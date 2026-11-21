@@ -216,14 +216,14 @@ export function GuideSummary({
 
         <div className="space-y-8 lg:col-span-5">
           {serious.length > 0 && (
-            <div className="bg-clay-700 p-5 text-paper">
+            <div className="bg-alert p-5 text-white">
               <h3 className="font-serif text-xl">{g.serious}</h3>
-              <p className="mt-1 text-xs leading-5 text-paper/85">{g.seriousHint}</p>
+              <p className="mt-1 text-xs leading-5 text-white/85">{g.seriousHint}</p>
               <ul className="mt-4 space-y-3">
                 {serious.map(({ id, note }) => (
                   <li key={id} className="text-sm leading-6">
                     <span className="font-medium">{nameOf(id)}</span>
-                    <span className="block text-xs leading-6 text-paper/85">{note}</span>
+                    <span className="block text-xs leading-6 text-white/85">{note}</span>
                   </li>
                 ))}
               </ul>

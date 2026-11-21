@@ -301,7 +301,7 @@ export function TripOverview({
         {(notes.length > 0 || seriousNote) && (
           <div className="lg:col-span-5">
             <p className="text-xs tracking-[0.1em] text-clay-700">{t.headsUp}</p>
-            {seriousNote && <p className="mt-3 bg-clay-700 px-4 py-3 text-sm font-medium leading-6 text-paper">{seriousNote}</p>}
+            {seriousNote && <p className="mt-3 bg-alert px-4 py-3 text-sm font-medium leading-6 text-white">{seriousNote}</p>}
             <ul className="mt-3 space-y-2 border-l border-clay-600 pl-4 text-sm leading-6 text-ink-soft">
               {notes.map((note) => (
                 <li key={note}>{note}</li>
