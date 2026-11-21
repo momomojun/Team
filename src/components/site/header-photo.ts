@@ -14,7 +14,7 @@ export function headerPhoto(id: string, locale: Locale): HeaderPhoto | undefined
   if (!attraction || !photo) return undefined;
   const park = parks.find((p) => p.code === attraction.park);
   return {
-    src: photo.url.replace("/960px-", "/1280px-"),
+    src: photo.url.replace("/960px-", "/1920px-"),
     href: photo.page,
     credit: fill(getDictionary(locale).attraction.photoCredit, { author: photo.author, license: photo.license }),
     // 公园名、景点名分开转换（英文版按各自的原文查英文）

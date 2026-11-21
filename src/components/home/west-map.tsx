@@ -98,7 +98,7 @@ function Shapes({
           key={state.name}
           d={state.d}
           fill={state.focus ? "var(--color-paper-deep)" : "none"}
-          stroke={state.focus ? "#5c6e82" : "#33424f"}
+          stroke={state.focus ? "var(--color-map-state-focus)" : "var(--color-map-state)"}
           strokeWidth={1}
           vectorEffect="non-scaling-stroke"
           strokeLinejoin="round"

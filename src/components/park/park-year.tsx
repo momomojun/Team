@@ -40,8 +40,7 @@ export function ParkYear({ park, locale, dict }: { park: Park; locale: string; d
       <div className="mx-auto max-w-[1600px] px-5 py-20 sm:px-10 lg:py-28">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
-            <p className="eyebrow text-mute">{t.eyebrow}</p>
-            <h2 className="mt-5 font-serif text-[clamp(1.9rem,3vw,2.8rem)] leading-tight">{t.title}</h2>
+            <h2 className="section-title">{t.title}</h2>
           </div>
           <p className="max-w-md text-sm leading-7 text-ink-soft">{localize(park.seasonNote, locale as Locale)}</p>
         </div>
@@ -127,7 +126,7 @@ export function ParkYear({ park, locale, dict }: { park: Park; locale: string; d
                   {climates.map((c, i) => (
                     <td key={i} className="py-4 tabular-nums text-ink-soft">
                       {Math.round(c!.wetDays)}
-                      {c!.snowDays >= 1 && <span className="block text-[10px] text-[#9dbad4]">{fill(t.snow, { n: Math.round(c!.snowDays) })}</span>}
+                      {c!.snowDays >= 1 && <span className="block text-[10px] text-snow">{fill(t.snow, { n: Math.round(c!.snowDays) })}</span>}
                     </td>
                   ))}
                 </tr>

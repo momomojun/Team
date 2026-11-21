@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-/** 公园页的信息区块：墨色细线下是衬线标题，右边小字写数据来源 */
+/** 公园页的信息区块：金色衬线标题后面一条细金线（和首页的区块标题一样），下面小字写数据来源 */
 export function Section({
   title,
   source,
@@ -12,11 +12,14 @@ export function Section({
 }) {
   return (
     <section>
-      <header className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-t border-ink pt-5">
-        <h3 className="font-serif text-2xl">{title}</h3>
-        {source && <p className="text-xs text-mute">{source}</p>}
+      <header>
+        <h3 className="flex items-center gap-4 font-serif text-[22px] leading-tight tracking-[0.03em] text-clay-600 md:text-[26px]">
+          <span className="shrink-0">{title}</span>
+          <span aria-hidden className="h-px flex-1 bg-clay-500/70 [transform:scaleY(0.5)]" />
+        </h3>
+        {source && <p className="mt-2 text-xs text-mute">{source}</p>}
       </header>
-      <div className="pt-7">{children}</div>
+      <div className="pt-6">{children}</div>
     </section>
   );
 }

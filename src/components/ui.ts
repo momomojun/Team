@@ -2,7 +2,7 @@
 const base =
   "inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 text-xs tracking-[0.06em] transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-40";
 
-export const buttonPrimary = `${base} bg-clay-500 text-paper hover:bg-clay-600`;
+export const buttonPrimary = `${base} bg-gold text-on-gold hover:bg-gold-deep`;
 
 export const buttonSecondary = `${base} border border-ink/20 text-ink hover:border-ink`;
 

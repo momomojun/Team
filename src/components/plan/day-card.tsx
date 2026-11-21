@@ -599,7 +599,7 @@ export function DayCard({
                               key={note.text}
                               className={`border px-1.5 py-0.5 text-[11px] ${
                                 note.tone === "serious"
-                                  ? "border-clay-700 bg-clay-700 font-medium text-paper"
+                                  ? "border-alert bg-alert font-medium text-white"
                                   : note.tone === "warn"
                                     ? "border-clay-600/40 text-clay-700"
                                     : "border-line text-ink-soft"

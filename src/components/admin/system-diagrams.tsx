@@ -178,7 +178,7 @@ function Legend({ lang }: { lang: AdminLang }) {
 
 function Canvas({ height, label, children }: { height: number; label: string; children: React.ReactNode }) {
   return (
-    <div className="no-scrollbar overflow-x-auto bg-[#f4efe7] p-3 [--color-paper:#f4efe7] [--color-paper-deep:#ebe4d8]">
+    <div className="no-scrollbar overflow-x-auto">
       <svg viewBox={`0 0 1200 ${height}`} className="block h-auto w-full min-w-[920px]" role="img" aria-label={label}>
         <Markers />
         {children}

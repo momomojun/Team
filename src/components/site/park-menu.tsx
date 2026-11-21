@@ -107,7 +107,7 @@ export function ParksMenu({
         aria-expanded={open}
         aria-haspopup="true"
         onClick={() => setOpen(!open)}
-        className="inline-flex items-center gap-1.5 hover:opacity-60"
+        className="nav-line inline-flex items-center gap-1.5"
       >
         {text.parks}
         <IconChevronRight className={`text-[10px] transition-transform ${open ? "-rotate-90" : "rotate-90"}`} />
@@ -136,7 +136,7 @@ export function ParksMenu({
           </div>
           <div className="mx-auto flex max-w-[1600px] justify-end px-10 pb-7">
             <Link
-              href={`/${locale}#parks`}
+              href={`/${locale}/parks`}
               onClick={() => setOpen(false)}
               className="link-line inline-flex items-center gap-2 text-xs tracking-[0.12em]"
             >
@@ -187,7 +187,7 @@ export function MobileMenu({
         createPortal(
         <div className="fixed inset-0 z-[60] overflow-y-auto bg-paper text-ink tracking-normal whitespace-normal lg:hidden">
           <div className="flex h-16 items-center justify-between border-b border-line px-5 sm:px-10">
-            <Link href={`/${locale}`} onClick={close} className="font-serif text-base tracking-[0.3em] uppercase">
+            <Link href={`/${locale}`} onClick={close} className="font-serif text-xl tracking-[0.12em]">
               {wordmark}
             </Link>
             <button type="button" aria-label={text.close} onClick={close} className="text-xl">
@@ -196,7 +196,7 @@ export function MobileMenu({
           </div>
           <nav className="space-y-9 px-5 pt-7 pb-16 sm:px-10">
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              <Link href={`/${locale}/plan`} onClick={close} className="bg-clay-500 px-4 py-3 text-center text-sm tracking-[0.12em] text-paper">
+              <Link href={`/${locale}/plan`} onClick={close} className="bg-gold px-4 py-3 text-center text-sm tracking-[0.12em] text-on-gold">
                 {text.start}
               </Link>
               <Link href={`/${locale}/plan`} onClick={close} className="border border-ink/25 px-4 py-3 text-center text-sm tracking-[0.12em]">

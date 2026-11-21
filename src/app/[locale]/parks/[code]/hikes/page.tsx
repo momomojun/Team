@@ -35,8 +35,7 @@ export default async function HikesPage({ params }: PageProps<"/[locale]/parks/[
     <div className={`${parkContainer} py-20 lg:py-28`}>
       <div className="mb-12 grid gap-8 lg:grid-cols-12">
         <div className="lg:col-span-7">
-          <p className="eyebrow text-mute">{t.hikes.eyebrow}</p>
-          <h2 className="mt-5 font-serif text-[clamp(2rem,3.5vw,3.2rem)] leading-tight">
+          <h2 className="section-title">
             {fill(t.hikes.title, { n: displayCount })}
           </h2>
           <p className="mt-5 max-w-2xl text-sm leading-7 text-ink-soft">

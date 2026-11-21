@@ -20,8 +20,7 @@ export default async function AttractionsPage({ params }: PageProps<"/[locale]/p
   return (
     <div className={`${parkContainer} py-20 lg:py-28`}>
       <div className="mb-12">
-        <p className="eyebrow text-mute">{t.attractionsEyebrow}</p>
-        <h2 className="mt-5 font-serif text-[clamp(2rem,3.5vw,3.2rem)] leading-tight">
+        <h2 className="section-title">
           {fill(t.attractionsTitle, { n: attractions.length })}
         </h2>
       </div>

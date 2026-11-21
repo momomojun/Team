@@ -28,8 +28,7 @@ export default async function LivePage({ params }: PageProps<"/[locale]/parks/[c
   return (
     <section className="bg-paper-deep">
       <div className={`${parkContainer} py-20 lg:py-28`}>
-      <p className="eyebrow text-mute">{t.infoEyebrow}</p>
-      <h2 className="mt-5 font-serif text-[clamp(2rem,3.5vw,3.2rem)] leading-tight">{t.infoTitle}</h2>
+      <h2 className="section-title">{t.infoTitle}</h2>
       {isUsingDemoKey() && (
         <p className="mt-8 max-w-3xl border-l border-mute pl-5 text-xs leading-6 text-mute">{dict.common.demoKeyNotice}</p>
       )}

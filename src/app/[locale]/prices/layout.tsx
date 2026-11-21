@@ -22,7 +22,7 @@ export default async function PricesLayout({ children, params }: LayoutProps<"/[
   const base = `/${locale}/prices`;
 
   return (
-    <div className="mx-auto max-w-[1600px] px-5 pt-14 pb-28 sm:px-10">
+    <div className="mx-auto max-w-[1296px] px-5 pb-28 sm:px-10">
       <PricesHashRedirect />
       <PageHeader eyebrow={t.eyebrow} title={t.title} intro={t.intro} photo={headerPhoto("glac-going-to-the-sun-road", locale)} />
       <div className="mt-10">

@@ -116,7 +116,7 @@ export function AttractionTags({ attraction: a, text }: { attraction: Attraction
   if (!a.mustSee && !a.outsidePark && !a.openMonths && !a.bestMonths && !a.permit) return null;
   return (
     <ul className="flex flex-wrap gap-2">
-      {a.mustSee && <li className={`${tag} border-clay-500 bg-clay-500 text-paper`}>{t.mustSee}</li>}
+      {a.mustSee && <li className={`${tag} border-gold bg-gold text-on-gold`}>{t.mustSee}</li>}
       {a.outsidePark && <li className={`${tag} border-line text-mute`}>{t.outsidePark}</li>}
       {a.openMonths && (
         <li className={`${tag} border-clay-600/40 text-clay-700`}>
