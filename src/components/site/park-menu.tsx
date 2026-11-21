@@ -196,7 +196,7 @@ export function MobileMenu({
           </div>
           <nav className="space-y-9 px-5 pt-7 pb-16 sm:px-10">
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              <Link href={`/${locale}/plan`} onClick={close} className="bg-ink px-4 py-3 text-center text-sm tracking-[0.12em] text-paper">
+              <Link href={`/${locale}/plan`} onClick={close} className="bg-clay-500 px-4 py-3 text-center text-sm tracking-[0.12em] text-paper">
                 {text.start}
               </Link>
               <Link href={`/${locale}/plan`} onClick={close} className="border border-ink/25 px-4 py-3 text-center text-sm tracking-[0.12em]">

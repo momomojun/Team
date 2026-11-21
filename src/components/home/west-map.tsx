@@ -98,7 +98,7 @@ function Shapes({
           key={state.name}
           d={state.d}
           fill={state.focus ? "var(--color-paper-deep)" : "none"}
-          stroke={state.focus ? "#b8ac97" : "#dcd3c5"}
+          stroke={state.focus ? "#5c6e82" : "#33424f"}
           strokeWidth={1}
           vectorEffect="non-scaling-stroke"
           strokeLinejoin="round"
@@ -123,11 +123,11 @@ function Shapes({
       })}
       {view.cities.map((city) => (
         <g key={city.id}>
-          <circle cx={city.x} cy={city.y} r={3.5 * textScale} fill="var(--color-paper)" stroke="#857e72" strokeWidth={1.2 * textScale} />
+          <circle cx={city.x} cy={city.y} r={3.5 * textScale} fill="var(--color-paper)" stroke="var(--color-mute)" strokeWidth={1.2 * textScale} />
           <text
             x={city.x + 10 * textScale}
             y={city.y + 5 * textScale}
-            fill="#857e72"
+            fill="var(--color-mute)"
             fontSize={15 * textScale}
             // 手机上缩得太小看不清，只留圆点
             className="max-sm:hidden"

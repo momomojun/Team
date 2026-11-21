@@ -53,14 +53,13 @@ export function SiteHeader({
             : "border-b border-transparent bg-gradient-to-b from-black/35 to-transparent text-white"
         }`}
       >
-        {/* 手机和平板上：左边标志，右边行程、简繁和菜单；宽屏（导航放得下 6 项）：左导航、中间标志、右边简繁和按钮 */}
+        {/* 11-20 改版：导航只留 4 项（公园、什么时候去、灵感、榜单），价格放进手机菜单和页脚；行程就是右边的金色按钮（带景点数）。
+            手机和平板上：左边标志，右边行程、简繁和菜单；宽屏：左导航、中间标志、右边账号、简繁和按钮 */}
         <div className="mx-auto flex h-16 max-w-[1600px] items-center justify-between px-5 whitespace-nowrap sm:px-10 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:gap-x-6">
-          <nav className="hidden items-center gap-6 text-[13px] tracking-[0.12em] lg:flex xl:gap-8">
+          <nav className="hidden items-center gap-7 text-[13px] tracking-[0.14em] lg:flex xl:gap-10">
             <ParksMenu locale={locale} regions={regions} text={text} onOpenChange={setMenuOpen} />
-            <TripNavLink href={`/${locale}/plan`} label={text.plan} />
             <NavLink href={`/${locale}/when`} label={text.when} active={pathname === `/${locale}/when`} />
             <NavLink href={`/${locale}/routes`} label={text.routes} active={pathname === `/${locale}/routes`} />
-            <NavLink href={`/${locale}/prices`} label={text.prices} active={pathname === `/${locale}/prices` || pathname.startsWith(`/${locale}/prices/`)} />
             <NavLink href={`/${locale}/rankings`} label={text.rankings} active={pathname === `/${locale}/rankings` || pathname.startsWith(`/${locale}/rankings/`)} />
           </nav>
 
@@ -72,7 +71,7 @@ export function SiteHeader({
           </Link>
 
           <div className="flex items-center justify-end gap-5 sm:gap-6">
-            <span className="text-[13px] tracking-[0.12em] lg:hidden">
+            <span className="hidden text-[13px] tracking-[0.12em] sm:inline lg:hidden">
               <TripNavLink href={`/${locale}/plan`} label={text.plan} />
             </span>
             <span className="hidden text-[13px] tracking-[0.12em] lg:inline">
@@ -80,14 +79,13 @@ export function SiteHeader({
             </span>
             <LocaleSwitcher current={locale} />
             <MobileMenu locale={locale} wordmark={wordmark} regions={regions} text={text} />
-            <Link
+            <TripNavLink
               href={`/${locale}/plan`}
-              className={`hidden px-4 py-2 text-xs tracking-[0.14em] transition-colors duration-300 md:inline-block ${
-                solid ? "bg-ink text-paper hover:bg-clay-700" : "border border-white/60 hover:bg-white hover:text-ink"
+              label={text.start}
+              className={`hidden items-baseline gap-1.5 px-5 py-2.5 text-xs tracking-[0.16em] transition-colors duration-300 md:inline-flex ${
+                solid ? "bg-clay-500 text-paper hover:bg-clay-600" : "border border-white/60 hover:bg-white hover:text-[#0d1520]"
               }`}
-            >
-              {text.start}
-            </Link>
+            />
           </div>
         </div>
       </header>

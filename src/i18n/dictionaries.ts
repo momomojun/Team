@@ -26,7 +26,7 @@ const zhHans = {
     parks: "公园",
     plan: "行程",
     when: "什么时候去",
-    routes: "博主·明星·电影",
+    routes: "灵感",
     prices: "价格",
     rankings: "榜单",
     start: "开始规划",
@@ -1556,9 +1556,12 @@ const zhHans = {
     },
     copilot: {
       eyebrow: "Copilot · 用一句话说需求",
-      title: "直接说你想怎么玩，缺什么我来问，问清楚就排好",
+      title: "说一句话，整趟行程替你排好",
       intro:
-        "比如“6 月带爸妈去优胜美地玩 4 天，从旧金山飞”。排好的行程会放进下面的行程页，之后还能接着说“轻松一点”“第三晚住 Curry Village”“不去冰川点了”“换成 9 月去”。",
+        "哪天去哪、几点到、住哪、哪些景点那几天去不了，都按国家公园的开放日期算好。排完还能接着说“轻松一点”“第三晚住 Curry Village”“换成 9 月去”。",
+      waking: "Copilot 正在唤醒，约 20–30 秒后就能发送",
+      unavailable: "Copilot 暂时用不了，可以先用下面的表单自己排。",
+      manual: "不想打字？自己选公园和日期",
       name: "Copilot",
       examples: [
         "6 月带爸妈去优胜美地玩 4 天，从旧金山飞",
@@ -1599,6 +1602,8 @@ const zhHans = {
       unavailableMonth: "{month} 月去不了的景点有 {n} 个，想去的在里面就换个月份：",
       unavailableDated: "这几天去不了的景点有 {n} 个，想去的在里面就换个日期：",
       unavailableOthers: "另外 {n} 个不太热门的",
+      unavailableShow: "看原因和替代 ↓",
+      unavailableHide: "收起 ↑",
       roadUnlikely: "往年这几天{road}多半还没通车（或者已经封路），定了日期也排不进去",
       tourOff: "出发这几天不开",
       alertClosed: "NPS 实时公告说关了：{title}（公告说的是现在，出发前再看一眼）",

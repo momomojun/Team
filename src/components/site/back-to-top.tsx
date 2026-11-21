@@ -18,7 +18,7 @@ export function BackToTop({ label }: { label: string }) {
       title={label}
       tabIndex={visible ? 0 : -1}
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      className={`fixed right-5 bottom-5 z-40 print:hidden flex size-11 items-center justify-center border border-ink/15 bg-paper/95 text-lg text-ink shadow-sm backdrop-blur transition-[opacity,transform,background-color,color] duration-300 hover:bg-ink hover:text-paper sm:right-8 sm:bottom-8 ${
+      className={`fixed right-5 bottom-5 z-40 print:hidden flex size-11 items-center justify-center border border-ink/15 bg-paper/95 text-lg text-ink shadow-sm backdrop-blur transition-[opacity,transform,background-color,color] duration-300 hover:bg-clay-500 hover:text-paper sm:right-8 sm:bottom-8 ${
         visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0"
       }`}
     >

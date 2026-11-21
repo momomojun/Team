@@ -44,7 +44,7 @@ export function CelebritySpots({
   const visible = shots.filter((shot) => !park || shot.park === park);
   const parkName = (code: string) => parks.find((p) => p.code === code)?.nameZh ?? code;
   const chip = (active: boolean) =>
-    `border px-3 py-1.5 text-xs transition-colors ${active ? "border-ink bg-ink text-paper" : "border-ink/20 text-ink hover:border-ink"}`;
+    `border px-3 py-1.5 text-xs transition-colors ${active ? "border-clay-500 bg-clay-500 text-paper" : "border-ink/20 text-ink hover:border-ink"}`;
 
   return (
     <div>

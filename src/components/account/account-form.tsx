@@ -70,7 +70,7 @@ export function AccountForm({
       </label>
       {mode === "signup" && <p className="text-xs leading-6 text-mute">{text.passwordHint}</p>}
       {error && <p className="text-sm text-clay-700">{error}</p>}
-      <button type="submit" disabled={pending} className={`${buttonLarge} bg-ink text-paper hover:bg-clay-700 disabled:opacity-60`}>
+      <button type="submit" disabled={pending} className={`${buttonLarge} bg-clay-500 text-paper hover:bg-clay-600 disabled:opacity-60`}>
         {mode === "signup" ? text.signupSubmit : text.loginSubmit}
       </button>
     </form>

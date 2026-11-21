@@ -38,7 +38,7 @@ export interface TeslaLodgingRow {
 const SUPER_COLOR = "#a04c2e";
 const DEST_COLOR = "#b8862b";
 const LODGING_COLOR = "#6b6459";
-const GATEWAY_COLOR = "#1c1b18";
+const GATEWAY_COLOR = "#5d6b7a";
 /** 数据整理那天往前一年内开的算新开 */
 const NEW_DAYS = 365;
 
@@ -181,7 +181,7 @@ export function TeslaExplorer({
       >
         <div className="flex gap-4">
           <span
-            className="mt-1 inline-flex size-6 shrink-0 items-center justify-center rounded-full text-[11px] text-paper tabular-nums"
+            className="mt-1 inline-flex size-6 shrink-0 items-center justify-center rounded-full text-[11px] text-white tabular-nums"
             style={{ backgroundColor: s.kind === "supercharger" ? SUPER_COLOR : DEST_COLOR }}
           >
             {index + 1}

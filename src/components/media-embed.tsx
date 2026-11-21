@@ -37,7 +37,7 @@ export function MediaEmbed({
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="group relative block aspect-video w-full max-w-[480px] overflow-hidden border border-line bg-ink text-left"
+            className="group relative block aspect-video w-full max-w-[480px] overflow-hidden border border-line bg-night text-left"
           >
             <img
               src={`https://i.ytimg.com/vi/${encodeURIComponent(src)}/hqdefault.jpg`}
@@ -46,7 +46,7 @@ export function MediaEmbed({
               loading="lazy"
             />
             <div className="absolute inset-0 flex items-center justify-center bg-black/30 transition-colors group-hover:bg-black/15">
-              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-clay-700/90 text-white shadow-lg transition-transform group-hover:scale-110">
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-clay-700/90 text-paper shadow-lg transition-transform group-hover:scale-110">
                 <span className="ml-0.5 text-base leading-none" aria-hidden>▶</span>
               </span>
             </div>

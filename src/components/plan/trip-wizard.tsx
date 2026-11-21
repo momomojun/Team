@@ -60,7 +60,7 @@ const LODGING_PREFS: LodgingPref[] = ["any", "hotel", "rental", "camp"];
 
 const chip = (active: boolean) =>
   `border px-3 py-1.5 text-xs transition-colors ${
-    active ? "border-ink bg-ink text-paper" : "border-ink/20 text-ink hover:border-ink"
+    active ? "border-clay-500 bg-clay-500 text-paper" : "border-ink/20 text-ink hover:border-ink"
   }`;
 
 /** 机场当出发地：“盐湖城国际机场（SLC）”，括号按当前语言 */
@@ -343,11 +343,24 @@ export function TripWizard({
       </div>
 
       {/* 先说这个月（这几天）去不了哪些热门景点：想去的地方去不了，就换个时间 */}
+      {/* 11-20 改版：收成一行（数量和前几个名字），点开再看原因和替代，不再把“生成攻略”挤到很下面 */}
       {unavailable.length > 0 && (
-        <div className="border-l-2 border-clay-600 bg-clay-50/70 px-5 py-4">
-          <p className="text-sm text-clay-800">
-            {fill(startDate ? t.unavailableDated : t.unavailableMonth, { month: tripMonth, n: unavailable.length })}
-          </p>
+        <details className="group border border-line bg-paper-deep/60 px-5 py-3.5">
+          <summary className="flex min-h-11 cursor-pointer list-none flex-wrap items-center justify-between gap-x-4 gap-y-1 text-sm text-ink-soft">
+            <span>
+              <span className="text-clay-700">
+                {fill(startDate ? t.unavailableDated : t.unavailableMonth, { month: tripMonth, n: unavailable.length })}
+              </span>{" "}
+              {unavailable
+                .slice(0, 3)
+                .map((stop) => stop.name)
+                .join(text.units.listSep)}
+              {unavailable.length > 3 ? "……" : ""}
+            </span>
+            <span className="text-xs tracking-[0.1em] text-clay-600 group-open:hidden">{t.unavailableShow}</span>
+            <span className="hidden text-xs tracking-[0.1em] text-clay-600 group-open:inline">{t.unavailableHide}</span>
+          </summary>
+          <div className="pb-1">
           {popularUnavailable.length > 0 && (
             <ul className="mt-3 space-y-2.5">
               {popularUnavailable.map((stop) => (
@@ -372,7 +385,8 @@ export function TripWizard({
               </ul>
             </details>
           )}
-        </div>
+          </div>
+        </details>
       )}
 
       {companions.length > 0 && (
@@ -441,7 +455,7 @@ export function TripWizard({
               aria-pressed={pace === option}
               onClick={() => setPace(option)}
               className={`border p-4 text-left transition-colors ${
-                pace === option ? "border-ink bg-ink text-paper" : "border-ink/20 hover:border-ink"
+                pace === option ? "border-clay-500 bg-clay-500 text-paper" : "border-ink/20 hover:border-ink"
               }`}
             >
               <span className="block font-serif text-lg">{t.paces[option]}</span>
@@ -510,7 +524,7 @@ export function TripWizard({
       </div>
 
       <div className="flex flex-wrap items-center gap-6">
-        <button type="submit" disabled={busy || !originValue} className={`${buttonLarge} bg-ink text-paper hover:bg-clay-700 disabled:opacity-50`}>
+        <button type="submit" disabled={busy || !originValue} className={`${buttonLarge} bg-clay-500 text-paper hover:bg-clay-600 disabled:opacity-50`}>
           {busy ? t.generating : t.generate}
           {!busy && <IconArrowRight className="text-base" />}
         </button>

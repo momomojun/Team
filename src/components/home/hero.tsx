@@ -89,7 +89,7 @@ export function Hero({
   const animated = (i: number) => i === index || i === previous;
 
   return (
-    <section className="relative h-[100svh] min-h-[640px] overflow-hidden bg-ink text-white">
+    <section className="relative h-[100svh] min-h-[640px] overflow-hidden bg-night text-white">
       {slides.map((slide, i) => (
         // 点“进入公园”时，当前这张大图过渡成公园页的首图（公园页上有同名的 ViewTransition）
         <ViewTransition
@@ -149,7 +149,7 @@ export function Hero({
               {text.subtitle}
             </p>
             <div className="hero-fade mt-10 flex flex-wrap items-center gap-8" style={order(1)}>
-              <Link href={planHref} className={`${buttonLarge} bg-paper text-ink hover:bg-white`}>
+              <Link href={planHref} className={`${buttonLarge} bg-clay-500 text-paper hover:bg-clay-600`}>
                 {text.planCta}
                 <IconArrowRight className="text-base" />
               </Link>

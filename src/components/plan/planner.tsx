@@ -92,7 +92,6 @@ import { alertCovers, type DayWeather } from "./weather";
 import { gearDayOf, gearFor } from "./clothing";
 import { weatherNotes } from "./weather-line";
 import { gearText, weatherSpeech, weatherSummary } from "./weather-text";
-import { PageHeader } from "@/components/site/page-header";
 import { closedAllDays } from "@/lib/closures";
 
 const LODGING_COLOR = "#2f4a5a";
@@ -1345,11 +1344,13 @@ export function Planner({
         );
       })()}
 
-      <PageHeader
-        eyebrow={`Itinerary · ${t.title}`}
-        title={t.title}
-        intro={t.intro}
-        // 照片用行程里第一座公园的首图，还没排行程时用优胜美地
+      {/* 11-20 改版：行程页的首屏就是 Copilot（大照片做底、一直显示），原来的页头标题不要了；
+          照片用行程里第一座公园的首图，还没排行程时用优胜美地 */}
+      <CloudSync />
+      <CopilotChat
+        text={text}
+        english={locale === "en"}
+        onTrip={applyCopilotTrip}
         photo={(parks.find((park) => park.code === allIds[0]?.split("-")[0]) ?? parks.find((park) => park.code === "yose"))?.photo}
       />
 
@@ -1364,11 +1365,6 @@ export function Planner({
       />
 
       <SectionNav label={t.nav.label} items={sectionLinks} inset />
-
-
-
-      <CloudSync />
-      <CopilotChat text={text} english={locale === "en"} onTrip={applyCopilotTrip} />
 
       <section id="plan-wizard" className="scroll-mt-32 border-t border-ink pt-6 print:hidden">
         <div className="flex flex-wrap items-baseline justify-between gap-4">

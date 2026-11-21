@@ -109,7 +109,7 @@ export function SeasonGuide({ parks, locale, text }: { parks: ParkSeason[]; loca
 
   const chip = (active: boolean) =>
     `border px-3 py-1.5 text-xs tabular-nums transition-colors ${
-      active ? "border-ink bg-ink text-paper" : "border-ink/20 text-ink hover:border-ink"
+      active ? "border-clay-500 bg-clay-500 text-paper" : "border-ink/20 text-ink hover:border-ink"
     }`;
 
   return (

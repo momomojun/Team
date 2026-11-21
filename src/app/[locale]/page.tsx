@@ -308,7 +308,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       </section>
 
       {/* 收尾：一张大图 + 开始规划 */}
-      <section className="relative h-[82svh] min-h-[540px] overflow-hidden bg-ink text-white">
+      <section className="relative h-[82svh] min-h-[540px] overflow-hidden bg-night text-white">
         {finalPhoto && (
           <CommonsImage src={large(finalPhoto.url)} alt="" fill sizes="100vw" className="object-cover" />
         )}
@@ -318,7 +318,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           <Reveal>
             <h2 className="mt-8 font-serif text-[clamp(2.2rem,5vw,4.6rem)] leading-tight">{t.finalTitle}</h2>
           </Reveal>
-          <Link href={`/${locale}/plan`} className={`${buttonLarge} mt-12 bg-paper text-ink hover:bg-white`}>
+          <Link href={`/${locale}/plan`} className={`${buttonLarge} mt-12 bg-clay-500 text-paper hover:bg-clay-600`}>
             {t.finalCta}
             <IconArrowRight className="text-base" />
           </Link>

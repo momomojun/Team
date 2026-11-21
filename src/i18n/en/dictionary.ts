@@ -1589,9 +1589,12 @@ export const en: Dictionary = {
     },
     copilot: {
       eyebrow: "Copilot · just describe it",
-      title: "Tell me the trip you have in mind. I'll ask what's missing, then plan it",
+      title: "Describe the trip. We'll plan every day of it",
       intro:
-        "Try “4 days in Yosemite with my parents in June, flying into San Francisco.” The plan lands in the trip below, and you can keep going: “slow it down,” “stay at Curry Village on night 3,” “skip Glacier Point,” “make it September instead.”",
+        "Where to go each day, when to arrive, where to sleep, and which sights are closed on your dates, all worked out from the parks' own opening dates. Then keep going: “slow it down,” “stay at Curry Village on night 3,” “make it September instead.”",
+      waking: "Waking the Copilot up; you can send in about 20–30 seconds",
+      unavailable: "The Copilot isn't available right now. You can build the trip yourself with the form below.",
+      manual: "Rather not type? Pick parks and dates yourself",
       name: "Copilot",
       examples: [
         "4 days in Yosemite with my parents in June, flying into San Francisco",
@@ -1632,6 +1635,8 @@ export const en: Dictionary = {
       unavailableMonth: "{n} {n|sight is|sights are} unavailable in {month:month}. If one you want is on the list, try another month:",
       unavailableDated: "{n} {n|sight is|sights are} unavailable on these dates. If one you want is on the list, try other dates:",
       unavailableOthers: "{n} less popular {n|sight|sights}",
+      unavailableShow: "Why, and what to do instead ↓",
+      unavailableHide: "Hide ↑",
       roadUnlikely: "In past years {road} usually wasn't open yet (or had already closed) on these dates, so it can't be scheduled even with set dates",
       tourOff: "Not running on your dates",
       alertClosed: "Closed per live NPS alert: {title} (the alert reflects current conditions; check again before you go)",

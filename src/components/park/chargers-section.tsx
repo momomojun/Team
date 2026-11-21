@@ -24,7 +24,7 @@ type ChargerText = Dictionary["park"]["chargers"];
 // 状态用小圆点 + 文字，不用彩色底块
 const flagStyles: Record<StationFlag, string> = {
   unavailable: "text-clay-700 before:bg-clay-600",
-  stale: "text-[#835816] before:bg-[#c08a3e]",
+  stale: "text-[#e0b25a] before:bg-[#c08a3e]",
   nonNetworked: "text-mute before:bg-mute",
 };
 
