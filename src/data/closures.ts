@@ -273,4 +273,40 @@ export const tempClosures: TempClosure[] = [
     source: "https://www.nps.gov/cuva/planyourvisit/conditions.htm",
     checked: "2026-10-20",
   },
+  {
+    // 2026-11-21 每晚读公告自动提议（公告 8B02938E-D0B2-4BF7-9025-E04E4D6327B3）：核对公告原文，把 reasonZh 改成中文说明再合并
+    attractions: ["mora-narada-falls","mora-paradise-visitor-center","mora-christine-falls","mora-trail-of-the-shadows","mora-longmire"],
+    from: "2026-11-21",
+    reopen: null,
+    reasonZh: "NPS 公告：Paradise Road Status: Gate closed at Longmire: projected to open tomorrow（每晚读公告自动提议，机器读取；合并前改成中文说明、写上替代办法）",
+    source: "",
+    checked: "2026-11-21",
+  },
+  {
+    // 2026-11-21 每晚读公告自动提议（公告 6136DC5B-D12B-4F2A-95FD-8ED93B595944）：核对公告原文，把 reasonZh 改成中文说明再合并
+    attractions: ["pefo-painted-desert-vc","pefo-tiponi-point","pefo-tawa-point","pefo-painted-desert-inn","pefo-pintado-point","pefo-onyx-bridge"],
+    from: "2026-11-21",
+    reopen: null,
+    reasonZh: "NPS 公告：Painted Desert Visitor Center Closed for Construction（每晚读公告自动提议，机器读取；合并前改成中文说明、写上替代办法）",
+    source: "",
+    checked: "2026-11-21",
+  },
+  {
+    // 2026-11-21 每晚读公告自动提议（公告 13B2A38C-C7D9-4FE4-9F5D-BFCB471BCE00）：核对公告原文，把 reasonZh 改成中文说明再合并
+    attractions: ["seki-general-grant"],
+    from: "2026-11-21",
+    reopen: null,
+    reasonZh: "NPS 公告：Some Trails Closed in the Grant Grove Area Due to Prescribed Burn Activity（每晚读公告自动提议，机器读取；合并前改成中文说明、写上替代办法）",
+    source: "https://www.nps.gov/maps/full.html?mapId=98f33b85-31e2-47ac-b0ba-b319e8c5ab92",
+    checked: "2026-11-21",
+  },
+  {
+    // 2026-11-21 每晚读公告自动提议（公告 2868B222-11AB-46B6-B985-4019B6E7EA33）：核对公告原文，把 reasonZh 改成中文说明再合并
+    attractions: ["zion-narrows"],
+    from: "2026-11-21",
+    reopen: null,
+    reasonZh: "NPS 公告：Narrows are Closed.（每晚读公告自动提议，机器读取；合并前改成中文说明、写上替代办法）",
+    source: "",
+    checked: "2026-11-21",
+  },
 ];
