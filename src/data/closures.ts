@@ -38,7 +38,7 @@ export const tempClosures: TempClosure[] = [
     reasonZh:
       "Grove of the Patriarchs 停车场 10 月 5 日起关闭，这条线原来的起点停不了车；可以停 Cowlitz Divide 停车场，沿 Eastside Trail 往南走过去，或者从 123 号公路那头的步道口进。",
     source: "https://www.nps.gov/mora/planyourvisit/trails-and-backcountry-camp-conditions.htm",
-    checked: "2026-10-20",
+    checked: "2026-11-20",
   },
   {
     attractions: ["bibe-balanced-rock"],
@@ -81,7 +81,7 @@ export const tempClosures: TempClosure[] = [
     reasonZh:
       "利潘点和进去的支路 2026 年 6 月 22 日到 12 月 23 日翻修（重铺路面、重修步道），整段不开放；Desert View Drive 上的莫兰点、沙漠景观点照常开。走 Tanner 步道的停在西边约 300 米的 No Name Point 走过去，64 号公路路边不能停车。",
     source: "https://home.nps.gov/grca/learn/news/lipan-point-closure-2026.htm",
-    checked: "2026-10-16",
+    checked: "2026-11-20",
   },
   {
     attractions: ["zion-watchman-trail"],
@@ -99,7 +99,7 @@ export const tempClosures: TempClosure[] = [
     reasonZh:
       "Notch 步道和步道两侧 30 米内全部封闭，NPS 在修已经不安全的那段木梯，没有公布重开日期；可以改走同一个停车场的 Door、Window 步道，或者去 Saddle Pass 爬一段恶地之墙。",
     source: "https://www.nps.gov/badl/planyourvisit/conditions.htm",
-    checked: "2026-10-16",
+    checked: "2026-11-20",
   },
   {
     attractions: ["meve-far-view-sites"],
@@ -167,7 +167,7 @@ export const tempClosures: TempClosure[] = [
     reasonZh:
       "山洪冲毁了路面：Cottonwood 营地到圣埃伦娜峡谷的铺装路、Hot Springs Road 都封着（Old Maverick Road、River Road 也封了），重开时间未定，开车到不了这两个步道口；可以去奇索斯盆地的 Window、Lost Mine 步道，或者 Boquillas 峡谷。",
     source: "https://www.nps.gov/bibe/planyourvisit/conditions.htm",
-    checked: "2026-10-15",
+    checked: "2026-11-20",
   },
   {
     attractions: ["sagu-bajada-loop", "sagu-valley-view-overlook", "sagu-signal-hill"],

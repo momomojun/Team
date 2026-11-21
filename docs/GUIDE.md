@@ -129,7 +129,7 @@ npm --prefix D:/LLM/Team run alerts:fetch
 cd D:/LLM/Team/copilot && python -m nps_copilot alerts
 ```
 
-  第二条：`.env.local` 里有 `GEMINI_API_KEY` 就用 Gemini 读（免费档），没有就用本机 Ollama（要开着）；读过的记在 `copilot/data/alerts/extracted.json`，下次只读新出现、改过的几条。其实不跑也行：用 Copilot 排两周内出发的行程时，要去的公园今天还没读过，它会当场只抓这几座公园的公告读一遍。GitHub 上每天也会自动抓一次，有新的关闭公告就开一个 `nps-alerts` 标签的 issue；仓库设置里加 secret `DATA_GOV_API_KEY` 更稳（不加用 DEMO_KEY，常常被限流）。
+  第二条：`.env.local` 里有 `GEMINI_API_KEY` 就用 Gemini 读（免费档），没有就用本机 Ollama（要开着）；读过的记在 `copilot/data/alerts/extracted.json`，下次只读新出现、改过的几条。其实不跑也行：用 Copilot 排两周内出发的行程时，要去的公园今天还没读过，它会当场只抓这几座公园的公告读一遍。GitHub 上每天也会自动抓一次，有新的关闭公告就记进那个一直开着的 `nps-alerts` issue（每晚更新正文、加一条评论），每周集中处理一次；仓库设置里加 secret `DATA_GOV_API_KEY` 更稳（不加用 DEMO_KEY，常常被限流）。
 
 ### Copilot：三种跑法，选一个
 
@@ -314,7 +314,7 @@ cd copilot && COPILOT_PROMPT_INTAKE=v2 python eval/run.py --record --plan
 4. 三个都填进 Vercel（Production 和 Preview），Deployments 里从 `main` 那一行 **Redeploy**。存行程、存对话的两张表（`user_trips`、`chat_threads`）在第一个人登录时自动建。
 5. 本机也要用的话，三行一样写进 `.env.local`。
 
-`bot/closures-*` 和 `data/alerts-live` 这两种机器人分支不让 Vercel 构建预览版：前者写在根目录的 `vercel.json`，后者是只放数据的分支，每晚的 workflow 往里写自己的 `vercel.json`。
+`bot/closures`（11-20 以前是每晚一个 `bot/closures-<日期>`）和 `data/alerts-live` 这两种机器人分支不让 Vercel 构建预览版：前者写在根目录的 `vercel.json`（`bot/**`），后者是只放数据的分支，每晚的 workflow 往里写自己的 `vercel.json`。
 
 - 手机上用：HTTPS 下 service worker 才能注册，所以离线功能要部署后才有；iPhone 用 Safari“添加到主屏幕”，安卓用 Chrome“安装应用”。
 - 在微信里直接点 `*.vercel.app` 的链接可能会被拦，用手机浏览器打开，或者绑一个自己的域名。

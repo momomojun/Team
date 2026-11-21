@@ -2,7 +2,7 @@
 export const content: Record<string, string> = {
   "彩绘沙漠游客中心（北入口）": "Painted Desert Visitor Center & Community Complex",
   "北入口游客中心停车场（I-40 311 号出口）": "North entrance visitor center lot (I-40 Exit 311)",
-  "I-40 311 号出口旁的公园北入口，是一组 1960 年代的现代主义建筑（国家历史地标），有加油站、小餐馆、礼品店和洗手间。游客中心大楼 2026 年因施工关闭，咨询和地图暂时搬到 3 公里外的彩绘沙漠旅馆。": "The park's north entrance, by I-40 Exit 311, is a 1960s modernist complex and a National Historic Landmark, with a gas station, a small restaurant, a gift shop, and restrooms. The visitor center building is closed for construction in 2026; information and maps have moved temporarily to the Painted Desert Inn, about 2 miles away.",
+  "I-40 311 号出口旁的公园北入口，是一组 1960 年代的现代主义建筑（国家历史地标），有加油站、小餐馆、礼品店和洗手间。游客中心大楼在翻修，NPS 说预计 2027 年 6 月重开，咨询和地图暂时搬到 3 公里外的彩绘沙漠旅馆。": "The park's north entrance, by I-40 Exit 311, is a 1960s modernist complex and a National Historic Landmark, with a gas station, a small restaurant, a gift shop, and restrooms. The visitor center building is being renovated and NPS expects it to reopen in June 2027; information and maps have moved temporarily to the Painted Desert Inn, about 2 miles away.",
   "园内只有这里能加油；南口那头最近的加油站在 Holbrook": "This is the only place in the park to buy gas. From the south entrance, the nearest gas is in Holbrook.",
   "公园 8:00–17:00 开放（亚利桑那全年不实行夏令时，夏天比科罗拉多、新墨西哥和纳瓦霍保留地晚 1 小时），感恩节和圣诞节关闭": "The park is open 8 a.m.–5 p.m. Arizona doesn't observe daylight saving time, so in summer it's 1 hour behind Colorado, New Mexico, and the Navajo Nation. Closed Thanksgiving and Christmas.",
   "从这里沿 Tawa 步道穿过草原走约 1.9 公里到塔瓦观景点": "From here, the Tawa Trail crosses grassland for about 1.2 miles to Tawa Point.",
