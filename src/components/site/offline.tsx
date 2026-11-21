@@ -29,7 +29,7 @@ export function OfflineBanner({ label }: { label: string }) {
   return (
     <div
       role="status"
-      className="fixed inset-x-0 bottom-0 z-50 bg-ink px-5 py-2.5 text-center text-xs tracking-[0.08em] text-paper print:hidden"
+      className="fixed inset-x-0 bottom-0 z-50 bg-clay-500 px-5 py-2.5 text-center text-xs tracking-[0.08em] text-paper print:hidden"
     >
       {label}
     </div>

@@ -127,7 +127,7 @@ export function ParkYear({ park, locale, dict }: { park: Park; locale: string; d
                   {climates.map((c, i) => (
                     <td key={i} className="py-4 tabular-nums text-ink-soft">
                       {Math.round(c!.wetDays)}
-                      {c!.snowDays >= 1 && <span className="block text-[10px] text-[#5b7a99]">{fill(t.snow, { n: Math.round(c!.snowDays) })}</span>}
+                      {c!.snowDays >= 1 && <span className="block text-[10px] text-[#9dbad4]">{fill(t.snow, { n: Math.round(c!.snowDays) })}</span>}
                     </td>
                   ))}
                 </tr>

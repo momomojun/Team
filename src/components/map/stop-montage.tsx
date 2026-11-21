@@ -153,7 +153,7 @@ export function PhotoReel({
   }, [count, photoKey, slideMs]);
 
   return (
-    <figure ref={rootRef} data-reel="" className="tour-reel relative aspect-[2/1] w-full overflow-hidden bg-ink sm:aspect-[16/10]">
+    <figure ref={rootRef} data-reel="" className="tour-reel relative aspect-[2/1] w-full overflow-hidden bg-night sm:aspect-[16/10]">
       {photos.map((photo, index) => (
         // 不用 next/image：要按帧改 transform、提前下载同一张，自己挑好缩略图宽度更直接
         // eslint-disable-next-line @next/next/no-img-element
@@ -174,28 +174,28 @@ export function PhotoReel({
       {count > 1 && (
         <div className="absolute top-2.5 right-3 left-3 z-[4] flex gap-1">
           {photos.map((photo, index) => (
-            <span key={photo.url} className="h-[2px] flex-1 overflow-hidden bg-paper/35">
+            <span key={photo.url} className="h-[2px] flex-1 overflow-hidden bg-white/35">
               <span
                 ref={(element) => {
                   barRefs.current[index] = element;
                 }}
-                className="block h-full origin-left bg-paper"
+                className="block h-full origin-left bg-white"
                 style={{ transform: "scaleX(0)" }}
               />
             </span>
           ))}
         </div>
       )}
-      <figcaption className="absolute right-4 bottom-3.5 left-5 z-[4] text-paper">
+      <figcaption className="absolute right-4 bottom-3.5 left-5 z-[4] text-white">
         {eyebrow && (
-          <p className="tour-reel-line flex items-center gap-2 text-[11px] tracking-[0.16em] text-paper/85 lining-nums">
+          <p className="tour-reel-line flex items-center gap-2 text-[11px] tracking-[0.16em] text-white/85 lining-nums">
             <span className="inline-block h-px w-6 shrink-0" style={{ backgroundColor: color }} />
             {eyebrow}
           </p>
         )}
         <p className="tour-reel-title mt-1.5 max-w-[85%] font-serif text-[1.6rem] leading-[1.08] lining-nums sm:text-[2.1rem]">{title}</p>
       </figcaption>
-      <span ref={creditRef} className="absolute top-5 right-3 z-[4] max-w-[55%] truncate text-right text-[9px] text-paper/70" />
+      <span ref={creditRef} className="absolute top-5 right-3 z-[4] max-w-[55%] truncate text-right text-[9px] text-white/70" />
     </figure>
   );
 }

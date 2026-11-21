@@ -164,7 +164,7 @@ export function ParkLocator({ park, locale, dict }: { park: Park; locale: string
                   key={state.name}
                   d={state.d}
                   fill={state.focus ? "var(--color-paper-deep)" : "none"}
-                  stroke={state.focus ? "#b8ac97" : "#dcd3c5"}
+                  stroke={state.focus ? "#5c6e82" : "#33424f"}
                   strokeWidth={1}
                   vectorEffect="non-scaling-stroke"
                   strokeLinejoin="round"
@@ -184,7 +184,7 @@ export function ParkLocator({ park, locale, dict }: { park: Park; locale: string
                     y1={home[1]}
                     x2={at[0]}
                     y2={at[1]}
-                    stroke="#a04c2e"
+                    stroke="var(--color-clay-600)"
                     strokeOpacity={0.45}
                     strokeWidth={1}
                     strokeDasharray="3 3"
@@ -193,13 +193,13 @@ export function ParkLocator({ park, locale, dict }: { park: Park; locale: string
                 ) : null,
               )}
               {flightMarks.map(({ airport, at }) => (
-                <line key={`line-${airport.code}`} x1={home[0]} y1={home[1]} x2={at[0]} y2={at[1]} stroke="#1c1b18" strokeOpacity={0.3} strokeWidth={1} vectorEffect="non-scaling-stroke" />
+                <line key={`line-${airport.code}`} x1={home[0]} y1={home[1]} x2={at[0]} y2={at[1]} stroke="var(--color-ink)" strokeOpacity={0.3} strokeWidth={1} vectorEffect="non-scaling-stroke" />
               ))}
               {view.cities.map((city, i) => {
                 const label = cityLabels[i];
                 return (
-                  <g key={city.id} fill="#8a8377">
-                    <circle cx={city.x} cy={city.y} r={2.4 * k} fill="var(--color-paper)" stroke="#8a8377" strokeWidth={0.9 * k} />
+                  <g key={city.id} fill="var(--color-mute)">
+                    <circle cx={city.x} cy={city.y} r={2.4 * k} fill="var(--color-paper)" stroke="var(--color-mute)" strokeWidth={0.9 * k} />
                     {label && (
                       <text x={label.x} y={label.y} textAnchor={label.anchor} fontSize={9.5 * k}>
                         {cityName(city)}
@@ -212,9 +212,9 @@ export function ParkLocator({ park, locale, dict }: { park: Park; locale: string
                 const label = comboLabels[i];
                 return (
                   <g key={other.code}>
-                    <circle cx={at[0]} cy={at[1]} r={3.2 * k} fill="#5f7a4a" stroke="var(--color-paper)" strokeWidth={1 * k} />
+                    <circle cx={at[0]} cy={at[1]} r={3.2 * k} fill="var(--color-pine-500)" stroke="var(--color-paper)" strokeWidth={1 * k} />
                     {label && (
-                      <text x={label.x} y={label.y} textAnchor={label.anchor} fontSize={10.5 * k} fill="#4b5d3c">
+                      <text x={label.x} y={label.y} textAnchor={label.anchor} fontSize={10.5 * k} fill="var(--color-pine-600)">
                         {name(other)}
                       </text>
                     )}
@@ -225,20 +225,20 @@ export function ParkLocator({ park, locale, dict }: { park: Park; locale: string
                 const label = flightLabels[i];
                 return (
                   <g key={airport.code}>
-                    <rect x={at[0] - 3 * k} y={at[1] - 3 * k} width={6 * k} height={6 * k} fill="#1c1b18" />
+                    <rect x={at[0] - 3 * k} y={at[1] - 3 * k} width={6 * k} height={6 * k} fill="var(--color-ink)" />
                     {label && (
-                      <text x={label.x} y={label.y} textAnchor={label.anchor} fontSize={10.5 * k} fill="#1c1b18" style={{ fontFamily: "var(--font-jost)" }}>
+                      <text x={label.x} y={label.y} textAnchor={label.anchor} fontSize={10.5 * k} fill="var(--color-ink)" style={{ fontFamily: "var(--font-jost)" }}>
                         {airport.code}
-                        <tspan fill="#68615a"> · {hours(minutes)}</tspan>
+                        <tspan fill="var(--color-mute)"> · {hours(minutes)}</tspan>
                       </text>
                     )}
                   </g>
                 );
               })}
-              <circle cx={home[0]} cy={home[1]} r={10 * k} fill="#a04c2e" fillOpacity={0.15} />
-              <circle cx={home[0]} cy={home[1]} r={5 * k} fill="#a04c2e" stroke="var(--color-paper)" strokeWidth={1.5 * k} />
+              <circle cx={home[0]} cy={home[1]} r={10 * k} fill="var(--color-clay-600)" fillOpacity={0.15} />
+              <circle cx={home[0]} cy={home[1]} r={5 * k} fill="var(--color-clay-600)" stroke="var(--color-paper)" strokeWidth={1.5 * k} />
               {homeLabel && (
-                <text x={homeLabel.x} y={homeLabel.y} textAnchor={homeLabel.anchor} fontSize={15 * k} fill="#1c1b18" style={{ fontFamily: "var(--font-serif)" }}>
+                <text x={homeLabel.x} y={homeLabel.y} textAnchor={homeLabel.anchor} fontSize={15 * k} fill="var(--color-ink)" style={{ fontFamily: "var(--font-serif)" }}>
                   {name(park)}
                 </text>
               )}
@@ -253,7 +253,7 @@ export function ParkLocator({ park, locale, dict }: { park: Park; locale: string
                 {t.where.legendAirport}
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <span className="size-2 rounded-full bg-[#5f7a4a]" />
+                <span className="size-2 rounded-full bg-pine-500" />
                 {t.where.legendCombo}
               </span>
               <span>{t.where.mapNote}</span>

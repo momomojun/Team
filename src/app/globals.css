@@ -1,10 +1,12 @@
 @import "tailwindcss";
 
 /*
- * 设计基调参考 Aman、Explora 这类高端旅行网站：纸色底、墨色字、照片说话；
+ * 设计基调（11-20 改版，方向 A，参考 Wabunka、Explora 这类高端旅行网站的风格）：深藏青底、米白字、哑光金点缀、照片说话；
  * 标题用衬线（英文 Cormorant Garamond + 中文思源宋体），正文用 Jost + 系统黑体；
- * 细线代替卡片边框，直角按钮，小号大写字母标签。
- * 只做浅色主题，深色区块（开场、页脚）单独设计，所以 dark: 只在 .dark 容器里生效。
+ * 细线代替卡片边框，直角按钮。
+ * 颜色的名字沿用原来的（paper 是底、ink 是字），值换成深色：paper 深藏青、ink 米白；
+ * clay（原来的砂岩红强调色）换成哑光金，pine 换成浅一点的绿，两组都倒过来排：50 最深（当底色），600、700 最亮（当字色），
+ * 所以原来“浅底深字”的写法（bg-clay-50 text-clay-700）在深色底上照样成立。打印时换回浅色（见 @media print）。
  */
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -14,37 +16,39 @@
 }
 
 @theme {
-  --color-paper: #f4efe7;
-  --color-paper-deep: #ebe4d8;
-  --color-ink: #1c1b18;
-  --color-ink-soft: #45413a;
-  /* 浅灰字在纸色底、深一点的纸色底上对比度都要到 4.5:1（WCAG AA） */
-  --color-mute: #68615a;
-  --color-line: #d9cfbf;
+  --color-paper: #0d1520;
+  --color-paper-deep: #152130;
+  --color-ink: #efe9de;
+  --color-ink-soft: #cdc6b8;
+  /* 灰字在深藏青、深一点的面板上对比度都要到 4.5:1（WCAG AA） */
+  --color-mute: #9ba4b1;
+  --color-line: #283646;
+  /* 夜色：开场、页脚、大图底这些本来就是深色的区块（不跟着 paper / ink 换，打印时也不变） */
+  --color-night: #070b11;
 
-  /* 砂岩红：强调色（热度、选中、步道） */
-  --color-clay-50: #fbf4f0;
-  --color-clay-100: #f5e4da;
-  --color-clay-200: #eac6b3;
-  --color-clay-300: #dca186;
-  --color-clay-400: #cb7a58;
-  --color-clay-500: #b85f3c;
-  --color-clay-600: #a04c2e;
-  --color-clay-700: #833d26;
-  --color-clay-800: #683222;
-  --color-clay-900: #532a1e;
+  /* 哑光金：强调色（热度、选中、步道、按钮）。50–300 是深色底上的金色调底，500–900 越来越亮 */
+  --color-clay-50: #1b1f24;
+  --color-clay-100: #23272b;
+  --color-clay-200: #393630;
+  --color-clay-300: #5e5340;
+  --color-clay-400: #8f7a52;
+  --color-clay-500: #b8975c;
+  --color-clay-600: #c9a96e;
+  --color-clay-700: #d8bd88;
+  --color-clay-800: #e6d2a8;
+  --color-clay-900: #f2e6cc;
 
-  /* 松绿：完成、可用 */
-  --color-pine-50: #f1f5f2;
-  --color-pine-100: #dde8e0;
-  --color-pine-200: #bcd1c2;
-  --color-pine-300: #8fb29a;
-  --color-pine-400: #5f8b6d;
-  --color-pine-500: #436f53;
-  --color-pine-600: #345a42;
-  --color-pine-700: #2a4836;
-  --color-pine-800: #233a2d;
-  --color-pine-900: #1d3026;
+  /* 松绿：完成、可用（同样倒过来排） */
+  --color-pine-50: #142019;
+  --color-pine-100: #1a2a21;
+  --color-pine-200: #24402f;
+  --color-pine-300: #3a6149;
+  --color-pine-400: #578a68;
+  --color-pine-500: #74a684;
+  --color-pine-600: #8fbf9d;
+  --color-pine-700: #a9d1b4;
+  --color-pine-800: #c4e2cc;
+  --color-pine-900: #dff0e3;
 
   --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --animate-kenburns: kenburns 11s cubic-bezier(0.25, 0.6, 0.3, 1) both;
@@ -74,8 +78,40 @@ body {
 }
 
 ::selection {
-  background: var(--color-clay-200);
+  background: var(--color-clay-300);
   color: var(--color-ink);
+}
+
+/* 打印、存 PDF：换回浅色（深色底打出来费墨、也看不清） */
+@media print {
+  :root {
+    --color-paper: #ffffff;
+    --color-paper-deep: #f4efe7;
+    --color-ink: #1c1b18;
+    --color-ink-soft: #45413a;
+    --color-mute: #5f5952;
+    --color-line: #d9cfbf;
+    --color-clay-50: #fbf4f0;
+    --color-clay-100: #f5e4da;
+    --color-clay-200: #eac6b3;
+    --color-clay-300: #dca186;
+    --color-clay-400: #a98747;
+    --color-clay-500: #8f6e33;
+    --color-clay-600: #7a5c27;
+    --color-clay-700: #634a1f;
+    --color-clay-800: #4d3a19;
+    --color-clay-900: #3a2c13;
+    --color-pine-50: #f1f5f2;
+    --color-pine-100: #dde8e0;
+    --color-pine-200: #bcd1c2;
+    --color-pine-300: #8fb29a;
+    --color-pine-400: #5f8b6d;
+    --color-pine-500: #436f53;
+    --color-pine-600: #345a42;
+    --color-pine-700: #2a4836;
+    --color-pine-800: #233a2d;
+    --color-pine-900: #1d3026;
+  }
 }
 
 /* 小号大写标签，比如 “DESTINATIONS” */
@@ -392,14 +428,14 @@ body {
   outline-offset: 3px;
 }
 
-/* MapLibre 自带控件：直角、纸色底，和页面一致 */
+/* MapLibre 自带控件：直角、浅色底（控件里的图标是深色的，底图也是浅色的，所以不跟着页面变深） */
 .maplibregl-ctrl-group {
   border-radius: 0 !important;
-  background: var(--color-paper) !important;
-  box-shadow: 0 1px 2px rgb(28 27 24 / 0.12) !important;
+  background: #f4efe7 !important;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.25) !important;
 }
 .maplibregl-ctrl-group button + button {
-  border-top-color: var(--color-line) !important;
+  border-top-color: #d9cfbf !important;
 }
 .maplibregl-ctrl-attrib {
   background: rgb(244 239 231 / 0.85) !important;
@@ -412,9 +448,9 @@ body {
   width: 14px;
   height: 14px;
   border-radius: 9999px;
-  background: var(--car, #a04c2e);
+  background: var(--car, #b8975c);
   border: 3px solid #fff;
-  box-shadow: 0 0 0 7px color-mix(in srgb, var(--car, #a04c2e) 22%, transparent);
+  box-shadow: 0 0 0 7px color-mix(in srgb, var(--car, #b8975c) 22%, transparent);
   pointer-events: none;
   transition: background-color 500ms;
 }
@@ -423,9 +459,9 @@ body {
   width: 12px;
   height: 12px;
   border-radius: 9999px;
-  background: var(--color-ink);
+  background: #1c1b18;
   border: 2px solid #fff;
-  box-shadow: 0 0 0 5px color-mix(in srgb, var(--color-ink) 18%, transparent);
+  box-shadow: 0 0 0 5px color-mix(in srgb, #1c1b18 18%, transparent);
   pointer-events: none;
 }
 /* 到站的小牌子弹一下出来 */

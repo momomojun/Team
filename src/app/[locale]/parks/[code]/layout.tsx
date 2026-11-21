@@ -27,7 +27,7 @@ export default async function ParkLayout({ children, params }: LayoutProps<"/[lo
   const hasTesla = (teslaChargers[code]?.stations.length ?? 0) > 0;
 
   const hero = (
-    <section className="relative h-[88svh] min-h-[620px] overflow-hidden bg-ink text-white">
+    <section className="relative h-[88svh] min-h-[620px] overflow-hidden bg-night text-white">
       {heroPhoto && (
         <ViewTransition name={`park-photo-${park.code}`} share="park-morph" default="none">
           <div className="absolute inset-0">
@@ -98,7 +98,7 @@ export default async function ParkLayout({ children, params }: LayoutProps<"/[lo
       actions={
         <Link
           href={`/${locale}/plan?park=${park.code}`}
-          className="inline-flex items-center gap-2 bg-ink px-4 py-2 text-xs tracking-[0.12em] text-paper transition-colors hover:bg-clay-700"
+          className="inline-flex items-center gap-2 bg-clay-500 px-4 py-2 text-xs tracking-[0.12em] text-paper transition-colors hover:bg-clay-600"
         >
           {t.nav.generate}
         </Link>

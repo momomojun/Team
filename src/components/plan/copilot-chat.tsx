@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import { CommonsImage } from "@/components/commons-image";
 import { IconArrowRight } from "@/components/icons";
+import type { HeaderPhoto } from "@/components/site/page-header";
 import { buttonLarge } from "@/components/ui";
 import { fill } from "@/i18n/format";
 import { useTrip, type Trip } from "@/lib/trip-store";
@@ -9,8 +11,9 @@ import type { PlannerText } from "./types";
 
 /**
  * 行程页的对话框：用一句话说需求，Copilot（本机模型 + 网站的排行程引擎）追问、排出行程，行程原样放进下面的行程页，
- * 之后还能接着说“第二天轻松一点”“第三晚住 Jackson”。经 /api/copilot/chat 中转；Copilot 没开（比如部署在 Vercel 上）
- * 就整块不显示，页面照旧能用
+ * 之后还能接着说“第二天轻松一点”“第三晚住 Jackson”。经 /api/copilot/chat 中转。
+ * 11-20 改版：放在行程页最上面当首屏（大照片做底），一直显示：还在确认 Copilot 开没开时写“正在唤醒”（Modal 上冷启动要十几秒到半分钟，
+ * 以前这段时间整块不显示，仓库主人找很久才找到），连不上就写“暂时用不了”、指向下面的表单
  */
 interface Question {
   kind: string;
@@ -70,11 +73,14 @@ export function CopilotChat({
   text,
   english,
   onTrip,
+  photo,
 }: {
   text: PlannerText;
   english: boolean;
   /** 排出了行程：放进行程页；返回 false 表示用户不想换掉现在的行程 */
   onTrip: (trip: Trip) => boolean;
+  /** 首屏的底图（行程里第一座公园的首图） */
+  photo?: HeaderPhoto;
 }) {
   const t = text.plan.copilot;
   const [available, setAvailable] = useState<boolean | null>(null);
@@ -90,13 +96,23 @@ export function CopilotChat({
   const list = useRef<HTMLOListElement>(null);
 
   useEffect(() => {
+    // 网站这边最多等 30 秒；Modal 冷启动偶尔更久，没连上就隔 10 秒再问，一共问 4 次（约 1 分半）才说“暂时用不了”
     let alive = true;
-    fetch("/api/copilot/chat")
-      .then((response) => response.json())
-      .then((health: { available: boolean }) => alive && setAvailable(health.available))
-      .catch(() => alive && setAvailable(false));
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const check = (left: number) =>
+      fetch("/api/copilot/chat")
+        .then((response) => response.json())
+        .then((health: { available: boolean }) => health.available)
+        .catch(() => false)
+        .then((ok) => {
+          if (!alive) return;
+          if (ok || left <= 1) setAvailable(ok);
+          else timer = setTimeout(() => void check(left - 1), 10_000);
+        });
+    void check(4);
     return () => {
       alive = false;
+      if (timer) clearTimeout(timer);
     };
   }, []);
 
@@ -129,11 +145,9 @@ export function CopilotChat({
     persistChat(session.current, messages);
   }, [messages]);
 
-  if (!available) return null;
-
   const send = async (said: string) => {
     const message = said.trim();
-    if (!message || busy) return;
+    if (!message || busy || !available) return;
     setMessages((current) => [...current, { role: "user", text: message }]);
     setDraft("");
     setBusy(true);
@@ -228,39 +242,34 @@ export function CopilotChat({
     !messages.some((message) => message.applied) &&
     (trip.pool.length > 0 || trip.days.some((day) => day.length > 0));
 
+  const status = available === null ? t.waking : available === false ? t.unavailable : null;
+
   return (
-    <section id="plan-copilot" className="scroll-mt-32 border-t border-ink pt-6 print:hidden">
-      <div className="max-w-2xl">
-        <p className="eyebrow text-mute">{t.eyebrow}</p>
-        <h2 className="mt-4 font-serif text-2xl leading-snug">{t.title}</h2>
-        <p className="mt-3 text-sm leading-7 text-ink-soft">{t.intro}</p>
-      </div>
-      <div className="mt-8">
-        {messages.length === 0 ? (
-          <div className="flex flex-wrap gap-2">
-            {t.examples.map((example) => (
-              <button
-                key={example}
-                type="button"
-                onClick={() => void send(example)}
-                className="border border-ink/20 px-3 py-1.5 text-left text-xs leading-5 text-ink-soft transition-colors hover:border-ink hover:text-ink"
-              >
-                {example}
-              </button>
-            ))}
-          </div>
-        ) : (
-          <ol ref={list} className="max-h-[28rem] space-y-5 overflow-y-auto pr-1" aria-live="polite">
+    <section id="plan-copilot" className="relative -mx-5 scroll-mt-16 overflow-hidden bg-night text-white sm:-mx-10 print:hidden">
+      {photo && <CommonsImage src={photo.src} alt="" fill priority sizes="100vw" className="object-cover opacity-50" />}
+      {/* 照片上压一层夜色，保证字看得清 */}
+      <div aria-hidden className="absolute inset-0 bg-night/55" />
+      <div className="relative mx-auto flex min-h-[560px] max-w-4xl flex-col items-center justify-center px-5 py-16 text-center sm:px-10 sm:py-24">
+        <p className="eyebrow text-clay-600">{t.eyebrow}</p>
+        <h1 className="mt-6 font-serif text-[clamp(2.4rem,5vw,4.4rem)] leading-[1.12] text-balance [word-break:keep-all]">{t.title}</h1>
+        <p className="mt-6 max-w-2xl text-[15px] leading-8 text-white/80">{t.intro}</p>
+
+        {messages.length > 0 && (
+          <ol
+            ref={list}
+            className="mt-10 max-h-[26rem] w-full space-y-5 overflow-y-auto border border-white/15 bg-night/70 p-5 text-left backdrop-blur-sm"
+            aria-live="polite"
+          >
             {messages.map((message, i) => (
               <li key={i} className={message.role === "user" ? "flex justify-end" : ""}>
                 {message.role === "user" ? (
-                  <p className="max-w-[85%] bg-ink px-4 py-2.5 text-sm leading-7 text-paper">{message.text}</p>
+                  <p className="max-w-[85%] bg-white/12 px-4 py-2.5 text-sm leading-7 text-white">{message.text}</p>
                 ) : (
-                  <div className="max-w-[92%] border-l-2 border-clay-600 pl-4">
-                    <p className="eyebrow text-mute">{t.name}</p>
-                    <p className="mt-1.5 whitespace-pre-line text-sm leading-7 text-ink">{message.text}</p>
+                  <div className="max-w-[92%]">
+                    <p className="eyebrow text-clay-600">{t.name}</p>
+                    <p className="mt-1.5 whitespace-pre-line text-sm leading-7 text-white/90">{message.text}</p>
                     {message.applied && (
-                      <a href="#plan-overview" className="link-line mt-2 inline-block text-xs tracking-[0.1em] text-clay-700">
+                      <a href="#plan-overview" className="link-line mt-2 inline-block text-xs tracking-[0.1em] text-clay-600">
                         {t.applied}
                       </a>
                     )}
@@ -269,11 +278,11 @@ export function CopilotChat({
               </li>
             ))}
             {busy && (
-              <li className="border-l-2 border-line pl-4">
+              <li>
                 {progress ? (
                   <ChatProgress progress={progress} english={english} text={t} />
                 ) : (
-                  <span className="animate-pulse text-sm text-mute">{t.thinking}</span>
+                  <span className="animate-pulse text-sm text-white/60">{t.thinking}</span>
                 )}
               </li>
             )}
@@ -281,7 +290,7 @@ export function CopilotChat({
         )}
 
         {options.length > 0 && !busy && (
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="mt-4 flex w-full flex-wrap gap-2">
             {options.map((option) => {
               const label = option.label ?? (english ? option.en : option.zh) ?? "";
               return (
@@ -289,19 +298,19 @@ export function CopilotChat({
                   key={label}
                   type="button"
                   onClick={() => void send(label)}
-                    className="border border-ink/20 px-3 py-1.5 text-left text-xs transition-colors hover:border-ink"
+                  className="min-h-11 border border-white/25 px-4 py-2 text-left text-sm transition-colors hover:border-clay-600 hover:text-clay-700"
                 >
                   {label}
-                  {option.note && <span className="ml-2 text-mute">{option.note}</span>}
+                  {option.note && <span className="ml-2 text-white/60">{option.note}</span>}
                 </button>
               );
             })}
           </div>
         )}
 
-        {oldTripBelow && <p className="mt-4 text-xs leading-6 text-mute">{t.oldTrip}</p>}
+        {oldTripBelow && <p className="mt-4 text-xs leading-6 text-white/70">{t.oldTrip}</p>}
 
-        <form onSubmit={submit} className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-end">
+        <form onSubmit={submit} className="mt-10 flex w-full flex-col gap-2.5 border border-white/20 bg-night/60 p-2.5 backdrop-blur-sm sm:flex-row">
           <label className="min-w-0 flex-1">
             <span className="sr-only">{t.placeholder}</span>
             <textarea
@@ -314,31 +323,69 @@ export function CopilotChat({
                   void send(draft);
                 }
               }}
-              rows={2}
+              rows={1}
               maxLength={2000}
               placeholder={messages.length === 0 ? t.placeholder : t.followUp}
-              className="w-full resize-none border-b border-ink/30 bg-transparent py-2 text-sm leading-7 focus:border-ink focus:outline-none"
+              className="block min-h-14 w-full resize-none bg-[#f4efe6] px-5 py-4 text-left text-base leading-6 text-[#1c1b18] placeholder:text-[#6b645c] focus:outline-none"
             />
           </label>
-          <div className="flex items-center gap-5">
-            <button
-              type="submit"
-              disabled={busy || !draft.trim()}
-              className={`${buttonLarge} bg-ink text-paper hover:bg-clay-700 disabled:opacity-50`}
-            >
-              {t.send}
-              <IconArrowRight className="text-base" />
-            </button>
-            {messages.length > 0 && (
-              <button type="button" onClick={restart} disabled={busy} className="link-line text-xs tracking-[0.1em]">
-                {t.restart}
-              </button>
-            )}
-          </div>
+          <button
+            type="submit"
+            disabled={busy || !draft.trim() || !available}
+            className={`${buttonLarge} min-h-14 justify-center bg-clay-500 text-paper hover:bg-clay-600 disabled:opacity-60`}
+          >
+            {t.send}
+            <IconArrowRight className="text-base" />
+          </button>
         </form>
+
+        {messages.length === 0 && (
+          <div className="mt-5 flex flex-wrap justify-center gap-2.5">
+            {t.examples.map((example) => (
+              <button
+                key={example}
+                type="button"
+                onClick={() => void send(example)}
+                disabled={!available}
+                className="min-h-11 border border-white/25 px-4 py-2 text-left text-[13px] leading-5 text-white/85 transition-colors hover:border-clay-600 hover:text-clay-700 disabled:cursor-default disabled:hover:border-white/25 disabled:hover:text-white/85"
+              >
+                {example}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <p className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-[13px] text-white/70" aria-live="polite">
+          {status && (
+            <span>
+              <span aria-hidden className={available === null ? "mr-1.5 animate-pulse text-clay-600" : "mr-1.5 text-white/50"}>
+                ●
+              </span>
+              {status}
+            </span>
+          )}
+          <a href="#plan-wizard" className="link-line text-clay-600">
+            {t.manual}
+          </a>
+          {messages.length > 0 && (
+            <button type="button" onClick={restart} disabled={busy} className="link-line">
+              {t.restart}
+            </button>
+          )}
+        </p>
         {error && <p className="mt-3 text-sm text-clay-700">{error}</p>}
-        <p className="mt-4 text-xs leading-6 text-mute">{t.note}</p>
+        <p className="mt-6 max-w-2xl text-[11px] leading-5 text-white/55">{t.note}</p>
       </div>
+      {photo && (
+        <a
+          href={photo.href}
+          target="_blank"
+          rel="noreferrer"
+          className="absolute right-4 bottom-3 text-[10px] tracking-[0.06em] text-white/55 hover:text-white sm:right-10"
+        >
+          {photo.caption} · {photo.credit}
+        </a>
+      )}
     </section>
   );
 }

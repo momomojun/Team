@@ -15,7 +15,7 @@ export default function NotFound() {
       <p className="mt-2 max-w-sm text-sm leading-7 text-ink-soft">The page you’re looking for doesn’t exist or has moved. Head back to the home page and pick a park.</p>
       <Link
         href="/"
-        className="mt-10 inline-flex items-center gap-3 bg-ink px-7 py-3.5 text-xs tracking-[0.16em] text-paper transition-colors hover:bg-clay-700"
+        className="mt-10 inline-flex items-center gap-3 bg-clay-500 px-7 py-3.5 text-xs tracking-[0.16em] text-paper transition-colors hover:bg-clay-600"
       >
         回到首页 · 回到首頁 · Home
       </Link>

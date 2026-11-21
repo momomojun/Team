@@ -40,7 +40,7 @@ export default async function PlanPage({ params }: PageProps<"/[locale]/plan">) 
   const dict = getDictionary(locale);
 
   return (
-    <div className="mx-auto max-w-[1600px] px-5 pt-14 pb-28 sm:px-10">
+    <div className="mx-auto max-w-[1600px] px-5 pb-28 sm:px-10">
       <Planner
         locale={locale}
         // 行程页不显示照片，不把图集传给浏览器

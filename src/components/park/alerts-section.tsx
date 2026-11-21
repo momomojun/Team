@@ -15,7 +15,7 @@ const STALE_AFTER_DAYS = 180;
 const categoryStyles: Record<string, string> = {
   "Park Closure": "text-clay-700",
   Danger: "text-clay-700",
-  Caution: "text-[#835816]",
+  Caution: "text-[#e0b25a]",
   Information: "text-mute",
 };
 

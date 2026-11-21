@@ -36,7 +36,7 @@ export default async function LoginPage({ params, searchParams }: PageProps<"/[l
           />
         </label>
         {error && <p className="text-sm text-clay-700">{t.error}</p>}
-        <button type="submit" className={`${buttonLarge} bg-ink text-paper hover:bg-clay-700`}>
+        <button type="submit" className={`${buttonLarge} bg-clay-500 text-paper hover:bg-clay-600`}>
           {t.submit}
         </button>
       </form>

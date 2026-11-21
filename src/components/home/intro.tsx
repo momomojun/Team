@@ -140,16 +140,16 @@ export function Intro({
   const skip = () => setPhase((current) => (current === "playing" ? "lifting" : current));
 
   return (
-    <div className={`intro fixed inset-0 z-[100] cursor-pointer text-paper ${phase === "lifting" ? "intro-lift" : ""}`} onClick={skip} aria-hidden>
+    <div className={`intro fixed inset-0 z-[100] cursor-pointer text-white ${phase === "lifting" ? "intro-lift" : ""}`} onClick={skip} aria-hidden>
       {/* 上半：站名，贴着中线 */}
-      <div className="intro-half intro-top absolute inset-x-0 top-0 flex h-[calc(50%+1px)] flex-col items-center justify-end bg-ink pb-8">
+      <div className="intro-half intro-top absolute inset-x-0 top-0 flex h-[calc(50%+1px)] flex-col items-center justify-end bg-night pb-8">
         <div className="intro-text">
           <p className="intro-wordmark font-serif text-2xl uppercase sm:text-3xl">{wordmark}</p>
         </div>
       </div>
 
       {/* 下半：公园名滚过，最后停在首屏那座；下面是一行小字 */}
-      <div className="intro-half intro-bottom absolute inset-x-0 bottom-0 flex h-[calc(50%+1px)] flex-col items-center bg-ink pt-4">
+      <div className="intro-half intro-bottom absolute inset-x-0 bottom-0 flex h-[calc(50%+1px)] flex-col items-center bg-night pt-4">
         <div className="intro-text flex flex-col items-center">
           <div className="intro-words relative h-24 w-80 overflow-hidden text-center">
             {words.map((word, i) => {
@@ -166,12 +166,12 @@ export function Intro({
                   }}
                 >
                   <span className="block font-serif text-3xl sm:text-4xl">{word.zh}</span>
-                  <span className="eyebrow mt-2 block text-paper/45">{word.en}</span>
+                  <span className="eyebrow mt-2 block text-white/45">{word.en}</span>
                 </p>
               );
             })}
           </div>
-          <p className="eyebrow mt-5 text-paper/40" style={{ animation: "fade 0.9s ease 0.6s both" }}>
+          <p className="eyebrow mt-5 text-white/40" style={{ animation: "fade 0.9s ease 0.6s both" }}>
             {tagline}
           </p>
         </div>
@@ -181,7 +181,7 @@ export function Intro({
             event.stopPropagation();
             skip();
           }}
-          className="eyebrow absolute right-6 bottom-6 text-paper/45 transition-colors hover:text-paper sm:right-10 sm:bottom-8"
+          className="eyebrow absolute right-6 bottom-6 text-white/45 transition-colors hover:text-white sm:right-10 sm:bottom-8"
         >
           {skipLabel}
         </button>
@@ -189,7 +189,7 @@ export function Intro({
 
       {/* 中线：播放时从中间画出来，拉开时先向两边亮开，再随着幕布分开淡掉 */}
       <span ref={seamRef} className="intro-seam absolute top-1/2 left-1/2 block h-px w-64 -translate-x-1/2">
-        <span className="block h-full w-full origin-center bg-paper/35" style={{ animation: "grow-x 1.1s var(--ease-expo) 0.15s both" }} />
+        <span className="block h-full w-full origin-center bg-white/35" style={{ animation: "grow-x 1.1s var(--ease-expo) 0.15s both" }} />
       </span>
     </div>
   );

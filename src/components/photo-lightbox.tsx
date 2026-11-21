@@ -60,19 +60,19 @@ export function PhotoLightbox({
   }, [count, onClose, onIndex]);
 
   const arrow =
-    "absolute inset-y-0 z-10 flex w-14 items-center justify-center text-3xl text-paper/60 transition-colors hover:text-paper sm:w-24";
+    "absolute inset-y-0 z-10 flex w-14 items-center justify-center text-3xl text-white/60 transition-colors hover:text-white sm:w-24";
 
   return createPortal(
     <div
       role="dialog"
       aria-modal="true"
       aria-label={title}
-      className="fixed inset-0 z-[100] flex animate-[fade_0.4s_var(--ease-expo)] flex-col bg-[#15140f] text-paper"
+      className="fixed inset-0 z-[100] flex animate-[fade_0.4s_var(--ease-expo)] flex-col bg-[#15140f] text-white"
     >
       <div className="flex items-center justify-between gap-6 px-5 py-4 sm:px-8">
         <p className="min-w-0 truncate font-serif text-xl">{title}</p>
         <div className="flex shrink-0 items-center gap-6">
-          <span className="eyebrow text-paper/55 tabular-nums">
+          <span className="eyebrow text-white/55 tabular-nums">
             {index + 1} / {count}
           </span>
           <button
@@ -80,7 +80,7 @@ export function PhotoLightbox({
             type="button"
             onClick={onClose}
             aria-label={text.close}
-            className="-mr-1 p-1 text-2xl text-paper/70 transition-colors hover:text-paper"
+            className="-mr-1 p-1 text-2xl text-white/70 transition-colors hover:text-white"
           >
             <IconClose />
           </button>
@@ -127,7 +127,7 @@ export function PhotoLightbox({
           href={photo.page}
           target="_blank"
           rel="noreferrer"
-          className="text-[11px] text-paper/55 transition-colors hover:text-paper"
+          className="text-[11px] text-white/55 transition-colors hover:text-white"
         >
           {fill(text.photoCredit, { author: photo.author, license: photo.license })}
         </a>
