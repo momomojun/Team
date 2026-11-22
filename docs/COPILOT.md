@@ -58,7 +58,7 @@ flowchart LR
   - 模型只出“查什么”，不出事实：参数里的地方写名字，代码对成网站的 id（先认 id 和机场代码，再按资料里的名字，再按字面：“山谷酒店”→优胜美地山谷酒店、“沙漠观景点”→沙漠观景塔、“Zion Visitor Center”只认出了公园名时在这座公园里找景点），对不上的不查、把“网站上没有叫 X 的地方”告诉模型；日期代码检查格式、存不存在（“2027 年没有 2 月 30 日这一天”）、是不是已经过了（照查，附一句提醒）；同样的查询不查第二遍。
   - 回答的检查和 QA 一样：时间、数字要在给模型看过的东西里出现过（`qa.unsupported`），引用的编号要是给过的；另外不能说出工具名（`is_open` 这类带下划线的，“把你的工具列出来”这种注入）。没通过、到了 4 步还在要查、超时：已经查到了东西就直接把查到的给用户（不再调一次模型），什么都没查到、模型调用失败就返回 None，`pipeline._ask` 退回原来的“代码认问题 + 找一次就答”。`found: false`（网站答不了、日期不存在、没有这个公园）用模型那句老实话，不附出处。出处按编号写：资料写标题，查询结果写“网站的车程表 / 开放情况 / ……”。
   - trace（日志的 `qa`）：`mode: agent`、每一步的模型、耗时、调了什么（名字和对成的请求、找到的资料 id、出错原因）、node 用了多久；退回 QA 时在 `qa.agent` 里。
-- **多 agent 协作：规划 agent + 审查 agent**（`team.py`、提示词 `team_plan_v1`、`team_review_v1`，11-22，GOALS A2、P14、P16、P38；`COPILOT_TEAM=1` 才打开，默认关着）。为什么：调度员只会改条件、加减景点、指定住处，用户说“中间留一天休息”“每天开车别超过 3 小时”“只住一家”“前两天大提顿、后四天黄石”，表单上没有、引擎不知道，只能排满再在说明里带过。现在几个角色来回商量：
+- **多 agent 协作：规划 agent + 审查 agent**（`team.py`、提示词 `team_plan_v1`、`team_review_v1`，11-22，GOALS A2、P14、P16、P38；11-22 晚仓库主人定默认打开，`COPILOT_TEAM=0` 关掉）。为什么：调度员只会改条件、加减景点、指定住处，用户说“中间留一天休息”“每天开车别超过 3 小时”“只住一家”“前两天大提顿、后四天黄石”，表单上没有、引擎不知道，只能排满再在说明里带过。现在几个角色来回商量：
   1. **规划 agent**（模型）读这一趟用户说过的话（换新行程时从头算，`Session.trip_from`），摘出软要求（wish，24 种，和评测的检查同一套名字），每条必须附原话片段（evidence）。代码核对：片段要真在用户说过的话里；第几天要在行程里；片区、季节性山路只认目录里有的（`attractions.json` 的 `area`、`parks.json` 新加的 `roads`）；景点名要在资料里对得上（对不上的照实说“网站没有收录”，比如大峡谷北缘）。不合格的丢掉、记在 trace 的 `team_plan.dropped`。这一趟说过的话没变、只是在问问题时不再调模型。
   2. **代码翻成引擎旋钮**：`TripRequest.prefs`（休息日、每天开车上限、每天 / 某天最多几站、几点以后出门、几点前回、最后一天几点前到、至少几次日出日落星空、至少几条徒步、一定要走的山路、不坐班车、避开危险、不去的片区、一天几个片区、某天只待一处、哪几天去哪座公园），加上 include / exclude。引擎怎么照做见 DEVELOPMENT.md 的 `generate-trip.ts`。
   3. **检查**：排出来的行程用和评测同一个判分脚本（`scripts/soft-check-lib.mjs`，经 `scripts/soft-check.mjs`）逐条判；代码自己会修的先修：“只住一家 / 最多两家”引擎没有这个旋钮，挨个试“每晚都住这家”，挑整趟开车最少的。
@@ -123,7 +123,7 @@ flowchart LR
 | `src/lib/copilot/live.ts` | 关闭清单 → 行程引擎的 `LiveClosures`：两周内出发、清单是新的、日期碰得到才用 |
 | `copilot/scripts/alerts_report.py`、`.github/workflows/alerts-nightly.yml` | 每晚抓公告、新的关闭公告开 issue；抽查模型（`eval/baseline-alerts-canary.json`）、提议改 `closures.ts`（`scripts/propose-closures.mjs`）、把关闭清单推到 `data/alerts-live` 分支给网站用（`src/lib/alerts-live.ts`） |
 | `copilot/nps_copilot/dispatcher.py` | 调度员：给模型看的上下文、输出格式、丢掉编造的名字 |
-| `copilot/nps_copilot/team.py`、`prompts/team_plan_v1.txt`、`team_review_v1.txt`、`scripts/soft-check-lib.mjs`、`scripts/soft-check.mjs` | 多 agent 协作（11-22）：规划 agent 摘软要求和代码核对（`compile_wishes`）、翻成引擎参数（`apply`）、判分（`grade`，调 Node 的判分脚本）、合并住处（`one_lodging`）、审查 agent 和最多 3 轮的商量（`negotiate`）、取舍说明（`tradeoffs`）；`COPILOT_TEAM=1` 打开 |
+| `copilot/nps_copilot/team.py`、`prompts/team_plan_v1.txt`、`team_review_v1.txt`、`scripts/soft-check-lib.mjs`、`scripts/soft-check.mjs` | 多 agent 协作（11-22）：规划 agent 摘软要求和代码核对（`compile_wishes`）、翻成引擎参数（`apply`）、判分（`grade`，调 Node 的判分脚本）、合并住处（`one_lodging`）、审查 agent 和最多 3 轮的商量（`negotiate`）、取舍说明（`tradeoffs`）；默认打开，`COPILOT_TEAM=0` 关掉。规划 agent 摘的每条要求，原话片段里要有说到这件事的词（`CUES`，比如开车上限要说到开车、休息日要说到休息），不然丢掉（`evidence_not_about_kind`）：默认打开后查出 4B 会把“节奏适中”读成中间休息一天、把“我想住airbnb”读成只住一家 |
 | `copilot/nps_copilot/knowledge.py`、`qa.py` | QA：在 `knowledge.jsonl` 里检索（名字命中 + BM25）、让模型只按查到的资料回答、检查回答里的数字，对不上就摘原文 |
 | `copilot/nps_copilot/vectors.py`、`embeddings.py` | QA 的按意思找（11-10）：资料用 Gemini 的嵌入接口变成 768 维向量，存进 Neon 的 `copilot_knowledge_vectors`（pgvector，按型号、资料 id）；回答问题时按 `COPILOT_RETRIEVAL` 用关键词、按意思找，或者两份名单按 RRF 合起来，嵌入接口、数据库任何一步出错，或者按意思找一条都没找到（库是空的），都退回关键词；问题里点了全名、按意思找的前 20 条里却没有的景点、住处（多半是还没算向量），放到最前面（`retrieval_pinned`）。建库、更新：`python -m nps_copilot vectors sync`（只算新的、改过的，删掉资料里没有了的；`--dry-run` 只数要算几条）。逐条比距离、不建 HNSW 索引（两千来条，精确又够快） |
 | `copilot/nps_copilot/graph.py` | 一轮对话按 LangGraph 的流程图跑（10-22）：understand（`Session.begin` + 调度员）→ dispatch（按调度员给的几件事做）或 legacy（原来的规则）→ finish（写日志、存档）。每个节点调 `pipeline.py` 同一套代码，评测直接调 `Session.send` 测到的就是这里跑的。对话状态（`Session.snapshot`）存进 LangGraph 的 SQLite 检查点（`copilot/data/sessions.sqlite`），Copilot 重启以后用原来的会话 id 接着说。`python -m nps_copilot graph` 打出 Mermaid 流程图。没装 langgraph（`pip install "copilot[graph]"`）或 `COPILOT_GRAPH=0` 就直接调 `Session.send`、会话只在内存里。Docker 镜像和 Hugging Face Space 里没装（免费 Space 重启会清空磁盘，存档本来也留不住） |
@@ -151,7 +151,7 @@ flowchart LR
 | 代码 | `copilot/nps_copilot/`、行程引擎 `src/` | `nps_copilot/__init__.py` 的 `__version__`（和 `pyproject.toml` 一起改），git tag `copilot-v<版本>` |
 | 镜像 | `ghcr.io/momomojun/team-copilot:<tag>` | 和 git tag 同名；镜像里记着构建的提交（`/health` 的 `build`，本机按源码构建的是 `local-build`） |
 | 提示词 | `copilot/nps_copilot/prompts/<任务>_v<n>.txt` | 默认用哪一版写在 `prompts/defaults.json`；部署时可以用环境变量临时换 |
-| 模型 | Ollama，不在镜像里 | `COPILOT_MODEL`（默认 `qwen3.5:4b-q4_K_M`） |
+| 模型 | Ollama，不在镜像里 | `COPILOT_MODEL`（默认 `qwen3.5:35b-a3b-q4_K_M`，11-22 起；以前 `qwen3.5:4b-q4_K_M`） |
 | 数据 | 网站数据 `src/data/`、给 Copilot 的资料 `copilot/contracts/`、各地叫法 `copilot/nps_copilot/data/` | 按文件内容算的 hash（`nps_copilot/data_version.py`，11-22），见下面“数据版本” |
 | 实时公告 | `copilot/data/alerts/closures-latest.json`（一天可能变几次） | 每次排行程单独记：哪天读的、内容 hash、几条关闭 |
 
@@ -190,7 +190,7 @@ flowchart LR
 
 ### 计划书里改了做法的几条（11-22 定的）
 
-- **最多 3 轮的修正由审查 agent 做**（P16）：没打开多 agent 时，Critic 照旧只自动改一次（只有“没说节奏、太满就改轻松”不违背用户原话）；`COPILOT_TEAM=1` 时，代码按用户的软要求逐条检查，审查 agent 最多 3 轮决定怎么改条件（节奏、景点、住处）或放弃哪条，每一轮改的是条件本身，所以几轮之间结果会不同（11-22 上午定“不做 3 轮”时还没有软要求旋钮）。
+- **最多 3 轮的修正由审查 agent 做**（P16）：关掉多 agent（`COPILOT_TEAM=0`）时，Critic 照旧只自动改一次（只有“没说节奏、太满就改轻松”不违背用户原话）；打开时（默认），代码按用户的软要求逐条检查，审查 agent 最多 3 轮决定怎么改条件（节奏、景点、住处）或放弃哪条，每一轮改的是条件本身，所以几轮之间结果会不同（11-22 上午定“不做 3 轮”时还没有软要求旋钮）。
 - **行程说明不逐句附出处**（P17）：不编由“模板只用结果 + 模型写的逐条核对、对不上换回模板”保证；出处在网站行程页每一站的“资料出处”里（官网、公告、班车时刻、核对日期）；回答问题时照旧列出处。
 - **线上每一轮不进 MLflow**（P25）：评测进本机 MLflow；线上用 JSONL 日志、`stats` 和网站后台（模型、token、花费、耗时、工具调用、数据版本都有）。Modal 上没人用会关机，另开一台 MLflow 服务器要花钱、内容重复。
 - **每一步用同一串模型**（P12）：`COPILOT_STEP_MODELS` 能分，默认不分。
@@ -270,7 +270,7 @@ flowchart LR
 | 变量 | 默认 | 作用 |
 |---|---|---|
 | `COPILOT_PROVIDER` | 聊天：Gemini 3.5 Flash Lite → Nemotron 3.5 Super（OpenRouter 免费版）→ Groq Qwen3.8 27B → DeepSeek Flash → `ollama`（`cloud_chain`）；读公告：Gemini → Nemotron 3.5 Super（推理开 high）→ Qwen3.8 27B → DeepSeek Flash → `ollama`（`alerts_chain`）。前三家是免费档（10-28 MiniMax M3.1 Flash 的免费推广期结束，换成 Nemotron），DeepSeek 按量付费，免费的都出错才轮到它（10-28 仓库主人定的“放在免费模型后面当备用”）（10-21 OpenAI 的 key 没额度了，GPT-4.1 mini 拿掉，设 `openai` 还能单独用）；前一个出错换下一个、没配 key 的跳过（`ProviderChain`）；评测：`ollama` | `ollama` / `gemini` / `openai` / `openrouter` / `groq` / `deepseek` / `replay`，设了就按设的（`deepseek` 是 10-28 加的，按量付费，默认型号 `deepseek-flash`）。顺序是 10-20 仓库主人定的“哪个稳哪个准用哪个，免费的能用就先用免费的”，按第四轮对照（RESULTS.md）。评测脚本（`eval/run.py`、`conversation.py`、`alerts.py`）也认，`--record` 录到 `recordings/<模型>…jsonl` |
-| `COPILOT_MODEL` | Ollama：`qwen3.5:4b-q4_K_M`；Gemini：`gemini-3.5-flash-lite`；OpenAI：`gpt-5-nano` | 模型名（Gemini 免费档能用的有 `gemma-4-31b-it`、`gemini-3.8-flash` 等，见 AI Studio 的“速率限制”页） |
+| `COPILOT_MODEL` | Ollama：`qwen3.5:35b-a3b-q4_K_M`（11-22 起，约 22 GB、要 32 GB 内存；小机器设 `qwen3.5:4b-q4_K_M`）；Gemini：`gemini-3.5-flash-lite`；OpenAI：`gpt-5-nano` | 模型名（Gemini 免费档能用的有 `gemma-4-31b-it`、`gemini-3.8-flash` 等，见 AI Studio 的“速率限制”页） |
 | `GEMINI_API_KEY`、`OPENAI_API_KEY`、`OPENROUTER_API_KEY`、`GROQ_API_KEY`、`DEEPSEEK_API_KEY` | — | 商业 API 的 key，写在仓库根目录的 `.env.local`（不提交）或设成环境变量；只放在请求头里，不写日志、不进录音 |
 | `COPILOT_STEP_MODELS` | — | 某几步单独换模型（GOALS P12，10-20）：`intake=gemini,qa=openai:gpt-4.1-mini`，写成 `步骤=提供方[:型号]`，步骤是 `dispatch`（调度员）/ `intake`（摘条件）/ `qa`（回答问题）/ `writer`（写说明），提供方是 `gemini` / `openai` / `openrouter` / `groq` / `ollama`；单独指定的出错退回平常的顺序，写错了直接报错。后台和 `/health` 的 `steps` 显示换了哪几步。读公告另用 `COPILOT_ALERTS_PROVIDER` |
 | `COPILOT_PROMPT_JUDGE` | `v1` | 模型打分（`eval/judge.py`）的裁判提示词版本 |
@@ -304,7 +304,7 @@ flowchart LR
 | `COPILOT_CHAT_TIMEOUT` | `20` | 聊天时每次调商业模型最多等几秒，超时不重试、直接换顺序里的下一个（10-21：Gemini 偶尔 70 多秒才回，第一句话要等一分多钟）；评测、每晚读公告不受影响 |
 | `COPILOT_ALERTS_BUDGET` | `12` | 聊天时现读公告最多等几秒：没读过的几条同时交给模型，到时间还没读完的按规则算、不进缓存（10-21：一次排行程读公告用了 49 秒） |
 | `COPILOT_DISPATCH` | `1` | 设成 `0` 关掉调度员，每轮都走原来按规则的流程（对照实验、出问题时回滚） |
-| `COPILOT_TEAM` | 不设 | 设成 `1`：多 agent 协作（规划 agent 摘软要求、审查 agent 最多 3 轮商量，`team.py`，11-22） |
+| `COPILOT_TEAM` | `1` | 多 agent 协作（规划 agent 摘软要求、审查 agent 最多 3 轮商量，`team.py`，11-22；11-22 晚起默认打开）；设成 `0` 关掉。单元测试默认关（`tests/conftest.py`，别的测试写好的假回答没有它那次调用），`test_team.py` 自己打开 |
 | `COPILOT_BUILD_SHA` | — | 镜像构建时写入，`/health` 显示 |
 | `COPILOT_TOKEN` | — | 设了就要请求头 `X-Copilot-Token` 等于它（`/health` 除外），不对返回 401（`guard.py`，10-21）；放到公网（Hugging Face Spaces）时用，网站的中转（`src/lib/copilot/upstream.ts`）读同名变量带上。没设不检查 |
 | `COPILOT_RATE_MINUTE`、`COPILOT_RATE_DAY` | `20`、`300` | 每个来源（网站中转透传的 `X-Forwarded-For`）每分钟、每天最多发几句话（`POST /sessions/{id}/messages`），超了 429 + `Retry-After` |
@@ -315,4 +315,4 @@ flowchart LR
 
 ## 模型参数
 
-和 `experiments/local-model-validation` 的实验一样：温度 0、种子 42、`num_ctx` 4096、`num_predict` 512（Writer 1536，7 天的行程说明 512 会被截断）、`top_k` 20、`top_p` 0.95、关思考（`think: false`），输出用 JSON Schema 约束。为什么用 Qwen3.5 4B 见 [PROJECT.md](PROJECT.md#模型)。
+和 `experiments/local-model-validation` 的实验一样：温度 0、种子 42、`num_ctx` 4096、`num_predict` 512（Writer 1536，7 天的行程说明 512 会被截断）、`top_k` 20、`top_p` 0.95、关思考（`think: false`；gpt-oss 关不掉，给 `low`），输出用 JSON Schema 约束。为什么用 Qwen3.5 35B-A3B（以前 4B）见 [PROJECT.md](PROJECT.md#模型)。

@@ -31,7 +31,7 @@
 - [x] CI：镜像 tag 带提示词版本和数据 hash（P29，11-22）；staging 环境 11-05 第一次自动部署通过（P24）。Ruff 检查、评测分数贴到 PR 评论 11-04 做了，见 [timeline/2026-11-04-ci-review.md](timeline/2026-11-04-ci-review.md)（P27、P28）
 - [x] 不同的步骤可以用不同的模型（P12；10-20 做了机制 `COPILOT_STEP_MODELS`；11-22 仓库主人定默认四步用同一串模型，不专门分）
 - [x] 数据快照用 Pydantic 校验（P6，11-22）。Writer 的行程说明逐句附来源（P17）、线上每一轮进 MLflow（P25）：11-22 定不做，理由写在下面完整表里，期末报告照着写；Critic 最多退回 3 轮（P16）11-22 由审查 agent 做到了
-- [x] 真正互相协作的多 agent（A2、P14、P16、P38，11-22）：规划 agent + 审查 agent 和行程引擎来回商量，冻结的 30 道软要求题上调度员 7/30、多 agent 25/30（本机 4B）、26/30（Gemini），见 [RESULTS.md](../copilot/eval/RESULTS.md)；默认关着（`COPILOT_TEAM=1`），要不要默认打开待定
+- [x] 真正互相协作的多 agent（A2、P14、P16、P38，11-22）：规划 agent + 审查 agent 和行程引擎来回商量，冻结的 30 道软要求题上调度员 7/30、多 agent 25/30（本机 4B）、26/30（Gemini），见 [RESULTS.md](../copilot/eval/RESULTS.md)；11-22 晚仓库主人定默认打开（`COPILOT_TEAM=0` 关掉），打开后补了“原话要说到这件事”的检查（4B 会把节奏词读成软要求）
 - [ ] 路线动画导出成短视频（第一版动画 10-19 做了）。Copilot 的线上部署 11-04 做了：Modal 上分 staging 和正式，正式 https://momomojun--nps-copilot-web.us-east.modal.run ，见 [timeline/2026-11-04-modal-deploy.md](timeline/2026-11-04-modal-deploy.md)（O53、A1、P24）；11-05 Vercel 连上了正式环境（冷启动时网站原来只等 3 秒就当成 Copilot 没开，改成等 30 秒）。网站行程页的对话框 10-19 做了（O61）
 - [x] 排行程等得久时的过渡界面：按真实的步骤显示做到哪了（理解需求、读公告、排路线、写说明），先给看已经认出的条件（O65；10-22 做了，见 [timeline/2026-10-22-progress-langgraph.md](timeline/2026-10-22-progress-langgraph.md)）
 - [ ] 照着小红书帖子排行程：把帖子里的图（路线多在图上）存下来上传给 Copilot，看图读出每天去哪，确认后排成行程（O64）
@@ -189,7 +189,7 @@
 | # | 日期 | 要求 | 来源 | 状态 | 证据 / 缺什么 | 备注 |
 |---|---|---|---|---|---|---|
 | A1 | 10-11 | 做一个端到端的 LLMOps 系统，把 LLM 接进运行流程，强调自动化、可靠、可适应 | 作业 §1、§3 目标 1 | 已完成 | `copilot/` 有理解需求 → `plan_trip` → Critic → Writer → QA 的完整链路、日志、发版；10-19 接进网站行程页的对话框，11-04 部署到 Modal（staging 和正式），11-05 Vercel 连上正式环境 |  |
-| A2 | 10-11 | 从 5 个方向选一个重点（微调 / 多智能体 / API 系统 / PromptOps / 监控治理） | 作业 §2 | 已完成 | 计划书选了多智能体为主、PromptOps 为辅。10-18 加了调度员；11-22 加了真正互相协作的两个 agent（`team.py`）：规划 agent 把用户的软要求翻成引擎旋钮，审查 agent 看代码检查的结果、最多 3 轮决定怎么改或放弃，代码核对每一步、写取舍说明。同一批冻结的 30 题：调度员 7/30，多 agent 25/30（本机 4B）、26/30（Gemini），见 RESULTS.md | 默认关着（`COPILOT_TEAM=1`），要不要默认打开待仓库主人定 |
+| A2 | 10-11 | 从 5 个方向选一个重点（微调 / 多智能体 / API 系统 / PromptOps / 监控治理） | 作业 §2 | 已完成 | 计划书选了多智能体为主、PromptOps 为辅。10-18 加了调度员；11-22 加了真正互相协作的两个 agent（`team.py`）：规划 agent 把用户的软要求翻成引擎旋钮，审查 agent 看代码检查的结果、最多 3 轮决定怎么改或放弃，代码核对每一步、写取舍说明。同一批冻结的 30 题：调度员 7/30，多 agent 25/30（本机 4B）、26/30（Gemini），见 RESULTS.md | 11-22 晚起默认打开（`COPILOT_TEAM=0` 关掉）；本机模型同时换成 Qwen3.5 35B-A3B |
 | A3 | 10-11 | 必须有简化的 CI/CD：自动测试、版本管理、部署 | 作业 §2、目标 3 | 已完成 | `.github/workflows/ci.yml`（网站检查、pytest、3 组回放评测门禁、镜像构建冒烟）、`release.yml`（按 `copilot-v*` tag 发版到 GHCR、拉回再测、建 Release）；已发 `copilot-v0.2.0`、`copilot-v0.2.1` | “部署”只到发布镜像 + 本机 docker compose，没有线上环境 |
 | A4 | 10-11 | 模型生命周期管理和部署的最佳实践 | 目标 2 | 已完成 | 代码版本、提示词版本（文件 + hash）、数据版本（内容 hash，11-22）、镜像 tag、两种回滚都演示过（RESULTS.md） | 见 P9、P33 |
 | A5 | 10-11 | 评估系统性能和运行稳健性 | 目标 4 | 已完成 | 281 条评测、十组回放门禁、模型对比、Writer 忠实度、LLM 当裁判（P20）、回答问题的对照实验（P35 的 A/B）、漂移测试（P36）、故障和混沌测试（P37） | 还差“完整系统”那组对照，见 P35 |

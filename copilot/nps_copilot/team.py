@@ -28,7 +28,7 @@ from functools import lru_cache
 from . import catalog, knowledge, prompts
 from .catalog import CONTRACTS, ROOT
 from .providers import Provider, ProviderError
-from .text import contains
+from .text import contains, normalize
 
 MAX_ROUNDS = 3
 HAZARDS = ("dropoff", "scramble", "thermal", "flashFlood", "water", "heat", "altitude", "wildlife", "remote", "motion")
@@ -40,6 +40,53 @@ KINDS = (
     "no_shuttle_stops", "road_day",
 )
 CLOCK = re.compile(r"([01]\d|2[0-3]):[0-5]\d")
+
+# 每种软要求的原话里要有说到这件事的词（规范化成简体、小写以后比）。片段在原话里只证明用户说过这句，不证明说的是这件事：
+# 11-22 默认打开以后，4B 把“节奏适中”“balanced pace”读成中间休息一天、每天开车不超过 1 小时，“我想住 airbnb”读成只住一家，
+# 问句“塔夫特点值得去吗？”读成一定要去；没有软要求的普通对话（conversation-v1、v2）因此变差 4 组
+_REST = r"休息|歇|什么都不|不安排|空出|空着|自由活动|放空|\brest|days? off|\bfree\b|\brelax\b|nothing|\bbreak\b|lazy|chill"
+_STOPS = r"地方|站|景点|个点|stops?|places|sights|spots|attractions|things"
+_WHEN = r"\d|点|钟|早|晚|中午|下午|上午|天黑|am\b|pm\b|a\.m|p\.m|noon|morning|afternoon|evening|night|dark"
+_SLOT = r"日出|日落|夕阳|晚霞|星|夜|银河|sunrise|sunset|star|night|milky|dark sk"
+_NOT = r"不去|不要|不想|别去|别安排|去掉|跳过|删|算了不|不用|不必|不需要|no need|skip|don'?t|do not|not |avoid|drop|remove|without|\bno\b|cut"
+CUES = {
+    "rest_days": _REST, "rest_day_on": _REST,
+    "max_drive_per_day": r"开车|车程|驾车|开.{0,4}(小时|钟头|分钟)|在车上|路上|drive|driving|behind the wheel|in the car|on the road",
+    "max_lodgings": r"[一两二三四\d]家|换来换去|不想?换|别换|少换|同一(家|个)|一个(酒店|住处|地方)|only one|one (hotel|place|lodg)|same (hotel|place|lodg)|"
+                    r"change hotels|hotel change|switch hotels|move hotels|moving hotels|unpack|one base",
+    "depart_not_before": r"出门|出发|起床|睡懒觉|起不来|别.{0,3}早|leave|leaving|start|head out|get going|sleep in|morning person",
+    "no_consecutive_early": r"早起|早出|起早|early",
+    "return_by": r"回|到酒店|到住|收工|back|return|done|finish|wrap up",
+    "day_return_by": r"回|到|赶|飞机|航班|机场|back|airport|flight|return",
+    "park_days": r"[前后头第]\s*[一两二三四五六七八九十\d]+\s*[天日晚]|最后.{0,3}[天日]|\bdays?\b|first|last|then",
+    "max_stops_per_day": _STOPS, "day_max_stops": _STOPS,
+    "has_slot": _SLOT, "slot_each_day": _SLOT,
+    "include": r"一定|必须|要去|想去|也去|还去|还是去|加上|加个|加一|换成|别漏|不能错过|must|definitely|want to|wanna|add|include|have to|need to|can'?t miss|don'?t miss|really",
+    "exclude": _NOT, "exclude_area": _NOT,
+    "max_areas_per_day": r"片|区|一带|一处|一个地方|待在|area|region|section|part|separate|one place|cover|spread|zone",
+    "day_single_area": r"片|区|一带|一处|一个地方|待在|area|region|section|part|separate|one place|cover|spread|zone",
+    "hikes_per_day": r"徒步|步道|爬山|走.{0,2}路|hike|hiking|trail|walk",
+    "max_hike_min": r"(徒步|步道|爬山|走|hike|hiking|trail|walk).*(小时|分钟|钟头|短|长|累|hour|min|short|long|easy)|"
+                    r"(小时|分钟|钟头|短|长|hour|min|short|long|easy).*(徒步|步道|爬山|hike|hiking|trail|walk)",
+    "max_stop_minutes": r"小时|分钟|钟头|多久|太久|hour|min|long",
+    "no_hazards": r"危险|悬崖|陡|安全|吓人|恐高|地热|边上|dangerous|danger|cliff|drop-?off|safe|scary|risky|exposure|heights|hazard|steep|thermal|edge",
+    "no_shuttle_stops": r"班车|摆渡|巴士|大巴|接驳|shuttle|bus",
+    "road_day": r"路|大道|公路|山口|road|drive|highway|pass|parkway",
+}
+# 问句不是要求（“塔夫特点值得去吗？”）
+QUESTION = re.compile(r"[？?]\s*$|吗\s*$|值得去|怎么样|worth (it|going|a visit)")
+
+
+def _says(kind: str, evidence: str) -> bool:
+    text = normalize(evidence).lower()
+    if kind in ("include", "exclude", "exclude_area") and QUESTION.search(text):
+        return False
+    if kind == "include" and re.search(_NOT, text):
+        return False
+    if kind == "exclude" and re.search(r"还是去|还去|也去|加上", text):
+        return False
+    return bool(re.search(CUES[kind], text))
+
 
 # 输出格式尽量简单：Gemini 嫌可选字段多、又带长度和范围限制的 schema 太复杂（400，too many states），
 # 参数的范围、片区和山路在不在目录里，都由 compile_wishes 逐条核对
@@ -87,7 +134,7 @@ SLOWER = {"packed": "normal", "normal": "relaxed", "relaxed": "leisurely"}
 
 
 def enabled() -> bool:
-    return os.environ.get("COPILOT_TEAM") == "1"
+    return os.environ.get("COPILOT_TEAM", "1") != "0"
 
 
 class TeamError(RuntimeError):
@@ -214,6 +261,9 @@ def compile_wishes(raw: list, messages: list[str], request: dict) -> Plan:
         kind, evidence = item["kind"], (item.get("evidence") or "").strip()
         if not contains(said, evidence):
             drop(item, "evidence_not_in_messages")
+            continue
+        if not _says(kind, evidence):
+            drop(item, "evidence_not_about_kind")
             continue
         params: dict = {}
         time_ok = isinstance(item.get("time"), str) and CLOCK.fullmatch(item["time"])

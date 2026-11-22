@@ -14,6 +14,9 @@ os.environ.setdefault("COPILOT_LIVE", "0")
 os.environ["COPILOT_LEDGER"] = "off"
 # 回答问题时只按关键词找资料：不连 Neon、不调嵌入接口（测按意思找的测试自己换成假的）
 os.environ["COPILOT_RETRIEVAL"] = "bm25"
+# 多 agent（规划 agent + 审查 agent）11-22 起默认打开，每排一次多一次模型调用；
+# 别的测试写好的假回答是按没有它的调用顺序排的，这里关掉，测多 agent 的测试（test_team.py）自己打开
+os.environ.setdefault("COPILOT_TEAM", "0")
 
 from nps_copilot.intake import Intake  # noqa: E402
 from nps_copilot.providers import ScriptedProvider  # noqa: E402

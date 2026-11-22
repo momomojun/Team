@@ -28,7 +28,7 @@
 
 - **网站 NPS Guide**（`src/`，Next.js）：美国国家公园行程规划，按日期排行程、算车程、提醒封路和预约。排行程的是**确定的代码**，不用 AI。
 - **Copilot**（`copilot/`，Python）：课程 CSYE 7374 LLMOps 加的 AI 部分。用户随口说一句“6 月带爸妈去优胜美地玩 4 天”，AI 模型从里面摘出条件，代码检查、追问，齐了以后交给网站的排行程引擎，再写成说明。
-- **模型**：谁稳谁准用谁，免费的先用（10-20 仓库主人定的，按评测成绩排）。免费档在前：聊天：Gemini 3.5 Flash Lite → OpenRouter 上的 Nemotron 3.5 Super（免费版；10-28 MiniMax M3.1 Flash 的免费推广期结束，换掉了）→ Groq 上的 Qwen3.8 27B → DeepSeek Flash（按量付费的备用，免费的三家都出错才用，10-28 仓库主人定的）→ 本机跑的 Qwen3.5 4B（通过 Ollama）；读 NPS 公告：Gemini → Nemotron 3.5 Super（推理开 high）→ Qwen3.8 27B → DeepSeek Flash → 本机。10-21 仓库主人的 OpenAI key 没额度了，付费的 GPT-4.1 mini 不再放进默认顺序（`COPILOT_PROVIDER=openai` 还能单独用）。前一个出错（额度用完、服务忙）这一句就换下一个，`.env.local` 里没有那一家的 key 就跳过，什么 key 都没有就只用本机。评测、CI 用本机模型录好的回答回放，不调云端（比较的成绩见 RESULTS.md）。
+- **模型**：谁稳谁准用谁，免费的先用（10-20 仓库主人定的，按评测成绩排）。免费档在前：聊天：Gemini 3.5 Flash Lite → OpenRouter 上的 Nemotron 3.5 Super（免费版；10-28 MiniMax M3.1 Flash 的免费推广期结束，换掉了）→ Groq 上的 Qwen3.8 27B → DeepSeek Flash（按量付费的备用，免费的三家都出错才用，10-28 仓库主人定的）→ 本机跑的 Qwen3.5 35B-A3B（通过 Ollama；11-22 起，以前是 4B，内存不够的电脑自动退回 4B）；读 NPS 公告：Gemini → Nemotron 3.5 Super（推理开 high）→ Qwen3.8 27B → DeepSeek Flash → 本机。10-21 仓库主人的 OpenAI key 没额度了，付费的 GPT-4.1 mini 不再放进默认顺序（`COPILOT_PROVIDER=openai` 还能单独用）。前一个出错（额度用完、服务忙）这一句就换下一个，`.env.local` 里没有那一家的 key 就跳过，什么 key 都没有就只用本机。评测、CI 用本机模型录好的回答回放，不调云端（CI 的门禁仍回放 Qwen3.5 4B 的录音；比较的成绩见 RESULTS.md）。用户说的软要求（“中间留一天休息”“每天开车别超过 3 小时”“只住一家”）由规划 agent 和审查 agent 跟排行程引擎商量（多 agent 协作，11-22 起默认打开，`COPILOT_TEAM=0` 关掉）。
 - **CI/CD**：每个 PR 自动检查；推 `copilot-v*` 标签自动发版到 GHCR。
 
 ## 2. 装工具（只做一次）
@@ -67,7 +67,7 @@ Windows 上建议先运行一次 `git config --global core.autocrlf true`。`.gi
 在仓库根目录双击 **`start.cmd`**：它开两个窗口，一个跑 Copilot 服务、一个跑网站，都起来以后自动打开行程页 http://localhost:3000/zh-Hans/plan （最上面就是 Copilot 对话框）。关掉：双击 **`stop.cmd`**，或者直接关掉那两个窗口。
 
 - 第一次运行会自己装依赖（`npm install`、`python -m pip install -e copilot[api]`），要几分钟。
-- 模型：平常是免费的云端模型优先、本机模型兜底（`.env.local` 里有哪家的 key 用哪家）。只想用本机 Qwen3.5 4B、一次云端都不调（测试时省额度），在 PowerShell 里跑：
+- 模型：平常是免费的云端模型优先、本机模型兜底（`.env.local` 里有哪家的 key 用哪家）。只想用本机模型（Qwen3.5 35B-A3B；这台电脑的 Ollama 里没下它就用 4B）、一次云端都不调（测试时省额度），在 PowerShell 里跑：
 
 ```bash
 powershell -ExecutionPolicy Bypass -File D:/LLM/Team/scripts/start-local.ps1 -LocalModel
@@ -146,7 +146,7 @@ docker compose -f copilot/docker-compose.yml -f copilot/docker-compose.ollama.ym
 ```
 
 - 有 NVIDIA 显卡的，在 `up` 前面多加一个 `-f copilot/docker-compose.gpu.yml`，快很多。
-- 第一次要下载约 7 GB（Ollama 镜像约 3.8 GB + 模型约 3.4 GB），之后不用再下。
+- 第一次要下载约 26 GB（Ollama 镜像约 3.8 GB + 模型 Qwen3.5 35B-A3B 约 22 GB），之后不用再下；要 32 GB 内存。内存不够、或者不想下这么大的，命令前加 `COPILOT_MODEL=qwen3.5:4b-q4_K_M`（模型约 3.4 GB；PowerShell 里先 `$env:COPILOT_MODEL="qwen3.5:4b-q4_K_M"`）。
 - 它会等模型下载完、装进显卡（“预热”）才启动 Copilot，所以每次启动要等几分钟（momomojun 的电脑上：第一次连下载 17 分钟，之后约 3.5 分钟）；起来以后每句话几秒。模型留在显卡里 24 小时。
 - 起来以后测一下，看到“冒烟测试通过”就好了：
 
@@ -162,7 +162,7 @@ docker compose -f copilot/docker-compose.yml -f copilot/docker-compose.ollama.ym
 
 - 8765 端口被别的程序占了：命令前面加 `COPILOT_PORT=8766`（PowerShell 里先 `$env:COPILOT_PORT=8766`），测试地址也换成 8766。
 - 已经在本机下好模型的，设 `OLLAMA_MODELS=<本机的 models 目录>` 就不再下载。
-- Mac：Docker 里用不了苹果芯片的 GPU，很慢。建议直接装 [Ollama](https://ollama.com/download)，运行 `ollama pull qwen3.5:4b-q4_K_M`，然后用 C。
+- Mac：Docker 里用不了苹果芯片的 GPU，很慢。建议直接装 [Ollama](https://ollama.com/download)，运行 `ollama pull qwen3.5:35b-a3b-q4_K_M`（内存不到 32 GB 的拉 `qwen3.5:4b-q4_K_M`，再设 `COPILOT_MODEL=qwen3.5:4b-q4_K_M`），然后用 C。
 
 **C. 直接用 Python（改 Copilot 代码时最方便）**：自己开着 Ollama。
 
@@ -487,6 +487,6 @@ docker compose -f copilot/docker-compose.yml exec -T copilot python -m nps_copil
 - **CI 的类型检查报 `PageProps` 找不到**：先跑 `npx next typegen`，这些全局类型是 Next.js 生成的。
 - **评测报“回放记录里没有这次调用”**：改了提示词或样例，录音对不上了，要用真模型重新录（见“改提示词”）。
 - **Copilot 报“连不上本机 Ollama”**：Ollama 没开，或者地址、端口不对。用第 4 节的 B，或者设对 `OLLAMA_HOST_URL`。
-- **一键启动后第一句话超时**：模型还没装进显卡。一键启动的预热步骤就是为这个加的；自己开的 Ollama 第一次调用前先 `ollama run qwen3.5:4b-q4_K_M` 一次。
+- **一键启动后第一句话超时**：模型还没装进显卡。一键启动的预热步骤就是为这个加的；自己开的 Ollama 第一次调用前先 `ollama run qwen3.5:35b-a3b-q4_K_M` 一次（用 4B 的换成 4B）。
 - **Git Bash 里 `-e COPILOT_REPLAY=/app/...` 这类路径被改成 Windows 路径**：命令前加 `MSYS_NO_PATHCONV=1`。
 - **不知道某个功能在哪个文件**：网站看 [DEVELOPMENT.md](DEVELOPMENT.md#代码结构)，Copilot 看 [COPILOT.md](COPILOT.md#文件)。

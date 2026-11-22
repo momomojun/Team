@@ -40,6 +40,7 @@ PRICES = {
     "openai/gpt-oss-120b": (0.0, 0.0),
     "qwen/qwen3.8-27b": (0.0, 0.0),
     "qwen3.5:4b-q4_K_M": (0.0, 0.0),
+    "qwen3.5:35b-a3b-q4_K_M": (0.0, 0.0),
     # DeepSeek 按人民币、分时段、缓存命中另算，实际花费按下面的 DEEPSEEK_CNY；这里是高峰、缓存未命中的上限，
     # 只给 eval/compare_alerts.py 这种拿不到调用时间的地方用
     "deepseek-flash": (0.28, 1.13),

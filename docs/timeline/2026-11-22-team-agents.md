@@ -34,3 +34,11 @@
 
 - 仓库主人问能不能用更大的 MoE 模型，同意后从 Ollama 官方库下载了 `qwen3.5:35b-a3b-q4_K_M`（约 22 GB）和 `gpt-oss:20b`（约 14 GB），和 4B 一起跑了八组评测（本机，不花钱）。成绩在 RESULTS.md“本机换更大的 MoE 模型”：35B-A3B 回答问题 27 → 33/44、读公告日期 16 → 20/24、软要求多 agent 25 → 27/30，单句理解打平，多轮对话少 2 组（没把 airbnb 读成住民宿），慢 2–3 倍；gpt-oss 不合适。
 - 修了两处 gpt-oss 的问题：它关不掉思考，给 `think: "low"`（`providers._think`）；它用自己的工具调用格式不写 JSON 时，错误信息直接说清楚。
+
+## 多 agent 默认打开、本机换成 35B-A3B（同一个分支）
+
+- 仓库主人看完对照定的。`COPILOT_TEAM` 默认 `1`（`0` 关掉）；本机默认模型 `qwen3.5:35b-a3b-q4_K_M`（`providers.py`、Docker、后台架构图），`start-local.ps1` 先找下好了 35B 的 Ollama，没有就退回 4B 并提示；Docker 的 Ollama 升到 0.40.16（本机跑通 35B 的版本，Docker 里没试过）。
+- 打开后多轮对话门禁变差 4 组：规划 agent 在没有软要求的普通对话里把“节奏适中”读成休息一天、“我想住airbnb”读成只住一家。加了“原话要说到这件事”的检查（`team.CUES`），soft-v1 四个模型的成绩不变、门禁恢复；考题的漏洞（没有“什么要求都没有”的对照题）记在 RESULTS.md。
+- 35B 把“我想住airbnb”当成一家住处：代码改成按住宿偏好处理（`dispatcher.LODGING_KIND`），35B 的 conversation-v1 19 → 20 组。
+- 4B、35B 的多轮对话录音补录了规划 agent 的调用（本机，不花钱），CI 门禁现在真的走多 agent。单元测试默认关多 agent（`tests/conftest.py`），`test_team.py` 自己打开。
+- 线上（Modal）的 Copilot 下次发版以后才会打开多 agent，每次排行程多一次云端模型调用。

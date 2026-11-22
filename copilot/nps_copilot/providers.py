@@ -58,7 +58,8 @@ def _think(model: str) -> bool | str:
 
 @dataclass
 class OllamaProvider:
-    model: str = os.environ.get("COPILOT_MODEL", "qwen3.5:4b-q4_K_M")
+    # 本机兜底 11-22 起换成 Qwen3.5 35B-A3B（MoE，每次只用 3B；本机对照理解、推理更好，慢 2–3 倍，见 RESULTS.md）
+    model: str = os.environ.get("COPILOT_MODEL", "qwen3.5:35b-a3b-q4_K_M")
     host: str = os.environ.get("OLLAMA_HOST_URL", "http://127.0.0.1:11435")
     timeout: float = 120.0
     name: str = "ollama"
