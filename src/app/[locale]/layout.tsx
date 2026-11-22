@@ -80,6 +80,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
             parks: dict.nav.parks,
             plan: dict.nav.plan,
             when: dict.nav.when,
+            activities: dict.nav.activities,
             routes: dict.nav.routes,
             prices: dict.nav.prices,
             rankings: dict.nav.rankings,

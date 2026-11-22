@@ -16,6 +16,7 @@ export interface MenuText {
   parks: string;
   plan: string;
   when: string;
+  activities: string;
   routes: string;
   prices: string;
   rankings: string;
@@ -204,6 +205,9 @@ export function MobileMenu({
               </Link>
               <Link href={`/${locale}/when`} onClick={close} className="border border-ink/25 px-4 py-3 text-center text-sm tracking-[0.12em]">
                 {text.when}
+              </Link>
+              <Link href={`/${locale}/activities`} onClick={close} className="border border-ink/25 px-4 py-3 text-center text-sm tracking-[0.12em]">
+                {text.activities}
               </Link>
               <Link href={`/${locale}/routes`} onClick={close} className="border border-ink/25 px-4 py-3 text-center text-sm tracking-[0.12em]">
                 {text.routes}

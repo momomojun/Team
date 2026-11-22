@@ -32,7 +32,7 @@ export function PageHeader({
 }) {
   return (
     // 所在的容器有左右内边距：用负边距撑满整个屏幕宽（body 设了 overflow-x: clip，不会出横向滚动条）
-    <header className="relative mx-[calc(50%-50vw)] flex min-h-[440px] overflow-hidden bg-night text-white h-[64svh] print:h-auto print:min-h-0 print:bg-transparent print:text-ink">
+    <header data-header-tone="dark" className="relative mx-[calc(50%-50vw)] flex min-h-[440px] overflow-hidden bg-night text-white h-[64svh] print:h-auto print:min-h-0 print:bg-transparent print:text-ink">
       {photo && (
         <CommonsImage src={photo.src} alt="" fill priority sizes="100vw" className="animate-drift object-cover print:hidden" />
       )}

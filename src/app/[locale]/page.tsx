@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CommonsImage } from "@/components/commons-image";
+import { ActivityCard } from "@/components/activities/activity-card";
 import { ContinueTrip } from "@/components/home/continue-trip";
 import { FilmTile, type FilmCard } from "@/components/home/film-reel";
 import { Hero, type HeroSlide } from "@/components/home/hero";
@@ -17,6 +18,8 @@ import { localizePark } from "@/i18n/content";
 import { localize } from "@/i18n/convert";
 import { getDictionary } from "@/i18n/dictionaries";
 import { fill, formatMonths } from "@/i18n/format";
+import { activityCards } from "@/lib/activity-cards";
+import { byParkPopularity } from "@/lib/park-popularity";
 
 // “当月精选”按当前月份计算，页面每天重新生成一次
 export const revalidate = 86400;
@@ -33,13 +36,6 @@ const photoOf = (id: string) => attractions.find((attraction) => attraction.id =
 /** Commons 缩略图换成 1920 宽，做全屏大图 */
 const large = (url: string) => url.replace("/960px-", "/1920px-");
 
-/** 热门程度：各景点的 Google 评论数加起来（游客中心、园外景点不算，和热度排名一样） */
-const popularityOf = new Map<string, number>();
-for (const attraction of attractions) {
-  if (!attraction.google || attraction.kind === "visitor" || attraction.outsidePark) continue;
-  popularityOf.set(attraction.park, (popularityOf.get(attraction.park) ?? 0) + attraction.google.reviews);
-}
-const byPopularity = (a: Pick<Park, "code">, b: Pick<Park, "code">) => (popularityOf.get(b.code) ?? 0) - (popularityOf.get(a.code) ?? 0);
 const heroOf = (park: Pick<Park, "hero">) => photoOf(park.hero);
 
 /** 照片格子：悬停时照片慢慢放大一点、压暗一点，名字在底部居中（Wabunka 的入口、拼贴格子都是这样） */
@@ -86,7 +82,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const parkHref = (code: string) => `${base}/parks/${code}`;
 
   const localParks = parks.filter((park) => !isSite(park)).map((park) => localizePark(park, locale));
-  const ranked = [...localParks].sort(byPopularity);
+  const ranked = [...localParks].sort(byParkPopularity);
   const credit = (photo: { author: string; license: string }) => fill(t.photoCredit, photo);
   const month = new Date().getMonth() + 1;
   // 竖排的中文名：繁体页面用繁体，英文页面也写中文（像 Wabunka 给英文读者写的日文）
@@ -171,6 +167,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
     { value: creatorRoutes.length, label: t.stats.routes },
   ];
   const closingPhoto = photoOf(CLOSING_PHOTO);
+  // 这个月的活动：限时的、所在公园热门的排前面
+  const monthActivities = activityCards(locale, month);
 
   return (
     <div className="theme-dark">
@@ -362,8 +360,29 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         </div>
       </section>
 
-      {/* 米色的两段：资料从哪来、电影里的国家公园（Wabunka 的“Trusted by”和“Japan Through Film”也是米色底） */}
+      {/* 从这里起是米色的下半页（照着 Wabunka：上半页深色看风景，下半页米色是能去做的事和资料，只换一次）：
+          这个月的活动（Wabunka 的“Available Today”）、资料从哪来、电影里的国家公园 */}
       <div className="theme-light">
+        {monthActivities.length > 0 && (
+          <section className="pt-20 md:pt-24">
+            <div className={container}>
+              <SectionTitle href={`${base}/activities/${month}`}>{fill(t.activitiesTitle, { month })}</SectionTitle>
+              <Rail label={fill(t.activitiesTitle, { month })} previous={t.previous} next={t.next}>
+                {monthActivities.slice(0, 8).map((card) => (
+                  <div key={card.id} className="w-[72vw] shrink-0 snap-start sm:w-[40vw] md:w-[calc((100%-1rem)/3)] lg:w-[calc((100%-1.5rem)/4)]">
+                    <ActivityCard card={card} dict={dict} href={`${base}/activities/${month}#activity-${card.id}`} sizes="(min-width: 1024px) 300px, (min-width: 768px) 33vw, 72vw" />
+                  </div>
+                ))}
+              </Rail>
+              <div className="mt-12 text-center">
+                <Link href={`${base}/activities/${month}`} className={goldButton}>
+                  {fill(t.activitiesAll, { month, n: monthActivities.length })}
+                </Link>
+              </div>
+            </div>
+          </section>
+        )}
+
         <section id="about" className={`${container} grid scroll-mt-16 gap-12 py-20 md:py-24 lg:grid-cols-[5fr_7fr]`}>
           <div>
             <h2 className="font-serif text-[26px] leading-snug text-clay-600 md:text-[32px]">{t.dataTitle}</h2>
@@ -407,8 +426,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       <section className="relative overflow-hidden bg-night py-20 md:py-28">
         {closingPhoto && <CommonsImage src={large(closingPhoto.url)} alt="" fill sizes="100vw" className="object-cover" />}
         <div className="absolute inset-0 bg-black/35" />
-        <div className={`${container} theme-light relative grid gap-4 bg-transparent md:grid-cols-2`}>
-          <div className="flex flex-col items-center bg-paper px-8 py-10 text-center">
+        <div className={`${container} relative grid gap-4 md:grid-cols-2`}>
+          <div className="theme-light flex flex-col items-center bg-paper px-8 py-10 text-center">
             <h2 className="font-serif text-[22px]">{t.closingPlanTitle}</h2>
             <p className="mt-3 max-w-sm text-[14px] leading-7 text-ink-soft">{t.closingPlanText}</p>
             <Link
@@ -419,7 +438,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             </Link>
             <ContinueTrip href={planHref} parkNames={Object.fromEntries(localParks.map((park) => [park.code, park.nameZh]))} locale={locale} text={t} />
           </div>
-          <div className="flex flex-col items-center bg-paper px-8 py-10 text-center">
+          <div className="theme-light flex flex-col items-center bg-paper px-8 py-10 text-center">
             <h2 className="font-serif text-[22px]">{t.appTitle}</h2>
             <p className="mt-3 max-w-sm text-[14px] leading-7 text-ink-soft">{t.appText}</p>
           </div>
