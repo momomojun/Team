@@ -6,6 +6,7 @@ import * as OpenCC from "opencc-js";
 import { airports } from "../src/data/airports.ts";
 import { npsCodeOf, parks } from "../src/data/parks.ts";
 import { attractions } from "../src/data/attractions/index.ts";
+import { seasonalRoads } from "../src/data/roads.ts";
 import { knowledge } from "./build-copilot-knowledge.mjs";
 import { localize } from "../src/i18n/convert.ts";
 import { airportMinutes } from "../src/lib/travel.ts";
@@ -44,6 +45,8 @@ export function catalog() {
       linked: parks.filter((other) => other.code !== park.code && linked(park.code, other.code, nearbyOf)).map((other) => other.code),
       // Intake 认公园名用：简体、繁体、英文全名和去掉 National Park 的短名，都按小写比较
       aliases: [...new Set([park.nameZh, hant, park.nameEn, shortEn, park.code])],
+      // 季节性山路（规划 agent 认“向阳大道一定要开一次”用；TripRequest.prefs.roads）
+      roads: seasonalRoads.filter((road) => road.park === park.code).map((road) => ({ id: road.id, nameZh: road.nameZh, nameEn: road.nameEn })),
     };
   });
   const airportList = Object.values(airports).map((airport) => ({

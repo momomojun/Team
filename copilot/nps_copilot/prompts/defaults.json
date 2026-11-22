@@ -5,5 +5,7 @@
   "dispatch": "v1",
   "alerts": "v1",
   "judge": "v1",
-  "agent": "v2"
+  "agent": "v2",
+  "team_plan": "v1",
+  "team_review": "v1"
 }

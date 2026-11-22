@@ -11,6 +11,7 @@ import { formatClock, minutesOfDay, sunTimes } from "../sun";
 import { fitFor, type Party } from "../suitability";
 import { zoneOf } from "../time-zone";
 import { airportMinutes, gatewayNode, travelMinutes } from "../travel";
+import { openChance, roadFor, roadStatus } from "../roads";
 import { reachable } from "../trip-parks";
 import type { Trip, TripLodging } from "../trip-store";
 import {
@@ -350,6 +351,7 @@ function describeDays(
       driveMin: Math.round(timeline.driveMin),
       activeMin: Math.round(timeline.activeMin),
       warnings: [...(timeline.overloaded ? ["overloaded" as const] : []), ...(timeline.lateReturn ? ["lateReturn" as const] : [])],
+      ...dayRoads(dayStops, exact ? date : null),
       lodging: to
         ? {
             id: to.id,
@@ -477,4 +479,16 @@ function withRestDays(trip: Trip, rest: Set<number>, total: number): Trip {
     }
   }
   return { ...trip, dayCount: total, days, nights };
+}
+
+/** 这天要走的季节性山路和往年这一天通车的把握（只定了月份时不算：不知道是哪天） */
+function dayRoads(stops: PlanStop[], date: string | null) {
+  const roads = [...new Map(stops.flatMap((stop) => (roadFor(stop.id) ? [[roadFor(stop.id)!.id, roadFor(stop.id)!]] : []))).values()];
+  if (roads.length === 0) return {};
+  return {
+    roads: roads.map((road) => {
+      const status = date ? roadStatus(road, date) : null;
+      return { id: road.id, nameZh: road.nameZh, nameEn: road.nameEn, chance: status ? Math.round(openChance(status) * 100) / 100 : null };
+    }),
+  };
 }

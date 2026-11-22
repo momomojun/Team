@@ -93,6 +93,6 @@ test("至少一次日出、看星空，一定要走的山路，不坐班车，�
 });
 
 test("判分：没排出行程全算没做到，不认识的检查算没做到", () => {
-  assert.deepEqual(checkSoft(null, [{ kind: "max_lodgings", count: 1 }]), [{ kind: "max_lodgings", ok: false, detail: "没排出行程" }]);
+  assert.deepEqual(checkSoft(null, [{ kind: "max_lodgings", count: 1 }]), [{ kind: "max_lodgings", ok: false, detail: "没排出行程", facts: {} }]);
   assert.equal(checkSoft({ days: [] }, [{ kind: "nope" }])[0].ok, false);
 });

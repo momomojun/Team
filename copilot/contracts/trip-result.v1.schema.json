@@ -198,6 +198,38 @@
               ]
             }
           },
+          "roads": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "nameZh",
+                "nameEn",
+                "chance"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "nameZh": {
+                  "type": "string"
+                },
+                "nameEn": {
+                  "type": "string"
+                },
+                "chance": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            }
+          },
           "lodging": {
             "oneOf": [
               {

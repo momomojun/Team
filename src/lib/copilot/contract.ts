@@ -332,6 +332,16 @@ export const tripResultSchema = {
           driveMin: { type: "integer", minimum: 0 },
           activeMin: { type: "integer", minimum: 0 },
           warnings: { type: "array", items: { enum: ["overloaded", "lateReturn"] } },
+          /** 这天要走的季节性山路，往年这一天通车的把握（0–1；当年已经知道的是 0 或 1；记录太少是 null） */
+          roads: {
+            type: "array",
+            items: {
+              type: "object",
+              additionalProperties: false,
+              required: ["id", "nameZh", "nameEn", "chance"],
+              properties: { id: { type: "string" }, nameZh: { type: "string" }, nameEn: { type: "string" }, chance: { type: ["number", "null"], minimum: 0, maximum: 1 } },
+            },
+          },
           lodging: {
             oneOf: [
               { type: "null" },

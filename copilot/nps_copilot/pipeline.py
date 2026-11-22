@@ -6,6 +6,8 @@
    条件或改动变了就 plan_trip → Critic（必要时改一次再排）→ Writer；问题交给 qa（只按查到的资料回答）。
 3. 调度员出错、输出用不了，或者用户只是在回答上一句追问（“5”“是的”），走原来按规则的流程（_legacy）。
    设 COPILOT_DISPATCH=0 可以整个关掉调度员（对照实验、回滚用）。
+4. COPILOT_TEAM=1（多 agent 协作，team.py）：排行程前规划 agent 读这一趟说过的话、摘出软要求（中间休息一天、
+   每天开车上限、只住一家……）交给引擎；排完审查 agent 和代码检查、最多改 3 轮，做不到的写成取舍说明。
 
 每轮对话写一条日志（JSONL，默认 copilot/runs/，已在 .gitignore 里）：提示词版本、模型、各步耗时、
 模型输出、调度员做了什么、丢掉的片段、Critic 的发现、Writer 有没有被换成模板，每次模型调用用了哪个模型、
@@ -25,6 +27,7 @@ from typing import Callable
 
 from . import __version__, catalog, data_version, knowledge, prompts, qa
 from . import dispatcher as dispatcher_module
+from . import team
 from . import writer as writer_module
 from .critic import critique
 from .intake import Field, Intake
@@ -112,6 +115,10 @@ class Session:
         self.exclude: list[str] = []
         self.nights: dict[int, str] = {}
         self._solo = True
+        # 多 agent 协作：这一趟从第几轮对话开始（换新行程时重新算），规划 agent 读出来的软要求
+        self.trip_from = len(getattr(self, "history", []))
+        self.team_plan: team.Plan | None = None
+        self._team_key: tuple | None = None
 
     @property
     def zh(self) -> bool:
@@ -250,7 +257,7 @@ class Session:
         if self._trace_note:
             trace["pronoun"] = self._trace_note
         trace["edits"] = {"include": self.include, "exclude": self.exclude, "nights": self.nights}
-        effective = self._with_edits(request)
+        effective = self._team(self._with_edits(request), message, trace)
         if self.last_request is not None and same_request(self.last_request, effective):
             trace["unchanged"] = True
             answers = self._answers(asks, self.last_result, zh, trace, message)
@@ -310,6 +317,19 @@ class Session:
                     if 1 <= night < (request.get("days") or 1):
                         self.nights[night] = doc.id
         return notes
+
+    def _team(self, request: dict, message: str, trace: dict) -> dict:
+        """COPILOT_TEAM=1：规划 agent 读这一趟用户说过的话、摘出软要求放进请求。这一趟说过的话没变（只是在问问题）就不再调模型"""
+        if not team.enabled():
+            return request
+        messages = [user for user, _ in self.history[getattr(self, "trip_from", 0):]] + [message]
+        key = tuple(messages)
+        if getattr(self, "team_plan", None) is None or (key != getattr(self, "_team_key", None) and not (qa.is_question(message) and not is_ack(message))):
+            self._emit("read")
+            self.team_plan = team.understand(self.provider, messages, request)
+            self._team_key = key
+            trace["team_plan"] = self.team_plan.trace
+        return team.apply(self.team_plan, request)
 
     def _with_edits(self, request: dict) -> dict:
         """条件 + 用户的改动；换了公园、改短了天数以后对不上的改动不带"""
@@ -404,7 +424,19 @@ class Session:
             text = "这些条件排不出行程：" + "；".join(issue["message"] for issue in error.issues) if error.issues else str(error)
             return Reply("error", "\n".join([*head, text]), None, request, None, trace)
         result = call.result
+        team_lines: list[str] = []
+        plan = getattr(self, "team_plan", None) if team.enabled() else None
+        if plan is not None and (plan.wishes or plan.unknown):
+            try:
+                outcome = team.negotiate(self.provider, plan, request, call, lambda r: plan_trip(r, self.reference_date))
+                request, result, call = outcome.request, outcome.result, outcome.call
+                team_lines = team.tradeoffs(outcome, plan.wishes, plan.unknown, zh)
+                trace["team"] = {**outcome.trace, "final": [item["ok"] for item in outcome.status], "given_up": sorted(outcome.given_up)}
+            except team.TeamError as error:
+                trace["team_error"] = str(error)
         review = critique(request, result)
+        if team_lines or trace.get("team"):
+            review.revision = None  # 审查 agent 已经商量过节奏，Critic 不再自己改
         trace["plan"] = {"latency_ms": call.latency_ms, "via": call.via, **({"alerts": call.refresh} if call.refresh else {}),
                          # 这次排行程交给引擎的公告关闭清单（哪天读的、内容 hash、几条）
                          **({"alerts_data": call.alerts_data} if call.alerts_data else {})}
@@ -424,6 +456,8 @@ class Session:
         text, writer_trace = writer_module.write(request, result, review, language, self.provider,
                                                  self.intake.preferences, use_model=self.writer_model)
         trace["writer"] = writer_trace
+        if team_lines:
+            text = "\n".join([text, *team_lines])
         # 公告没读到、退回旧清单（或者只按网站整理的临时关闭）：在说明最后告诉用户（护栏，GOALS P26）
         if notice := writer_module.alerts_notice(call.refresh, result, zh):
             text = f"{text}\n{notice}"
@@ -472,7 +506,7 @@ class Session:
                     head.append(said)
             text = "\n".join([*head, turn.question["text"]]) if turn.question else "\n".join(head)
             return Reply("needs_input", text, turn.question, None, None, trace)
-        request = self._with_edits(turn.request)
+        request = self._team(self._with_edits(turn.request), message, trace)
         if self.last_request is not None and same_request(self.last_request, request):
             # 条件没变：是提问就在网站资料里查着回答，“好的”、闲聊就简短回一句；都不把同一个行程再印一遍
             trace["unchanged"] = True
