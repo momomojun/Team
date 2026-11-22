@@ -22,21 +22,19 @@ const order = (i: number) => ({ "--i": i }) as CSSProperties;
 
 /**
  * 首屏（照着 Wabunka）：全屏大图一张接一张交叉淡入，每张放大一点、慢慢往左平移；
- * 正中是站名、一句话和一条白色搜索框，底下“往下看”一道细线往下流。左下角写这是哪座公园，点了进公园页（照片放大成公园页首图）。
+ * 正中只放站名、一句话和一条白色搜索框（11-21 仓库主人要首屏字再少一点），底下“往下看”一道细线往下流。左下角写这是哪座公园，点了进公园页（照片放大成公园页首图）。
  */
 export function Hero({
   slides,
   wordmark,
   text,
   search,
-  aboutHref,
 }: {
   slides: HeroSlide[];
   wordmark: string;
-  text: { title: string; subtitle: string; about: string; scroll: string; previous: string; next: string };
+  text: { title: string; scroll: string; previous: string; next: string };
   /** 白色搜索框 */
   search: ReactNode;
-  aboutHref: string;
 }) {
   const [index, setIndex] = useState(0);
   const [previous, setPrevious] = useState<number | null>(null);
@@ -91,14 +89,7 @@ export function Hero({
         <p className="hero-fade mt-6 font-serif text-[clamp(1.05rem,1.6vw,1.35rem)] tracking-[0.08em] text-white/95" style={order(0)}>
           {text.title}
         </p>
-        <p className="hero-fade mt-3 max-w-2xl text-[14px] leading-7 text-balance text-white/80 [word-break:keep-all] md:text-[15px]" style={order(1)}>
-          {text.subtitle}
-        </p>
-        <a href={aboutHref} className="hero-fade group mt-6 inline-flex items-center gap-3 text-[13px] tracking-[0.06em] text-white/90" style={order(2)}>
-          {text.about}
-          <span aria-hidden className="h-px w-10 origin-left bg-white/70 transition-transform duration-700 ease-(--ease-soft) group-hover:scale-x-150" />
-        </a>
-        <div className="hero-fade mt-14 w-full max-w-xl" style={order(3)}>
+        <div className="hero-fade mt-12 w-full max-w-xl" style={order(1)}>
           {search}
         </div>
       </div>
