@@ -53,9 +53,12 @@ export function recordYears(n: number, text: { recentYears: string; knownYears: 
   return (n >= ROAD_YEARS ? text.recentYears : text.knownYears).replace("{n}", String(n));
 }
 
-/** 这一年的 md 这天通不通：通 true、没通 false、不知道 null（没记录哪天关闭，又已经到秋天了） */
+/**
+ * 这一年的 md 这天通不通：通 true、没通 false、不知道 null（没记录哪天关闭，又已经到秋天了）。
+ * 只记了关闭日、没查到开通日的年份（180 号公路 2017、2019 年这些只查到路况页上的关闭日）：春天不知道，秋天按关闭日算
+ */
 function openOn([, open, close]: RoadYear, md: MonthDay): boolean | null {
-  if (open === null) return close === null ? false : null;
+  if (open === null) return close === null ? false : md >= LATE_SUMMER ? md <= close : null;
   if (md < open) return false;
   if (close === null) return md < LATE_SUMMER ? true : null;
   // 关闭日在开通日之前：关到了第二年年初，这一季都算开着

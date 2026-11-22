@@ -193,7 +193,8 @@ for (const [id, list] of Object.entries(history)) {
   lines.push(`  ${JSON.stringify(id)}: [\n${wrapped.map((line) => `    ${line}`).join("\n")}\n  ],`);
 }
 
-const today = new Date().toISOString().slice(0, 10);
+// 核对日期按加州的日子（和别的数据一样；UTC 晚上就已经是第二天了）
+const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Los_Angeles" }).format(new Date());
 writeFileSync(
   OUTPUT,
   `// 由 scripts/build-roads.mjs 生成，不要手改（npm run data:roads）。
