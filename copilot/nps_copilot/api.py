@@ -24,9 +24,10 @@ from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel
 
-from . import __version__, alerts_live, embeddings, guard, ledger, monitor, publish, tts, vectors
+from . import __version__, alerts_live, data_version, embeddings, guard, ledger, monitor, publish, tts, vectors
 from . import graph as graph_module
 from .pipeline import VERSION, Session, prompt_hashes
+from .plan_client import live_closures
 from .providers import ProviderError, chat_provider
 
 app = FastAPI(title="NPS Guide Copilot", version=__version__)
@@ -91,7 +92,7 @@ def health() -> dict:
         provider = chat_provider()
     except ProviderError as error:  # COPILOT_STEP_MODELS 写错、没配 key：照样回 /health，写明是什么错
         return {"version": VERSION, "build": os.environ.get("COPILOT_BUILD_SHA"), "provider": None, "model": None,
-                "error": str(error), "prompts": prompt_hashes(), "plan_tool": "missing"}
+                "error": str(error), "prompts": prompt_hashes(), "data": data_version.current(), "plan_tool": "missing"}
     names = lambda item: [getattr(p, "model", p.name) for p in getattr(item, "providers", [item])]  # noqa: E731
     return {
         "version": VERSION,
@@ -103,6 +104,10 @@ def health() -> dict:
         # 单独换了模型的步骤：{步骤: [先试的, 出错再按平常的顺序]}
         "steps": {step: names(item) for step, item in getattr(provider, "steps", {}).items()},
         "prompts": prompt_hashes(),
+        # 数据版本：网站数据、给 Copilot 的资料、各地叫法按内容算的 hash（data_version.py）
+        "data": data_version.current(),
+        # 现在的公告关闭清单（哪天读的、内容 hash、几条）
+        "alerts_data": data_version.alerts_snapshot(live_closures()),
         "plan_tool": "http" if os.environ.get("COPILOT_PLAN_URL") else ("cli" if shutil.which("node") else "missing"),
         # 讲解版的配音：本机 Kokoro 能不能用
         "tts": "kokoro" if tts.available() else None,

@@ -58,8 +58,10 @@ def _log(experiment, run_name, params, metrics, report, tags) -> None:
 
 
 def prompt_params(hashes: dict) -> dict:
-    """各步提示词的版本（hash 太长，记版本号和前 8 位）"""
-    out = {}
+    """各步提示词的版本（hash 太长，记版本号和前 8 位），加上这次评测用的数据版本（nps_copilot/data_version.py）"""
+    from nps_copilot import data_version
+
+    out = {"data_version": data_version.current()["id"]}
     # prompt_hashes() 是 {"intake/v1": "79d3b5f861f0", ...}
     for key, value in (hashes or {}).items():
         step, _, version = key.partition("/")

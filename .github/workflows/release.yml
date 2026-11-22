@@ -55,7 +55,15 @@ jobs:
           python copilot/eval/agent.py --replay copilot/eval/recordings/agent-v1-gemini-3.5-flash-lite.jsonl --gate copilot/eval/baseline-agent.json
 
       - name: Build image
-        run: docker build -f copilot/Dockerfile --build-arg COPILOT_BUILD_SHA=${GITHUB_SHA::7} -t "$IMAGE:$GITHUB_REF_NAME" -t "$IMAGE:latest" .
+        run: |
+          # 第三个标签：提交 + 提示词 + 数据版本（sha-1a2b3c4-p5d6e7f80-d3f9a0b1c2d3e，nps_copilot/data_version.py），
+          # 看标签就知道镜像里是哪份代码、哪版提示词、哪份数据
+          trace=$(cd copilot && python -m nps_copilot.data_version --tag "$GITHUB_SHA")
+          echo "TRACE_TAG=$trace" >> "$GITHUB_ENV"
+          prompts=${trace#*-p}
+          docker build -f copilot/Dockerfile --build-arg COPILOT_BUILD_SHA=${GITHUB_SHA::7} \
+            --label "io.npsguide.prompts=${prompts%%-d*}" --label "io.npsguide.data=${trace##*-d}" \
+            -t "$IMAGE:$GITHUB_REF_NAME" -t "$IMAGE:latest" -t "$IMAGE:$trace" .
       - name: Smoke test before push
         run: |
           docker run -d --name before -p 127.0.0.1:8765:8765 -e COPILOT_PROVIDER=replay -e COPILOT_REPLAY=$REPLAY "$IMAGE:$GITHUB_REF_NAME"
@@ -72,9 +80,10 @@ jobs:
         run: |
           docker push "$IMAGE:$GITHUB_REF_NAME"
           docker push "$IMAGE:latest"
+          docker push "$IMAGE:$TRACE_TAG"
       - name: Smoke test the pushed image
         run: |
-          docker rmi "$IMAGE:$GITHUB_REF_NAME" "$IMAGE:latest"
+          docker rmi "$IMAGE:$GITHUB_REF_NAME" "$IMAGE:latest" "$IMAGE:$TRACE_TAG"
           docker pull "$IMAGE:$GITHUB_REF_NAME"
           docker run -d --name after -p 127.0.0.1:8765:8765 -e COPILOT_PROVIDER=replay -e COPILOT_REPLAY=$REPLAY "$IMAGE:$GITHUB_REF_NAME"
           python3 copilot/scripts/smoke.py http://127.0.0.1:8765 --expect-version repo
@@ -90,6 +99,8 @@ jobs:
             echo "Digest: \`$digest\`"
             echo
             echo "提示词 / Prompts: \`$(python3 -c 'import json;print(json.load(open("copilot/nps_copilot/prompts/defaults.json")))')\`"
+            echo
+            echo "数据版本 / Data version: \`${TRACE_TAG##*-d}\`（这份镜像的另一个标签：提交 + 提示词 + 数据 / also tagged with commit + prompts + data: \`$IMAGE:$TRACE_TAG\`）"
             echo
             echo "评测报告在附件里（回放门禁）/ Replay eval reports are attached. 部署和回滚 / Deploy and rollback: docs/GUIDE.md"
             # 这一版新增了什么（中英文），发版的 PR 里写好的

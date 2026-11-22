@@ -2,7 +2,7 @@
   python -m nps_copilot chat [--reference 2026-10-16] [--writer-model]   对话（默认本机 Ollama）
   python -m nps_copilot serve [--host 127.0.0.1] [--port 8765]           HTTP 服务（要 pip install -e copilot[api]）
   python -m nps_copilot stats [--days 7]                                 看运行日志：按版本统计成功率、耗时、编造、退回模板
-  python -m nps_copilot version                                          版本、提示词版本和 hash、模型
+  python -m nps_copilot version                                          版本、提示词版本和 hash、数据版本、模型
   python -m nps_copilot alerts [--snapshot copilot/data/alerts/latest.json]   读公告快照、提取临时关闭（快照用 npm run alerts:fetch 抓）
   python -m nps_copilot vectors sync [--model gemini-embedding-001] [--dry-run]   资料的向量写进 Neon（只算新的、改过的；要 DATABASE_URL）
 """
@@ -14,7 +14,7 @@ import json
 import os
 import sys
 
-from . import __version__, prompts
+from . import __version__, data_version, prompts
 from .pipeline import Session
 from .providers import ProviderError, chat_provider
 
@@ -66,6 +66,7 @@ def main() -> None:
         return
     if args.command == "version":
         print(json.dumps({"version": __version__, "build": os.environ.get("COPILOT_BUILD_SHA"), "prompts": prompts.current(),
+                          "data": data_version.current(),
                           "provider": os.environ.get("COPILOT_PROVIDER", "ollama"), "model": os.environ.get("COPILOT_MODEL", "qwen3.5:4b-q4_K_M")},
                          ensure_ascii=False, indent=1))
         return

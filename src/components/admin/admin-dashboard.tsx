@@ -142,6 +142,10 @@ interface AdminData {
     /** 模型配置写错了（比如 COPILOT_STEP_MODELS 看不懂、没配 key） */
     error?: string;
     prompts: Record<string, string>;
+    /** 数据版本：网站数据、给 Copilot 的资料、各地叫法按内容算的 hash（copilot/nps_copilot/data_version.py），11-22 起才有 */
+    data?: { id: string; parts: Record<string, string | null> };
+    /** 现在的公告关闭清单：哪天读的、内容 hash、几条 */
+    alerts_data?: { fetched: string | null; hash: string; closures: number } | null;
     plan_tool: string;
   } | null;
   stats: {
@@ -188,6 +192,8 @@ const TEXT = {
     chain: "模型顺序",
     stepModels: "单独换了模型",
     prompts: "提示词",
+    data: "数据版本",
+    alertsData: "公告清单 {date} 读的，{n} 条",
     planTool: "行程引擎",
     noNode: "找不到 node",
     offline: "Copilot 没开（或者连不上 COPILOT_URL）。下面只有架构图和 GitHub 上每晚读公告的结果。",
@@ -313,6 +319,8 @@ const TEXT = {
     chain: "Model order",
     stepModels: "Per-step models",
     prompts: "Prompts",
+    data: "Data version",
+    alertsData: "alert list read {date}, {n} closures",
     planTool: "Trip engine",
     noNode: "node not found",
     offline: "The Copilot is off (or COPILOT_URL can't be reached). Only the architecture and the nightly alerts runs on GitHub are shown below.",
@@ -755,6 +763,18 @@ export function AdminDashboard({ lang = "zh" }: { lang?: AdminLang }) {
               <span className="text-mute">{t.prompts} </span>
               {Object.keys(health.prompts).join(t.listSep) || "—"}
             </span>
+            {health.data && (
+              <span title={Object.entries(health.data.parts).map(([part, hash]) => `${part} ${hash ?? "—"}`).join(" · ")}>
+                <span className="text-mute">{t.data} </span>
+                <code className="text-[12px]">{health.data.id}</code>
+                {health.alerts_data && (
+                  <span className="text-mute">
+                    {t.sep}
+                    {t.alertsData.replace("{date}", health.alerts_data.fetched ?? "—").replace("{n}", String(health.alerts_data.closures))}
+                  </span>
+                )}
+              </span>
+            )}
             <span>
               <span className="text-mute">{t.planTool} </span>
               {health.plan_tool === "missing" ? <span className="text-clay-700">{t.noNode}</span> : health.plan_tool}

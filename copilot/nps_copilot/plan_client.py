@@ -15,6 +15,7 @@ import urllib.error
 import urllib.request
 from dataclasses import dataclass
 
+from . import data_version
 from .catalog import ROOT
 
 DEFAULT_CLOSURES = ROOT / "copilot" / "data" / "alerts" / "closures-latest.json"
@@ -33,6 +34,8 @@ class PlanCall:
     via: str
     # 聊天时现读公告的情况（refreshed、读了哪几座公园、新读了几条……），记进日志
     refresh: dict | None = None
+    # 交给行程引擎的公告关闭清单是哪一份（data_version.alerts_snapshot）；走网站接口时网站用自己的清单，这里不知道
+    alerts_data: dict | None = None
 
 
 def live_closures() -> str | None:
@@ -48,6 +51,7 @@ def plan_trip(request: dict, reference_date: str, on_step=None) -> PlanCall:
     url = os.environ.get("COPILOT_PLAN_URL")
     start = time.perf_counter()
     refresh = None
+    live = None
     if os.environ.get("COPILOT_LIVE") != "0" and not os.environ.get("COPILOT_LIVE_CLOSURES"):
         # 两周内出发、要去的公园今天还没读过公告：当场只抓这几座公园的读一遍（出错就用原来的清单）
         from .alerts_live import refresh_for
@@ -64,6 +68,7 @@ def plan_trip(request: dict, reference_date: str, on_step=None) -> PlanCall:
             raise PlanError("plan_trip 拒绝了请求", payload.get("issues")) from error
         via = "http"
     else:
+        live = live_closures()
         node = shutil.which("node")
         if not node:
             raise PlanError("找不到 node（要 Node 24 以上），或者设 COPILOT_PLAN_URL 走网站接口")
@@ -71,7 +76,7 @@ def plan_trip(request: dict, reference_date: str, on_step=None) -> PlanCall:
             [node, "--disable-warning=ExperimentalWarning", "--disable-warning=MODULE_TYPELESS_PACKAGE_JSON",
              "--import", "./tests/register.mjs", "scripts/plan-trip.mjs", "-"],
             input=json.dumps(request, ensure_ascii=False).encode("utf-8"), cwd=ROOT, capture_output=True,
-            env={**os.environ, "REFERENCE_DATE": reference_date, **({"LIVE_CLOSURES": live} if (live := live_closures()) else {})},
+            env={**os.environ, "REFERENCE_DATE": reference_date, **({"LIVE_CLOSURES": live} if live else {})},
             timeout=120,
         )
         output = completed.stdout.decode("utf-8")
@@ -81,4 +86,5 @@ def plan_trip(request: dict, reference_date: str, on_step=None) -> PlanCall:
             raise PlanError(f"plan_trip 出错：{completed.stderr.decode('utf-8', 'replace')[-500:]}")
         result = json.loads(output)
         via = "cli"
-    return PlanCall(result=result, latency_ms=round((time.perf_counter() - start) * 1000), via=via, refresh=refresh)
+    return PlanCall(result=result, latency_ms=round((time.perf_counter() - start) * 1000), via=via, refresh=refresh,
+                    alerts_data=data_version.alerts_snapshot(live) if via == "cli" else None)

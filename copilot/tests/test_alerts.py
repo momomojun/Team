@@ -89,11 +89,16 @@ def test_drift_a_new_closure_alert_changes_the_plan(tmp_path, monkeypatch):
     planned = lambda result: {stop["id"] for day in result["days"] for stop in day["stops"]}  # noqa: E731
 
     monkeypatch.setenv("COPILOT_LIVE", "0")
-    assert "yose-tunnel-view" in planned(plan_trip(request, "2026-10-16").result)
+    before = plan_trip(request, "2026-10-16")
+    assert "yose-tunnel-view" in planned(before.result)
+    assert before.alerts_data is None  # 没用公告清单，日志里也不写
     monkeypatch.delenv("COPILOT_LIVE")
     monkeypatch.setenv("COPILOT_LIVE_CLOSURES", str(path))
-    result = plan_trip(request, "2026-10-16").result
+    call = plan_trip(request, "2026-10-16")
+    result = call.result
     assert "yose-tunnel-view" not in planned(result)
+    # 日志里记下这次排行程用的是哪一份公告清单（数据版本）
+    assert call.alerts_data["fetched"] == "2026-10-16" and call.alerts_data["closures"] == 1
     skipped = next(item for item in result["skipped"] if item["id"] == "yose-tunnel-view")
     assert skipped["alert"]["title"] == alert["title"]
     text = writer.template(request, result, critique(request, result), "zh")

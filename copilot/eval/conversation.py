@@ -31,6 +31,7 @@ os.environ.setdefault("COPILOT_SOURCE", "eval")
 # 评测、测试不用本机的 NPS 公告关闭清单（每天会变），结果才能复现
 os.environ.setdefault("COPILOT_LIVE", "0")
 
+from nps_copilot import data_version  # noqa: E402
 from nps_copilot.pipeline import Session, prompt_hashes  # noqa: E402
 from guard import StopEarly, safe_name  # noqa: E402
 import tracking  # noqa: E402
@@ -153,7 +154,7 @@ def main() -> int:
     reports.mkdir(exist_ok=True)
     stamp = dt.datetime.now().strftime("%Y%m%dT%H%M%S")
     report = reports / f"{stamp}-conversation-{label.replace(':', '_').replace('/', '_')}.json"
-    report.write_text(json.dumps({"label": label, "prompts": prompt_hashes(), "cases": passed, "turns": turn_ok,
+    report.write_text(json.dumps({"label": label, "prompts": prompt_hashes(), "data": data_version.current(), "cases": passed, "turns": turn_ok,
                                   "total_cases": len(results), "total_turns": len(turns), "results": results},
                                  ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"报告：{report}")

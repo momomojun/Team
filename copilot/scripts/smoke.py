@@ -1,7 +1,8 @@
 """对一个跑起来的 Copilot 服务做冒烟测试：/health 正常、发一句完整的需求能排出行程。
 
   python copilot/scripts/smoke.py http://127.0.0.1:8765 [--expect-version 0.2.0]
-  --expect-version repo：和这份代码里的 nps_copilot.__version__ 比（CI 用：镜像必须是这次提交构建的）
+  --expect-version repo：和这份代码里的 nps_copilot.__version__ 比（CI 用：镜像必须是这次提交构建的），
+                        数据版本也要和这份代码里的数据一样（镜像里装的就是这次提交的数据）
 
 用回放模型跑（COPILOT_PROVIDER=replay）时，用的这句话要在录音里（默认的这句在开发集里）。
 CI 构建镜像以后、发版推镜像以后都跑一次；回滚以后也用它确认旧版本起来了。
@@ -40,9 +41,14 @@ def main() -> int:
     parser.add_argument("--days", type=int, default=4, help="这句话应该排出几天")
     args = parser.parse_args()
     sys.stdout.reconfigure(encoding="utf-8")
+    expect_data = None
     if args.expect_version == "repo":
         init = Path(__file__).resolve().parents[1] / "nps_copilot" / "__init__.py"
         args.expect_version = re.search(r'__version__ = "(.+?)"', init.read_text(encoding="utf-8")).group(1)
+        sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+        from nps_copilot import data_version  # 只用标准库，CI 的系统 Python 也能跑
+
+        expect_data = data_version.current()["id"]
 
     deadline = time.time() + args.wait
     while True:
@@ -57,6 +63,9 @@ def main() -> int:
     print("health:", json.dumps(health, ensure_ascii=False))
     if args.expect_version and health["version"] != f"copilot/{args.expect_version}":
         print(f"版本不对：{health['version']}，应该是 copilot/{args.expect_version}")
+        return 1
+    if expect_data and (health.get("data") or {}).get("id") != expect_data:
+        print(f"数据版本不对：镜像里是 {(health.get('data') or {}).get('id')}，这份代码是 {expect_data}")
         return 1
     if health.get("plan_tool") == "missing":
         print("行程引擎不可用（容器里没有 node）")

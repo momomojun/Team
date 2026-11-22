@@ -25,10 +25,10 @@
 - [x] 用模型给回答有没有依据打分（LLM-as-judge）（P20；10-20 `eval/judge.py`，两个裁判交叉、带校准题，成绩在 RESULTS.md）
 - [x] 漂移测试（插入一条新的关闭公告，看多久反映出来）、故障测试（模型超时、NPS 接口挂了）（P36、P37；10-20 量了时间、改成距上次读超过 6 小时就现读；故障测试和混沌测试在 RESULTS.md）
 - [x] 每天读 NPS 实时公告、模型提取关闭信息（10-19 提取、评测、接进 Copilot、每晚抓公告；10-20 每晚抽查模型分数、掉了开 issue，提议改 `closures.ts` 推到 bot 分支由人开 PR 合并，关闭清单发布给网站行程页用）；仓库主人 10-20 定“模型提议、人来批”，不直接取代 `closures.ts`（O60、P8、P30）
-- [ ] 数据版本：快照的 hash，每个回答记下模型名和数据版本（P9、P32、P33、A4）
+- [x] 数据版本：快照的 hash，每个回答记下模型名和数据版本（P9、P32、P33、A4；11-22 做了，见 [timeline/2026-11-22-data-version.md](timeline/2026-11-22-data-version.md)）
 - [x] 监控：token、成本、看板（P25；10-19 每轮日志记下每次模型调用的模型和 token，`stats` 和 `GET /stats` 按模型算花费；网站后台 `/zh-Hans/admin` 画成图表。计划书写的 MLflow 没用）
 - [ ] 护栏：外部接口挂了退回快照（P26；限流和共享口令 10-21 做了，`guard.py`）
-- [ ] CI：镜像 tag 带提示词版本和数据 hash 还没做（P29）；staging 环境 11-05 第一次自动部署通过（P24）。Ruff 检查、评测分数贴到 PR 评论 11-04 做了，见 [timeline/2026-11-04-ci-review.md](timeline/2026-11-04-ci-review.md)（P27、P28）
+- [x] CI：镜像 tag 带提示词版本和数据 hash（P29，11-22）；staging 环境 11-05 第一次自动部署通过（P24）。Ruff 检查、评测分数贴到 PR 评论 11-04 做了，见 [timeline/2026-11-04-ci-review.md](timeline/2026-11-04-ci-review.md)（P27、P28）
 - [ ] 不同的步骤可以用不同的模型（P12；10-20 做了机制 `COPILOT_STEP_MODELS`，默认还是每一步都按 Gemini → MiniMax → Qwen（Groq）→ 本机（10-21 起不用 OpenAI）；按对照成绩怎么分配等仓库主人定）
 - [ ] Writer 的行程说明逐句附来源（P17）；Critic 最多退回 3 轮（P16，现在有意只改一次）；数据快照用 Pydantic 校验（P6）
 - [ ] 路线动画导出成短视频（第一版动画 10-19 做了）。Copilot 的线上部署 11-04 做了：Modal 上分 staging 和正式，正式 https://momomojun--nps-copilot-web.us-east.modal.run ，见 [timeline/2026-11-04-modal-deploy.md](timeline/2026-11-04-modal-deploy.md)（O53、A1、P24）；11-05 Vercel 连上了正式环境（冷启动时网站原来只等 3 秒就当成 Copilot 没开，改成等 30 秒）。网站行程页的对话框 10-19 做了（O61）
@@ -190,7 +190,7 @@
 | A1 | 10-11 | 做一个端到端的 LLMOps 系统，把 LLM 接进运行流程，强调自动化、可靠、可适应 | 作业 §1、§3 目标 1 | 部分完成 | `copilot/` 有理解需求 → `plan_trip` → Critic → Writer → QA 的完整链路、日志、发版；但没接进网站（阶段 5 没开始），也没有托管部署 | PROJECT.md“LLMOps 分阶段计划” |
 | A2 | 10-11 | 从 5 个方向选一个重点（微调 / 多智能体 / API 系统 / PromptOps / 监控治理） | 作业 §2 | 部分完成 | 计划书选了多智能体为主、PromptOps 为辅；实际 PromptOps 和评测做得扎实，多智能体名不副实（固定流水线，模型只摘字和按资料回答）；10-18 加了调度员（模型决定每一轮做哪几件事、调用哪些工具），多智能体比原来名副其实，但还是一个调度员 + 几个工具，不是几个 agent 互相协作 | 仓库主人 10-18 也说“感觉非常不智能”，见 O60 |
 | A3 | 10-11 | 必须有简化的 CI/CD：自动测试、版本管理、部署 | 作业 §2、目标 3 | 已完成 | `.github/workflows/ci.yml`（网站检查、pytest、3 组回放评测门禁、镜像构建冒烟）、`release.yml`（按 `copilot-v*` tag 发版到 GHCR、拉回再测、建 Release）；已发 `copilot-v0.2.0`、`copilot-v0.2.1` | “部署”只到发布镜像 + 本机 docker compose，没有线上环境 |
-| A4 | 10-11 | 模型生命周期管理和部署的最佳实践 | 目标 2 | 部分完成 | 代码版本、提示词版本（文件 + hash）、镜像 tag、两种回滚都演示过（RESULTS.md）；数据没有版本 / hash | 见 P9、P33 |
+| A4 | 10-11 | 模型生命周期管理和部署的最佳实践 | 目标 2 | 已完成 | 代码版本、提示词版本（文件 + hash）、数据版本（内容 hash，11-22）、镜像 tag、两种回滚都演示过（RESULTS.md） | 见 P9、P33 |
 | A5 | 10-11 | 评估系统性能和运行稳健性 | 目标 4 | 部分完成 | 82 条评测（25+40+17）当门禁、三个模型对比、Writer 忠实度；没有对照实验、漂移测试、故障测试 | 见 P34–P37 |
 | A6 | 10-13 | 交 1–2 页 proposal（标题、成员联系方式、问题和动机、架构和重点、CI/CD 计划、工具数据集和预期结果） | 作业 §4、模板 | 部分完成 | 文件写好了（2 页，9 节齐）；提交没有：大纲写 10 月 29 日那周交，仓库主人还没说交了没有 | 见 P2–P4 |
 | A7 | — | 11 月 5 日起每周 scrum 汇报 | 大纲第 9–13 周 | 部分完成 | 11-04：`npm run scrum` 按时间线和合并的 PR 生成周报草稿到 `docs/scrum/`，第一份 `2026-10-29.md`；每周还要人填下周计划、卡住的 | 项目占总分 25%：每周 scrum + 最后演示 |
@@ -209,7 +209,7 @@
 | P6 | 10-13 | 快照用 Pydantic 做 schema 校验 | §4 | 部分完成 | `TripRequest`/`TripResult` 用 JSON Schema（TS 里写、生成给 Python），请求逐字段报错；没有对数据快照本身做 Pydantic 校验 | |
 | P7 | 10-13 | 切块、做 embedding、存进 Chroma（向量检索） | §4、§7 | 已完成 | 10-22 做了对照实验：Chroma + bge-m3（本机 Ollama）的向量检索，48 个问题前 5 条找到 0.92，关键词 BM25 0.81，英文问题 0.81 对 0.56（RESULTS.md）；Copilot 照旧用 BM25，换不换等仓库主人定（部署的地方要有嵌入模型、多轮对话要重录）；11-11 做完向量检索（PR #102）：Gemini 嵌入（gemini-embedding-2，768 维）存进 Neon 的 pgvector（没用 Chroma：Modal 上没有本机嵌入模型，Neon 已经开着），48 题前 5 条 1.00、第 1 条 0.88，关键词 0.81 / 0.46；单用按意思找比和关键词合起来好，Modal 上设成 `COPILOT_RETRIEVAL=vector`，出错退回关键词（`vectors.py`，RESULTS.md）。**线上在用**（11-13 起，copilot-v0.5.0）：1996 条资料都有向量；正式环境 `/health` 是 `retrieval: vector`，仓库主人在正式网站问的三句，后台“最近的对话”都是按意思找到的（0.35–1.2 秒，第一句多半是 Neon 休眠后唤醒），没有退回关键词 | |
 | P8 | 10-13 | 每晚刷新 NPS 公告 | §4、§6 | 已完成 | 关闭信息还是手动维护的 `src/data/closures.ts`；`npm run check:closures` 只在本机定时任务里每天报告、不改数据、不在 CI 里；10-19 能抓快照、模型提取了（`npm run alerts:fetch`、`python -m nps_copilot alerts`），每晚自动跑和接进排行程还没做；10-19 GitHub 每晚抓一次（`alerts-nightly.yml`），新的关闭公告开 issue；模型提取在本机跑，没有自动接进数据；10-19 每晚在 GitHub 上用 Gemini 只读新的、改过的公告，issue 里列出模型找到的景点；聊天时要去的公园今天没读过就现读；10-20 每晚抽查模型、提议改 `closures.ts`（人开 PR 合并）、网站行程页也用模型提取的结果 | PROJECT.md“下一步”第 2 条 |
-| P9 | 10-13 | 每份快照有内容 hash，每个回答记下用的哪份数据 | §3、§4 | 没做 | 日志每轮记 Copilot 版本、提示词 hash、`reference_date`；`/health` 有构建提交；`TripResult.engine.version` 写死 "1"；没有数据 hash | |
+| P9 | 10-13 | 每份快照有内容 hash，每个回答记下用的哪份数据 | §3、§4 | 已完成 | 11-22：`copilot/nps_copilot/data_version.py` 按内容给网站数据、给 Copilot 的资料、各地叫法算 hash（换行统一，Windows 和镜像里一样），合成 12 位数据版本；每轮日志记 `data`（镜像里还记 `build` 提交号），排行程时记下交给引擎的公告关闭清单（哪天读的、hash、几条）；`/health`、`version`、评测报告、MLflow 都有 | `TripResult.engine.version` 还是写死的 "1"（引擎代码的版本由提交号管） |
 | P10 | 10-13 | Provider 抽象 + 测试用的 mock provider（不需要密钥） | §4、§6 | 已完成 | `providers.py`：Ollama、Replay、Recording、Scripted；CI 用回放 | |
 | P11 | 10-13 | 一个低成本商业 API 模型 + 一个开源模型（Ollama）对比，按配置切换 | §4、§7 | 部分完成 | 10-19 仓库主人改了主意：加了 Gemini、OpenAI 的 Provider（`COPILOT_PROVIDER=gemini / openai`），读公告这一项和本机 4B 比过（RESULTS.md）；对话那几步还没比，默认还是本机 | 仓库主人对另一个助手说过“目前不希望依赖云端 API”（archive/LLMOPS_WORK_LOG.md）；计划书要改 |
 | P12 | 10-13 | 每个 agent 可以用不同的模型 | §4 | 部分完成 | 10-20：`COPILOT_STEP_MODELS` 让调度员、摘条件、回答问题、写说明各自换模型（出错退回平常的顺序），后台显示换了哪几步；读公告本来就单独设（`COPILOT_ALERTS_PROVIDER`）。默认分配还没定 | |
@@ -229,11 +229,11 @@
 | P26 | 10-13 | 护栏：没查到来源不说开没开、输入校验、限流、外部 API 挂了退回缓存快照 | §4 | 部分完成 | 输入校验、提示注入没得逞（holdout 两组）、QA 数字核对和“查不到说不知道”有；10-21 加了限流（每个来源每分钟 20、每天 300 句，全局每天 2000 句）和共享口令（`guard.py`，为上 Hugging Face Spaces）；没有缓存回退（plan_trip 本来就不联网） | |
 | P27 | 10-13 | 每个 PR：Ruff lint、mock pytest、数据快照校验、工具契约测试 | §6 | 已完成 | pytest、契约测试（`tests/copilot-plan.test.ts`、契约文件是否最新）都有；11-04 加了 `ruff check copilot`（`copilot/pyproject.toml`），第一次跑就查出两处正则的真 bug；另有 CodeRabbit 的 AI 审查（`.coderabbit.yaml`） | |
 | P28 | 10-13 | 改了提示词/agent/模型/数据的 PR 跑评测门禁，分数表贴到 PR 评论 | §6 | 已完成 | 每个 PR 跑八组回放门禁（不能低于基线），报告上传为 artifact；11-04 起 `copilot/eval/pr_summary.py` 把成绩表贴到 PR 评论（一条、每次更新）和 CI 摘要页；改提示词还是要本机重录，只改了几次调用的可以 `--fill` 补录 | |
-| P29 | 10-13 | 合并到 main 时构建镜像（tag = git SHA + 提示词版本 + 数据 hash）、推 GHCR、部署 staging、冒烟；回滚 = 重新部署上一个 tag | §6 | 部分完成 | 改成推 `copilot-v*` tag 时发版：测试、门禁、构建、冒烟、推 GHCR、拉回再冒烟、建 Release；回滚演示过（0.2.1 → 0.2.0 → 0.2.1）；镜像 tag 只有版本号，没有提示词版本和数据 hash；没有 staging | |
+| P29 | 10-13 | 合并到 main 时构建镜像（tag = git SHA + 提示词版本 + 数据 hash）、推 GHCR、部署 staging、冒烟；回滚 = 重新部署上一个 tag | §6 | 已完成 | 改成推 `copilot-v*` tag 时发版：测试、门禁、构建、冒烟、推 GHCR、拉回再冒烟、建 Release；回滚演示过（0.2.1 → 0.2.0 → 0.2.1）；11-22 起发版和 staging 都多打一个 `sha-<提交>-p<提示词>-d<数据>` 标签，冒烟测试核对镜像里的数据版本和这次提交一样 | 合并到 main 时构建、部署 staging 是 11-04 做的（`copilot-staging.yml`） |
 | P30 | 10-13 | 每晚定时：刷新公告 → 重建索引 → 重跑评测 → 分数漂移自动开 issue | §6 | 已完成 | 10-20：`alerts-nightly.yml` 每晚读完公告用同一串模型抽查 26 条标好答案的公告（`eval/alerts.py --chain`），低于 `baseline-alerts-canary.json` 开 `alerts-quality` issue；提议改 `closures.ts`、发布关闭清单给网站。没有“重建索引”这一步：资料（`copilot/contracts/`）跟着代码走，改数据的 PR 里跑 `npm run copilot:contracts` | |
 | P31 | 10-13 | 交付物：仓库、带 demo UI 的 Docker 服务、CI/CD、评测报告、期末展示 | §8 | 部分完成 | 仓库、Docker 服务、CI/CD 有；`copilot/eval/RESULTS.md` 是过程记录，不是最终报告；demo UI、展示没有 | |
-| P32 | 10-13 | 每个回答能追溯到模型、提示词、数据版本 | §8 目标 1 | 部分完成 | 日志有 Copilot 版本、提示词 hash；没有模型名（只在 `version` 命令和环境变量里）、没有数据版本 | |
-| P33 | 10-13 | 提示词、模型、数据都有版本；镜像打 tag；能回滚 | §8 目标 2 | 部分完成 | 提示词、代码、镜像有版本，两种回滚都演示过；数据没有版本 | |
+| P32 | 10-13 | 每个回答能追溯到模型、提示词、数据版本 | §8 目标 1 | 已完成 | 每轮日志有 Copilot 版本、提示词 hash、每次模型调用的模型名（`calls`）、数据版本（11-22）、镜像提交号 |  |
+| P33 | 10-13 | 提示词、模型、数据都有版本；镜像打 tag；能回滚 | §8 目标 2 | 已完成 | 提示词、代码、镜像有版本，两种回滚都演示过；11-22 数据也有了版本（内容 hash），镜像标签里带着 |  |
 | P34 | 10-13 | 回归注入测试：故意合进更差的提示词、更弱的模型、坏数据，证明门禁都能拦住 | §8 目标 3 | 部分完成 | 更差的提示词：intake v2 开发集 24/25 被门禁拦下（RESULTS.md）；更弱的模型：Qwen3 4B 20/25 只做了对比，没当成注入跑门禁；坏数据：没做 | |
 | P35 | 10-13 | 对照实验：(A) 单个提示词的 LLM、(B) 只加检索、(C) 完整系统；指标：约束违规率、依据性、recall@5、Critic 轮数、p50/p95 延迟、每次请求成本 | §8 目标 4 | 部分完成 | 只有模型之间的对比（Qwen3.5 4B / 9B / Qwen3 4B）；没有 A/B/C，没有 recall@5、成本；10-18 做了第一个对照：调度员关掉（`COPILOT_DISPATCH=0`）vs 打开，没见过的多轮对话 6/15 → 14/15（RESULTS.md）；A/B/C、recall@5、成本还没做；10-19 公告提取做了规则 / 模型 / 两者合并的对照（RESULTS.md）；10-19 读公告比了 6 个模型（本机 4B、GPT-4.1 mini、GPT-6 luna、GPT-5 nano、Gemini 3.5 Flash Lite、Gemma 4 31B），有了每 1000 次的成本和延迟；11-11 回答问题的三组：A 不给资料（48 题全部老实说没写，没编）、B 关键词（答到点子上 0.73）、C 按意思找（0.94，英文 0.44 → 0.88），附 recall@5、耗时、每千次成本（RESULTS.md）；“完整系统”那一组还没做 | PROJECT.md“下一步”第 4 条 |
 | P36 | 10-13 | 漂移测试：插入一条新的关闭公告，量回答多久能反映出来 | §8 | 已完成 | 依赖 P810-19：`tests/copilot-plan.test.ts` 和 `test_alerts.py` 的漂移测试，塞一条新的关闭公告，下一次提取后的行程就不排这个景点、说明里说是公告说的；“多久反映出来”取决于本机多久跑一次提取，还没量；10-20 `copilot/scripts/drift_timing.py` 量了时间：以前 11–16.5 小时，现在问的时候当场读约 4–5 秒，最晚 6 小时 | |
