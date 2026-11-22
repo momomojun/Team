@@ -45,7 +45,7 @@ export function GuidesSection({
           <div className="mt-12 grid gap-x-12 gap-y-14 lg:grid-cols-3">
             {data.groups.map((group) => (
               <div key={group.topic}>
-                <h3 className="border-t border-ink pt-4 font-serif text-2xl">{text.topics[group.topic]}</h3>
+                <h3 className="border-t border-line pt-4 font-serif text-2xl">{text.topics[group.topic]}</h3>
                 {group.videos.length === 0 ? (
                   <p className="mt-4 text-sm text-mute">{text.empty}</p>
                 ) : (

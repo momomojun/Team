@@ -163,7 +163,7 @@ export function SeasonGuide({ parks, locale, text }: { parks: ParkSeason[]; loca
           {groups.map(({ verdict, items }) =>
             items.length === 0 ? null : (
               <section key={verdict}>
-                <h2 className="flex items-baseline gap-3 border-t border-ink pt-4">
+                <h2 className="flex items-baseline gap-3 border-t border-line pt-4">
                   <span className={`font-serif text-2xl ${verdict === "poor" ? "text-mute" : ""}`}>{text.verdicts[verdict]}</span>
                   <span className="text-xs text-mute">{fill(text.count, { n: items.length })}</span>
                 </h2>

@@ -252,12 +252,12 @@ export function TripOverview({
   ];
 
   return (
-    <section id="plan-overview" className="scroll-mt-32 border-t border-ink pt-6">
-      <p className="eyebrow text-mute">{t.eyebrow}</p>
+    <section id="plan-overview" className="scroll-mt-32">
+      <h2 className="section-title">{t.eyebrow}</h2>
       <div className="mt-6 flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2">
-        <h2 className="font-serif text-[clamp(1.8rem,3vw,2.6rem)] leading-tight">
+        <h3 className="font-serif text-[clamp(1.8rem,3vw,2.6rem)] leading-tight">
           {fill(t.title, { parks: parkList, days: dayCount })}
-        </h2>
+        </h3>
         {dateRange && <p className="text-sm text-ink-soft">{dateRange}</p>}
       </div>
 
@@ -312,7 +312,7 @@ export function TripOverview({
       </div>
 
       {/* 手机上表格放不下，每天一段：第几天、几点到几点、开车多久，下面是去哪、住哪 */}
-      <ol className="mt-10 border-t border-ink sm:hidden">
+      <ol className="mt-10 border-t border-line sm:hidden">
         {views.map((view) => {
           const names = view.rows.map((row) => row.stop.nameZh);
           const lodging = view.day < views.length - 1 || !view.to?.endpoint ? view.to?.name : undefined;
@@ -355,7 +355,7 @@ export function TripOverview({
       <div className="mt-10 hidden overflow-x-auto sm:block">
         <table className="w-full min-w-[40rem] border-collapse text-left text-sm">
           <thead>
-            <tr className="border-b border-ink text-xs text-mute">
+            <tr className="border-b border-line text-xs text-mute">
               <th className="py-2 pr-4 font-normal">{t.table.day}</th>
               <th className="py-2 pr-4 font-normal">{t.table.stops}</th>
               <th className="py-2 pr-4 font-normal">{t.table.time}</th>

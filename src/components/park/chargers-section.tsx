@@ -98,7 +98,7 @@ function ChargerReport({ stations, t, teslaHref }: { stations: ChargingStation[]
 
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="border-b border-ink text-left text-xs text-mute">
+          <thead className="border-b border-line text-left text-xs text-mute">
             <tr>
               <th className="pb-3 pr-3 font-normal">{t.columns.name}</th>
               <th className="pb-3 pr-3 font-normal whitespace-nowrap">{t.columns.distance}</th>

@@ -101,7 +101,7 @@ export default async function TeslaPage({ params }: PageProps<"/[locale]/parks/[
         />
       )}
 
-      <section className="mt-16 grid gap-10 border-t border-ink pt-6 lg:grid-cols-12">
+      <section className="mt-16 grid gap-10 border-t border-line pt-6 lg:grid-cols-12">
         <div className="lg:col-span-7">
           <h3 className="font-serif text-2xl">{tt.howTitle}</h3>
           <ul className="mt-4 space-y-3 text-sm leading-7 text-ink-soft">

@@ -155,7 +155,7 @@ export function BookingsSection({
               <p className="mt-2 text-xs leading-6 text-mute">{t.shuttleIntro}</p>
               <ul className="mt-6 space-y-8">
                 {shuttles.map((system) => (
-                  <li key={system.id} className="border-t border-ink pt-4">
+                  <li key={system.id} className="border-t border-line pt-4">
                     <p className="font-serif text-lg">{system.nameZh}</p>
                     <p className="mt-1 text-xs text-mute">{fill(t.shuttleHub, { name: system.hub.nameZh })}</p>
                     <ul className="mt-3 space-y-1 text-sm leading-6 text-ink-soft">

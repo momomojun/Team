@@ -1289,7 +1289,7 @@ export function Planner({
 
   const chip = (active: boolean) =>
     `pb-1 text-[13px] transition-colors ${
-      active ? "border-b border-ink text-ink" : "border-b border-transparent text-mute hover:text-ink"
+      active ? "border-b border-clay-500 text-ink" : "border-b border-transparent text-mute hover:text-ink"
     }`;
   const card = "bg-paper-deep/70";
   // 下划线式输入框
@@ -1366,7 +1366,7 @@ export function Planner({
 
       <SectionNav label={t.nav.label} items={sectionLinks} inset />
 
-      <section id="plan-wizard" className="scroll-mt-32 border-t border-ink pt-6 print:hidden">
+      <section id="plan-wizard" className="scroll-mt-32 print:hidden">
         <div className="flex flex-wrap items-baseline justify-between gap-4">
           <div className="max-w-2xl">
             <h2 className="section-title">{t.wizard.title}</h2>
@@ -1744,7 +1744,7 @@ export function Planner({
             />
           )}
 
-          <section id="plan-add" className="scroll-mt-32 border-t border-ink pt-5 print:hidden">
+          <section id="plan-add" className="scroll-mt-32 border-t border-line pt-5 print:hidden">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="font-serif text-xl">{t.add}</h2>
               <select

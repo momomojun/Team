@@ -116,7 +116,7 @@ export function TeslaExplorer({
 
   const filterClass = (active: boolean) =>
     `inline-flex items-center gap-1.5 pb-1 text-[13px] transition-colors ${
-      active ? "border-b border-ink text-ink" : "border-b border-transparent text-mute hover:text-ink"
+      active ? "border-b border-clay-500 text-ink" : "border-b border-transparent text-mute hover:text-ink"
     }`;
   const count = (kind: Exclude<Filter, "all">) => stations.filter((s) => s.kind === kind).length;
 
@@ -272,7 +272,7 @@ export function TeslaExplorer({
         </div>
 
         <div className="lg:col-span-5">
-          <div className="flex flex-wrap gap-x-5 gap-y-2 border-t border-ink pt-5">
+          <div className="flex flex-wrap gap-x-5 gap-y-2 border-t border-line pt-5">
             {(["all", "supercharger", "destination"] as const).map((key) => (
               <button key={key} type="button" className={filterClass(filter === key)} onClick={() => setFilter(key)}>
                 {key !== "all" && (
@@ -302,7 +302,7 @@ export function TeslaExplorer({
       </div>
 
       {lodgings.length > 0 && (
-        <section className="border-t border-ink pt-6">
+        <section className="border-t border-line pt-6">
           <h3 className="font-serif text-2xl">{t.lodgingTitle}</h3>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-mute">{t.lodgingIntro}</p>
           <ul className="mt-5 grid gap-x-10 sm:grid-cols-2 lg:grid-cols-3">
