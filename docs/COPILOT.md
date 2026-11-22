@@ -213,6 +213,8 @@ flowchart LR
 - **混沌测试**（`python eval/conversation.py --replay <录音> --chaos 0.3 [--chaos-backup]`）：回放时按固定种子让一部分模型调用失败（`providers.FaultyProvider`），看整套还剩几成；加 `--chaos-backup` 时失败的那次换备用模型（同一份录音）。
 - **漂移测试量时间**（`python copilot/scripts/drift_timing.py`）：新发一条关闭公告，量多久以后行程里不再有那个景点。
 - **模型打分**（`python eval/judge.py --copilot <Copilot 模型> --judge <提供方:型号> --record | --replay | --dry-run`，10-20）：回放三组多轮对话，截下每次回答问题的资料和回答交给裁判（`prompts/judge_v1.txt`），资料里没有依据的照抄出来、打 1–5 分；8 条校准题（真回答后面加一句资料里没有的话）检查裁判可不可信；裁判最好和被打分的不是同一个模型。录音在 `recordings/judge-<裁判>-<Copilot>.jsonl`。
+- **回归注入测试**（`python eval/injection.py`，11-22，GOALS P34）：故意放进更差的提示词（intake v2）、更弱的模型（Qwen3 4B、Qwen3.5 9B 的录音）、4 种坏数据（字段改名、时区写错、机场不存在、景点 id 重复），期望门禁全部拦下、对照组放行；不调模型、5 秒，CI 和发版每次都跑。
+- **排行程三组对照**（`python eval/planners.py --record | --replay <录音>`，11-22，GOALS P35）：同样 30 条行程请求（从行程质量评测那 110 条里均匀挑），A 只靠模型直接排、B 模型 + 这几座公园的景点资料、C 行程引擎；三组排出来的行程用同一套规则打分（`scripts/compare-planners-lib.mjs`：对不上景点库或不在要去的公园、重复、那个月去不了、要抽签、时间排不开、一天太满、不适合同行的人、没照用户说的做），三组都不排住处；看全对的比例、每条几处违规、耗时中位数和 p95、每千次花费。录音在 `recordings/planners-<模型>.jsonl`，成绩在 RESULTS.md。
 
 ## 监控指标
 

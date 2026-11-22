@@ -604,7 +604,17 @@ export function generateTrip(input: GenerateInput, original: GenerateContext): {
       }),
     );
   };
-  const totalDrive = (current: Trip) => timelines(current).reduce((sum, { timeline }) => sum + timeline.driveMin, 0);
+  /**
+   * 整趟开车多少分钟。没排景点、但要换住处的一天也算上那段路（从前一晚住处直接开到当晚住处，和行程页、VROOM 裁判一样），
+   * 不然把一天唯一的景点挪走看起来省了车程、其实那天照样要开（11-22 补上，之后才允许把只有一个景点的那天挪空）
+   */
+  const nearStops = [...stopById.values()];
+  const totalDrive = (current: Trip) =>
+    dayContexts(current).reduce(
+      (sum, { stops, context: day }) =>
+        sum + (stops.length > 0 ? buildTimeline(stops, day).driveMin : (buildTransferTimeline(day, nearStops)?.driveMin ?? 0)),
+      0,
+    );
   /** 第 d 天去的公园 */
   const parksOn = (current: Trip, d: number) => new Set(current.days[d].map((item) => stopById.get(item.id)?.park));
   /** 景点只往同一座公园的那几天（或者还空着的天）挪、补：多公园的行程里往别的公园的日子挪只会白算 */
@@ -731,16 +741,22 @@ export function generateTrip(input: GenerateInput, original: GenerateContext): {
     for (let round = 0; round < REGROUP_ROUNDS; round++) {
       const before = { drive: totalDrive(trip), excess: excess(trip), troubled: troubled(trip).length, heaviest: heaviest(trip), timing: timingMiss(trip) };
       let best: { trip: Trip; drive: number } | null = null;
-      // 一天只剩一个景点的不挪走：空出来的一天还是要开车换住处，那段车程这里算不进去，看起来省了其实没省
+      // 一个一个景点挪，也试把一整天的几个景点一起挪过去（瓜达卢佩山：McKittrick 峡谷的两个景点单独占一天，
+      // 一个一个挪都省不了车，两个一起挪到也路过那里的第 3 天才省）。挪空了的那天换住处的车程 totalDrive 照算，不会看起来省了其实没省
       for (let d = 0; d < trip.days.length; d++) {
-        if (trip.days[d].length < 2) continue;
-        for (const item of trip.days[d]) {
+        const moves = [...trip.days[d].map((item) => [item]), ...(trip.days[d].length >= 2 ? [trip.days[d]] : [])];
+        for (const group of moves) {
           for (let target = 0; target < trip.days.length; target++) {
-            if (target === d || trip.days[target].length === 0 || !samePark(trip, target, item.id) || chanceOn(item.id, target) < ROAD_LIKELY) continue;
+            if (target === d || trip.days[target].length === 0) continue;
+            if (group.some((item) => !samePark(trip, target, item.id) || chanceOn(item.id, target) < ROAD_LIKELY)) continue;
+            const moving = new Set(group.map((item) => item.id));
             const days = trip.days.map((day, index) =>
-              index === d ? day.filter((other) => other.id !== item.id) : index === target ? [...day, item] : day,
+              index === d ? day.filter((other) => !moving.has(other.id)) : index === target ? [...day, ...group] : day,
             );
-            const trial = rearrange({ ...trip, days }, [d, target]);
+            // 重新选住处不一定更好（选住处是按每晚看的）：再试一次住处不变、只重排这两天，取开车少的
+            const trial = [rearrange({ ...trip, days }, [d, target]), arrangeAll({ ...trip, days }, [d, target])].reduce((a, b) =>
+              totalDrive(b) < totalDrive(a) ? b : a,
+            );
             const drive = totalDrive(trial);
             if (before.drive - drive < REGROUP_MIN || (best && drive >= best.drive)) continue;
             if (excess(trial) > before.excess || troubled(trial).length > before.troubled) continue;
