@@ -103,7 +103,7 @@ export function VisitsRanking({
         </p>
       )}
 
-      <ol className="mt-4 border-t border-ink">
+      <ol className="mt-4 border-t border-line">
         {shown.map(({ row, rank }) => {
           const value = valueOf(row);
           return (

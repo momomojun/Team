@@ -120,7 +120,7 @@ export function AttractionsExplorer({
 
   const filterClass = (active: boolean) =>
     `inline-flex items-center gap-1.5 pb-1 text-[13px] transition-colors ${
-      active ? "border-b border-ink text-ink" : "border-b border-transparent text-mute hover:text-ink"
+      active ? "border-b border-clay-500 text-ink" : "border-b border-transparent text-mute hover:text-ink"
     }`;
 
   return (
@@ -194,7 +194,7 @@ export function AttractionsExplorer({
       </div>
 
       <div className="lg:col-span-5">
-        <div className="space-y-5 border-t border-ink pt-5">
+        <div className="space-y-5 border-t border-line pt-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-5">
               {(["rank", "area"] as const).map((mode) => (

@@ -52,7 +52,7 @@ export default async function TimelinePage({ params }: PageProps<"/[locale]/rank
       )}
       <div className="mt-16 max-w-3xl">
         <h3 className="font-serif text-2xl">{t.timeline.canadaTitle}</h3>
-        <ul className="mt-4 border-t border-ink">
+        <ul className="mt-4 border-t border-line">
           {canadianParks.map((park) => (
             <li key={park.code} className="flex items-baseline justify-between gap-4 border-b border-line py-2.5">
               <Link href={`/${locale}/parks/${park.code}`} className="font-serif text-base hover:text-clay-700">

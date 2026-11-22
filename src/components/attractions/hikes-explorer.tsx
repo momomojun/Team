@@ -261,7 +261,7 @@ export function HikesExplorer({
 
   const filterClass = (active: boolean) =>
     `inline-flex items-center gap-1.5 pb-1 text-[13px] transition-colors ${
-      active ? "border-b border-ink text-ink" : "border-b border-transparent text-mute hover:text-ink"
+      active ? "border-b border-clay-500 text-ink" : "border-b border-transparent text-mute hover:text-ink"
     }`;
   const count = (key: Exclude<Filter, "all">) => allTrailsList.filter(FILTERS[key]).length;
   const filterGroups: { key: Exclude<Filter, "all">; label: string; dot?: string }[][] = [
@@ -291,7 +291,7 @@ export function HikesExplorer({
       </div>
 
       <div className="lg:col-span-5">
-        <div className="space-y-4 border-t border-ink pt-5">
+        <div className="space-y-4 border-t border-line pt-5">
           <div className="flex items-center gap-5">
             {(["rank", "short", "easy"] as const).map((mode) => (
               <button key={mode} type="button" onClick={() => setSort(mode)} className={filterClass(sort === mode)}>

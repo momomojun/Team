@@ -159,11 +159,10 @@ export function TripBookings({
   };
 
   return (
-    <section id="plan-bookings" className="scroll-mt-32 border-t border-ink pt-6">
+    <section id="plan-bookings" className="scroll-mt-32">
       <div className="flex flex-wrap items-baseline justify-between gap-4">
         <div className="max-w-2xl">
-          <p className="eyebrow text-mute">{b.eyebrow}</p>
-          <h2 className="mt-4 font-serif text-2xl leading-snug">{b.title}</h2>
+          <h2 className="section-title">{b.title}</h2>
           <p className="mt-3 text-sm leading-7 text-ink-soft">{b.intro}</p>
           {approximate && <p className="mt-2 text-xs leading-6 text-clay-700">{b.approxNote}</p>}
         </div>

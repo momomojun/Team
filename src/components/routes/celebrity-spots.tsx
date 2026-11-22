@@ -62,7 +62,7 @@ export function CelebritySpots({
       </div>
       <ul className="mt-10 grid gap-x-12 gap-y-10 md:grid-cols-2">
         {visible.map((shot) => (
-          <li key={shot.id} className="border-t border-ink pt-4">
+          <li key={shot.id} className="border-t border-line pt-4">
             <Link
               href={
                 shot.attraction

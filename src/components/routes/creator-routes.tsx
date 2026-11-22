@@ -121,7 +121,7 @@ export function CreatorRoutes({
               key={key}
               type="button"
               onClick={() => setSort(key)}
-              className={`pb-0.5 ${sort === key ? "border-b border-ink text-ink" : "text-mute hover:text-ink"}`}
+              className={`pb-0.5 ${sort === key ? "border-b border-clay-500 text-ink" : "text-mute hover:text-ink"}`}
             >
               {text.sort[key]}
             </button>
@@ -150,7 +150,7 @@ export function CreatorRoutes({
             route.cover ||
             (route.platform === "youtube" ? `https://i.ytimg.com/vi/${route.id.replace("yt-", "")}/hqdefault.jpg` : undefined);
           return (
-            <li key={route.id} id={route.id} className="scroll-mt-32 border-t border-ink pt-5">
+            <li key={route.id} id={route.id} className="scroll-mt-32 border-t border-line pt-5">
               {coverUrl && (
                 <a
                   href={route.url}

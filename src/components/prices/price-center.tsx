@@ -549,7 +549,7 @@ export function PriceCenter({
         <div className="mt-8 overflow-x-auto">
           <table className="w-full min-w-[40rem] border-collapse text-left text-sm">
             <thead>
-              <tr className="border-b border-ink text-xs text-mute">
+              <tr className="border-b border-line text-xs text-mute">
                 <th className="py-2 pr-4 font-normal">{text.table.airport}</th>
                 <th className="py-2 pr-4 font-normal">{text.table.parks}</th>
                 <th className="py-2 pr-4 text-right font-normal">{text.table.car}</th>
@@ -598,7 +598,7 @@ export function PriceCenter({
         <div className="mt-6 overflow-x-auto">
           <table className="w-full min-w-[40rem] border-collapse text-left text-sm">
             <thead>
-              <tr className="border-b border-ink text-xs text-mute">
+              <tr className="border-b border-line text-xs text-mute">
                 <th className="py-2 pr-4 font-normal">{text.table.state}</th>
                 {GRADES.map((grade) => (
                   <th key={grade} className="py-2 pr-4 text-right font-normal">

@@ -435,7 +435,7 @@ const daysAgo = (date: string) => Math.round((Date.now() - new Date(`${date}T12:
 function Section({ title, note, children }: { title: string; note?: string; children: React.ReactNode }) {
   return (
     <section className="mt-16">
-      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-ink pb-3">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-line pb-3">
         <h2 className="font-serif text-2xl">{title}</h2>
         {note && <p className="text-[11px] leading-5 text-mute">{note}</p>}
       </div>
@@ -728,7 +728,7 @@ export function AdminDashboard({ lang = "zh" }: { lang?: AdminLang }) {
       </div>
 
       {/* 服务状态 */}
-      <div className="mt-10 border-y border-ink py-4 text-sm">
+      <div className="mt-10 border-y border-line py-4 text-sm">
         {failed ? (
           <p className="text-clay-700">{t.failed}</p>
         ) : !data ? (

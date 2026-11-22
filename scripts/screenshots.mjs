@@ -39,7 +39,13 @@ async function openPage(browser, { width, height, scale = 1, mobile = false }) {
 }
 
 async function go(page, path) {
-  await page.goto(`${BASE}${path}`, { waitUntil: "networkidle2", timeout: 90000 });
+  // 行程页一直有后台请求（问 Copilot 开没开、查天气），等不到网络安静：页面加载完了就接着走
+  await page
+    .goto(`${BASE}${path}`, { waitUntil: "networkidle2", timeout: 45000 })
+    .catch(async (error) => {
+      if (error.name !== "TimeoutError") throw error;
+      await page.waitForFunction(() => document.readyState === "complete", { timeout: 45000 });
+    });
   await page.addStyleTag({ content: HIDE_DEV_UI });
   await page.evaluate(() => document.fonts.ready);
 }
@@ -130,11 +136,12 @@ const shots = {
 
   async park(browser) {
     const page = await openPage(browser, DESKTOP);
-    await go(page, "/zh-Hans/parks/yell");
-    await scrollTo(page, "#attractions");
+    // 景点地图在公园的“景点”分页上
+    await go(page, "/zh-Hans/parks/yell/attractions");
+    await scrollTo(page, "h2.section-title");
     // 地图是进入视野后才创建的，等它出来再量位置
-    await page.waitForSelector("#attractions .maplibregl-canvas", { timeout: 30000 });
-    const toMap = await page.evaluate(() => document.querySelector("#attractions .maplibregl-canvas").getBoundingClientRect().top);
+    await page.waitForSelector(".maplibregl-canvas", { timeout: 30000 });
+    const toMap = await page.evaluate(() => document.querySelector(".maplibregl-canvas").getBoundingClientRect().top);
     await page.evaluate((y) => window.scrollBy({ top: y - 150, behavior: "instant" }), toMap);
     await sleep(1500);
     await imagesLoaded(page);
@@ -161,10 +168,11 @@ const shots = {
   async rankings(browser) {
     const page = await openPage(browser, DESKTOP);
     await go(page, "/zh-Hans/rankings");
-    await scrollTo(page, "#visits", 1500, 120);
+    // 页头是整屏宽的照片，截下面的排行
+    await scrollTo(page, "main h2.section-title", 1500, -40);
     await shot(page, "rankings.jpg");
     // 公园页的“人多不多”：每个月平均每天的人次和历年的人次
-    await go(page, "/zh-Hans/parks/zion");
+    await go(page, "/zh-Hans/parks/zion/activities");
     await scrollTo(page, "#crowds", 1500);
     await shot(page, "crowds.jpg");
     await page.close();
@@ -173,7 +181,11 @@ const shots = {
   async when(browser) {
     const page = await openPage(browser, DESKTOP);
     await go(page, "/zh-Hans/when");
-    await sleep(2000);
+    await sleep(1500);
+    // 页头是整屏宽的照片：往下滚到选日期和第一组公园
+    await page.evaluate(() => window.scrollTo({ top: (document.querySelector("h1")?.closest("header")?.getBoundingClientRect().bottom ?? 0) - 64, behavior: "instant" }));
+    await sleep(1500);
+    await imagesLoaded(page);
     await shot(page, "when.jpg");
     await page.close();
   },
@@ -190,8 +202,8 @@ const shots = {
 
   async prices(browser) {
     const page = await openPage(browser, DESKTOP);
-    await go(page, "/zh-Hans/prices");
-    await scrollTo(page, "#gas");
+    await go(page, "/zh-Hans/prices/gas");
+    await scrollTo(page, "main h2.section-title", 1800, -40);
     await shot(page, "prices.jpg");
     await page.close();
   },
@@ -210,7 +222,7 @@ const shots = {
     await go(page, "/zh-Hans/plan");
     await scrollTo(page, "#plan-day-1", 2000);
     const plan = await page.screenshot({ type: "jpeg", quality: QUALITY });
-    await go(page, "/zh-Hans/parks/yell");
+    await go(page, "/zh-Hans/parks/yell/attractions");
     // 第一张景点卡片：照片下半截、名字、热度和简介
     await scrollTo(page, 'article[id^="attraction-"]', 2000, 420);
     await imagesLoaded(page);

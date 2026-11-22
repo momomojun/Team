@@ -50,7 +50,7 @@ export default async function VisitsPage({ params }: PageProps<"/[locale]/rankin
         <p className="mt-2 text-xs leading-6 text-mute">
           {fill(t.visits.canadaIntro, { year: canadaYear, next: String(canadaYear + 1).slice(2) })}
         </p>
-        <ul className="mt-4 border-t border-ink">
+        <ul className="mt-4 border-t border-line">
           {canada
             .filter((park) => park.visits)
             .sort((a, b) => b.visits!.latest - a.visits!.latest)

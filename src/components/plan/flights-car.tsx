@@ -192,9 +192,8 @@ export function FlightsCar({
     pickup && dropoff && outDate && backDate ? { pickup, dropoff, from: outDate, to: backDate } : null;
 
   return (
-    <section id="plan-flights" className="scroll-mt-32 border-t border-ink pt-5">
-      <p className="eyebrow text-mute">{t.eyebrow}</p>
-      <h2 className="mt-3 font-serif text-xl">{t.title}</h2>
+    <section id="plan-flights" className="scroll-mt-32">
+      <h2 className="section-title">{t.title}</h2>
       <p className="mt-2 text-xs leading-6 text-mute">{t.intro}</p>
 
       <div className="mt-5 flex flex-wrap items-end gap-x-8 gap-y-4">

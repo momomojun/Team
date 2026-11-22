@@ -126,11 +126,10 @@ export function TripSupplies({
   };
 
   return (
-    <section id="plan-supplies" className="scroll-mt-32 border-t border-ink pt-5">
+    <section id="plan-supplies" className="scroll-mt-32">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="eyebrow text-mute">{t.eyebrow}</p>
-          <h2 className="mt-3 font-serif text-xl">{t.title}</h2>
+          <h2 className="section-title">{t.title}</h2>
         </div>
         <label className="flex cursor-pointer items-center gap-2 text-xs text-ink-soft">
           <input type="checkbox" checked={showOnMap} onChange={(event) => onToggleMap(event.target.checked)} className="accent-ink" />

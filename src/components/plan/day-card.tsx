@@ -349,7 +349,7 @@ export function DayCard({
   ].filter((warning): warning is string => warning !== null);
 
   return (
-    <section id={`plan-day-${day}`} className="scroll-mt-32 border-t border-ink">
+    <section id={`plan-day-${day}`} className="scroll-mt-32 border-t border-line">
       <header className="flex flex-wrap items-start justify-between gap-4 py-5">
         <div className="flex items-baseline gap-4">
           <span className="font-serif text-4xl leading-none text-clay-700 tabular-nums">

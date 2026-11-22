@@ -101,8 +101,8 @@ export function GuideSummary({
     ) : null;
 
   return (
-    <section id="plan-guide" className="scroll-mt-32 border-t border-ink pt-6">
-      <p className="eyebrow text-mute">{g.eyebrow}</p>
+    <section id="plan-guide" className="scroll-mt-32">
+      <h2 className="section-title">{g.eyebrow}</h2>
       <div className="mt-8 grid gap-12 lg:grid-cols-12">
         <div className="space-y-10 lg:col-span-7">
           {origin && destination && outboundMin !== undefined && inboundMin !== undefined && (

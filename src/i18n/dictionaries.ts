@@ -176,12 +176,12 @@ const zhHans = {
     nonresidentWaiver:
       "同车只要有一个人持有效年卡，全车的门票和非居民附加费都免：可以是美国居民年卡（$80，凭美国护照、美国驾照 / 州 ID 或绿卡购买）、非居民年卡（$250）或本公园年卡。持卡人不一定是司机，但必须在车上并出示带照片的证件；步行、骑车等按人收费的入口，一张卡覆盖持卡人和另外 3 名成人。",
     nonresidentSource: "来源：NPS 官网 Nonresident Fees",
-    introTitle: "Overview · 公园特色",
-    highlightsEyebrow: "Highlights · 最热门",
+    introTitle: "公园特色",
+    highlightsEyebrow: "最热门",
     highlightsTitle: "来这里，先看这几处",
     highlightsAll: "全部 {n} 个景点",
     hikes: {
-      eyebrow: "Hikes · 徒步",
+      eyebrow: "徒步",
       title: "{n} 条徒步路线",
       intro: "来回多远、爬升多少、要走多久、多难，带孩子和老人行不行；地图上画出每条步道，起点的圆点按难度上色（绿色简单、黄色中等、红色困难）。路况、别人最近走的评价，点 AllTrails 看。",
       alltrailsPark: "AllTrails 上这座公园的全部步道",
@@ -199,7 +199,7 @@ const zhHans = {
         alltrails: "AllTrails",
         alltrailsHint: "在 AllTrails 查看这条步道（评分、路况、最近的评价）",
         details: "景点详情",
-        topEyebrow: "AllTrails Leaderboard · 热门步道榜单",
+        topEyebrow: "热门步道榜单",
         topTitle: "AllTrails 最热门的 {n} 条步道",
         topSubtitle: "按 AllTrails 综合热度指数与评价数排序（本园共收录 {total} 条步道）。标有中文名的步道已收入上方地图，可直接加入行程。",
         topPopularity: "热度 {score}",
@@ -218,7 +218,7 @@ const zhHans = {
       },
     },
     tesla: {
-      eyebrow: "Tesla · 充电",
+      eyebrow: "充电",
       title: "Tesla 超充和目的地充电",
       intro:
         "这座公园一带的 Tesla 超充站（Supercharger，直流快充）和目的地充电（酒店、游客中心的交流慢充）。两份资料对着看：美国能源部的 NLR 充电站数据（加拿大的由加拿大自然资源部提供）和 OpenStreetMap 上志愿者标的；只有一边有、或者两边桩数不一样的都标出来了。现在有几个空桩、多少钱，以 Tesla App 为准。",
@@ -278,7 +278,7 @@ const zhHans = {
       noOsm: "这座公园这次没查到 OpenStreetMap（公共服务太忙），下面只有 NLR 的数据，没有两边对照。",
     },
     where: {
-      eyebrow: "Where · 在哪里",
+      eyebrow: "在哪里",
       title: "在哪里，从哪儿过来",
       mapLabel: "{park}的位置、常用机场和顺路的公园",
       legendPark: "这座公园",
@@ -293,7 +293,7 @@ const zhHans = {
       comboNote: "写着车程的是开车一天能到的，行程页的“顺路一起玩”可以一起排，一趟最多 6 座。",
     },
     year: {
-      eyebrow: "The Year · 一年里",
+      eyebrow: "一年里",
       title: "一年里什么时候去",
       month: "月份",
       best: "最适合",
@@ -306,12 +306,12 @@ const zhHans = {
       events: "特别活动和季节现象",
       note: "气温、雨雪是 {years} 年同期的平均（Open-Meteo，按园内各片区的景点数加权）；能去的景点按开放月份和临时关闭算，必去的算两份；人多不多按 NPS 近 3 年每个月平均每天的人次，和全年最挤的月份比。",
     },
-    attractionsEyebrow: "Attractions · 景点",
+    attractionsEyebrow: "景点",
     attractionsTitle: "{n} 个精选景点",
-    celebsEyebrow: "Celebrity Spots · 明星同款",
+    celebsEyebrow: "明星同款",
     celebsTitle: "明星在这里拍过的照片",
     celebsAll: "看所有公园的明星同款",
-    filmsEyebrow: "Film, Game & Animation · 电影、游戏、动画同款",
+    filmsEyebrow: "电影、游戏、动画同款",
     filmsTitle: "在这里拍过的电影，照着这里做的游戏和动画",
     filmsAll: "看所有公园的电影、游戏、动画同款",
     filmsText:
@@ -334,7 +334,7 @@ const zhHans = {
       generate: "用这个公园生成攻略",
     },
     guides: {
-      eyebrow: "More guides · 更多攻略",
+      eyebrow: "更多攻略",
       title: "打卡、行程和餐厅",
       intro: "按这座公园在 YouTube 上搜推荐行程、拍照的地方、附近吃什么。只列出标题和链接，点进去在 YouTube 上看，不转载视频。",
       source: "YouTube",
@@ -394,7 +394,7 @@ const zhHans = {
       sourceCanada: "来源：Parks Canada attendance（加拿大政府开放数据）",
     },
     activities: {
-      eyebrow: "Activities · 活动与开放情况",
+      eyebrow: "活动与开放情况",
       title: "特别活动",
       hint: "季节现象、节庆、要预约的游船和导览等，挑日期、订行程前先看看。",
       openingTitle: "开放情况",
@@ -430,7 +430,7 @@ const zhHans = {
       officialPage: "官方页面",
     },
     bookings: {
-      eyebrow: "Book ahead · 预约和班车",
+      eyebrow: "预约和班车",
       title: "要提前订的",
       intro: "园内住宿、营地、许可证抽签、入园预约和船票，各自从什么时候开始能订或申请。",
       planLink: "排进行程后，行程页会按日期算出具体哪天去订，还能加到日历。",
@@ -475,7 +475,7 @@ const zhHans = {
       parkingStops: "{names}",
       parkingWeekends: "的周末、节假日",
     },
-    infoEyebrow: "Live · 实时",
+    infoEyebrow: "实时",
     infoTitle: "实时信息",
     alerts: {
       title: "实时公告",
@@ -1125,7 +1125,7 @@ const zhHans = {
       original: "原文",
     },
     flights: {
-      eyebrow: "Flights & Car · 机票和租车",
+      eyebrow: "机票和租车",
       title: "机票和租车",
       intro: "按行程的进出机场和日期查机票，顺便比较附近几个机场；租车按同样的日期取还。",
       home: "从哪里飞",
@@ -1176,7 +1176,7 @@ const zhHans = {
       morePrices: "单独查机票、租车和油价 →",
     },
     budget: {
-      eyebrow: "Budget · 预算",
+      eyebrow: "预算",
       title: "预算估算",
       intro: "按人数、住宿、车程粗算一遍，方便比较方案；实际价格以预订时为准。",
       travelers: "人数",
@@ -1256,7 +1256,7 @@ const zhHans = {
       } as Record<string, string>,
     },
     supplies: {
-      eyebrow: "Supplies · 补给",
+      eyebrow: "补给",
       title: "沿途补给",
       intro: "每晚住处附近的超市、加油站、快充，还有合口味的亚洲超市和餐厅。园里商店少、东西贵，进园前把水和吃的备好。",
       kinds: {
@@ -1295,7 +1295,7 @@ const zhHans = {
       offlineBanner: "现在没有网络，显示的是上次保存的内容",
     },
     bookings: {
-      eyebrow: "Bookings · 预约和许可证",
+      eyebrow: "预约和许可证",
       title: "要提前订的",
       intro:
         "按这次行程的日期算：园内住宿、营地、许可证抽签、入园预约和船票，每一项从哪天开始能订或能申请，按先后排好。热门的常常开放几分钟就订满，建议加到日历、定好闹钟。",
@@ -1389,7 +1389,7 @@ const zhHans = {
       clear: "删除离线地图",
     },
     today: {
-      eyebrow: "Today · 今天",
+      eyebrow: "今天",
       title: "第 {n} 天",
       progress: "已完成 {done} / {total}",
       sunset: "日落 {time}，还有 {left}",
@@ -1454,7 +1454,7 @@ const zhHans = {
       qrTooLong: "行程太长，二维码放不下，用“复制链接”或“导出文件”。",
       qrAlt: "行程分享二维码",
       badFile: "这个文件不是 NPS Guide 导出的行程。",
-      eyebrow: "Import · 收到一个行程",
+      eyebrow: "收到一个行程",
       stops: "{n} 个景点",
       done: "已完成 {n} 个",
       withPrefs: "同时导入人数、车型和出发机场",
@@ -1464,7 +1464,7 @@ const zhHans = {
       invalid: "这个链接里的行程读不出来，可能没复制完整。",
     },
     overview: {
-      eyebrow: "Overview · 行程总览",
+      eyebrow: "行程总览",
       title: "{parks} · {days} 天",
       and: "和",
       dateRange: "{from} – {to}",
@@ -1616,7 +1616,7 @@ const zhHans = {
     },
     wizard: {
       sitesGroup: "园外名胜",
-      eyebrow: "Auto Plan · 自动生成攻略",
+      eyebrow: "自动生成攻略",
       title: "选好公园、月份、天数和出发地，整趟行程自动排好",
       intro:
         "按热度、季节和真实车程挑景点，排好每天几点到哪，连每晚住哪都安排好。生成后还能拖拽调整、换住处。",
@@ -1678,7 +1678,7 @@ const zhHans = {
       collapse: "收起",
     },
     guide: {
-      eyebrow: "Guide · 攻略说明",
+      eyebrow: "攻略说明",
       route: "路线",
       routeLine: "从{origin}出发，开车约 {outbound}到第一站；最后一天开约 {inbound}回到{destination}。",
       parksLine: "这趟一起玩{parks}，按顺路排成一条线路。",
@@ -1721,7 +1721,7 @@ const zhHans = {
     },
   },
   login: {
-    eyebrow: "Private · 自用",
+    eyebrow: "自用",
     title: "输入访问密码",
     intro: "这个网站设了访问密码，只给自己和同行的人用。输一次，这台设备一年内都不用再输。",
     password: "密码",
@@ -1729,7 +1729,7 @@ const zhHans = {
     error: "密码不对，再试一次。",
   },
   account: {
-    eyebrow: "Account · 账号",
+    eyebrow: "账号",
     title: "登录或注册",
     intro: "登录由 Neon Auth 处理。登入以后，这份行程和 Copilot 的对话会存进 Neon，换一台电脑也能接着用。这和全站访问密码是两回事。",
     hello: "你的账号",
@@ -1753,11 +1753,11 @@ const zhHans = {
     },
   },
   prices: {
-    eyebrow: "Prices · 机票 · 租车 · 油价",
+    eyebrow: "机票 · 租车 · 油价",
     title: "机票、租车和油价",
     intro: "不用先排行程也能单独查：机票当前价格和附近机场比较、各机场租车参考价、公园所在各州的油价。",
     nav: { label: "价格页导航", flights: "机票", car: "租车", gas: "油价" },
-    flightsEyebrow: "Flights · 机票",
+    flightsEyebrow: "机票",
     flightsTitle: "机票",
     flightsIntro:
       "填上从哪里飞、飞到哪个机场和日期，查 Google Flights 当前最低价（配了 SerpApi 就用 SerpApi）；也可以一次比较某个公园附近的几个机场。",
@@ -1797,7 +1797,7 @@ const zhHans = {
     compareHint: "按开车到公园的时间排；价格是 {n} 人往返总价，日期用上面填的。",
     park: "公园",
     driveTo: "开车到{park} {d}",
-    carEyebrow: "Car Rental · 租车",
+    carEyebrow: "租车",
     carTitle: "租车",
     carIntro:
       "租车没有免费的实时价格接口：下面是各机场在 Kayak 上的参考价快照；选好机场和日期，点比价链接看当前价格。点表格里的机场可以直接选中。",
@@ -1848,7 +1848,7 @@ const zhHans = {
       "国家公园里砂石路多、秋冬可能要防滑链，SUV 更稳；国际驾照要和本国驾照一起带。",
       "不少信用卡自带租车碰撞险，出发前问清楚，免得在柜台重复买。",
     ],
-    gasEyebrow: "Gas · 油价",
+    gasEyebrow: "油价",
     gasTitle: "油价",
     gasIntro: "AAA 各州均价（美元 / 加仑）。公园里和偏远小镇的加油站通常比州均价贵不少，进园前在门户小镇加满。",
     gasLive: "AAA {date} 的均价（每 12 小时更新一次）",
@@ -1868,7 +1868,7 @@ const zhHans = {
     source: "机票：Google Flights（自用低频查询）或 SerpApi；租车：Kayak 快照加比价链接；油价：AAA。都只当参考，以预订时为准。",
   },
   routes: {
-    eyebrow: "Creators, Celebrities & Screen · 博主、明星和影视游戏同款",
+    eyebrow: "博主、明星和影视游戏同款",
     title: "博主路线、明星和影视游戏同款",
     tabsLabel: "博主路线、明星同款和电影、游戏、动画同款",
     tabs: { creators: "博主路线", celebs: "明星同款", films: "电影、游戏、动画同款" },
@@ -1915,12 +1915,12 @@ const zhHans = {
     source:
       "播放量、阅读量是整理时的快照（最近一次 {date}）；路线和评价是我们对视频和图文的转述（外语视频由我们翻译；B 站视频没有公开字幕，是我们用语音识别转成文字后整理的），以原视频、原文为准。暂不收录小红书（没有公开接口）。",
     empty: "这个组合下还没有博主路线，换个公园或语言看看。",
-    parkEyebrow: "Creators · 博主路线",
+    parkEyebrow: "博主路线",
     parkTitle: "博主在这里怎么玩",
     parkMore: "看全部 {n} 条博主路线",
   },
   when: {
-    eyebrow: "Seasons · 什么时候去",
+    eyebrow: "什么时候去",
     title: "什么时候，去哪座公园",
     intro:
       "选出发日期（或者只看某个月），按最佳季节、这时候能去的景点、往年同期的天气和特别活动，把 {n} 座公园分成最适合、可以去和不太合适三类，每座都写明原因。",
@@ -1979,7 +1979,7 @@ const zhHans = {
       "天气是 Open-Meteo 2016–2025 年同期平均；人多不多按 NPS 游客统计（{years} 年），加拿大的公园没有按月的数字；景点开放月份和特别活动是整理的通常情况（含 2026 年已知的关闭），出发前以公园官网和 NPS 公告为准。",
   },
   rankings: {
-    eyebrow: "Rankings · 榜单",
+    eyebrow: "榜单",
     title: "美国国家公园榜单",
     intro:
       "美国一共 {n} 座国家公园（国家公园管理局管的 400 多处地方中，名字就叫国家公园的），网站上收了其中 {ours} 座，另外还有加拿大落基山的 3 座。下面是官方统计的游客人次、每座公园哪年设立，以及媒体推荐、世界遗产和暗夜公园。",
@@ -2003,7 +2003,7 @@ const zhHans = {
       honors: "世界遗产和暗夜公园",
     },
     visits: {
-      eyebrow: "Visitors · 游客人次",
+      eyebrow: "游客人次",
       title: "哪座国家公园人最多",
       intro:
         "{year} 年 NPS 统计的游客人次：一个人一天进园算一次，同一天进出几次只算一次，第二天再进来又算一次，所以是人次不是人数。",
@@ -2027,7 +2027,7 @@ const zhHans = {
       canadaSource: "来源：Parks Canada attendance（加拿大政府开放数据）",
     },
     picks: {
-      eyebrow: "Picks · 媒体推荐",
+      eyebrow: "媒体推荐",
       title: "旅行媒体选中的",
       intro:
         "Lonely Planet、国家地理、TIME 每年评出“今年该去哪”。下面是 2024 年以来选中的国家公园，以及公园里的体验和住宿；整个州、地区的条目里顺带提到的不算。这里只写谁选了什么，为什么选是我们自己的概括，完整内容请看原文。",
@@ -2049,7 +2049,7 @@ const zhHans = {
       checked: "{date} 整理。Lonely Planet、国家地理的下一年榜单一般在秋天公布，TIME 在春天。",
     },
     honors: {
-      eyebrow: "Honors · 世界遗产和暗夜公园",
+      eyebrow: "世界遗产和暗夜公园",
       title: "世界遗产和暗夜公园",
       heritageTitle: "联合国教科文组织世界遗产",
       heritageIntro: "美国 {n} 座国家公园是世界遗产（或者是世界遗产的一部分），加拿大落基山的 3 座同属一处世界遗产。",
@@ -2062,7 +2062,7 @@ const zhHans = {
       checked: "{date} 按联合国教科文组织世界遗产中心、DarkSky International 和 Parks Canada 的页面整理。",
     },
     timeline: {
-      eyebrow: "Timeline · 设立时间",
+      eyebrow: "设立时间",
       title: "从 1872 年的黄石，到 {year} 年的{name}",
       intro:
         "黄石设为国家公园的时候，国家公园管理局还没成立（1916 年才有）。之后一百多年里国家公园陆续增加，很多是先当国家纪念地、后来才升格的，比如大峡谷 1908 年先是国家纪念地，1919 年成为国家公园。",
@@ -2097,9 +2097,9 @@ const zhHans = {
   },
   footer: {
     tagline: "美国国家公园行程规划。按季节、日出日落和真实车程，把每一天排得刚刚好。",
-    parksTitle: "Parks · 公园",
-    pagesTitle: "Explore · 浏览",
-    dataTitle: "Data · 数据来源",
+    parksTitle: "公园",
+    pagesTitle: "浏览",
+    dataTitle: "数据来源",
     sources:
       "National Park Service（公告、门票、游客人次）、Parks Canada、U.S. DOE / NLR、OpenStreetMap、Wikimedia Commons（照片按各自授权署名）、Natural Earth。",
     googleNote: "景点评分和评论数来自 Google Maps，{date} 快照。",

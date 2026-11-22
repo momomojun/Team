@@ -37,7 +37,7 @@ export function RoutesTabs({
             aria-selected={active === tab.id}
             onClick={() => pick(tab.id)}
             className={`-mb-px inline-flex items-baseline gap-2 border-b-2 pb-3 font-serif text-xl transition-colors ${
-              active === tab.id ? "border-ink text-ink" : "border-transparent text-mute hover:text-ink"
+              active === tab.id ? "border-clay-500 text-ink" : "border-transparent text-mute hover:text-ink"
             }`}
           >
             {tab.label}

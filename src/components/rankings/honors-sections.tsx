@@ -76,7 +76,7 @@ export function PicksSection({
               {picks
                 .filter((pick) => pick.edition === edition)
                 .map((pick) => (
-                  <li key={`${pick.outlet}-${pick.title}`} className="border-t border-ink pt-4">
+                  <li key={`${pick.outlet}-${pick.title}`} className="border-t border-line pt-4">
                     <p className="text-xs text-mute">
                       <span className="text-ink-soft">{t.outlets[pick.outlet]}</span> · {t.lists[pick.outlet]} · {t.kinds[pick.kind]}
                     </p>
@@ -148,7 +148,7 @@ export function HonorsSection({
         <section>
           <h3 className="font-serif text-2xl">{t.heritageTitle}</h3>
           <p className="mt-2 text-xs leading-6 text-mute">{fill(t.heritageIntro, { n: usHeritage })}</p>
-          <ul className="mt-5 border-t border-ink">
+          <ul className="mt-5 border-t border-line">
             {sites.map(({ site, codes, year }) => (
               <li key={site.url} className="flex items-baseline gap-4 border-b border-line py-3">
                 <span className="w-12 shrink-0 text-xs text-mute tabular-nums">{year}</span>
@@ -168,7 +168,7 @@ export function HonorsSection({
         <section>
           <h3 className="font-serif text-2xl">{t.darkSkyTitle}</h3>
           <p className="mt-2 text-xs leading-6 text-mute">{t.darkSkyIntro}</p>
-          <ul className="mt-5 border-t border-ink">
+          <ul className="mt-5 border-t border-line">
             {skies.map(([code, sky]) => (
               <li key={code} className="flex items-baseline gap-4 border-b border-line py-3">
                 <span className="w-12 shrink-0 text-xs text-mute tabular-nums">{sky.year}</span>
