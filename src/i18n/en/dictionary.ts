@@ -378,6 +378,17 @@ export const en: Dictionary = {
       live: "Live updates",
       generate: "Plan a trip to this park",
     },
+    roadEvents: {
+      title: "Road closures",
+      hint: "From NPS road data (read {date}, updated nightly): which roads are closed and since when. A road drops off this list once it reopens.",
+      closed: "Closed",
+      partly: "Some lanes",
+      since: "Since {m:month} {d}",
+      until: "until {m:month} {d}",
+      unknownEnd: "no reopening date announced",
+      affects: "Can't be reached by car; trips starting within two weeks skip them: ",
+      source: "Source: NPS road events (WZDx)",
+    },
     guides: {
       eyebrow: "More guides",
       title: "Photo spots, itineraries, and food",

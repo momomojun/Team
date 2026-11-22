@@ -34,6 +34,29 @@ export interface ExtractedClosures {
 
 export const LIVE_STALE_DAYS = 3;
 
+/**
+ * 两份关闭清单合成一份：每晚模型读公告的（closures-latest.json）和 NPS 道路事件的（road-events-latest.json，
+ * scripts/road-events-lib.mjs 转成同样的格式）。同一座公园两份都有时，按旧的那份的日期算新不新（保守）
+ */
+export function mergeExtracted(...files: (ExtractedClosures | undefined)[]): ExtractedClosures | undefined {
+  const list = files.filter((file): file is ExtractedClosures => Boolean(file));
+  if (list.length <= 1) return list[0];
+  const parks: Record<string, string> = {};
+  for (const file of list) {
+    for (const [code, date] of Object.entries(file.parks ?? {})) parks[code] = parks[code] && parks[code] < date ? parks[code] : date;
+  }
+  // 旧格式（没有 parks）：这份清单里的公园都按 fetched 算
+  for (const file of list) {
+    if (file.parks) continue;
+    for (const closure of file.closures) parks[closure.park] = parks[closure.park] && parks[closure.park] < file.fetched ? parks[closure.park] : file.fetched;
+  }
+  return {
+    fetched: list.map((file) => file.fetched).sort()[0],
+    parks,
+    closures: list.flatMap((file) => file.closures),
+  };
+}
+
 export type LiveStatus = "used" | "month-only" | "too-far" | "stale" | "future";
 
 export interface LiveFromClosures {

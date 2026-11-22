@@ -41,6 +41,8 @@
     "eval:referee": "node --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/eval-referee.mjs",
     "perf:tour": "node scripts/perf-tour.mjs",
     "check:campgrounds": "node scripts/check-campgrounds.mjs",
+    "roads:events": "node --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/road-events.mjs fetch",
+    "roads:sync": "node --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/road-events.mjs sync",
     "alerts:fetch": "node --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/fetch-alerts.mjs",
     "alerts:propose": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs scripts/propose-closures.mjs"
   },
