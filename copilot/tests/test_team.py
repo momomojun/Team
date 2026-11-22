@@ -134,3 +134,26 @@ def test_team_off_by_default(tmp_path, monkeypatch):
     provider = ScriptedProvider([extraction(parks=["优胜美地"], dates=["2027年6月10日"], duration="5天", origin="弗雷斯诺", preferences=["适中"])])
     reply = Session(provider, "2026-11-21", log=False, dispatcher=False).send("2027年6月10日从弗雷斯诺去优胜美地玩5天，中间留一天休息，适中")
     assert "prefs" not in reply.request and "team" not in reply.trace
+
+
+def test_model_output_types_are_cleaned_and_clamped():
+    """输出格式只限定了 kind（Gemini 嫌复杂的 schema），类型、范围由代码把关：字符串当数字、超出契约范围的不能交给引擎"""
+    messages = ["每天开车别超过10小时，每天最多去30个地方，徒步别超过 one hour"]
+    raw = [
+        {"kind": "max_drive_per_day", "evidence": "每天开车别超过10小时", "minutes": 900},
+        {"kind": "max_stops_per_day", "evidence": "每天最多去30个地方", "count": 30},
+        {"kind": "max_hike_min", "evidence": "徒步别超过 one hour", "minutes": "60"},
+        {"kind": "rest_days", "evidence": "每天最多去30个地方", "min": True},
+    ]
+    plan = team.compile_wishes(raw, messages, YOSE)
+    assert plan.prefs == {"maxDrivePerDay": 720, "restDays": [3]}
+    assert sorted(item["reason"] for item in plan.trace["dropped"]) == ["no_count", "no_minutes"]
+
+
+def test_tradeoff_for_a_missing_slot_is_written_in_words():
+    wish = team.Wish("has_slot", {"slot": "sunrise", "min": 1}, "至少要看一次日出")
+    item = {"ok": False, "detail": "sunrise 0 站", "facts": {"count": 0}}
+    outcome = team.Outcome({}, {"days": [], "skipped": []}, None, [item])
+    zh, en = team.tradeoffs(outcome, [wish], [], True), team.tradeoffs(outcome, [wish], [], False)
+    assert zh == ["没能完全做到“看日出”：一次都没排上（这几天合适的时段已经排了别的、或者赶不过去）。这是取舍，想换个办法可以直接说。"]
+    assert "sunrise 0" not in en[0] and "none fit into the plan" in en[0]

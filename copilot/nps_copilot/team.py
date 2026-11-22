@@ -41,27 +41,29 @@ KINDS = (
 )
 CLOCK = re.compile(r"([01]\d|2[0-3]):[0-5]\d")
 
+# 输出格式尽量简单：Gemini 嫌可选字段多、又带长度和范围限制的 schema 太复杂（400，too many states），
+# 参数的范围、片区和山路在不在目录里，都由 compile_wishes 逐条核对
 PLAN_SCHEMA = {
-    "type": "object", "additionalProperties": False, "required": ["wishes"],
-    "properties": {"wishes": {"type": "array", "maxItems": 8, "items": {
-        "type": "object", "additionalProperties": False, "required": ["kind", "evidence"],
+    "type": "object", "required": ["wishes"],
+    "properties": {"wishes": {"type": "array", "items": {
+        "type": "object", "required": ["kind", "evidence"],
         "properties": {
-            "kind": {"enum": list(KINDS)},
-            "evidence": {"type": "string", "maxLength": 120},
-            "min": {"type": "integer", "minimum": 1, "maximum": 14},
+            "kind": {"type": "string", "enum": list(KINDS)},
+            "evidence": {"type": "string"},
+            "min": {"type": "integer"},
             "middle": {"type": "boolean"},
-            "day": {"type": "integer", "minimum": 1, "maximum": 14},
+            "day": {"type": "integer"},
             "last": {"type": "boolean"},
-            "days": {"type": "array", "maxItems": 14, "items": {"type": "integer", "minimum": 1, "maximum": 14}},
-            "minutes": {"type": "integer", "minimum": 15, "maximum": 900},
-            "count": {"type": "integer", "minimum": 0, "maximum": 12},
-            "time": {"type": "string", "maxLength": 5},
-            "park": {"type": "string", "maxLength": 4},
-            "area": {"type": "string", "maxLength": 60},
-            "road": {"type": "string", "maxLength": 60},
-            "slot": {"enum": list(SLOTS)},
-            "places": {"type": "array", "maxItems": 6, "items": {"type": "string", "maxLength": 60}},
-            "hazards": {"type": "array", "maxItems": 10, "items": {"enum": list(HAZARDS)}},
+            "days": {"type": "array", "items": {"type": "integer"}},
+            "minutes": {"type": "integer"},
+            "count": {"type": "integer"},
+            "time": {"type": "string"},
+            "park": {"type": "string"},
+            "area": {"type": "string"},
+            "road": {"type": "string"},
+            "slot": {"type": "string"},
+            "places": {"type": "array", "items": {"type": "string"}},
+            "hazards": {"type": "array", "items": {"type": "string"}},
         },
     }}},
 }
@@ -173,6 +175,23 @@ def understand(provider: Provider, messages: list[str], request: dict) -> Plan:
     return plan
 
 
+INT_KEYS = ("min", "day", "minutes", "count")
+STR_KEYS = ("evidence", "time", "park", "area", "road", "slot", "kind")
+
+
+def _clean(item: dict) -> dict:
+    """模型给的参数先按类型过一遍：数字要是整数（不是 true/false），文字要是字符串，列表里只留对的类型"""
+    out = {key: item[key] for key in INT_KEYS if isinstance(item.get(key), int) and not isinstance(item.get(key), bool)}
+    out.update({key: item[key] for key in STR_KEYS if isinstance(item.get(key), str)})
+    out.update({key: item[key] for key in ("middle", "last") if isinstance(item.get(key), bool)})
+    if isinstance(item.get("days"), list):
+        out["days"] = [d for d in item["days"] if isinstance(d, int) and not isinstance(d, bool)]
+    for key in ("places", "hazards"):
+        if isinstance(item.get(key), list):
+            out[key] = [v for v in item[key] if isinstance(v, str)]
+    return out
+
+
 def compile_wishes(raw: list, messages: list[str], request: dict) -> Plan:
     """核对每条 wish（原话片段真在用户说过的话里、参数合法），翻成引擎的旋钮和检查"""
     said = "\n".join(messages)
@@ -188,6 +207,7 @@ def compile_wishes(raw: list, messages: list[str], request: dict) -> Plan:
 
     day_ok = lambda d: isinstance(d, int) and 1 <= d <= days  # noqa: E731
     for item in raw:
+        item = _clean(item) if isinstance(item, dict) else item
         if not isinstance(item, dict) or item.get("kind") not in KINDS:
             drop(item, "invalid")
             continue
@@ -213,14 +233,14 @@ def compile_wishes(raw: list, messages: list[str], request: dict) -> Plan:
             params = {"day": item["day"]}
             prefs["restDays"] = sorted({*prefs.get("restDays", []), item["day"]})
         elif kind in ("max_drive_per_day", "max_hike_min", "max_stop_minutes"):
-            if not item.get("minutes"):
+            if not item.get("minutes") or item["minutes"] < 15:
                 drop(item, "no_minutes")
                 continue
-            params = {"minutes": item["minutes"]}
+            params = {"minutes": min(item["minutes"], 900)}
             key = {"max_drive_per_day": "maxDrivePerDay", "max_hike_min": "maxHikeMin", "max_stop_minutes": "maxStopMin"}[kind]
-            prefs[key] = max(30, item["minutes"]) if kind == "max_drive_per_day" else item["minutes"]
+            prefs[key] = min(max(30, params["minutes"]), 720) if kind == "max_drive_per_day" else params["minutes"]
         elif kind == "max_lodgings":
-            if not item.get("count"):
+            if not item.get("count") or item["count"] > 6:
                 drop(item, "no_count")
                 continue
             params = {"count": item["count"]}  # 引擎没有这个旋钮：排完由代码合并住处
@@ -246,13 +266,13 @@ def compile_wishes(raw: list, messages: list[str], request: dict) -> Plan:
             params = {"park": item["park"], "days": sorted(set(chosen))}
             prefs.setdefault("parkDays", []).append({"park": item["park"], "days": params["days"]})
         elif kind == "max_stops_per_day":
-            if not item.get("count"):
+            if not item.get("count") or item["count"] > 12:
                 drop(item, "no_count")
                 continue
             params = {"count": item["count"]}
             prefs["maxStopsPerDay"] = item["count"]
         elif kind == "day_max_stops":
-            if not day_ok(item.get("day")) or item.get("count") is None:
+            if not day_ok(item.get("day")) or item.get("count") is None or not 0 <= item["count"] <= 12:
                 drop(item, "bad_day")
                 continue
             params = {"day": item["day"], "count": item["count"]}
@@ -261,7 +281,7 @@ def compile_wishes(raw: list, messages: list[str], request: dict) -> Plan:
             if item.get("slot") not in SLOTS:
                 drop(item, "no_slot")
                 continue
-            count = days if kind == "slot_each_day" else (item.get("min") or 1)
+            count = days if kind == "slot_each_day" else min(max(item.get("min") or 1, 1), days)
             params = {"slot": item["slot"]} if kind == "slot_each_day" else {"slot": item["slot"], "min": count}
             prefs.setdefault("minSlots", {})[item["slot"]] = max(count, prefs.get("minSlots", {}).get(item["slot"], 0))
         elif kind in ("include", "exclude"):
@@ -286,7 +306,7 @@ def compile_wishes(raw: list, messages: list[str], request: dict) -> Plan:
             params = {"area": item["area"]}
             prefs.setdefault("excludeAreas", []).append(item["area"])
         elif kind == "max_areas_per_day":
-            if not item.get("count"):
+            if not item.get("count") or item["count"] > 6:
                 drop(item, "no_count")
                 continue
             params = {"count": item["count"]}
@@ -298,7 +318,7 @@ def compile_wishes(raw: list, messages: list[str], request: dict) -> Plan:
             params = {"day": item["day"]}
             prefs.setdefault("dayAreas", []).append({"day": item["day"], "area": item["area"]})
         elif kind == "hikes_per_day":
-            count = item.get("min") or 1
+            count = min(max(item.get("min") or 1, 1), 3)
             params = {"min": count}
             prefs["minHikes"] = count * days
         elif kind == "no_hazards":
@@ -588,6 +608,11 @@ def _why(wish: Wish, item: dict, zh: bool) -> str:
             else:
                 parts.append(f"day {d['day']} has {_hm(d['minutes'], False)} of driving" + (f" ({_hm(base, False)} is just getting between lodgings or the airport)" if base >= 30 else ""))
         return "；".join(parts) if zh else "; ".join(parts)
+    if wish.kind == "has_slot":
+        count = facts.get("count") or 0
+        if zh:
+            return "一次都没排上（这几天合适的时段已经排了别的、或者赶不过去）" if count == 0 else f"只排上 {count} 次"
+        return "none fit into the plan" if count == 0 else f"only {count} fit into the plan"
     if wish.kind == "max_lodgings":
         names = facts.get("lodgings") or []
         return f"现在住 {len(names)} 家" if zh else f"the plan uses {len(names)} places"
@@ -596,7 +621,7 @@ def _why(wish: Wish, item: dict, zh: bool) -> str:
         return ("涉及：" + "、".join(names)) if zh else ("affects: " + ", ".join(names))
     if days:
         return (f"第 {_days_zh(days)} 天没做到") if zh else (f"not met on {_days_en(days)}")
-    return item.get("detail", "") if zh else ""
+    return "排出来的行程还是没做到" if zh else "the plan still doesn't meet it"
 
 
 def tradeoffs(outcome: Outcome, wishes: list[Wish], unknown: list[str], zh: bool) -> list[str]:

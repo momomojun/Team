@@ -5,7 +5,8 @@
 - team：多加规划 agent 和审查 agent（team.py），COPILOT_TEAM=1。
 
 题目只说了软要求、没说节奏，Copilot 会先追问“这次想怎么玩”。评测扮演一个不挑的用户回答追问（`answer_followup`）：
-问节奏回“还没想好”那一项的序号（不替用户表态，节奏仍算默认），别的选择题回 1，最多答两次；题目本身不改。
+有“还没想好”就回它的序号（不替用户表态，节奏仍算默认），别的选择题回 1，最多答两次；题目本身不改。
+（11-22 第一次修的时候按追问的 target 认节奏，可给用户看的追问不带 target，结果回了 1 =“轻松玩”，那一版也记在 RESULTS.md。）
 （11-22 第一次跑没有这一步，两种方式几乎都停在追问上，那一版成绩记在 RESULTS.md 里，不能拿来比 agent。）
 
 每题按最后一轮打分：状态（排出来没有）、checks（排出来的行程用和审查 agent 同一个判分脚本 scripts/soft-check-lib.mjs 逐条判）、
@@ -47,15 +48,18 @@ MODES = {"dispatcher": "0", "team": "1"}
 MAX_FOLLOWUPS = 2
 
 
+# 节奏追问里“先按适中排一版”的那一项（intake.PACE_OPTIONS 的 default）；给用户看的追问只带选项文字，按文字认
+NOT_SURE = {"还没想好", "還沒想好", "Not sure yet"}
+
+
 def answer_followup(question: dict | None, zh: bool) -> str | None:
-    """不挑的用户怎么回答追问：节奏选“还没想好”，别的选择题选第一个；不是选择题（问公园、天数）就不答"""
+    """不挑的用户怎么回答追问：有“还没想好”就选它（节奏仍算默认，不替用户表态），别的选择题选第一个；
+    回序号（“5”），和真用户点按钮、回数字一样，代码直接按追问读、不调模型。不是选择题（问公园、天数）就不答"""
     if not question or question.get("kind") != "choose" or not question.get("options"):
         return None
-    options = question["options"]
-    chosen = next((o for o in options if o.get("value") == "default"), None) if question.get("target") == "pace" else None
-    chosen = chosen or options[0]
-    # 回序号（“5”），和真用户点按钮、回数字一样：代码直接按追问读，不调模型
-    return str(options.index(chosen) + 1)
+    labels = [option.get("label") for option in question["options"]]
+    chosen = next((i for i, label in enumerate(labels) if label in NOT_SURE), 0)
+    return str(chosen + 1)
 
 
 def grade(rows: list[dict]) -> dict[str, list[dict]]:
