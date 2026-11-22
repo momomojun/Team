@@ -4,6 +4,10 @@
 - dispatcher：现在的样子（调度员 + Intake + 引擎 + Critic + Writer），COPILOT_TEAM=0；
 - team：多加规划 agent 和审查 agent（team.py），COPILOT_TEAM=1。
 
+题目只说了软要求、没说节奏，Copilot 会先追问“这次想怎么玩”。评测扮演一个不挑的用户回答追问（`answer_followup`）：
+问节奏回“还没想好”那一项的序号（不替用户表态，节奏仍算默认），别的选择题回 1，最多答两次；题目本身不改。
+（11-22 第一次跑没有这一步，两种方式几乎都停在追问上，那一版成绩记在 RESULTS.md 里，不能拿来比 agent。）
+
 每题按最后一轮打分：状态（排出来没有）、checks（排出来的行程用和审查 agent 同一个判分脚本 scripts/soft-check-lib.mjs 逐条判）、
 must_say_any（回复里至少要有其中一个说法，冲突题、陷阱题要讲清楚取舍）。三样都对算这题过。
 
@@ -40,6 +44,18 @@ import tracking  # noqa: E402
 REFERENCE = "2026-11-21"
 CASES = HERE / "cases" / "soft-v1.jsonl"
 MODES = {"dispatcher": "0", "team": "1"}
+MAX_FOLLOWUPS = 2
+
+
+def answer_followup(question: dict | None, zh: bool) -> str | None:
+    """不挑的用户怎么回答追问：节奏选“还没想好”，别的选择题选第一个；不是选择题（问公园、天数）就不答"""
+    if not question or question.get("kind") != "choose" or not question.get("options"):
+        return None
+    options = question["options"]
+    chosen = next((o for o in options if o.get("value") == "default"), None) if question.get("target") == "pace" else None
+    chosen = chosen or options[0]
+    # 回序号（“5”），和真用户点按钮、回数字一样：代码直接按追问读，不调模型
+    return str(options.index(chosen) + 1)
 
 
 def grade(rows: list[dict]) -> dict[str, list[dict]]:
@@ -59,18 +75,24 @@ def grade(rows: list[dict]) -> dict[str, list[dict]]:
 
 def run_case(case: dict, provider) -> dict:
     session = Session(provider, case.get("reference", REFERENCE), log=False)
-    reply, calls, start = None, [], time.perf_counter()
+    reply, calls, answers, start = None, [], [], time.perf_counter()
     for step in case["turns"]:
-        try:
-            reply = session.send(step["user"])
-        except ProviderError as error:
-            return {"id": case["id"], "error": str(error), "status": "error", "text": "", "result": None, "calls": calls,
-                    "latency_ms": round((time.perf_counter() - start) * 1000)}
-        calls += [call.get("task") for call in reply.trace.get("calls") or []]
+        message = step["user"]
+        for _ in range(MAX_FOLLOWUPS + 1):
+            try:
+                reply = session.send(message)
+            except ProviderError as error:
+                return {"id": case["id"], "error": str(error), "status": "error", "text": "", "result": None, "calls": calls,
+                        "answers": answers, "latency_ms": round((time.perf_counter() - start) * 1000)}
+            calls += [call.get("task") for call in reply.trace.get("calls") or []]
+            message = answer_followup(reply.question, session.zh) if reply.status == "needs_input" else None
+            if message is None or len(answers) >= MAX_FOLLOWUPS:
+                break
+            answers.append(message)
     trace = reply.trace
     return {
         "id": case["id"], "status": reply.status, "text": reply.text, "result": reply.result or session.last_result,
-        "calls": calls, "latency_ms": round((time.perf_counter() - start) * 1000),
+        "calls": calls, "answers": answers, "latency_ms": round((time.perf_counter() - start) * 1000),
         "team_plan": (trace.get("team_plan") or {}).get("wishes"), "team": {k: v for k, v in (trace.get("team") or {}).items() if k != "rounds"},
         "rounds": len([r for r in (trace.get("team") or {}).get("rounds", []) if "review" in r]),
         "prefs": (reply.request or {}).get("prefs"),
