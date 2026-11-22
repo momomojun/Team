@@ -177,8 +177,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       <Hero
         slides={slides}
         wordmark={dict.site.wordmark}
-        aboutHref="#about"
-        text={{ title: t.heroTitle, subtitle: t.heroSubtitle, about: t.about, scroll: t.scroll, previous: t.previous, next: t.next }}
+        text={{ title: t.heroTitle, scroll: t.scroll, previous: t.previous, next: t.next }}
         search={
           <HeroSearch
             parks={parks.map((park) => localizePark(park, locale)).map((park) => ({ code: park.code, href: parkHref(park.code), nameZh: park.nameZh, nameEn: park.nameEn }))}
@@ -329,7 +328,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       {/* 博主同款路线：一大六小的拼贴 */}
       <section className="pb-24">
         <div className={container}>
-          <SectionTitle href={`${base}/routes`} hint={t.routesHint}>
+          <SectionTitle href={`${base}/routes`}>
             {t.routesTitle}
           </SectionTitle>
           <ul className="grid auto-rows-[52vw] grid-cols-2 gap-1 sm:auto-rows-[30vw] md:auto-rows-[210px] md:grid-cols-4">
@@ -391,7 +390,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         {films.length > 0 && (
           <section className="pb-20 md:pb-24">
             <div className={container}>
-              <SectionTitle href={`${base}/routes#films`} hint={t.filmHint}>
+              <SectionTitle href={`${base}/routes#films`}>
                 {t.filmTitle}
               </SectionTitle>
               <Rail label={t.filmTitle} previous={t.previous} next={t.next}>
