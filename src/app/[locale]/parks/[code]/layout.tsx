@@ -28,7 +28,7 @@ export default async function ParkLayout({ children, params }: LayoutProps<"/[lo
 
   // 照着 Wabunka 的目的地页：全屏大图慢慢平移，左下是名字和一句话，底下一条半透明的白条写几项基本情况，右边金色按钮
   const hero = (
-    <section className="relative overflow-hidden bg-night text-white">
+    <section data-header-tone="dark" className="relative overflow-hidden bg-night text-white">
       {/* 手机上底下那条基本情况放在照片下面（压在照片上会挡住名字），宽屏上压在照片底部 */}
       <div className="relative h-[78svh] min-h-[520px] md:h-[100svh] md:min-h-[640px]">
         {heroPhoto && (

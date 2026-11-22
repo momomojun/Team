@@ -14,6 +14,7 @@ import { localizePark } from "@/i18n/content";
 import { localize } from "@/i18n/convert";
 import { getDictionary } from "@/i18n/dictionaries";
 import { fill, formatMonths, otherName } from "@/i18n/format";
+import { parkWeight } from "@/lib/park-popularity";
 
 // “当季”按当前月份标，页面每天重新生成一次
 export const revalidate = 86400;
@@ -27,13 +28,8 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/parks">)
   return { title: fill(t.parksTitle, { n: parks.filter((park) => !isSite(park)).length }) };
 }
 
-/** 景点的 Google 评论数加起来，地图上名字挤在一起时热门的公园先摆 */
-const popularity = new Map<string, number>();
-for (const attraction of attractions) {
-  if (!attraction.google || attraction.kind === "visitor" || attraction.outsidePark) continue;
-  popularity.set(attraction.park, (popularity.get(attraction.park) ?? 0) + attraction.google.reviews);
-}
-const weight = (code: string) => popularity.get(code) ?? 0;
+/** 地图上名字挤在一起时热门的公园先摆 */
+const weight = parkWeight;
 const photoOf = (id: string) => attractions.find((attraction) => attraction.id === id)?.photo;
 
 /**

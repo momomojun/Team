@@ -21,13 +21,14 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
   const pages = [
     { href: `/${locale}/plan`, label: dict.nav.plan },
     { href: `/${locale}/when`, label: dict.nav.when },
+    { href: `/${locale}/activities`, label: dict.nav.activities },
     { href: `/${locale}/routes`, label: dict.nav.routes },
     { href: `/${locale}/prices`, label: dict.nav.prices },
     { href: `/${locale}/rankings`, label: dict.nav.rankings },
   ];
 
   return (
-    <footer className="cv-auto [--cv-h:900px] bg-coal text-white print:hidden">
+    <footer data-header-tone="dark" className="cv-auto [--cv-h:900px] bg-coal text-white print:hidden">
       {/* 照着 Wabunka：炭灰底，中间是站名，下面一行页面链接；公园按片区分栏排在下面，最后是数据来源和声明 */}
       <div className="mx-auto max-w-[1216px] px-5 pt-20 pb-10 sm:px-10">
         <div className="text-center">
