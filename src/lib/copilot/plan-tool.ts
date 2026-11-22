@@ -195,7 +195,7 @@ export function planTrip(input: unknown, options: PlanOptions) {
       nights: Object.fromEntries(
         active.flatMap((day, k) => (userNights.has(day + 1) && k + 1 < active.length ? [[k + 1, userNights.get(day + 1)!]] : [])),
       ),
-      prefs: enginePrefs(prefs),
+      prefs: enginePrefs(prefs, active),
     },
     {
       stops,
@@ -272,7 +272,7 @@ function eachDay(
   trip: Trip,
   dateFor: (day: number) => string,
   endpoints: Record<"origin" | "destination", LodgingPoint & { name: string }>,
-  timing: Pick<DayContext, "notBefore" | "returnBy"> = {},
+  timing: Timing = {},
 ) {
   const resolve = (
     night: TripLodging | null | undefined,
@@ -293,7 +293,15 @@ function eachDay(
     const to = resolve(trip.nights[d + 1]);
     const first = dayStops[0] ?? previous;
     const sun = first ? sunFor(date, first) : NOMINAL_SUN;
-    const context: DayContext = { sun, from, to, previous, date, ...timing };
+    const context: DayContext = {
+      sun,
+      from,
+      to,
+      previous,
+      date,
+      notBefore: timing.notBefore,
+      returnBy: d === trip.days.length - 1 && timing.lastDayBy !== undefined ? timing.lastDayBy : timing.returnBy,
+    };
     const nextPark = trip.days.slice(d + 1).flat().map((item) => stopById.get(item.id)?.park).find(Boolean);
     const near = new Set([previous?.park, nextPark].filter(Boolean));
     previous = dayStops.at(-1) ?? previous;
@@ -322,7 +330,7 @@ function describeDays(
   endpoints: Record<"origin" | "destination", LodgingPoint & { name: string }>,
   party: Party | undefined,
   maybeAlert: Map<string, ExtractedClosure>,
-  timing: Pick<DayContext, "notBefore" | "returnBy"> = {},
+  timing: Timing = {},
 ) {
   return eachDay(trip, dateFor, endpoints, timing).map(({ stops: dayStops, date, to, sun, context, near }, d) => {
     const timeline =
@@ -372,6 +380,8 @@ function describeDays(
             ...entry.warnings,
             ...(fitFor(party, stop.family).serious ? (["familySerious"] as const) : []),
             ...(maybeAlert.has(stop.id) ? (["alertMaybeClosed"] as const) : []),
+            // 点名要去的抽签项目（天使降临、半穹顶）：排进去了，但要先抽到许可证
+            ...(stop.permit && stop.lottery ? (["lottery"] as const) : []),
           ],
           ...(maybeAlert.has(stop.id) ? { alert: alertInfo(maybeAlert.get(stop.id)!) } : {}),
         };
@@ -414,7 +424,7 @@ const minutesOf = (clockText: string | undefined) => {
 };
 
 /** 契约里的软要求 → 行程引擎用的（时间换成当天第几分钟；休息日在这里处理，不交给引擎） */
-function enginePrefs(prefs: TripPrefs): EnginePrefs {
+function enginePrefs(prefs: TripPrefs, active: number[]): EnginePrefs {
   return {
     maxStopsPerDay: prefs.maxStopsPerDay,
     maxHikeMin: prefs.maxHikeMin,
@@ -424,12 +434,31 @@ function enginePrefs(prefs: TripPrefs): EnginePrefs {
     departNotBefore: minutesOf(prefs.departNotBefore),
     returnBy: minutesOf(prefs.returnBy),
     maxDrivePerDay: prefs.maxDrivePerDay,
+    // 第几天按整趟算（1 开始）；引擎看到的是去掉休息日以后的天（0 开始）
+    dayMaxStops: prefs.dayMaxStops
+      ? Object.fromEntries(prefs.dayMaxStops.flatMap(({ day, count }) => (active.includes(day - 1) ? [[active.indexOf(day - 1), count]] : [])))
+      : undefined,
+    lastDayBy: minutesOf(prefs.lastDayBy),
+    minSlots: prefs.minSlots,
+    minHikes: prefs.minHikes,
+    roads: prefs.roads,
+    avoidShuttle: prefs.avoidShuttle,
+    maxAreasPerDay: prefs.maxAreasPerDay,
+    dayAreas: prefs.dayAreas
+      ? Object.fromEntries(prefs.dayAreas.flatMap(({ day, area }) => (active.includes(day - 1) ? [[active.indexOf(day - 1), area]] : [])))
+      : undefined,
+    parkDays: prefs.parkDays
+      ? Object.fromEntries(
+          prefs.parkDays.map(({ park, days }) => [park, days.filter((day) => active.includes(day - 1)).map((day) => active.indexOf(day - 1))]),
+        )
+      : undefined,
   };
 }
 
-/** 排时间线时每天都要照的：几点以后出门、几点前回 */
-function timingOf(prefs: TripPrefs): Pick<DayContext, "notBefore" | "returnBy"> {
-  return { notBefore: minutesOf(prefs.departNotBefore), returnBy: minutesOf(prefs.returnBy) };
+/** 排时间线时每天都要照的：几点以后出门、几点前回（最后一天按几点前到回程地） */
+type Timing = Pick<DayContext, "notBefore" | "returnBy"> & { lastDayBy?: number };
+function timingOf(prefs: TripPrefs): Timing {
+  return { notBefore: minutesOf(prefs.departNotBefore), returnBy: minutesOf(prefs.returnBy), lastDayBy: minutesOf(prefs.lastDayBy) };
 }
 
 /** 去掉休息日排出来的行程，把空的休息日插回原来的位置：那天不排景点，晚上接着住前一晚的地方 */

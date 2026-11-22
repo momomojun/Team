@@ -272,6 +272,198 @@
           "type": "integer",
           "minimum": 30,
           "maximum": 720
+        },
+        "dayMaxStops": {
+          "type": "array",
+          "maxItems": 14,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "day",
+              "count"
+            ],
+            "properties": {
+              "day": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 14
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 12
+              }
+            }
+          }
+        },
+        "lastDayBy": {
+          "type": "string",
+          "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+        },
+        "minSlots": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "sunrise": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 14
+            },
+            "sunset": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 14
+            },
+            "night": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 14
+            }
+          }
+        },
+        "minHikes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 42
+        },
+        "roads": {
+          "type": "array",
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z]{4}-[a-z0-9-]+$"
+          }
+        },
+        "avoidShuttle": {
+          "type": "boolean"
+        },
+        "maxAreasPerDay": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "dayAreas": {
+          "type": "array",
+          "maxItems": 14,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "day",
+              "area"
+            ],
+            "properties": {
+              "day": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 14
+              },
+              "area": {
+                "type": "string",
+                "pattern": "^[a-z]{4}/[a-z0-9-]+$"
+              }
+            }
+          }
+        },
+        "parkDays": {
+          "type": "array",
+          "maxItems": 6,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "park",
+              "days"
+            ],
+            "properties": {
+              "park": {
+                "enum": [
+                  "acad",
+                  "ante",
+                  "arch",
+                  "badl",
+                  "banf",
+                  "bibe",
+                  "bisc",
+                  "blca",
+                  "brca",
+                  "cany",
+                  "care",
+                  "cave",
+                  "chir",
+                  "chis",
+                  "cong",
+                  "crla",
+                  "cuva",
+                  "dena",
+                  "deva",
+                  "drto",
+                  "ever",
+                  "gaar",
+                  "glac",
+                  "glba",
+                  "grba",
+                  "grca",
+                  "grsa",
+                  "grsm",
+                  "grte",
+                  "gumo",
+                  "hale",
+                  "havo",
+                  "hosp",
+                  "hsbd",
+                  "indu",
+                  "isro",
+                  "jasp",
+                  "jeff",
+                  "jotr",
+                  "katm",
+                  "kefj",
+                  "kova",
+                  "lacl",
+                  "lavo",
+                  "maca",
+                  "meve",
+                  "mora",
+                  "mova",
+                  "neri",
+                  "noca",
+                  "npsa",
+                  "olym",
+                  "pefo",
+                  "pinn",
+                  "redw",
+                  "romo",
+                  "sagu",
+                  "seki",
+                  "shen",
+                  "thro",
+                  "viis",
+                  "voya",
+                  "wave",
+                  "whsa",
+                  "wica",
+                  "wrst",
+                  "yell",
+                  "yoho",
+                  "yose",
+                  "zion"
+                ]
+              },
+              "days": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 14
+                }
+              }
+            }
+          }
         }
       }
     },

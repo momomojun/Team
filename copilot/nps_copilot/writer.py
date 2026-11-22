@@ -27,6 +27,7 @@ WARNINGS_ZH = {
     "parkingFull": "到的时候停车场多半已经满了", "overloaded": "这天安排得太满", "lateReturn": "回住处太晚",
     "familySerious": "对同行的婴儿或老人风险高、很累，请务必慎重考虑（看这个景点的说明）",
     "alertMaybeClosed": "NPS 最新公告里提到它可能关了，出发前在 nps.gov 确认",
+    "lottery": "要先抽签拿到许可证，没抽到就去不了",
 }
 WARNINGS_EN = {
     "tempClosed": "temporarily closed that day", "maybeClosed": "may still be temporarily closed", "afterHours": "arrives after hours or last entry",
@@ -35,11 +36,12 @@ WARNINGS_EN = {
     "parkingFull": "the lot is likely full by then", "overloaded": "this day is packed", "lateReturn": "late return to lodging",
     "familySerious": "risky or very strenuous for the baby or seniors in your group, please think very carefully (see the stop's notes)",
     "alertMaybeClosed": "a current NPS alert may mean it's closed, check nps.gov before you go",
+    "lottery": "needs a lottery permit first; without one you can't go",
 }
 SKIP_ZH = {"permit": "要抽签的许可证", "closed": "这几天不开放", "tooHard": "太难或太长", "noTime": "排不下",
-           "tooFar": "离其他景点太远", "across": "季节性山路封着、要绕很远", "unsuitable": "不适合同行的人"}
+           "tooFar": "离其他景点太远", "across": "季节性山路封着、要绕很远", "unsuitable": "不适合同行的人", "prefs": "按你说的要求没排"}
 SKIP_EN = {"permit": "lottery permit required", "closed": "closed on these dates", "tooHard": "too strenuous or long", "noTime": "no room",
-           "tooFar": "too far from everything else", "across": "seasonal road closed, long detour", "unsuitable": "not suitable for your group"}
+           "tooFar": "too far from everything else", "across": "seasonal road closed, long detour", "unsuitable": "not suitable for your group", "prefs": "left out per your request"}
 PACE_ZH = {"leisurely": "悠闲", "relaxed": "轻松", "normal": "适中", "packed": "多看一些"}
 PACE_EN = {"leisurely": "leisurely", "relaxed": "relaxed", "normal": "balanced", "packed": "packed"}
 

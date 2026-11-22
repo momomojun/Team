@@ -68,6 +68,24 @@ export interface TripPrefs {
   departNotBefore?: string;
   returnBy?: string;
   maxDrivePerDay?: number;
+  /** 某一天最多几站（day 1 开始，按整趟的天数算） */
+  dayMaxStops?: { day: number; count: number }[];
+  /** 最后一天几点前到回程地（赶飞机） */
+  lastDayBy?: string;
+  /** 至少几次日出、日落、看星空 */
+  minSlots?: { sunrise?: number; sunset?: number; night?: number };
+  /** 至少几条徒步 */
+  minHikes?: number;
+  /** 一定要走的季节性山路（roads.ts 的 id，比如 "glac-logan-pass"） */
+  roads?: string[];
+  /** 不坐园区班车 */
+  avoidShuttle?: boolean;
+  /** 一天最多去几个片区 */
+  maxAreasPerDay?: number;
+  /** 某一天只待在一个片区（day 1 开始；area 是 "公园代码/片区"） */
+  dayAreas?: { day: number; area: string }[];
+  /** 哪几天去哪座公园（day 1 开始） */
+  parkDays?: { park: string; days: number[] }[];
 }
 
 export const REQUEST_FIELDS = [
@@ -110,10 +128,11 @@ export const STOP_WARNINGS = [
   "maybeClosed",
   "familySerious",
   "alertMaybeClosed",
+  "lottery",
 ] as const;
 
 /** 没排进去的原因（generate-trip.ts 的 GuideSkipped） */
-export const SKIP_REASONS = ["permit", "closed", "tooHard", "noTime", "tooFar", "across", "unsuitable"] as const;
+export const SKIP_REASONS = ["permit", "closed", "tooHard", "noTime", "tooFar", "across", "unsuitable", "prefs"] as const;
 
 const DATE_PATTERN = "^\\d{4}-\\d{2}-\\d{2}$";
 /** NPS 公告（Copilot 提取的关闭清单里的一条）：标题、链接、公告写的重开日期 */
@@ -187,6 +206,53 @@ export const tripRequestSchema = {
         departNotBefore: { type: "string", pattern: "^([01][0-9]|2[0-3]):[0-5][0-9]$" },
         returnBy: { type: "string", pattern: "^([01][0-9]|2[0-3]):[0-5][0-9]$" },
         maxDrivePerDay: { type: "integer", minimum: 30, maximum: 720 },
+        dayMaxStops: {
+          type: "array",
+          maxItems: MAX_TRIP_DAYS,
+          items: {
+            type: "object",
+            additionalProperties: false,
+            required: ["day", "count"],
+            properties: { day: { type: "integer", minimum: 1, maximum: MAX_TRIP_DAYS }, count: { type: "integer", minimum: 0, maximum: 12 } },
+          },
+        },
+        lastDayBy: { type: "string", pattern: "^([01][0-9]|2[0-3]):[0-5][0-9]$" },
+        minSlots: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            sunrise: { type: "integer", minimum: 0, maximum: MAX_TRIP_DAYS },
+            sunset: { type: "integer", minimum: 0, maximum: MAX_TRIP_DAYS },
+            night: { type: "integer", minimum: 0, maximum: MAX_TRIP_DAYS },
+          },
+        },
+        minHikes: { type: "integer", minimum: 0, maximum: 3 * MAX_TRIP_DAYS },
+        roads: { type: "array", maxItems: 5, uniqueItems: true, items: { type: "string", pattern: "^[a-z]{4}-[a-z0-9-]+$" } },
+        avoidShuttle: { type: "boolean" },
+        maxAreasPerDay: { type: "integer", minimum: 1, maximum: 6 },
+        dayAreas: {
+          type: "array",
+          maxItems: MAX_TRIP_DAYS,
+          items: {
+            type: "object",
+            additionalProperties: false,
+            required: ["day", "area"],
+            properties: { day: { type: "integer", minimum: 1, maximum: MAX_TRIP_DAYS }, area: { type: "string", pattern: "^[a-z]{4}/[a-z0-9-]+$" } },
+          },
+        },
+        parkDays: {
+          type: "array",
+          maxItems: 6,
+          items: {
+            type: "object",
+            additionalProperties: false,
+            required: ["park", "days"],
+            properties: {
+              park: { enum: parkCodes },
+              days: { type: "array", minItems: 1, uniqueItems: true, items: { type: "integer", minimum: 1, maximum: MAX_TRIP_DAYS } },
+            },
+          },
+        },
       },
     },
     provenance: {

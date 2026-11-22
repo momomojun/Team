@@ -375,7 +375,8 @@
                       "tempClosed",
                       "maybeClosed",
                       "familySerious",
-                      "alertMaybeClosed"
+                      "alertMaybeClosed",
+                      "lottery"
                     ]
                   }
                 },
@@ -423,7 +424,8 @@
               "noTime",
               "tooFar",
               "across",
-              "unsuitable"
+              "unsuitable",
+              "prefs"
             ]
           },
           "openMonths": {

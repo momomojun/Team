@@ -58,6 +58,40 @@ test("避开危险：带 3 岁孩子去夏威夷火山，不排悬崖、地热�
   assert.deepEqual(ok(result, [{ kind: "no_hazards", hazards: ["dropoff", "thermal"] }, { kind: "party_fit", party: { youngestKid: 3 } }]), [true, true]);
 });
 
+test("按天的要求：哪几天去哪座公园、某天只待一个片区、某天最多几站、最后一天几点前到机场", () => {
+  const split = plan({
+    parks: ["grte", "yell"],
+    startDate: "2027-07-10",
+    days: 6,
+    origin: { airport: "JAC" },
+    prefs: { parkDays: [{ park: "grte", days: [1, 2] }, { park: "yell", days: [3, 4, 5, 6] }] },
+  });
+  assert.deepEqual(ok(split, [{ kind: "park_days", park: "grte", days: [1, 2] }, { kind: "park_days", park: "yell", days: [3, 4, 5, 6] }]), [true, true]);
+  const area = plan({ parks: ["yell"], startDate: "2027-06-28", days: 5, origin: { airport: "BZN" }, prefs: { dayAreas: [{ day: 3, area: "yell/geyser-basins" }] } });
+  assert.deepEqual(ok(area, [{ kind: "day_single_area", day: 3 }]), [true]);
+  const landing = plan({ parks: ["arch"], startDate: "2027-05-03", days: 3, origin: { airport: "SLC" }, prefs: { dayMaxStops: [{ day: 1, count: 1 }] } });
+  assert.deepEqual(ok(landing, [{ kind: "day_max_stops", day: 1, count: 1 }]), [true]);
+  const flight = plan({ parks: ["mora"], startDate: "2027-07-22", days: 3, origin: { airport: "SEA" }, prefs: { lastDayBy: "12:00" } });
+  assert.deepEqual(ok(flight, [{ kind: "day_return_by", day: "last", time: "12:00" }]), [true]);
+});
+
+test("至少一次日出、看星空，一定要走的山路，不坐班车，点名要去的抽签项目照排并提醒", () => {
+  const sunrise = plan({ parks: ["yose"], startDate: "2027-05-12", days: 4, origin: { airport: "FAT" }, prefs: { minSlots: { sunrise: 1 } } });
+  assert.deepEqual(ok(sunrise, [{ kind: "has_slot", slot: "sunrise", min: 1 }]), [true]);
+  const stars = plan({ parks: ["jotr"], startDate: "2027-04-06", days: 2, origin: { airport: "PSP" }, prefs: { minSlots: { night: 1 } } });
+  assert.deepEqual(ok(stars, [{ kind: "has_slot", slot: "night", min: 1 }]), [true]);
+  const road = plan({ parks: ["glac"], startDate: "2027-07-02", days: 3, origin: { airport: "FCA" }, prefs: { roads: ["glac-logan-pass"] } });
+  assert.deepEqual(ok(road, [{ kind: "road_day", road: "glac-logan-pass" }]), [true]);
+  const zion = { parks: ["zion"], startDate: "2027-07-01", days: 3, origin: { airport: "LAS" } };
+  assert.deepEqual(ok(plan(zion), [{ kind: "no_shuttle_stops" }]), [false]);
+  const noBus = plan({ ...zion, prefs: { avoidShuttle: true } });
+  assert.deepEqual(ok(noBus, [{ kind: "no_shuttle_stops" }]), [true]);
+  assert.ok(noBus.skipped.some((item) => item.reason === "prefs"));
+  const angels = plan({ ...zion, startDate: "2027-06-02", include: ["zion-angels-landing"] });
+  const stop = angels.days.flatMap((day) => day.stops).find((item) => item.id === "zion-angels-landing");
+  assert.ok(stop?.warnings.includes("lottery"));
+});
+
 test("判分：没排出行程全算没做到，不认识的检查算没做到", () => {
   assert.deepEqual(checkSoft(null, [{ kind: "max_lodgings", count: 1 }]), [{ kind: "max_lodgings", ok: false, detail: "没排出行程" }]);
   assert.equal(checkSoft({ days: [] }, [{ kind: "nope" }])[0].ok, false);

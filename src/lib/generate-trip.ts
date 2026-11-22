@@ -21,6 +21,7 @@ import { addDays } from "./dates";
 import { moonNight } from "./moon";
 import { popularRank } from "./popularity";
 import { acrossClosedRoad, bestRoadDay, openChance, ROAD_LIKELY, roadDecides, roadFor, roadStatus } from "./roads";
+import { shuttleFor } from "./shuttle";
 import { datedSchedule, runsOn, tourScheduleOf } from "./tours";
 import { fitFor, hasParty, type Party } from "./suitability";
 import { planTrip } from "./trip-plan";
@@ -78,6 +79,24 @@ export interface EnginePrefs {
   returnBy?: number;
   /** 每天开车最多多少分钟 */
   maxDrivePerDay?: number;
+  /** 某几天最多几站（第几天从 0 开始，去掉休息日以后的；“第一天落地晚，只去一个地方”） */
+  dayMaxStops?: Record<number, number>;
+  /** 最后一天几点前到回程地（赶飞机） */
+  lastDayBy?: number;
+  /** 至少排几次日出、日落、看星空（“至少看一次日出”“每天都看日落”）：挑这个时段最好的几个当必去 */
+  minSlots?: Partial<Record<"sunrise" | "sunset" | "night", number>>;
+  /** 至少排几条徒步（“每天至少走一条步道”= 天数）：挑最好的几条当必去 */
+  minHikes?: number;
+  /** 一定要走的季节性山路（roads.ts 的 id）：挑这条路上最好的一个景点当必去 */
+  roads?: string[];
+  /** 不坐园区班车：出发这几天要坐班车才能到的景点不排（点名要去的照排） */
+  avoidShuttle?: boolean;
+  /** 一天最多去几个片区（“海岸、雨林、飓风岭分开去”） */
+  maxAreasPerDay?: number;
+  /** 某一天只待在这个片区（第几天从 0 开始 → "公园/片区"） */
+  dayAreas?: Record<number, string>;
+  /** 哪几天去哪座公园（公园代码 → 第几天，从 0 开始）；不在这几天的这座公园的景点不排在别的天 */
+  parkDays?: Record<string, number[]>;
 }
 
 /** 参与挑选的景点：排行程需要的字段 + 热度、季节、许可证 */
@@ -150,6 +169,8 @@ export interface GuideSkipped {
   across?: string[];
   /** 不适合同行的小孩、老人、轮椅（旧版行程没有） */
   unsuitable?: string[];
+  /** 按用户说的要求没排：危险标记、徒步或活动太长、要坐班车（Copilot 的软要求，网站自己排的没有） */
+  prefs?: string[];
 }
 
 export interface GuideInfo {
@@ -329,6 +350,7 @@ export function generateTrip(input: GenerateInput, original: GenerateContext): {
     tooFar: [],
     across: [],
     unsuitable: [],
+    prefs: [],
   };
   const available: GuideStop[] = [];
   const tripDates = input.dates ?? (input.startDate ? Array.from({ length: input.days }, (_, day) => addDays(input.startDate, day)) : []);
@@ -344,18 +366,23 @@ export function generateTrip(input: GenerateInput, original: GenerateContext): {
   for (const stop of context.stops) {
     if (tripDates.length === 0 && datedTour(stop) && !include.has(stop.id)) continue;
     if (closed(stop)) skipped.closed.push(stop.id);
-    else if (stop.permit && stop.lottery) skipped.permit.push(stop.id);
+    else if (stop.permit && stop.lottery && !include.has(stop.id)) skipped.permit.push(stop.id);
     // 带的孩子不到年龄、老人不建议、轮椅去不了的不排；只是要注意的照排，行程里标出提醒
     else if (fitFor(input.party, stop.family).level === "no") skipped.unsuitable.push(stop.id);
     // 用户不想去有这些危险的地方（“带 3 岁孩子，危险的地方别去”）
-    else if (!include.has(stop.id) && stop.family?.hazards?.some((hazard) => prefs.avoidHazards?.includes(hazard))) skipped.unsuitable.push(stop.id);
+    else if (!include.has(stop.id) && stop.family?.hazards?.some((hazard) => prefs.avoidHazards?.includes(hazard))) skipped.prefs.push(stop.id);
     else if (
       !include.has(stop.id) &&
-      ((stop.kind === "hike" &&
-        (stop.durationMin > MAX_HIKE_MIN[input.pace] || ((input.pace === "relaxed" || input.pace === "leisurely") && stop.hike?.difficulty === "hard"))) ||
-        // 用户说的徒步上限：走着去的瀑布、湖（有步道资料的）也算徒步
-        ((stop.kind === "hike" || stop.hike !== undefined) && stop.durationMin > (prefs.maxHikeMin ?? Infinity)) ||
-        stop.durationMin > (prefs.maxStopMin ?? Infinity))
+      // 用户说的徒步上限：走着去的瀑布、湖（有步道资料的）也算徒步
+      (((stop.kind === "hike" || stop.hike !== undefined) && stop.durationMin > (prefs.maxHikeMin ?? Infinity)) ||
+        stop.durationMin > (prefs.maxStopMin ?? Infinity) ||
+        (prefs.avoidShuttle && closureDates.some((date) => shuttleFor(stop.id, date) !== null)))
+    )
+      skipped.prefs.push(stop.id);
+    else if (
+      !include.has(stop.id) &&
+      stop.kind === "hike" &&
+      (stop.durationMin > MAX_HIKE_MIN[input.pace] || ((input.pace === "relaxed" || input.pace === "leisurely") && stop.hike?.difficulty === "hard"))
     ) {
       skipped.tooHard.push(stop.id);
     } else available.push(stop);
@@ -371,7 +398,23 @@ export function generateTrip(input: GenerateInput, original: GenerateContext): {
   const parkSize = new Map<string, number>();
   for (const stop of context.stops) parkSize.set(stop.park, (parkSize.get(stop.park) ?? 0) + 1);
   const trails = trailRanks(context.stops);
-  const scores = new Map(available.map((stop) => [stop.id, score(stop, input.month, parkSize.get(stop.park) ?? 1, trails.get(stop.id))]));
+  let scores = new Map(available.map((stop) => [stop.id, score(stop, input.month, parkSize.get(stop.park) ?? 1, trails.get(stop.id))]));
+  const wanted = new Set<string>();
+  const pick = (candidates: GuideStop[], count: number) =>
+    [...candidates]
+      .sort((a, b) => scores.get(b.id)! - scores.get(a.id)!)
+      .slice(0, count)
+      .forEach((stop) => wanted.add(stop.id));
+  for (const [slot, count] of Object.entries(prefs.minSlots ?? {})) {
+    if (count) pick(available.filter((stop) => onlyAt(stop) === slot || (stop.bestTime as string[] | undefined)?.includes(slot)), count);
+  }
+  if (prefs.minHikes) pick(available.filter((stop) => stop.kind === "hike"), prefs.minHikes);
+  for (const road of prefs.roads ?? []) pick(available.filter((stop) => roadFor(stop.id)?.id === road), 1);
+  if (wanted.size > 0) {
+    for (let i = 0; i < available.length; i++) if (wanted.has(available[i].id)) available[i] = { ...available[i], mustSee: true };
+    context.stops = context.stops.map((stop) => (wanted.has(stop.id) ? { ...stop, mustSee: true } : stop));
+    scores = new Map(available.map((stop) => [stop.id, score(stop, input.month, parkSize.get(stop.park) ?? 1, trails.get(stop.id))]));
+  }
   const ranked = [...available].sort((a, b) => scores.get(b.id)! - scores.get(a.id)!);
 
   // 时间预算：扣掉从出发地开到公园、从公园开到回程地的时间（按最近的景点算）
@@ -455,7 +498,7 @@ export function generateTrip(input: GenerateInput, original: GenerateContext): {
         previous,
         date: dateFor(d),
         notBefore: prefs.departNotBefore,
-        returnBy: prefs.returnBy,
+        returnBy: d === current.days.length - 1 && prefs.lastDayBy !== undefined ? prefs.lastDayBy : prefs.returnBy,
       };
       previous = stops.at(-1) ?? previous;
       return { stops, context };
@@ -466,14 +509,17 @@ export function generateTrip(input: GenerateInput, original: GenerateContext): {
    * 博兹曼到老忠实泉就要 4 个多小时）；这段路再加 DRIVE_GRACE_MIN 分钟让路上能看几个地方
    */
   const transferBase = new WeakMap<object, number>();
+  /** 时间线是第几天的、那天几点前要回（按天的软要求用） */
+  const dayOf = new WeakMap<object, { day: number; returnBy?: number }>();
   const transferOf = (context: DayContext) =>
     context.from && context.to && context.from.id !== context.to.id
       ? (buildTransferTimeline(context, [...stopById.values()])?.driveMin ?? 0)
       : 0;
   const timelines = (current: Trip) =>
-    dayContexts(current).map(({ stops, context }) => {
+    dayContexts(current).map(({ stops, context }, day) => {
       const timeline = buildTimeline(stops, context);
       if (prefs.maxDrivePerDay !== undefined) transferBase.set(timeline, transferOf(context));
+      dayOf.set(timeline, { day, returnBy: context.returnBy });
       return { stops, timeline };
     });
   /**
@@ -502,14 +548,20 @@ export function generateTrip(input: GenerateInput, original: GenerateContext): {
   const overStops = (timeline: ReturnType<typeof buildTimeline>) =>
     Math.max(
       0,
-      timeline.entries.filter((entry) => entry.slot !== "night").length - Math.min(MAX_STOPS[input.pace] ?? Infinity, prefs.maxStopsPerDay ?? Infinity),
+      timeline.entries.filter((entry) => entry.slot !== "night").length -
+        Math.min(
+          MAX_STOPS[input.pace] ?? Infinity,
+          prefs.maxStopsPerDay ?? Infinity,
+          prefs.dayMaxStops?.[dayOf.get(timeline)?.day ?? -1] ?? Infinity,
+        ),
     );
   /** 回住处太晚，晚了多少分钟（看星空那天按 NIGHT_LATE_GRACE 放宽；用户说了几点前回的不放宽）；不晚是 0 */
   const lateBy = (timeline: ReturnType<typeof buildTimeline>) => {
     if (!timeline.lateReturn) return 0;
+    const userLimit = dayOf.get(timeline)?.returnBy;
     const limit =
-      prefs.returnBy !== undefined
-        ? Math.min(prefs.returnBy, LATE_RETURN)
+      userLimit !== undefined
+        ? Math.min(userLimit, LATE_RETURN)
         : timeline.entries.at(-1)?.slot === "night"
           ? LATE_RETURN + NIGHT_LATE_GRACE
           : LATE_RETURN;
@@ -521,13 +573,35 @@ export function generateTrip(input: GenerateInput, original: GenerateContext): {
       ? 0
       : Math.max(0, timeline.driveMin - Math.max(prefs.maxDrivePerDay, (transferBase.get(timeline) ?? 0) + DRIVE_GRACE_MIN));
   const tooLate = (timeline: ReturnType<typeof buildTimeline>) => lateBy(timeline) > 0;
+  /** 按天的软要求：这一天哪些景点放错了地方（片区太多时，人少的片区算放错；这天该只待一个片区却去了别处；这天不该去的公园） */
+  const placeArea = (stop: PlanStop) => `${stop.park}/${(stop as GuideStop).area ?? stop.id}`;
+  const parkAllows = (park: string, day: number) => !prefs.parkDays?.[park] || prefs.parkDays[park].includes(day);
+  const misplacedOn = (stops: PlanStop[], day: number): PlanStop[] => {
+    const wrong = new Set<PlanStop>();
+    for (const stop of stops) if (!parkAllows(stop.park, day)) wrong.add(stop);
+    const only = prefs.dayAreas?.[day];
+    if (only) for (const stop of stops) if (placeArea(stop) !== only) wrong.add(stop);
+    if (prefs.maxAreasPerDay !== undefined) {
+      const minutes = new Map<string, number>();
+      for (const stop of stops) minutes.set(placeArea(stop), (minutes.get(placeArea(stop)) ?? 0) + stop.durationMin);
+      const keep = new Set([...minutes.entries()].sort((a, b) => b[1] - a[1]).slice(0, prefs.maxAreasPerDay).map(([area]) => area));
+      for (const stop of stops) if (!keep.has(placeArea(stop))) wrong.add(stop);
+    }
+    return [...wrong];
+  };
+  const placement = (timeline: ReturnType<typeof buildTimeline>) =>
+    misplacedOn(
+      timeline.entries.filter((entry) => entry.slot !== "night").map((entry) => stopById.get(entry.id)).filter((stop) => stop !== undefined),
+      dayOf.get(timeline)?.day ?? -1,
+    ).length;
   const dayExcess = (timeline: ReturnType<typeof buildTimeline>) =>
     Math.max(0, dayLoad(timeline) - DAY_LIMIT[input.pace]) +
     overStops(timeline) * 1000 +
     (timeline.overloaded ? 1000 : 0) +
     missed(timeline) * 1000 +
     (tooLate(timeline) ? 1000 + lateBy(timeline) : 0) +
-    (overDrive(timeline) > 0 ? 1000 + overDrive(timeline) : 0);
+    (overDrive(timeline) > 0 ? 1000 + overDrive(timeline) : 0) +
+    placement(timeline) * 1000;
 
   // 每晚住哪：当天最后一站回去 + 第二天去第一站的车程最短；差不多时连住同一家。
   // 车程最省的几家里再看前后两天排出来的样子：省一点车程却让第二天赶不上游船、导览或者太满的不住
@@ -1019,6 +1093,35 @@ export function generateTrip(input: GenerateInput, original: GenerateContext): {
     const far = new Set(lateRemote.flat().map((stop) => stop.id));
     skipped.tooFar.push(...far);
     trip = arrangeAll(chooseLodging(arrangeAll({ ...trip, days: trip.days.map((day) => day.filter((item) => !far.has(item.id))) })));
+  }
+
+  // 按天的软要求（哪几天去哪座公园、一天只去一个片区、某天只待一处）：放错了的景点挪到能放的那天，
+  // 整趟更不满才挪；挪不开的去掉（点名要去的不动），攻略说明里写“按你说的要求没排”
+  if (prefs.parkDays || prefs.dayAreas || prefs.maxAreasPerDay !== undefined) {
+    const tried = new Set<string>();
+    for (let round = 0; round < 12; round++) {
+      const days = trip.days.map((day) => day.map((item) => stopById.get(item.id)).filter((stop): stop is PlanStop => stop !== undefined));
+      const found = days.flatMap((stops, d) => misplacedOn(stops, d).map((stop) => ({ stop, day: d }))).find(({ stop }) => !tried.has(stop.id));
+      if (!found) break;
+      tried.add(found.stop.id);
+      const before = excess(trip);
+      let best: { trip: Trip; excess: number } | null = null;
+      for (let other = 0; other < trip.days.length; other++) {
+        if (other === found.day || !parkAllows(found.stop.park, other) || misplacedOn([...days[other], found.stop], other).includes(found.stop)) continue;
+        const moved = trip.days.map((day, d) =>
+          d === found.day ? day.filter((item) => item.id !== found.stop.id) : d === other ? [...day, trip.days[found.day].find((item) => item.id === found.stop.id)!] : day,
+        );
+        const trial = arrangeAll(chooseLodging(arrangeAll({ ...trip, days: moved })));
+        const trialExcess = excess(trial);
+        if (trialExcess < before && (!best || trialExcess < best.excess)) best = { trip: trial, excess: trialExcess };
+      }
+      if (best) trip = best.trip;
+      // 必去的（有名的、用户点名的）不为了这条要求去掉：留在原处，由审查 agent、说明讲清楚
+      else if (!include.has(found.stop.id) && !guideById.get(found.stop.id)?.mustSee) {
+        skipped.prefs.push(found.stop.id);
+        trip = arrangeAll(chooseLodging(arrangeAll({ ...trip, days: trip.days.map((day) => day.filter((item) => item.id !== found.stop.id)) })));
+      }
+    }
   }
 
   // 补景点、挪景点、对调时只看整趟加起来有没有更满，太满的分钟可能从一天挪到了另一天（大烟山 + 仙纳度：补进 Blackrock Summit 后，
