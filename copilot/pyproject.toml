@@ -3,7 +3,8 @@ name = "nps-copilot"
 version = "0.6.0"
 description = "NPS Guide Copilot: LLM intake and explanation on top of the deterministic NPS Guide trip engine (CSYE 7374 LLMOps)"
 requires-python = ">=3.11"
-dependencies = []
+# pydantic：启动时校验数据快照（nps_copilot/snapshot.py，计划书 §4）；FastAPI 本来也要它
+dependencies = ["pydantic>=2.6"]
 
 [project.optional-dependencies]
 api = ["fastapi>=0.110", "uvicorn>=0.29"]

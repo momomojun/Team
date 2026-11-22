@@ -424,6 +424,10 @@ class Session:
         text, writer_trace = writer_module.write(request, result, review, language, self.provider,
                                                  self.intake.preferences, use_model=self.writer_model)
         trace["writer"] = writer_trace
+        # 公告没读到、退回旧清单（或者只按网站整理的临时关闭）：在说明最后告诉用户（护栏，GOALS P26）
+        if notice := writer_module.alerts_notice(call.refresh, result, zh):
+            text = f"{text}\n{notice}"
+            trace["alerts_notice"] = True
         lines = list(head)
         if changes:
             lines.append(("好，改了：" + "、".join(changes) + "。") if zh else ("Done. Changed: " + "; ".join(changes) + "."))

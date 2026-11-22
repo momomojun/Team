@@ -3,6 +3,7 @@
   python -m nps_copilot serve [--host 127.0.0.1] [--port 8765]           HTTP 服务（要 pip install -e copilot[api]）
   python -m nps_copilot stats [--days 7]                                 看运行日志：按版本统计成功率、耗时、编造、退回模板
   python -m nps_copilot version                                          版本、提示词版本和 hash、数据版本、模型
+  python -m nps_copilot check-data                                       校验数据快照（字段、类型、前后对不对得上）
   python -m nps_copilot alerts [--snapshot copilot/data/alerts/latest.json]   读公告快照、提取临时关闭（快照用 npm run alerts:fetch 抓）
   python -m nps_copilot vectors sync [--model gemini-embedding-001] [--dry-run]   资料的向量写进 Neon（只算新的、改过的；要 DATABASE_URL）
 """
@@ -38,6 +39,7 @@ def main() -> None:
     billing.add_argument("--json", action="store_true", help="输出汇总的 JSON（每晚读公告以后发布给后台用）")
     billing.add_argument("--publish", action="store_true", help="把这台机器最近 90 天的账发到 GitHub（data/alerts-live 的 usage-local.json），线上的后台看")
     sub.add_parser("version")
+    sub.add_parser("check-data", help="校验数据快照（公园、机场、景点、资料、各地叫法）：字段、类型、前后对不对得上")
     sub.add_parser("graph", help="把一轮对话的 LangGraph 流程图打成 Mermaid")
     alerts_cmd = sub.add_parser("alerts")
     alerts_cmd.add_argument("--snapshot", default=str(DATA / "alerts" / "latest.json"))
@@ -63,6 +65,15 @@ def main() -> None:
         from .graph import default_graph
 
         print(default_graph().mermaid())
+        return
+    if args.command == "check-data":
+        from . import snapshot
+
+        try:
+            print(json.dumps(snapshot.check(), ensure_ascii=False))
+        except snapshot.SnapshotError as error:
+            print(error, file=sys.stderr)
+            sys.exit(1)
         return
     if args.command == "version":
         print(json.dumps({"version": __version__, "build": os.environ.get("COPILOT_BUILD_SHA"), "prompts": prompts.current(),
