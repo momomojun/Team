@@ -347,3 +347,10 @@ def test_replay_fill_records_only_the_missing_calls(tmp_path):
     assert replay.complete_json("qa", "s", "old", {}).data == {"answer": "录过的"}  # 录过的不碰真模型
     assert replay.complete_json("qa", "s", "new", {}).data == {"answer": "新录的"}
     assert ReplayProvider(path).complete_json("qa", "s", "new", {}).data == {"answer": "新录的"}  # 补进了同一个文件
+
+
+def test_ollama_think_off_except_gpt_oss():
+    """gpt-oss 关不掉思考，给 low；别的模型照旧关"""
+    from nps_copilot.providers import _think
+    assert _think("qwen3.5:4b-q4_K_M") is False and _think("qwen3.5:35b-a3b-q4_K_M") is False
+    assert _think("gpt-oss:20b") == "low"

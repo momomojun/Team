@@ -29,3 +29,8 @@
 - search agent 的评测（`eval/agent.py`）加了本机 Ollama 模型（`--model` 不是 gemini、gemma 开头就走本机），给接下来的本机 MoE 模型对照用。
 - 文档：COPILOT.md（设计、文件、`COPILOT_TEAM`、评测）、DEVELOPMENT.md（引擎旋钮）、GOALS（A2、P38、P16 已完成，P14 部分完成）。
 - 验证：网站 230 个测试、Copilot 528 个测试通过，ruff、tsc、eslint 干净。
+
+## 本机 MoE 模型对照（同一个分支）
+
+- 仓库主人问能不能用更大的 MoE 模型，同意后从 Ollama 官方库下载了 `qwen3.5:35b-a3b-q4_K_M`（约 22 GB）和 `gpt-oss:20b`（约 14 GB），和 4B 一起跑了八组评测（本机，不花钱）。成绩在 RESULTS.md“本机换更大的 MoE 模型”：35B-A3B 回答问题 27 → 33/44、读公告日期 16 → 20/24、软要求多 agent 25 → 27/30，单句理解打平，多轮对话少 2 组（没把 airbnb 读成住民宿），慢 2–3 倍；gpt-oss 不合适。
+- 修了两处 gpt-oss 的问题：它关不掉思考，给 `think: "low"`（`providers._think`）；它用自己的工具调用格式不写 JSON 时，错误信息直接说清楚。
