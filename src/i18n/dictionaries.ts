@@ -378,6 +378,17 @@ const zhHans = {
       live: "实时信息",
       generate: "用这个公园生成攻略",
     },
+    roadEvents: {
+      title: "道路封闭",
+      hint: "NPS 的道路数据（{date} 读的，每晚更新一次）：哪条路从哪天起封。路通了这里就没有了。",
+      closed: "全封",
+      partly: "部分车道",
+      since: "{m} 月 {d} 日起",
+      until: "到 {m} 月 {d} 日",
+      unknownEnd: "重开日期没公布",
+      affects: "这些景点开车去不了，两周内出发的行程不排：",
+      source: "来源：NPS 道路事件（WZDx）",
+    },
     guides: {
       eyebrow: "更多攻略",
       title: "打卡、行程和餐厅",

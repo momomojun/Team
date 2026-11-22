@@ -5,12 +5,13 @@ import { AirSection } from "@/components/park/air-section";
 import { AlertsSection } from "@/components/park/alerts-section";
 import { ChargersSection } from "@/components/park/chargers-section";
 import { FeesSection } from "@/components/park/fees-section";
+import { RoadEventsSection } from "@/components/park/road-events-section";
 import { SignalSection } from "@/components/park/signal-section";
 import { SectionSkeleton } from "@/components/section";
 import { npsCodeOf } from "@/data/parks";
 import { isUsingDemoKey } from "@/lib/datagov";
 import { teslaChargers } from "@/data/tesla.generated";
-import { loadParkPage, parkContainer, parkPath } from "@/lib/park-page";
+import { attractionHref, loadParkPage, parkContainer, parkPath } from "@/lib/park-page";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/parks/[code]/live">): Promise<Metadata> {
   const { locale, code } = await params;
@@ -43,6 +44,16 @@ export default async function LivePage({ params }: PageProps<"/[locale]/parks/[c
             <FeesSection parkCode={park.code} npsCode={npsCodeOf(park)} dict={dict} locale={view.locale} />
           </Suspense>
         </div>
+      </div>
+      <div className="mt-20 empty:hidden">
+        <Suspense fallback={null}>
+          <RoadEventsSection
+            park={park.code}
+            dict={dict}
+            names={new Map(view.attractions.map((a) => [a.id, a.nameZh]))}
+            hrefFor={(id) => attractionHref(locale, code, id)}
+          />
+        </Suspense>
       </div>
       <div className="mt-20 grid items-start gap-16 lg:grid-cols-2">
         <Suspense fallback={<SectionSkeleton title={t.air.title} />}>

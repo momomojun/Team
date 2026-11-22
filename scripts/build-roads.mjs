@@ -10,6 +10,8 @@ import { USER_AGENT } from "./load-data.mjs";
 
 const OUTPUT = new URL("../src/data/roads.generated.ts", import.meta.url);
 const MANUAL = new URL("./data/roads-manual.json", import.meta.url);
+// 每晚按 NPS 道路事件记下的“这一季哪天开始封、哪天发现又通了”（npm run roads:sync 写的），只补官方表里还没有的日子
+const OBSERVED = new URL("./data/road-observed.json", import.meta.url);
 /** 逐年整理的路，年份少一些也收（统计时写明是近几年） */
 const MANUAL_MIN_YEARS = 8;
 /** 只留这一年以后的（行程按最近 20 个正常年份算，公园页画最近 15 年） */
@@ -148,6 +150,21 @@ const history = {};
 const manual = existsSync(MANUAL) ? JSON.parse(readFileSync(MANUAL, "utf8")) : {};
 for (const [id, road] of Object.entries(manual)) history[id] = road.years.map((row) => [...row]);
 
+// ---- 每晚记下的（NPS 道路事件）：没有这一年就加上；有这一年但开通日或关闭日还空着就补上；官方已经写了的不动
+const observed = existsSync(OBSERVED) ? JSON.parse(readFileSync(OBSERVED, "utf8")) : {};
+for (const [id, list] of Object.entries(observed)) {
+  const known = history[id];
+  if (!known) continue;
+  for (const [year, open, close] of list) {
+    const row = known.find((item) => item[0] === year);
+    if (!row) known.push([year, open ?? null, close ?? null]);
+    else {
+      if (!row[1] && open) row[1] = open;
+      if (!row[2] && close) row[2] = close;
+    }
+  }
+}
+
 for (const [id, year, open, close] of FIXES) {
   const list = history[id];
   if (!list) throw new Error(`没有这条路：${id}`);
@@ -176,7 +193,8 @@ for (const [id, list] of Object.entries(history)) {
   lines.push(`  ${JSON.stringify(id)}: [\n${wrapped.map((line) => `    ${line}`).join("\n")}\n  ],`);
 }
 
-const today = new Date().toISOString().slice(0, 10);
+// 核对日期按加州的日子（和别的数据一样；UTC 晚上就已经是第二天了）
+const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Los_Angeles" }).format(new Date());
 writeFileSync(
   OUTPUT,
   `// 由 scripts/build-roads.mjs 生成，不要手改（npm run data:roads）。

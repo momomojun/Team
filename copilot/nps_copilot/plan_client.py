@@ -36,6 +36,34 @@ class PlanCall:
     refresh: dict | None = None
     # 交给行程引擎的公告关闭清单是哪一份（data_version.alerts_snapshot）；走网站接口时网站用自己的清单，这里不知道
     alerts_data: dict | None = None
+    # 交给行程引擎的 NPS 道路事件是哪一份（同样记日期、内容 hash、几条）
+    roads_data: dict | None = None
+
+
+ROAD_EVENTS = ROOT / "copilot" / "data" / "alerts" / "road-events-latest.json"
+ROAD_EVENTS_URL = "https://raw.githubusercontent.com/momomojun/Team/data/alerts-live/road-events-latest.json"
+ROAD_EVENTS_MAX_AGE_S = 12 * 3600
+
+
+def road_events() -> str | None:
+    """NPS 道路事件（WZDx，每晚的 workflow 抓了发到 data/alerts-live 分支，scripts/road-events-lib.mjs 转成和公告清单一样的格式）。
+    本机没有或者超过 12 小时，就从 GitHub 上重新下一份（公开的文件，不要 key；5 秒下不来就用手里的旧的，没有就不用）。
+    COPILOT_LIVE=0（评测、测试）不用；COPILOT_ROAD_EVENTS 可以指定文件、不再下载"""
+    if os.environ.get("COPILOT_LIVE") == "0":
+        return None
+    if path := os.environ.get("COPILOT_ROAD_EVENTS"):
+        return path if os.path.exists(path) else None
+    fresh = ROAD_EVENTS.exists() and time.time() - ROAD_EVENTS.stat().st_mtime < ROAD_EVENTS_MAX_AGE_S
+    if not fresh:
+        try:
+            with urllib.request.urlopen(ROAD_EVENTS_URL, timeout=5) as response:
+                body = response.read()
+            json.loads(body.decode("utf-8"))  # 下到的不是 JSON 就不要
+            ROAD_EVENTS.parent.mkdir(parents=True, exist_ok=True)
+            ROAD_EVENTS.write_bytes(body)
+        except (OSError, ValueError):
+            pass
+    return str(ROAD_EVENTS) if ROAD_EVENTS.exists() else None
 
 
 def live_closures() -> str | None:
@@ -52,6 +80,7 @@ def plan_trip(request: dict, reference_date: str, on_step=None) -> PlanCall:
     start = time.perf_counter()
     refresh = None
     live = None
+    roads = None
     if os.environ.get("COPILOT_LIVE") != "0" and not os.environ.get("COPILOT_LIVE_CLOSURES"):
         # 两周内出发、要去的公园今天还没读过公告：当场只抓这几座公园的读一遍（出错就用原来的清单）
         from .alerts_live import refresh_for
@@ -69,6 +98,7 @@ def plan_trip(request: dict, reference_date: str, on_step=None) -> PlanCall:
         via = "http"
     else:
         live = live_closures()
+        roads = road_events()
         node = shutil.which("node")
         if not node:
             raise PlanError("找不到 node（要 Node 24 以上），或者设 COPILOT_PLAN_URL 走网站接口")
@@ -76,7 +106,7 @@ def plan_trip(request: dict, reference_date: str, on_step=None) -> PlanCall:
             [node, "--disable-warning=ExperimentalWarning", "--disable-warning=MODULE_TYPELESS_PACKAGE_JSON",
              "--import", "./tests/register.mjs", "scripts/plan-trip.mjs", "-"],
             input=json.dumps(request, ensure_ascii=False).encode("utf-8"), cwd=ROOT, capture_output=True,
-            env={**os.environ, "REFERENCE_DATE": reference_date, **({"LIVE_CLOSURES": live} if live else {})},
+            env={**os.environ, "REFERENCE_DATE": reference_date, **({"LIVE_CLOSURES": live} if live else {}), **({"LIVE_ROAD_EVENTS": roads} if roads else {})},
             timeout=120,
         )
         output = completed.stdout.decode("utf-8")
@@ -87,4 +117,5 @@ def plan_trip(request: dict, reference_date: str, on_step=None) -> PlanCall:
         result = json.loads(output)
         via = "cli"
     return PlanCall(result=result, latency_ms=round((time.perf_counter() - start) * 1000), via=via, refresh=refresh,
-                    alerts_data=data_version.alerts_snapshot(live) if via == "cli" else None)
+                    alerts_data=data_version.alerts_snapshot(live) if via == "cli" else None,
+                    roads_data=data_version.alerts_snapshot(roads) if via == "cli" else None)

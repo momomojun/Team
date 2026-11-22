@@ -407,7 +407,8 @@ class Session:
         review = critique(request, result)
         trace["plan"] = {"latency_ms": call.latency_ms, "via": call.via, **({"alerts": call.refresh} if call.refresh else {}),
                          # 这次排行程交给引擎的公告关闭清单（哪天读的、内容 hash、几条）
-                         **({"alerts_data": call.alerts_data} if call.alerts_data else {})}
+                         **({"alerts_data": call.alerts_data} if call.alerts_data else {}),
+                         **({"roads_data": call.roads_data} if call.roads_data else {})}
         if review.revision is not None:
             trace["revision"] = review.reason
             revised = plan_trip(review.revision, self.reference_date)
