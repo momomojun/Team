@@ -24,7 +24,7 @@ from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel
 
-from . import __version__, alerts_live, data_version, embeddings, guard, ledger, monitor, publish, tts, vectors
+from . import __version__, alerts_live, data_version, embeddings, guard, ledger, monitor, publish, snapshot, tts, vectors
 from . import graph as graph_module
 from .pipeline import VERSION, Session, prompt_hashes
 from .plan_client import live_closures
@@ -86,6 +86,9 @@ class Message(BaseModel):
     text: str
 
 
+# 启动时先验货：网站导出的资料字段不对、前后对不上，服务直接起不来（报出每一处），不等到聊天时半路出错（snapshot.py）
+SNAPSHOT = snapshot.check()
+
 @app.get("/health")
 def health() -> dict:
     try:
@@ -106,6 +109,8 @@ def health() -> dict:
         "prompts": prompt_hashes(),
         # 数据版本：网站数据、给 Copilot 的资料、各地叫法按内容算的 hash（data_version.py）
         "data": data_version.current(),
+        # 启动时校验过的数据快照：每份几条
+        "snapshot": SNAPSHOT,
         # 现在的公告关闭清单（哪天读的、内容 hash、几条）
         "alerts_data": data_version.alerts_snapshot(live_closures()),
         "plan_tool": "http" if os.environ.get("COPILOT_PLAN_URL") else ("cli" if shutil.which("node") else "missing"),

@@ -22,6 +22,7 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
     { href: `/${locale}/plan`, label: dict.nav.plan },
     { href: `/${locale}/when`, label: dict.nav.when },
     { href: `/${locale}/activities`, label: dict.nav.activities },
+    { href: `/${locale}/safety`, label: dict.nav.safety },
     { href: `/${locale}/routes`, label: dict.nav.routes },
     { href: `/${locale}/prices`, label: dict.nav.prices },
     { href: `/${locale}/rankings`, label: dict.nav.rankings },

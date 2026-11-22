@@ -125,3 +125,40 @@ def test_restart_and_change_with_a_question():
     fresh = session.send("帮我安排一个新的行程")
     assert fresh.status == "needs_input" and fresh.text.startswith("好，重新排一个新的行程")
     assert session.last_result is None and fresh.question["kind"] == "parks"
+
+
+def test_alerts_down_is_told_to_the_user(tmp_path, monkeypatch):
+    """护栏（GOALS P26）：两周内出发，当场读 NPS 公告失败 → 用前两天读的清单排，说明最后告诉用户按哪天的公告排的；
+    3 天内的清单也没有 → 只按网站整理的临时关闭排，也要说"""
+    from nps_copilot import alerts_live, plan_client
+
+    monkeypatch.delenv("COPILOT_LIVE", raising=False)
+    monkeypatch.delenv("COPILOT_LIVE_CLOSURES", raising=False)
+    monkeypatch.setenv("COPILOT_RUNS", str(tmp_path))
+    # NPS 公告接口挂了（真的 refresh_for 抓公告时会这样返回，见 test_alerts）
+    monkeypatch.setattr(alerts_live, "refresh_for", lambda *args, **kwargs: {"refreshed": False, "why": "error", "error": "NPS 公告接口出错（503）"})
+    closures = tmp_path / "closures-latest.json"
+    closures.write_text(json.dumps({"fetched": "2026-10-14", "parks": {"yose": "2026-10-14"}, "closures": []}), encoding="utf-8")
+    monkeypatch.setattr(plan_client, "DEFAULT_CLOSURES", closures)
+
+    def ask():
+        provider = ScriptedProvider([extraction(parks=["优胜美地"], dates=["10月20日"], duration="3天", origin="弗雷斯诺", preferences=["适中"])])
+        return Session(provider, "2026-10-16", log=False, dispatcher=False).send("10月20日从弗雷斯诺去优胜美地玩3天，适中")
+
+    reply = ask()
+    assert reply.status == "planned" and reply.trace["alerts_notice"]
+    assert reply.text.endswith("这份行程按 10 月 14 日读的公告排的；出发前到 nps.gov 看一眼有没有新的封路。")
+
+    monkeypatch.setattr(plan_client, "DEFAULT_CLOSURES", tmp_path / "missing.json")
+    reply = ask()
+    assert "手上也没有 3 天内读的公告，这份行程只按网站整理的临时关闭排" in reply.text
+
+
+def test_no_notice_when_alerts_were_read():
+    from nps_copilot.writer import alerts_notice
+
+    result = {"assumptions": ["live-alerts: 按 2026-10-16 的 NPS 公告：标题里写着关了的不排"]}
+    assert alerts_notice(None, result, True) is None
+    assert alerts_notice({"refreshed": True}, result, True) is None
+    assert alerts_notice({"refreshed": False, "why": "fresh"}, result, True) is None
+    assert "October 16" in alerts_notice({"refreshed": False, "why": "error"}, result, False)

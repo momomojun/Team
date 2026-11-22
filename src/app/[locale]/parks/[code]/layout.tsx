@@ -9,6 +9,7 @@ import { SectionNav } from "@/components/site/section-nav";
 import { fill } from "@/i18n/format";
 import { loadParkPage, parkPath } from "@/lib/park-page";
 import { teslaChargers } from "@/data/tesla.generated";
+import { attractionHazards, parkSafetyCards } from "@/lib/safety";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/parks/[code]">): Promise<Metadata> {
   const { locale, code } = await params;
@@ -25,6 +26,8 @@ export default async function ParkLayout({ children, params }: LayoutProps<"/[lo
   const overview = parkPath(locale, code);
   const hasHikes = view.attractions.some((a) => a.hike);
   const hasTesla = (teslaChargers[code]?.stations.length ?? 0) > 0;
+  // 安全：官方资料提到了危险，或者有景点标了危险（同行适合度）
+  const hasSafety = parkSafetyCards(code, view.locale).length > 0 || attractionHazards(code).length > 0;
 
   // 照着 Wabunka 的目的地页：全屏大图慢慢平移，左下是名字和一句话，底下一条半透明的白条写几项基本情况，右边金色按钮
   const hero = (
@@ -105,6 +108,7 @@ export default async function ParkLayout({ children, params }: LayoutProps<"/[lo
         { id: "attractions", label: t.nav.attractions, href: parkPath(locale, code, "attractions") },
         ...(hasHikes ? [{ id: "hikes", label: t.nav.hikes, href: parkPath(locale, code, "hikes") }] : []),
         ...(hasTesla ? [{ id: "tesla", label: t.nav.tesla, href: parkPath(locale, code, "tesla") }] : []),
+        ...(hasSafety ? [{ id: "safety", label: t.nav.safety, href: parkPath(locale, code, "safety") }] : []),
         ...(parkCreators.length > 0 ? [{ id: "creators", label: t.nav.creators, href: `/${locale}/routes?park=${code}` }] : []),
         { id: "guides", label: t.nav.guides, href: parkPath(locale, code, "guides") },
         ...(parkCelebs.length > 0 ? [{ id: "celebs", label: t.nav.celebs, href: `/${locale}/routes?park=${code}#celebs` }] : []),

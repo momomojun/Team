@@ -108,7 +108,8 @@ flowchart LR
 | `copilot/nps_copilot/catalog.py` | 按 `parks.json`、`airports.json` 认公园和机场，加上常用简称（`EXTRA_PARK_ALIASES`）、英文城市名（`data/airport_cities_en.json`）、各地中文叫法（`data/regional_names.json`）；同一个叫法对上两个机场时（两个波特兰、华盛顿的两个机场）交给 Intake 追问 |
 | `copilot/nps_copilot/dates.py`、`text.py` | 读日期（中文、英文的几种顺序、“二〇二七年”、“下个月”）和天数（“5天”“五日”“四日三夜”“一周”）；文本规范化（NFKC、繁转简、空格） |
 | `copilot/nps_copilot/plan_client.py` | 调 plan_trip：默认直接跑仓库里的 Node 命令行（不用开网站），设了 `COPILOT_PLAN_URL` 走 HTTP |
-| `copilot/nps_copilot/critic.py`、`writer.py` | Critic、Writer（模板和忠实度检查 `faithful`） |
+| `copilot/nps_copilot/critic.py`、`writer.py` | Critic、Writer（模板和忠实度检查 `faithful`；NPS 公告没读到、退回旧清单时在说明最后告诉用户，`alerts_notice`） |
+| `copilot/nps_copilot/snapshot.py` | 数据快照校验（Pydantic，11-22）：公园、机场、景点、回答问题用的资料、各地叫法的字段、类型和前后对不对得上；`serve` 启动时验，坏了起不来；`python -m nps_copilot check-data` |
 | `copilot/nps_copilot/alerts.py`、`scripts/fetch-alerts.mjs` | 读 NPS 公告提取临时关闭：抓快照、模型提取和代码核对、规则对照、两者合并、写关闭清单（`closures_from`） |
 | `src/lib/copilot/live.ts` | 关闭清单 → 行程引擎的 `LiveClosures`：两周内出发、清单是新的、日期碰得到才用 |
 | `copilot/scripts/alerts_report.py`、`.github/workflows/alerts-nightly.yml` | 每晚抓公告、新的关闭公告开 issue；抽查模型（`eval/baseline-alerts-canary.json`）、提议改 `closures.ts`（`scripts/propose-closures.mjs`）、把关闭清单推到 `data/alerts-live` 分支给网站用（`src/lib/alerts-live.ts`） |
@@ -165,6 +166,25 @@ flowchart LR
 - 现在默认 `intake/v1`、`writer/v1`、`qa/v2`、`dispatch/v1`（`qa/v2` 加了出行日期和英文回答的规则，10-18）。`intake_v2.txt` 是没采用的实验版本（回归集变好、开发集变差，门禁挡住了），留着演示回滚，见 [RESULTS.md](../copilot/eval/RESULTS.md)。
 - 怎么试一个新版本见 [GUIDE.md](GUIDE.md#改提示词)。
 
+### 外部服务挂了怎么办（护栏，GOALS P26）
+
+| 挂了的 | 退路 |
+|---|---|
+| 一个云端模型出错、额度用完、太慢 | 按顺序换下一个，最后本机模型（`providers.py`） |
+| 写说明的模型出错，或者写的东西对不上结果 | 退回模板，只用排行程的结果写（`writer.py`） |
+| NPS 公告接口挂了、限流、没网 | 用上次读的关闭清单；超过 3 天的不用，只按网站整理的 `closures.ts`；两种情况都在行程说明最后告诉用户按哪天的公告排的（11-22） |
+| Neon（按意思找资料）挂了、太慢 | 退回关键词找资料，照样回答（`vectors.py`） |
+| 查询工具（Node）出错、超时 | 返回空结果，回答说查不到，不编（`tools.py`） |
+| 有人刷接口 | 共享口令和限流（`guard.py`） |
+| 网站导出的资料坏了 | 启动时校验，起不来，冒烟测试拦住，不上线（`snapshot.py`） |
+
+### 计划书里改了做法的几条（11-22 定的）
+
+- **Critic 只自动改一次，不是最多 3 轮**（P16）：能自动改又不违背用户原话的只有“没说节奏、太满就改轻松”这一种；行程引擎是确定的，同样的条件再排几遍结果一样；挪景点、对调日子、换住处引擎排的时候已经做了。
+- **行程说明不逐句附出处**（P17）：不编由“模板只用结果 + 模型写的逐条核对、对不上换回模板”保证；出处在网站行程页每一站的“资料出处”里（官网、公告、班车时刻、核对日期）；回答问题时照旧列出处。
+- **线上每一轮不进 MLflow**（P25）：评测进本机 MLflow；线上用 JSONL 日志、`stats` 和网站后台（模型、token、花费、耗时、工具调用、数据版本都有）。Modal 上没人用会关机，另开一台 MLflow 服务器要花钱、内容重复。
+- **每一步用同一串模型**（P12）：`COPILOT_STEP_MODELS` 能分，默认不分。
+
 ## 评测
 
 | 样例 | 条数 | 是什么 | 门禁 |
@@ -193,6 +213,8 @@ flowchart LR
 - **混沌测试**（`python eval/conversation.py --replay <录音> --chaos 0.3 [--chaos-backup]`）：回放时按固定种子让一部分模型调用失败（`providers.FaultyProvider`），看整套还剩几成；加 `--chaos-backup` 时失败的那次换备用模型（同一份录音）。
 - **漂移测试量时间**（`python copilot/scripts/drift_timing.py`）：新发一条关闭公告，量多久以后行程里不再有那个景点。
 - **模型打分**（`python eval/judge.py --copilot <Copilot 模型> --judge <提供方:型号> --record | --replay | --dry-run`，10-20）：回放三组多轮对话，截下每次回答问题的资料和回答交给裁判（`prompts/judge_v1.txt`），资料里没有依据的照抄出来、打 1–5 分；8 条校准题（真回答后面加一句资料里没有的话）检查裁判可不可信；裁判最好和被打分的不是同一个模型。录音在 `recordings/judge-<裁判>-<Copilot>.jsonl`。
+- **回归注入测试**（`python eval/injection.py`，11-22，GOALS P34）：故意放进更差的提示词（intake v2）、更弱的模型（Qwen3 4B、Qwen3.5 9B 的录音）、4 种坏数据（字段改名、时区写错、机场不存在、景点 id 重复），期望门禁全部拦下、对照组放行；不调模型、5 秒，CI 和发版每次都跑。
+- **排行程三组对照**（`python eval/planners.py --record | --replay <录音>`，11-22，GOALS P35）：同样 30 条行程请求（从行程质量评测那 110 条里均匀挑），A 只靠模型直接排、B 模型 + 这几座公园的景点资料、C 行程引擎；三组排出来的行程用同一套规则打分（`scripts/compare-planners-lib.mjs`：对不上景点库或不在要去的公园、重复、那个月去不了、要抽签、时间排不开、一天太满、不适合同行的人、没照用户说的做），三组都不排住处；看全对的比例、每条几处违规、耗时中位数和 p95、每千次花费。录音在 `recordings/planners-<模型>.jsonl`，成绩在 RESULTS.md。
 
 ## 监控指标
 

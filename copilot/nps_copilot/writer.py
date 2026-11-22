@@ -320,6 +320,28 @@ TIME_RE = re.compile(r"\b\d{1,2}:\d{2}\b")
 NUMBER_RE = re.compile(r"(?<![\d:])\d+(?![\d:])")
 
 
+LIVE_USED = re.compile(r"按 (\d{4})-(\d{2})-(\d{2}) 的 NPS 公告")
+
+
+def alerts_notice(refresh: dict | None, result: dict, zh: bool) -> str | None:
+    """护栏（GOALS P26）：两周内出发、本来要当场读要去的公园的 NPS 公告，却没读到（接口挂了、限流、没网）时，
+    跟用户说清楚这份行程是按哪天的公告排的（plan_trip 的 assumptions 写着用了哪天的清单，旧过 3 天的不用）。
+    原来只记在日志里，用户不知道。评测、测试里 COPILOT_LIVE=0 不现读，不会出现"""
+    if not refresh or refresh.get("why") != "error":
+        return None
+    used = next((match for line in result.get("assumptions", []) if line.startswith("live-alerts:") and (match := LIVE_USED.search(line))), None)
+    if used:
+        month, day = int(used.group(2)), int(used.group(3))
+        return (f"提醒：今天没读到 NPS 最新公告（公告接口暂时连不上），这份行程按 {month} 月 {day} 日读的公告排的；出发前到 nps.gov 看一眼有没有新的封路。"
+                if zh else
+                f"Note: we couldn't reach the NPS alerts service today, so this plan uses the alerts we read on {calendar.month_name[month]} {day}. "
+                "Check nps.gov for new closures before you go.")
+    return ("提醒：今天没读到 NPS 最新公告（公告接口暂时连不上），手上也没有 3 天内读的公告，这份行程只按网站整理的临时关闭排；出发前一定到 nps.gov 看一下最新公告。"
+            if zh else
+            "Note: we couldn't reach the NPS alerts service today and have no alerts read in the last 3 days, so this plan only uses "
+            "the closures we track ourselves. Check nps.gov for current alerts before you go.")
+
+
 def faithful(text: str, result: dict, reference_text: str) -> list[str]:
     """说明里的时间和数字都要在结果或模板里出现过；返回对不上的（空列表 = 没发现编造）"""
     allowed = facts(result)
