@@ -39,6 +39,7 @@ os.environ.setdefault("COPILOT_RETRIEVAL", "bm25")
 # 评测里放宽，耗时另外按录音里每次调用的时间加起来看
 os.environ.setdefault("COPILOT_AGENT_BUDGET_S", "600")
 
+from nps_copilot import data_version  # noqa: E402
 from nps_copilot import agent, monitor  # noqa: E402
 from nps_copilot.ledger import estimate_tokens  # noqa: E402
 from nps_copilot.pipeline import Session, prompt_hashes  # noqa: E402
@@ -259,7 +260,7 @@ def main() -> int:
     reports = HERE / "reports"
     reports.mkdir(exist_ok=True)
     out = reports / f"{dt.datetime.now().strftime('%Y%m%dT%H%M%S')}-agent-{label.replace(':', '_')}.json"
-    out.write_text(json.dumps({"label": label, "models": models, "prompts": prompt_hashes(), "table": table, "rows": rows},
+    out.write_text(json.dumps({"label": label, "models": models, "prompts": prompt_hashes(), "data": data_version.current(), "table": table, "rows": rows},
                               ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"报告：{out}")
     for config, by_kind in table.items():

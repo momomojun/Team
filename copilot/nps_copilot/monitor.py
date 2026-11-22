@@ -269,7 +269,8 @@ def load(days: int, runs: Path = RUNS) -> list[dict]:
 def summarize(rows: list[dict]) -> dict[str, dict]:
     groups: dict[str, list[dict]] = defaultdict(list)
     for row in rows:
-        key = f"{row.get('version', '?')} · " + " ".join(sorted(row.get("prompts", {})))
+        # 数据版本（11-22 起才记）也分开：数据换了以后排出率、追问是不是变了
+        key = f"{row.get('version', '?')} · " + " ".join(sorted(row.get("prompts", {}))) + (f" · data {row['data']}" if row.get("data") else "")
         groups[key].append(row)
     summary = {}
     for key, items in groups.items():

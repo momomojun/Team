@@ -25,6 +25,7 @@ import os  # noqa: E402
 # 计费总账（nps_copilot/ledger.py）里记成“评测”调用的
 os.environ.setdefault("COPILOT_SOURCE", "eval")
 
+from nps_copilot import data_version  # noqa: E402
 from nps_copilot import alerts as alerts_module  # noqa: E402
 from nps_copilot.pipeline import prompt_hashes  # noqa: E402
 from guard import safe_name  # noqa: E402
@@ -163,7 +164,7 @@ def main() -> int:
     reports.mkdir(exist_ok=True)
     stamp = dt.datetime.now().strftime("%Y%m%dT%H%M%S")
     out = reports / f"{stamp}-alerts-{(label or 'rules').replace(':', '_').replace('/', '_')}.json"
-    out.write_text(json.dumps({"label": label, "prompts": prompt_hashes(), **results}, ensure_ascii=False, indent=1), encoding="utf-8")
+    out.write_text(json.dumps({"label": label, "prompts": prompt_hashes(), "data": data_version.current(), **results}, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"报告：{out}")
     scored = results.get("model") or results.get("rules") or {}
     tracking.log(

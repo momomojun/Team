@@ -36,7 +36,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build image
-        run: docker build -f copilot/Dockerfile --build-arg COPILOT_BUILD_SHA=${GITHUB_SHA::7} -t "$IMAGE:main-${GITHUB_SHA::7}" .
+        run: |
+          # 另打一个“提交 + 提示词 + 数据版本”的标签（nps_copilot/data_version.py）
+          trace=$(cd copilot && python3 -m nps_copilot.data_version --tag "$GITHUB_SHA")
+          echo "TRACE_TAG=$trace" >> "$GITHUB_ENV"
+          prompts=${trace#*-p}
+          docker build -f copilot/Dockerfile --build-arg COPILOT_BUILD_SHA=${GITHUB_SHA::7} \
+            --label "io.npsguide.prompts=${prompts%%-d*}" --label "io.npsguide.data=${trace##*-d}" \
+            -t "$IMAGE:main-${GITHUB_SHA::7}" -t "$IMAGE:$trace" .
       - name: Smoke test (replay provider)
         run: |
           docker run -d --name copilot -p 127.0.0.1:8765:8765 \
@@ -56,6 +63,7 @@ jobs:
           docker tag "$IMAGE:main-${GITHUB_SHA::7}" "$IMAGE:staging"
           docker push "$IMAGE:main-${GITHUB_SHA::7}"
           docker push "$IMAGE:staging"
+          docker push "$IMAGE:$TRACE_TAG"
       - name: Deploy to Modal (staging)
         id: deploy
         env:

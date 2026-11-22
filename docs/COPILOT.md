@@ -123,6 +123,7 @@ flowchart LR
 | `copilot/nps_copilot/providers.py` | 模型提供方：本机 Ollama（默认）、回放录好的输出（CI 用，没录到的请求直接报错）、录音、测试用的脚本、Gemini、OpenAI、OpenRouter、Groq 的 API（10-19；聊天按 `chat_provider()` 的顺序用 Gemini → MiniMax（OpenRouter）→ Qwen（Groq）→ 本机，`ProviderChain`，OpenAI 要明确设 `COPILOT_PROVIDER=openai` 才用；按免费档的每分钟次数放慢，服务忙会重试，当天额度用完直接报错；模型不认的思考、推理设置自动换下一档）、退回本机（`FallbackProvider`） |
 | `copilot/nps_copilot/prompts.py`、`prompts/` | 提示词版本，见下一节 |
 | `copilot/nps_copilot/pipeline.py` | 把上面串起来；每轮写一条 JSONL 日志到 `copilot/runs/<日期>.jsonl`（Docker 里是 `/data/runs`） |
+| `copilot/nps_copilot/data_version.py` | 数据版本：网站数据、给 Copilot 的资料、各地叫法按内容算的 hash，公告关闭清单的快照，镜像的第二个标签（见“版本”一节） |
 | `copilot/nps_copilot/monitor.py` | `python -m nps_copilot stats`、`GET /stats`：按版本统计运行日志，按模型算调用、token 和花费（价格表 `PRICES`） |
 | `src/components/plan/copilot-chat.tsx`、`src/app/api/copilot/chat/route.ts` | 网站行程页的对话框和中转接口 |
 | `copilot/nps_copilot/api.py`、`__main__.py` | HTTP 服务（FastAPI：`GET /health`、`POST /sessions`、`POST /sessions/{id}/messages`）和命令行（`chat`、`serve`、`stats`、`version`） |
@@ -140,8 +141,21 @@ flowchart LR
 | 镜像 | `ghcr.io/momomojun/team-copilot:<tag>` | 和 git tag 同名；镜像里记着构建的提交（`/health` 的 `build`，本机按源码构建的是 `local-build`） |
 | 提示词 | `copilot/nps_copilot/prompts/<任务>_v<n>.txt` | 默认用哪一版写在 `prompts/defaults.json`；部署时可以用环境变量临时换 |
 | 模型 | Ollama，不在镜像里 | `COPILOT_MODEL`（默认 `qwen3.5:4b-q4_K_M`） |
+| 数据 | 网站数据 `src/data/`、给 Copilot 的资料 `copilot/contracts/`、各地叫法 `copilot/nps_copilot/data/` | 按文件内容算的 hash（`nps_copilot/data_version.py`，11-22），见下面“数据版本” |
+| 实时公告 | `copilot/data/alerts/closures-latest.json`（一天可能变几次） | 每次排行程单独记：哪天读的、内容 hash、几条关闭 |
 
-每轮对话的日志都记着 Copilot 版本、每个提示词的版本和 hash、模型，事后能对上是哪个组合出的问题；`GET /health` 也报这几样。
+每轮对话的日志都记着 Copilot 版本、每个提示词的版本和 hash、数据版本、镜像的提交号、模型，事后能对上是哪个组合出的问题；`GET /health` 也报这几样。
+
+### 数据版本
+
+计划书承诺“每个回答都能追溯到模型、提示词、数据”（§3、§8 目标 1、2）。代码和提示词早就有版本，数据原来没有：同一句话、同一个模型，今天和上个月排出来不一样，分不清是模型变了还是景点、封路数据变了。
+
+- **静态数据**：`data_version.current()` 把三份数据各算一个 sha256（相对路径 + 内容，换行统一成 LF，所以 Windows 签出的 CRLF 和镜像里的 LF 算出来一样），合成 12 位的 `id`。改一个字、加一个景点、改一条封路都会变；只改代码、改文档不变。服务启动后算一次（14 MB，约 0.1 秒）。
+- **实时公告**：排行程那一刻交给引擎的关闭清单单独记在日志的 `plan.alerts_data`（`fetched`、`hash`、`closures`）。走网站接口（`COPILOT_PLAN_URL`）时网站用自己的清单，这里不记。
+- **记在哪**：每轮日志的 `data`（和镜像里才有的 `build` 提交号）；`GET /health` 的 `data`（三份各自的 hash）和 `alerts_data`；`python -m nps_copilot version`；评测报告的 `data`、MLflow 的参数 `data_version`；`stats` 按“版本 · 提示词 · 数据”分组（11-22 以前的日志没有数据版本，照旧只按前两样分）；后台“服务”一栏。
+- **镜像标签**：发版和 staging 除了原来的标签，再打一个 `sha-<提交>-p<提示词 8 位>-d<数据 12 位>`（计划书 §6 的“tag = git SHA + 提示词版本 + 数据 hash”），镜像标签 `io.npsguide.prompts`、`io.npsguide.data` 也写着。冒烟测试 `smoke.py --expect-version repo` 核对镜像 `/health` 的数据版本和这份代码一样，装错了数据就不发。
+- **从一轮日志找回当时的数据**：日志的 `build` 是提交号，`git show <提交>:src/data/closures.ts` 就是那一轮用的封路数据；本机跑的没有 `build`，按 `data` 对 GHCR 上带 `-d<id>` 的标签找提交。
+- 命令行：`python -m nps_copilot.data_version`（JSON）、`python -m nps_copilot.data_version --tag <提交>`（镜像标签），只用标准库。
 
 ### 提示词版本
 

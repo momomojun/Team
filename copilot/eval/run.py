@@ -27,6 +27,7 @@ os.environ.setdefault("COPILOT_SOURCE", "eval")
 # 评测、测试不用本机的 NPS 公告关闭清单（每天会变），结果才能复现
 os.environ.setdefault("COPILOT_LIVE", "0")
 
+from nps_copilot import data_version  # noqa: E402
 from nps_copilot.critic import critique  # noqa: E402
 from nps_copilot import prompts  # noqa: E402
 from nps_copilot.intake import Intake  # noqa: E402
@@ -165,7 +166,7 @@ def main() -> int:
             "skipped_kept": round(statistics.mean(d["skipped_kept"] for d in drafts if d["skipped_kept"] is not None), 2) if drafts else None,
         }
     report = {"run_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"), "model": model, "prompt": prompts.load("intake").id,
-              "prompt_hashes": prompt_hashes(), "cases_file": Path(args.cases).name, "seconds": round(time.perf_counter() - start, 1),
+              "prompt_hashes": prompt_hashes(), "data": data_version.current(), "cases_file": Path(args.cases).name, "seconds": round(time.perf_counter() - start, 1),
               "summary": summary, "results": results}
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)

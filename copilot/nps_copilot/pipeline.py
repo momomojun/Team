@@ -23,7 +23,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable
 
-from . import __version__, catalog, knowledge, prompts, qa
+from . import __version__, catalog, data_version, knowledge, prompts, qa
 from . import dispatcher as dispatcher_module
 from . import writer as writer_module
 from .critic import critique
@@ -129,7 +129,10 @@ class Session:
         self.turn += 1
         self.provider.take()  # 上一轮半路出错没写进日志的调用不算到这一轮
         trace = {"session": self.id, "turn": self.turn, "version": VERSION, "prompts": prompt_hashes(),
-                 "reference_date": self.reference_date, "message": message}
+                 "data": data_version.current()["id"], "reference_date": self.reference_date, "message": message}
+        # 镜像是哪次提交构建的（Dockerfile 的 COPILOT_BUILD_SHA）：有了它，`git show <提交>:src/data/…` 就能拿回这一轮用的数据原样
+        if build := os.environ.get("COPILOT_BUILD_SHA"):
+            trace["build"] = build
         if self.intake.language is None:
             from .intake import is_english
             self.intake.language = "en" if is_english(message) else "zh"
@@ -402,7 +405,9 @@ class Session:
             return Reply("error", "\n".join([*head, text]), None, request, None, trace)
         result = call.result
         review = critique(request, result)
-        trace["plan"] = {"latency_ms": call.latency_ms, "via": call.via, **({"alerts": call.refresh} if call.refresh else {})}
+        trace["plan"] = {"latency_ms": call.latency_ms, "via": call.via, **({"alerts": call.refresh} if call.refresh else {}),
+                         # 这次排行程交给引擎的公告关闭清单（哪天读的、内容 hash、几条）
+                         **({"alerts_data": call.alerts_data} if call.alerts_data else {})}
         if review.revision is not None:
             trace["revision"] = review.reason
             revised = plan_trip(review.revision, self.reference_date)

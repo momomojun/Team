@@ -451,6 +451,8 @@ python copilot/scripts/rollback_demo.py copilot-v0.2.1 copilot-v0.2.0 copilot-v0
 
 ### 监控：什么时候该回滚
 
+先看现在跑的是哪个组合：`/health`（或 `python -m nps_copilot version`）里的 `version`、`prompts`、`data`（数据版本，11-22 起）。`stats` 按“版本 · 提示词 · 数据”分组，数据换了以后排出率、追问变没变一眼能比；数据版本是什么、怎么从一轮日志找回当时的数据，见 [COPILOT.md](COPILOT.md#数据版本)。
+
 ```bash
 docker compose -f copilot/docker-compose.yml exec -T copilot python -m nps_copilot stats --days 7
 ```
