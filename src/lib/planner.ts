@@ -61,6 +61,10 @@ export interface DayContext {
   date?: string | null;
   /** 开车按估算的几倍算（按“今天”里的打卡学到的，见 personal-pace.ts）；坐班车的路段不变，不填是 1 */
   drive?: number;
+  /** 用户说的“几点以后再出门”（当天第几分钟）：不赶日出、不为停车场和班次提早出发（Copilot 的软要求，TripPrefs） */
+  notBefore?: number;
+  /** 用户说的“几点前回住处”（当天第几分钟）：比这晚就算回住处太晚 */
+  returnBy?: number;
 }
 
 /**
@@ -783,7 +787,8 @@ export function buildTimeline(stops: PlanStop[], context: DayContext): DayTimeli
     back.minutes,
     context.sun,
     context.from !== undefined,
-    undefined,
+    // 用户说几点以后再出门：和“今天”模式一样从这个时间出发（不赶日出、不提早）
+    context.notBefore,
     context.from?.endpoint === "origin",
     context.to?.endpoint === "destination",
     clocks.map((clock) => clock.departures),
@@ -791,7 +796,11 @@ export function buildTimeline(stops: PlanStop[], context: DayContext): DayTimeli
     clocks.map((clock) => clock.lot),
     shifts,
   );
-  return withClosures(withShuttles(timeline, stops, legs, back, context.date, context.sun), context.date);
+  const result = withClosures(withShuttles(timeline, stops, legs, back, context.date, context.sun), context.date);
+  // 用户说几点前回住处：比这晚就算回住处太晚（平常按 LATE_RETURN）
+  return context.returnBy === undefined
+    ? result
+    : { ...result, lateReturn: result.returnAt !== undefined && result.returnAt > Math.min(context.returnBy, LATE_RETURN) };
 }
 
 /** 这天临时关闭的景点加上提醒 */

@@ -47,7 +47,27 @@ export interface TripRequest {
   exclude?: string[];
   /** 用户指定的某几晚住处：第 night 晚（第 night 天晚上）住推荐住宿里的哪一家 */
   lodging?: { night: number; id: string }[];
+  /** 用户的软要求（11-21 加，规划 agent 从原话里翻译出来；见 TripPrefs） */
+  prefs?: TripPrefs;
   provenance?: Partial<Record<RequestField, FieldSource>>;
+}
+
+/**
+ * 软要求：用户说了、表单上没有的（“中间留一天休息”“每天开车别超过 3 小时”“9 点以后再出门”）。
+ * 时间写 "HH:MM"；行程引擎尽量照做，做不到的（比如两座公园离得远、又要求每天开车很少）由审查 agent 发现、讲清楚取舍
+ */
+export interface TripPrefs {
+  /** 第几天什么都不排、住在前一晚的住处（1 开始；第一天、最后一天不算） */
+  restDays?: number[];
+  maxStopsPerDay?: number;
+  maxHikeMin?: number;
+  maxStopMin?: number;
+  avoidHazards?: string[];
+  /** "公园代码/片区"，比如 "seki/cedar-grove" */
+  excludeAreas?: string[];
+  departNotBefore?: string;
+  returnBy?: string;
+  maxDrivePerDay?: number;
 }
 
 export const REQUEST_FIELDS = [
@@ -63,6 +83,7 @@ export const REQUEST_FIELDS = [
   "include",
   "exclude",
   "lodging",
+  "prefs",
 ] as const;
 export type RequestField = (typeof REQUEST_FIELDS)[number];
 
@@ -147,6 +168,25 @@ export const tripRequestSchema = {
           night: { type: "integer", minimum: 1, maximum: MAX_TRIP_DAYS - 1 },
           id: { type: "string", pattern: "^[a-z]{4}-stay-[a-z0-9-]+$" },
         },
+      },
+    },
+    prefs: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        restDays: { type: "array", maxItems: MAX_TRIP_DAYS - 2, uniqueItems: true, items: { type: "integer", minimum: 2, maximum: MAX_TRIP_DAYS - 1 } },
+        maxStopsPerDay: { type: "integer", minimum: 1, maximum: 12 },
+        maxHikeMin: { type: "integer", minimum: 15, maximum: 900 },
+        maxStopMin: { type: "integer", minimum: 15, maximum: 900 },
+        avoidHazards: {
+          type: "array",
+          uniqueItems: true,
+          items: { enum: ["dropoff", "scramble", "thermal", "flashFlood", "water", "heat", "altitude", "wildlife", "remote", "motion"] },
+        },
+        excludeAreas: { type: "array", maxItems: 20, uniqueItems: true, items: { type: "string", pattern: "^[a-z]{4}/[a-z0-9-]+$" } },
+        departNotBefore: { type: "string", pattern: "^([01][0-9]|2[0-3]):[0-5][0-9]$" },
+        returnBy: { type: "string", pattern: "^([01][0-9]|2[0-3]):[0-5][0-9]$" },
+        maxDrivePerDay: { type: "integer", minimum: 30, maximum: 720 },
       },
     },
     provenance: {

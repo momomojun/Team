@@ -5,7 +5,7 @@ import { lodgingOptions } from "../../data/lodging";
 import { parks } from "../../data/parks";
 import { airbnbUrl } from "../airbnb";
 import { addDays, nominalDate } from "../dates";
-import { closedKind, generateTrip, type GuideSkipped, type LiveClosures } from "../generate-trip";
+import { closedKind, generateTrip, type EnginePrefs, type GuideSkipped, type LiveClosures } from "../generate-trip";
 import { buildTimeline, buildTransferTimeline, NOMINAL_SUN, type DayContext, type LodgingPoint, type PlanStop, type SunWindow } from "../planner";
 import { formatClock, minutesOfDay, sunTimes } from "../sun";
 import { fitFor, type Party } from "../suitability";
@@ -18,6 +18,7 @@ import {
   TRIP_RESULT_CONTRACT,
   validateTripRequest,
   type Place,
+  type TripPrefs,
   type TripRequest,
   type ValidationIssue,
 } from "./contract";
@@ -168,12 +169,21 @@ export function planTrip(input: unknown, options: PlanOptions) {
     }));
   const origin = endpoint(normalized.origin, "origin", stops);
   const destination = endpoint(normalized.destination!, "destination", stops);
-  const { trip, guide } = generateTrip(
+  // 休息日（软要求）：先去掉这几天排，每天用自己的真实日期（班次、山路、临时关闭照旧按那天算），
+  // 排完再把空的一天插回去、住前一晚的地方
+  const prefs = normalized.prefs ?? {};
+  const rest = new Set((prefs.restDays ?? []).filter((day) => day > 1 && day < normalized.days).map((day) => day - 1));
+  const active = Array.from({ length: normalized.days }, (_, day) => day).filter((day) => !rest.has(day));
+  const activeDate = (day: number) => dateFor(active[day] ?? day);
+  if (rest.size > 0) assumptions.push(`rest-days: 第 ${[...rest].map((day) => day + 1).join("、")} 天按用户说的不排景点，住前一晚的地方`);
+  const userNights = new Map((normalized.lodging ?? []).map(({ night, id }) => [night, id]));
+  const generated = generateTrip(
     {
       parks: normalized.parks,
       month,
       startDate: normalized.startDate ?? "",
-      days: normalized.days,
+      days: active.length,
+      ...(normalized.startDate && rest.size > 0 ? { dates: active.map((day) => dateFor(day)) } : {}),
       origin,
       destination,
       pace: normalized.pace!,
@@ -181,25 +191,31 @@ export function planTrip(input: unknown, options: PlanOptions) {
       party: normalized.party,
       include: normalized.include,
       exclude: normalized.exclude,
-      nights: Object.fromEntries((normalized.lodging ?? []).map(({ night, id }) => [night, id])),
+      // 第 n 晚是第 n 天晚上：去掉休息日以后第 k 天（0 开始）晚上是原来的第 active[k] + 1 晚
+      nights: Object.fromEntries(
+        active.flatMap((day, k) => (userNights.has(day + 1) && k + 1 < active.length ? [[k + 1, userNights.get(day + 1)!]] : [])),
+      ),
+      prefs: enginePrefs(prefs),
     },
     {
       stops,
       lodging,
       // 生成时和下面排时间线一样，日出日落按当天第一站的公园和时区算（不知道第一站时按主公园）
-      sunFor: (day, stop) => sunFor(dateFor(day), stop ?? { park: main.code }),
-      dateFor,
+      sunFor: (day, stop) => sunFor(activeDate(day), stop ?? { park: main.code }),
+      dateFor: activeDate,
       zoneFor: (code) => zoneOf({ park: code }),
       live,
     },
   );
+  const guide = generated.guide;
+  const trip = rest.size > 0 ? withRestDays(generated.trip, rest, normalized.days) : generated.trip;
 
   return {
     contract: TRIP_RESULT_CONTRACT,
     engine: ENGINE,
     request: normalized,
     referenceDate: options.referenceDate,
-    days: describeDays(trip, dateFor, Boolean(normalized.startDate), { origin, destination }, normalized.party, maybeAlert),
+    days: describeDays(trip, dateFor, Boolean(normalized.startDate), { origin, destination }, normalized.party, maybeAlert, timingOf(prefs)),
     // 公告让它去不了的（不是季节、施工这些原因）附上是哪条公告
     skipped: describeSkipped(guide.skipped, (id) => {
       const closure = byAlert.get(id);
@@ -252,7 +268,12 @@ const LIVE_NOTES = {
  * 每天排时间线要的东西：这天的景点、从哪个住处出发回哪个住处、日出日落（和行程页一样，早上从前一晚住处出发、
  * 晚上回当晚住处，按当天第一站的时区）。describeDays 用它排时间线，评测（scripts/plan-quality-lib.mjs）拿它换顺序比
  */
-function eachDay(trip: Trip, dateFor: (day: number) => string, endpoints: Record<"origin" | "destination", LodgingPoint & { name: string }>) {
+function eachDay(
+  trip: Trip,
+  dateFor: (day: number) => string,
+  endpoints: Record<"origin" | "destination", LodgingPoint & { name: string }>,
+  timing: Pick<DayContext, "notBefore" | "returnBy"> = {},
+) {
   const resolve = (
     night: TripLodging | null | undefined,
   ): (LodgingPoint & { nameZh: string; nameEn: string; kind: "option" | "endpoint"; rental?: boolean; airbnb?: string }) | undefined => {
@@ -272,7 +293,7 @@ function eachDay(trip: Trip, dateFor: (day: number) => string, endpoints: Record
     const to = resolve(trip.nights[d + 1]);
     const first = dayStops[0] ?? previous;
     const sun = first ? sunFor(date, first) : NOMINAL_SUN;
-    const context: DayContext = { sun, from, to, previous, date };
+    const context: DayContext = { sun, from, to, previous, date, ...timing };
     const nextPark = trip.days.slice(d + 1).flat().map((item) => stopById.get(item.id)?.park).find(Boolean);
     const near = new Set([previous?.park, nextPark].filter(Boolean));
     previous = dayStops.at(-1) ?? previous;
@@ -287,7 +308,10 @@ export function dayInputs(result: TripResult): { stops: PlanStop[]; context: Day
   const firstDate = request.startDate || nominalDate(month, new Date(`${result.referenceDate}T12:00:00Z`));
   const stops = attractions.filter((a) => request.parks.includes(a.park));
   const endpoints = { origin: endpoint(request.origin, "origin", stops), destination: endpoint(request.destination ?? request.origin, "destination", stops) };
-  return eachDay(result.trip, (day) => addDays(firstDate, day), endpoints).map(({ stops: dayStops, context }) => ({ stops: dayStops, context }));
+  return eachDay(result.trip, (day) => addDays(firstDate, day), endpoints, timingOf(request.prefs ?? {})).map(({ stops: dayStops, context }) => ({
+    stops: dayStops,
+    context,
+  }));
 }
 
 /** 逐天的时间线：和行程页一样，早上从前一晚住处出发、晚上回当晚住处，按当天第一站的时区 */
@@ -298,8 +322,9 @@ function describeDays(
   endpoints: Record<"origin" | "destination", LodgingPoint & { name: string }>,
   party: Party | undefined,
   maybeAlert: Map<string, ExtractedClosure>,
+  timing: Pick<DayContext, "notBefore" | "returnBy"> = {},
 ) {
-  return eachDay(trip, dateFor, endpoints).map(({ stops: dayStops, date, to, sun, context, near }, d) => {
+  return eachDay(trip, dateFor, endpoints, timing).map(({ stops: dayStops, date, to, sun, context, near }, d) => {
     const timeline =
       (dayStops.length === 0 && buildTransferTimeline(context, attractions.filter((a) => near.has(a.park)))) ||
       buildTimeline(dayStops, context);
@@ -379,4 +404,48 @@ function describeSkipped(skipped: GuideSkipped, alertFor: (id: string) => Extrac
       ];
     }),
   );
+}
+
+/** "09:30" → 当天第几分钟 */
+const minutesOf = (clockText: string | undefined) => {
+  if (!clockText) return undefined;
+  const [hours, minutes] = clockText.split(":").map(Number);
+  return hours * 60 + minutes;
+};
+
+/** 契约里的软要求 → 行程引擎用的（时间换成当天第几分钟；休息日在这里处理，不交给引擎） */
+function enginePrefs(prefs: TripPrefs): EnginePrefs {
+  return {
+    maxStopsPerDay: prefs.maxStopsPerDay,
+    maxHikeMin: prefs.maxHikeMin,
+    maxStopMin: prefs.maxStopMin,
+    avoidHazards: prefs.avoidHazards,
+    excludeAreas: prefs.excludeAreas,
+    departNotBefore: minutesOf(prefs.departNotBefore),
+    returnBy: minutesOf(prefs.returnBy),
+    maxDrivePerDay: prefs.maxDrivePerDay,
+  };
+}
+
+/** 排时间线时每天都要照的：几点以后出门、几点前回 */
+function timingOf(prefs: TripPrefs): Pick<DayContext, "notBefore" | "returnBy"> {
+  return { notBefore: minutesOf(prefs.departNotBefore), returnBy: minutesOf(prefs.returnBy) };
+}
+
+/** 去掉休息日排出来的行程，把空的休息日插回原来的位置：那天不排景点，晚上接着住前一晚的地方 */
+function withRestDays(trip: Trip, rest: Set<number>, total: number): Trip {
+  const days: Trip["days"] = [];
+  const nights: Trip["nights"] = [trip.nights[0]];
+  let k = 0;
+  for (let day = 0; day < total; day++) {
+    if (rest.has(day)) {
+      days.push([]);
+      nights.push(nights[day]);
+    } else {
+      days.push(trip.days[k] ?? []);
+      nights.push(trip.nights[k + 1] ?? null);
+      k++;
+    }
+  }
+  return { ...trip, dayCount: total, days, nights };
 }
