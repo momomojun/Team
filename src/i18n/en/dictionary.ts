@@ -73,8 +73,8 @@ export const en: Dictionary = {
   home: {
     heroTitle: "Every park has its season. Be there for it.",
     searchLabel: "Search parks, or describe your trip",
-    searchPlaceholder: "Search parks, or describe your trip",
-    searchPlan: "Plan a trip from this",
+    searchPlaceholder: "Plan a trip in one sentence",
+    searchPlan: "Plan this trip",
     searchGo: "Search",
     scroll: "Scroll",
     photoCredit: "Photo: {author} · {license}",

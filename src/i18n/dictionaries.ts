@@ -73,8 +73,8 @@ const zhHans = {
   home: {
     heroTitle: "在对的季节，抵达对的风景",
     searchLabel: "搜公园，或者说一句你的行程",
-    searchPlaceholder: "搜公园，或者说一句你的行程",
-    searchPlan: "用这句话排行程",
+    searchPlaceholder: "说一句话，一键排好整趟行程",
+    searchPlan: "一键排行程",
     searchGo: "搜索",
     scroll: "往下看",
     photoCredit: "照片：{author} · {license}",
