@@ -1,0 +1,565 @@
+{
+ "fetched": "2026-11-22",
+ "parks": {
+  "yose": "2026-11-22",
+  "seki": "2026-11-22",
+  "crla": "2026-11-22",
+  "lavo": "2026-11-22",
+  "mora": "2026-11-22",
+  "grsm": "2026-11-22"
+ },
+ "closures": [
+  {
+   "alert": "road:crla#North Entrance Road|Rim Drive|Pinnacles Road#2026-10-26#2027-06-30",
+   "park": "crla",
+   "attractions": [
+    "crla-watchman-peak",
+    "crla-cloudcap-overlook",
+    "crla-phantom-ship-overlook",
+    "crla-sun-notch",
+    "crla-vidae-falls",
+    "crla-pinnacles",
+    "crla-plaikni-falls",
+    "crla-mount-scott"
+   ],
+   "strict": [
+    "crla-watchman-peak",
+    "crla-cloudcap-overlook",
+    "crla-phantom-ship-overlook",
+    "crla-sun-notch",
+    "crla-vidae-falls",
+    "crla-pinnacles",
+    "crla-plaikni-falls",
+    "crla-mount-scott"
+   ],
+   "from": "2026-10-26",
+   "reopen": null,
+   "title": "North Entrance Road, Rim Drive, Pinnacles Road: closed (NPS road events)",
+   "url": "https://www.nps.gov/crla/planyourvisit/conditions.htm",
+   "evidence": "Annual winter closure of East Rim Drive, West Rim Drive, North Entrance Road and Pinnacles Road took effect 10/26/2026. These roads are now closed to automobile traffic for the winter.",
+   "found_by": [
+    "road-events"
+   ]
+  },
+  {
+   "alert": "road:lavo#Lassen National Park Highway#2026-10-30#2027-06-25",
+   "park": "lavo",
+   "attractions": [
+    "lavo-lake-helen",
+    "lavo-kings-creek-falls",
+    "lavo-bumpass-hell",
+    "lavo-lassen-peak"
+   ],
+   "strict": [
+    "lavo-lake-helen",
+    "lavo-kings-creek-falls",
+    "lavo-bumpass-hell",
+    "lavo-lassen-peak"
+   ],
+   "from": "2026-10-30",
+   "reopen": null,
+   "title": "Lassen National Park Highway: closed (NPS road events)",
+   "url": "https://www.nps.gov/lavo/planyourvisit/conditions.htm",
+   "evidence": "The road through the park is closed due to accumulated snow.",
+   "found_by": [
+    "road-events"
+   ]
+  },
+  {
+   "alert": "road:mora#Sunrise Road#2026-10-19#2026-11-30",
+   "park": "mora",
+   "attractions": [
+    "mora-sunrise-visitor-center",
+    "mora-sunrise-point",
+    "mora-sourdough-ridge",
+    "mora-fremont-lookout",
+    "mora-burroughs-mountain"
+   ],
+   "strict": [
+    "mora-sunrise-visitor-center",
+    "mora-sunrise-point",
+    "mora-sourdough-ridge",
+    "mora-fremont-lookout",
+    "mora-burroughs-mountain"
+   ],
+   "from": "2026-10-19",
+   "reopen": null,
+   "title": "Sunrise Road: closed (NPS road events)",
+   "url": "https://www.nps.gov/mora/planyourvisit/conditions.htm",
+   "evidence": "Sunrise Road is CLOSED to vehicles until further notice.",
+   "found_by": [
+    "road-events"
+   ]
+  },
+  {
+   "alert": "road:mora#Paradise Valley Road|Ricksecker Point Road|Stevens Canyon Road|White River Road|Sunrise Road#2026-11-18#2027-04-30",
+   "park": "mora",
+   "attractions": [
+    "mora-box-canyon",
+    "mora-sunrise-visitor-center",
+    "mora-sunrise-point",
+    "mora-sourdough-ridge",
+    "mora-fremont-lookout",
+    "mora-burroughs-mountain"
+   ],
+   "strict": [
+    "mora-box-canyon",
+    "mora-sunrise-visitor-center",
+    "mora-sunrise-point",
+    "mora-sourdough-ridge",
+    "mora-fremont-lookout",
+    "mora-burroughs-mountain"
+   ],
+   "from": "2026-11-18",
+   "reopen": null,
+   "title": "Paradise Valley Road, Ricksecker Point Road, Stevens Canyon Road, White River Road, Sunrise Road: closed (NPS road events)",
+   "url": "https://www.nps.gov/mora/planyourvisit/conditions.htm",
+   "evidence": "The following regular winter season road closures are in place: SR410, SR123, Westside, Paradise Valley, Ricksecker Point, Stevens Canyon, White River, & Sunrise Roads.",
+   "found_by": [
+    "road-events"
+   ]
+  },
+  {
+   "alert": "road:seki#Highway 180#2026-11-13#2027-04-16",
+   "park": "seki",
+   "attractions": [
+    "seki-kings-canyon",
+    "seki-zumwalt-meadow",
+    "seki-roaring-river-falls",
+    "seki-mist-falls"
+   ],
+   "strict": [
+    "seki-kings-canyon",
+    "seki-zumwalt-meadow",
+    "seki-roaring-river-falls",
+    "seki-mist-falls"
+   ],
+   "from": "2026-11-13",
+   "reopen": null,
+   "title": "Highway 180: closed (NPS road events)",
+   "url": "https://www.nps.gov/seki/planyourvisit/conditions.htm",
+   "evidence": "Highway 180 east of Hume Lake Road is closed for the season. The road typically reopens again in late April.",
+   "found_by": [
+    "road-events"
+   ]
+  },
+  {
+   "alert": "road:seki#Crescent Meadow Road|Moro Rock Loop|Panoramic Point Rd#2026-11-18#2027-05-26",
+   "park": "seki",
+   "attractions": [
+    "seki-crescent-meadow",
+    "seki-moro-rock",
+    "seki-panoramic-point"
+   ],
+   "strict": [
+    "seki-crescent-meadow",
+    "seki-moro-rock",
+    "seki-panoramic-point"
+   ],
+   "from": "2026-11-18",
+   "reopen": null,
+   "title": "Crescent Meadow Road, Moro Rock Loop, Panoramic Point Rd: closed (NPS road events)",
+   "url": "https://www.nps.gov/seki/planyourvisit/conditions.htm",
+   "evidence": "Re-opening dates are dependent on conditions.",
+   "found_by": [
+    "road-events"
+   ]
+  },
+  {
+   "alert": "road:yose#Tioga Road|Glacier Point Road#2026-11-12#2027-12-31",
+   "park": "yose",
+   "attractions": [
+    "yose-tuolumne-meadows",
+    "yose-olmsted-point",
+    "yose-tenaya-lake",
+    "yose-lembert-dome",
+    "yose-cathedral-lakes",
+    "yose-gaylor-lakes",
+    "yose-may-lake",
+    "yose-pothole-dome",
+    "yose-glacier-point",
+    "yose-taft-point",
+    "yose-sentinel-dome",
+    "yose-washburn-point"
+   ],
+   "strict": [
+    "yose-tuolumne-meadows",
+    "yose-olmsted-point",
+    "yose-tenaya-lake",
+    "yose-lembert-dome",
+    "yose-cathedral-lakes",
+    "yose-gaylor-lakes",
+    "yose-may-lake",
+    "yose-pothole-dome",
+    "yose-glacier-point",
+    "yose-taft-point",
+    "yose-sentinel-dome",
+    "yose-washburn-point"
+   ],
+   "from": "2026-11-12",
+   "reopen": null,
+   "title": "Tioga Road, Glacier Point Road: closed (NPS road events)",
+   "url": "https://www.nps.gov/yose/planyourvisit/conditions.htm",
+   "evidence": "Tioga Road (continuation of Highway 120 through the park) and Glacier Point Road are closed for the season. They usually reopen in late May or June, depending on conditions.",
+   "found_by": [
+    "road-events"
+   ]
+  }
+ ],
+ "source": "https://developer.nps.gov/api/v1/roadevents",
+ "events": [
+  {
+   "key": "crla#North Entrance Road|Rim Drive|Pinnacles Road#2026-10-26#2027-06-30",
+   "park": "crla",
+   "roadNames": [
+    "North Entrance Road",
+    "Rim Drive",
+    "Pinnacles Road"
+   ],
+   "from": "2026-10-26",
+   "until": "2027-06-30",
+   "untilVerified": false,
+   "impact": "all-lanes-closed",
+   "type": "incident",
+   "description": "Annual winter closure of East Rim Drive, West Rim Drive, North Entrance Road and Pinnacles Road took effect 10/26/2026. These roads are now closed to automobile traffic for the winter.",
+   "roads": [
+    "crla-north-entrance-road",
+    "crla-west-rim-drive",
+    "crla-east-rim-drive"
+   ],
+   "attractions": [
+    "crla-watchman-peak",
+    "crla-cloudcap-overlook",
+    "crla-phantom-ship-overlook",
+    "crla-sun-notch",
+    "crla-vidae-falls",
+    "crla-pinnacles",
+    "crla-plaikni-falls",
+    "crla-mount-scott"
+   ],
+   "unmapped": [],
+   "segments": 10
+  },
+  {
+   "key": "grsm#Straight Fork and Balsam Mtn Road Closed#2025-05-13#",
+   "park": "grsm",
+   "roadNames": [
+    "Straight Fork and Balsam Mtn Road Closed"
+   ],
+   "from": "2025-05-13",
+   "until": null,
+   "untilVerified": false,
+   "impact": "all-lanes-closed",
+   "type": "incident",
+   "description": "Straight Fork and Balsam Mtn Road closed.",
+   "roads": [],
+   "attractions": [],
+   "unmapped": [
+    "Straight Fork and Balsam Mtn Road Closed"
+   ],
+   "segments": 4
+  },
+  {
+   "key": "grsm#Park Headquarters Road#2026-01-01#2026-12-31",
+   "park": "grsm",
+   "roadNames": [
+    "Park Headquarters Road"
+   ],
+   "from": "2026-01-01",
+   "until": "2026-12-31",
+   "untilVerified": false,
+   "impact": "all-lanes-closed",
+   "type": "work-zone",
+   "description": "Park Headquarters Road is closed due to rehabilitation work on the Sugarlands water and wastewater systems.",
+   "roads": [],
+   "attractions": [],
+   "unmapped": [
+    "Park Headquarters Road"
+   ],
+   "segments": 1
+  },
+  {
+   "key": "grsm#Heintooga Ridge Road|Rich Mountain|Parsons Branch#2026-10-31#2027-05-01",
+   "park": "grsm",
+   "roadNames": [
+    "Heintooga Ridge Road",
+    "Rich Mountain",
+    "Parsons Branch"
+   ],
+   "from": "2026-10-31",
+   "until": "2027-05-01",
+   "untilVerified": false,
+   "impact": "all-lanes-closed",
+   "type": "work-zone",
+   "description": "Heintooga Ridge Road, Parson Branch Road, and Rich Mountain Road are closed for the season.",
+   "roads": [],
+   "attractions": [],
+   "unmapped": [
+    "Heintooga Ridge Road",
+    "Rich Mountain",
+    "Parsons Branch"
+   ],
+   "segments": 6
+  },
+  {
+   "key": "lavo#Lassen National Park Highway#2026-10-30#2027-06-25",
+   "park": "lavo",
+   "roadNames": [
+    "Lassen National Park Highway"
+   ],
+   "from": "2026-10-30",
+   "until": "2027-06-25",
+   "untilVerified": false,
+   "impact": "all-lanes-closed",
+   "type": "incident",
+   "description": "The road through the park is closed due to accumulated snow.",
+   "roads": [
+    "lavo-park-highway"
+   ],
+   "attractions": [
+    "lavo-lake-helen",
+    "lavo-kings-creek-falls",
+    "lavo-bumpass-hell",
+    "lavo-lassen-peak"
+   ],
+   "unmapped": [],
+   "segments": 24
+  },
+  {
+   "key": "mora#Sunrise Road#2026-10-19#2026-11-30",
+   "park": "mora",
+   "roadNames": [
+    "Sunrise Road"
+   ],
+   "from": "2026-10-19",
+   "until": "2026-11-30",
+   "untilVerified": false,
+   "impact": "all-lanes-closed",
+   "type": "incident",
+   "description": "Sunrise Road is CLOSED to vehicles until further notice.",
+   "roads": [
+    "mora-sunrise-road"
+   ],
+   "attractions": [
+    "mora-sunrise-visitor-center",
+    "mora-sunrise-point",
+    "mora-sourdough-ridge",
+    "mora-fremont-lookout",
+    "mora-burroughs-mountain"
+   ],
+   "unmapped": [],
+   "segments": 22
+  },
+  {
+   "key": "mora#Carbon River Entrance|Mowich Lake Road#2026-11-01#2027-10-31",
+   "park": "mora",
+   "roadNames": [
+    "Carbon River Entrance",
+    "Mowich Lake Road"
+   ],
+   "from": "2026-11-01",
+   "until": "2027-10-31",
+   "untilVerified": false,
+   "impact": "all-lanes-closed",
+   "type": "work-zone",
+   "description": "WSDOT has closed SR165 Carbon River Fairfax Bridge to all vehicles, pedestrian, & bicycle traffic until further notice. No access to Carbon River or Mowich Lake by road.",
+   "roads": [],
+   "attractions": [],
+   "unmapped": [
+    "Carbon River Entrance",
+    "Mowich Lake Road"
+   ],
+   "segments": 2
+  },
+  {
+   "key": "mora#Paradise Valley Road|Ricksecker Point Road|Stevens Canyon Road|White River Road|Sunrise Road#2026-11-18#2027-04-30",
+   "park": "mora",
+   "roadNames": [
+    "Paradise Valley Road",
+    "Ricksecker Point Road",
+    "Stevens Canyon Road",
+    "White River Road",
+    "Sunrise Road"
+   ],
+   "from": "2026-11-18",
+   "until": "2027-04-30",
+   "untilVerified": false,
+   "impact": "all-lanes-closed",
+   "type": "incident",
+   "description": "The following regular winter season road closures are in place: SR410, SR123, Westside, Paradise Valley, Ricksecker Point, Stevens Canyon, White River, & Sunrise Roads.",
+   "roads": [
+    "mora-stevens-canyon-road",
+    "mora-sunrise-road"
+   ],
+   "attractions": [
+    "mora-box-canyon",
+    "mora-sunrise-visitor-center",
+    "mora-sunrise-point",
+    "mora-sourdough-ridge",
+    "mora-fremont-lookout",
+    "mora-burroughs-mountain"
+   ],
+   "unmapped": [
+    "Paradise Valley Road",
+    "Ricksecker Point Road",
+    "White River Road"
+   ],
+   "segments": 58
+  },
+  {
+   "key": "seki#Mineral King Rd#2026-10-28#2027-05-26",
+   "park": "seki",
+   "roadNames": [
+    "Mineral King Rd"
+   ],
+   "from": "2026-10-28",
+   "until": "2027-05-26",
+   "untilVerified": false,
+   "impact": "all-lanes-closed",
+   "type": "incident",
+   "description": "Mineral King Road is closed for the winter season. It usually reopens in May on the Wednesday before Memorial Day.",
+   "roads": [],
+   "attractions": [],
+   "unmapped": [
+    "Mineral King Rd"
+   ],
+   "segments": 2
+  },
+  {
+   "key": "seki#Highway 180#2026-11-13#2027-04-16",
+   "park": "seki",
+   "roadNames": [
+    "Highway 180"
+   ],
+   "from": "2026-11-13",
+   "until": "2027-04-16",
+   "untilVerified": false,
+   "impact": "all-lanes-closed",
+   "type": "incident",
+   "description": "Highway 180 east of Hume Lake Road is closed for the season. The road typically reopens again in late April.",
+   "roads": [
+    "seki-kings-canyon-highway"
+   ],
+   "attractions": [
+    "seki-kings-canyon",
+    "seki-zumwalt-meadow",
+    "seki-roaring-river-falls",
+    "seki-mist-falls"
+   ],
+   "unmapped": [],
+   "segments": 2
+  },
+  {
+   "key": "seki#Crescent Meadow Road|Moro Rock Loop|Panoramic Point Rd#2026-11-18#2027-05-26",
+   "park": "seki",
+   "roadNames": [
+    "Crescent Meadow Road",
+    "Moro Rock Loop",
+    "Panoramic Point Rd"
+   ],
+   "from": "2026-11-18",
+   "until": "2027-05-26",
+   "untilVerified": false,
+   "impact": "all-lanes-closed",
+   "type": "incident",
+   "description": "Re-opening dates are dependent on conditions.",
+   "roads": [],
+   "attractions": [
+    "seki-crescent-meadow",
+    "seki-moro-rock",
+    "seki-panoramic-point"
+   ],
+   "unmapped": [],
+   "segments": 14
+  },
+  {
+   "key": "yose#Tioga Road|Glacier Point Road#2026-11-12#2027-12-31",
+   "park": "yose",
+   "roadNames": [
+    "Tioga Road",
+    "Glacier Point Road"
+   ],
+   "from": "2026-11-12",
+   "until": "2027-12-31",
+   "untilVerified": false,
+   "impact": "all-lanes-closed",
+   "type": "incident",
+   "description": "Tioga Road (continuation of Highway 120 through the park) and Glacier Point Road are closed for the season. They usually reopen in late May or June, depending on conditions.",
+   "roads": [
+    "yose-tioga-road",
+    "yose-glacier-point-road"
+   ],
+   "attractions": [
+    "yose-tuolumne-meadows",
+    "yose-olmsted-point",
+    "yose-tenaya-lake",
+    "yose-lembert-dome",
+    "yose-cathedral-lakes",
+    "yose-gaylor-lakes",
+    "yose-may-lake",
+    "yose-pothole-dome",
+    "yose-glacier-point",
+    "yose-taft-point",
+    "yose-sentinel-dome",
+    "yose-washburn-point"
+   ],
+   "unmapped": [],
+   "segments": 4
+  }
+ ],
+ "unmapped": [
+  {
+   "park": "grsm",
+   "roads": [
+    "Straight Fork and Balsam Mtn Road Closed"
+   ],
+   "from": "2025-05-13",
+   "description": "Straight Fork and Balsam Mtn Road closed."
+  },
+  {
+   "park": "grsm",
+   "roads": [
+    "Park Headquarters Road"
+   ],
+   "from": "2026-01-01",
+   "description": "Park Headquarters Road is closed due to rehabilitation work on the Sugarlands water and wastewater systems."
+  },
+  {
+   "park": "grsm",
+   "roads": [
+    "Heintooga Ridge Road",
+    "Rich Mountain",
+    "Parsons Branch"
+   ],
+   "from": "2026-10-31",
+   "description": "Heintooga Ridge Road, Parson Branch Road, and Rich Mountain Road are closed for the season."
+  },
+  {
+   "park": "mora",
+   "roads": [
+    "Carbon River Entrance",
+    "Mowich Lake Road"
+   ],
+   "from": "2026-11-01",
+   "description": "WSDOT has closed SR165 Carbon River Fairfax Bridge to all vehicles, pedestrian, & bicycle traffic until further notice. No access to Carbon River or Mowich Lake by road."
+  },
+  {
+   "park": "mora",
+   "roads": [
+    "Paradise Valley Road",
+    "Ricksecker Point Road",
+    "White River Road"
+   ],
+   "from": "2026-11-18",
+   "description": "The following regular winter season road closures are in place: SR410, SR123, Westside, Paradise Valley, Ricksecker Point, Stevens Canyon, White River, & Sunrise Roads."
+  },
+  {
+   "park": "seki",
+   "roads": [
+    "Mineral King Rd"
+   ],
+   "from": "2026-10-28",
+   "description": "Mineral King Road is closed for the winter season. It usually reopens in May on the Wednesday before Memorial Day."
+  }
+ ]
+}
