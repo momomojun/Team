@@ -9,7 +9,7 @@
 | 部分 | 状态 |
 |---|---|
 | 网站 NPS Guide | 能用：美国 64 座国家公园（63 页）、加拿大 3 座、4 处园外名胜，987 个景点、364 条徒步路线；英文版、同行适合度、时区、营业季节、季节性山路、NPS 道路事件、安全页、活动页。11-20 到 11-22 照着 Wabunka 整站改版。部署在 Vercel（https://team-peach-five.vercel.app ），登录以后行程和对话存进 Neon |
-| Copilot | 调度员（模型决定改条件、提问、加减景点、换住处）→ Intake（模型摘片段、代码算）→ `plan_trip`（确定的行程引擎）→ Critic → Writer；回答问题有 search agent（模型自己选 9 种查询工具，评测 39/44，找一次就答 19/44）和按意思找资料（Gemini 嵌入 + Neon pgvector）；**多 agent 排行程**（规划 agent 摘软要求、代码核对、翻成引擎的 18 种旋钮，审查 agent 最多 3 轮商量，11-22 起默认打开）。模型：Gemini 3.5 Flash Lite → Nemotron 3.5 Super → Qwen3.8 27B → DeepSeek Flash（付费备用）→ 本机 Qwen3.5 35B-A3B |
+| Copilot | 调度员（模型决定改条件、提问、加减景点、换住处）→ Intake（模型摘片段、代码算）→ `plan_trip`（确定的行程引擎）→ Critic → Writer；回答问题有 search agent（模型自己选 9 种查询工具，评测 39/44，找一次就答 19/44；11-23 线上打开）和按意思找资料（Gemini 嵌入 + Neon pgvector）；**多 agent 排行程**（规划 agent 摘软要求、代码核对、翻成引擎的 18 种旋钮，审查 agent 最多 3 轮商量，11-22 起默认打开）。模型：Gemini 3.5 Flash Lite → Nemotron 3.5 Super → Qwen3.8 27B → DeepSeek Flash（付费备用）→ 本机 Qwen3.5 35B-A3B |
 | 线上部署 | Modal 上两个环境：staging（合进 main 自动部署，配 Vercel Preview）、正式（发版才部署，配 Vercel Production）；口令 + 限流；正式环境 https://momomojun--nps-copilot-web.us-east.modal.run |
 | CI/CD | PR 上 3 项必需检查（网站、Copilot 测试 + 十组回放门禁、镜像冒烟），成绩表贴到 PR；`copilot-v*` tag 发版到 GHCR、建 Release、部署 Modal 正式环境。已发到 [`copilot-v0.7.0`](https://github.com/momomojun/Team/releases/tag/copilot-v0.7.0)（11-23）；提示词回滚、换镜像回滚都演示过 |
 | 版本和追溯 | 每个回答记下代码版本、提示词版本（hash）、数据版本（网站数据、资料、各地叫法的 sha256）和提交号；镜像 tag 带这三样 |
@@ -29,7 +29,7 @@
 
 所有要求和承诺的完成情况、还没完成的完整清单见 [GOALS.md](GOALS.md)；这里只写接下来按什么顺序做（课程时间：11 月 5 日起每周 scrum，12 月 10 日项目演示）。
 
-1. **确认 copilot-v0.7.0 上线、打开 search agent**（11-23）：在正式环境发一句带软要求的话，确认多 agent 生效；Modal 正式环境的 Secret `nps-copilot` 加 `COPILOT_QA_AGENT=1`。
+1. ~~**确认 copilot-v0.7.0 上线、打开 search agent**~~（11-23 做完）：正式环境 `/health` 报 copilot/0.7.0；仓库主人在 Modal 正式环境的 Secret `nps-copilot` 加了 `COPILOT_QA_AGENT=1`，同一句“我想去沙漠玩，有什么国家公园推荐”打开前走“找一次就答”，打开后走 search agent（2 步，调了按季节比公园）。
 2. **演示和期末报告**（A8，12-10）：演示脚本（一句话排行程 → 软要求和取舍说明 → 提问 → 后台和测试页 → 发版和回滚）、期末报告和展示。材料：RESULTS.md 的成绩、GOALS 里“定了不做”的理由、后台的架构图和测试页。
 3. **每周 scrum**（A7）：`npm run scrum` 生成草稿，下周计划、卡住的自己填。
 4. **可选**：路线动画导出成短视频（O53，演示可以用）；Docker 一键启动换成 35B 以后找一台装了 Docker 的电脑试一次。
