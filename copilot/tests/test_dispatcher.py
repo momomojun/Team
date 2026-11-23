@@ -187,3 +187,11 @@ def test_a_park_too_far_away_is_not_added():
     session = lassen_session(act({"type": "add_stop", "place": "阿卡迪亚"}))
     reply = session.send("阿卡迪亚也要去")
     assert reply.request["parks"] == ["lavo"] and "开车一天到不了" in reply.text
+
+
+def test_lodging_kind_is_a_preference_not_a_lodge():
+    """“我想住airbnb”：模型当成指定一家叫 airbnb 的住处（35B-A3B 这样读），代码改成改住宿偏好"""
+    session, provider = planned_session(act({"type": "set_lodging", "place": "airbnb"}), extraction(preferences=["airbnb"]))
+    reply = session.send("我想住airbnb")
+    assert reply.status == "planned" and reply.request["lodgingPref"] == "rental"
+    assert "没找到" not in reply.text

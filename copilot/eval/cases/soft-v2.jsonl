@@ -1,0 +1,20 @@
+{"id": "N01-pace-word", "turns": [{"user": "2027年6月15日从弗雷斯诺去优胜美地玩4天，节奏适中"}], "expect": {"status": "planned", "no_wishes": true}, "why": "对照题：只说了节奏（“适中”不是中间休息一天）"}
+{"id": "N02-family-of-four", "turns": [{"user": "我们一家四口，2027年7月20日从盐湖城出发，去拱门和峡谷地玩5天"}], "expect": {"status": "planned", "no_wishes": true}, "why": "对照题：“一家四口”不是只住一家"}
+{"id": "N03-want-rental", "turns": [{"user": "2027年5月8日从拉斯维加斯去锡安玩3天，我想住民宿"}], "expect": {"status": "planned", "no_wishes": true}, "why": "对照题：住宿偏好（民宿）不是软要求"}
+{"id": "N04-first-time", "turns": [{"user": "第一次去大提顿，2027年8月3日从杰克逊出发玩4天，没什么特别要求"}], "expect": {"status": "planned", "no_wishes": true}, "why": "对照题：“第一次”不是第几天去哪"}
+{"id": "N05-self-drive", "turns": [{"user": "我们自己开车，2027年10月2日从凤凰城出发去大峡谷玩3天"}], "expect": {"status": "planned", "no_wishes": true}, "why": "对照题：“自己开车”不是每天开车上限"}
+{"id": "N06-heard-colors", "turns": [{"user": "2027年9月20日从丹佛去落基山玩3天，听说秋天的颜色很好看"}], "expect": {"status": "planned", "no_wishes": true}, "why": "对照题：听说什么好看是闲聊，不是一定要去"}
+{"id": "N07-two-turns", "turns": [{"user": "想去黄石看看"}, {"user": "2027年8月1日从博兹曼出发，玩5天"}], "expect": {"status": "planned", "no_wishes": true}, "why": "对照题（多轮）：只是补条件"}
+{"id": "N08-with-parents", "turns": [{"user": "2027年3月12日带爸妈从迈阿密去大沼泽地玩2天"}], "expect": {"status": "planned", "no_wishes": true}, "why": "对照题：带爸妈是同行的人（Intake 管），不是“不去危险的地方”"}
+{"id": "N09-on-vacation", "turns": [{"user": "趁着休假，2027年6月20日从西雅图去雷尼尔山玩3天"}], "expect": {"status": "planned", "no_wishes": true}, "why": "对照题：“休假”不是休息日"}
+{"id": "N10-you-decide", "turns": [{"user": "2027年8月5日从安克雷奇出发，去基奈峡湾和德纳里，一共6天，行程你看着排就行"}], "expect": {"status": "planned", "no_wishes": true}, "why": "对照题：两座公园、没说哪天去哪"}
+{"id": "N11-balanced-pace", "turns": [{"user": "Yosemite for 4 days from San Francisco starting June 15, 2027, balanced pace please"}], "expect": {"status": "planned", "no_wishes": true}, "why": "Control: a pace word is not a rest day (English)"}
+{"id": "N12-family-of-four", "turns": [{"user": "Family of four flying into Salt Lake City on July 20, 2027. Arches and Canyonlands for 5 days."}], "expect": {"status": "planned", "no_wishes": true}, "why": "Control: 'family of four' is not 'one hotel' (English)"}
+{"id": "N13-airbnb", "turns": [{"user": "Zion for 3 days from Las Vegas starting May 8, 2027. We'd like an Airbnb."}], "expect": {"status": "planned", "no_wishes": true}, "why": "Control: a lodging preference is not a soft wish (English)"}
+{"id": "N14-first-time", "turns": [{"user": "First time in Grand Teton! 4 days from Jackson starting August 3, 2027, no special requests."}], "expect": {"status": "planned", "no_wishes": true}, "why": "Control: 'first time' is not 'first days' (English)"}
+{"id": "N15-we-drive", "turns": [{"user": "We'll drive up from Phoenix. Grand Canyon for 3 days starting October 2, 2027."}], "expect": {"status": "planned", "no_wishes": true}, "why": "Control: driving there is not a daily drive limit (English)"}
+{"id": "N16-heard-colors", "turns": [{"user": "Rocky Mountain for 3 days from Denver starting September 20, 2027. I've heard the fall colors are great."}], "expect": {"status": "planned", "no_wishes": true}, "why": "Control: hearsay is not a must-see (English)"}
+{"id": "N17-two-turns", "turns": [{"user": "Thinking about Glacier"}, {"user": "From Kalispell, 4 days starting July 25, 2027"}], "expect": {"status": "planned", "no_wishes": true}, "why": "Control (multi-turn): just filling in the basics (English)"}
+{"id": "N18-with-parents", "turns": [{"user": "Taking my parents to the Everglades, 2 days from Miami starting March 12, 2027."}], "expect": {"status": "planned", "no_wishes": true}, "why": "Control: parents are the party, not 'no hazards' (English)"}
+{"id": "N19-same-trip-no-wish", "turns": [{"user": "Olympic for 4 days from Seattle starting August 12, 2027. Whatever you think is best."}], "expect": {"status": "planned", "no_wishes": true}, "why": "Control: the S13 trip without the one-area-a-day wish (English)"}
+{"id": "N20-any-plan", "turns": [{"user": "Joshua Tree, 2 days from Los Angeles starting November 6, 2027. Any plan is fine."}], "expect": {"status": "planned", "no_wishes": true}, "why": "Control: no wishes at all (English)"}

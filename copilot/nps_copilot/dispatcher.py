@@ -7,12 +7,15 @@
 """
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 
 from . import catalog, prompts
 from .providers import Provider, ProviderError
 from .text import contains, normalize
 
+LODGING_KIND = re.compile(r"(airbnb|vrbo|民宿|整套房子|酒店|旅馆|宾馆|露营|营地|帐篷|hotels?|motels?|lodges?|camping|campgrounds?|"
+                          r"(vacation )?rentals?|cabins?)(吧|啊|呀)?")
 TYPES = ("conditions", "ask", "add_stop", "remove_stop", "set_lodging", "new_trip", "chat")
 DISPATCH_SCHEMA = {
     "type": "object", "additionalProperties": False, "required": ["actions"],
@@ -97,6 +100,10 @@ def dispatch(provider: Provider, history: list[tuple[str, str]], conditions: dic
             else:
                 dropped.append({"action": raw, "reason": "place_not_in_conversation"})
                 continue
+        # 住处的种类不是一家住处：“我想住airbnb” 是改住宿偏好（conditions，交给 Intake），不是指定一家叫 airbnb 的
+        # （11-22 换成 35B-A3B 后它这样读，回“没找到叫 airbnb 的住处”；提示词里写了住酒店还是民宿属于 conditions）
+        if action.type == "set_lodging" and LODGING_KIND.fullmatch(normalize(action.place).lower()):
+            action = Action("conditions", "")
         if action.type in ("add_stop", "remove_stop", "set_lodging") and not action.place:
             dropped.append({"action": raw, "reason": "place_not_in_conversation"})
             continue

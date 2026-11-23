@@ -14,11 +14,12 @@ const MODEL_NAMES: Record<string, { name: string; via: string; paid?: boolean }>
   "deepseek-flash": { name: "DeepSeek Flash", via: "DeepSeek", paid: true },
   "qwen/qwen3.8-27b": { name: "Qwen3.8 27B", via: "Groq" },
   "qwen3.5:4b-q4_K_M": { name: "Qwen3.5 4B", via: "Ollama" },
+  "qwen3.5:35b-a3b-q4_K_M": { name: "Qwen3.5 35B-A3B", via: "Ollama" },
   "gpt-4.1-mini": { name: "GPT-4.1 mini", via: "OpenAI" },
 };
 // 免费的三家在前，付费的 DeepSeek 排在它们后面当备用（10-28 仓库主人定的），本机模型最后
-const CHAT_DEFAULT = ["gemini-3.5-flash-lite", "nvidia/nemotron-3.5-super-vl:free", "qwen/qwen3.8-27b", "deepseek-flash", "qwen3.5:4b-q4_K_M"];
-const ALERTS_DEFAULT = ["gemini-3.5-flash-lite", "nvidia/nemotron-3.5-super-vl:free", "qwen/qwen3.8-27b", "deepseek-flash", "qwen3.5:4b-q4_K_M"];
+const CHAT_DEFAULT = ["gemini-3.5-flash-lite", "nvidia/nemotron-3.5-super-vl:free", "qwen/qwen3.8-27b", "deepseek-flash", "qwen3.5:35b-a3b-q4_K_M"];
+const ALERTS_DEFAULT = ["gemini-3.5-flash-lite", "nvidia/nemotron-3.5-super-vl:free", "qwen/qwen3.8-27b", "deepseek-flash", "qwen3.5:35b-a3b-q4_K_M"];
 
 const TEXT = {
   zh: {

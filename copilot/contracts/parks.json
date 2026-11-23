@@ -35,6 +35,18 @@
       "優勝美地",
       "Yosemite",
       "yose"
+    ],
+    "roads": [
+      {
+        "id": "yose-tioga-road",
+        "nameZh": "Tioga Road（120 号公路）",
+        "nameEn": "Tioga Road"
+      },
+      {
+        "id": "yose-glacier-point-road",
+        "nameZh": "冰川点路（Glacier Point Road）",
+        "nameEn": "Glacier Point Road"
+      }
     ]
   },
   {
@@ -69,6 +81,13 @@
       "紅杉與國王峽谷",
       "Sequoia & Kings Canyon",
       "seki"
+    ],
+    "roads": [
+      {
+        "id": "seki-kings-canyon-highway",
+        "nameZh": "180 号公路（Hume Lake 路口到 Cedar Grove）",
+        "nameEn": "Kings Canyon Scenic Byway (SR 180) to Cedar Grove"
+      }
     ]
   },
   {
@@ -108,7 +127,8 @@
       "尖峰石陣",
       "Pinnacles",
       "pinn"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "chis",
@@ -141,7 +161,8 @@
       "海峽群島",
       "Channel Islands",
       "chis"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "jotr",
@@ -184,7 +205,8 @@
       "約書亞樹",
       "Joshua Tree",
       "jotr"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "redw",
@@ -219,7 +241,8 @@
       "紅木",
       "Redwood",
       "redw"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "lavo",
@@ -256,6 +279,13 @@
       "拉森火山",
       "Lassen Volcanic",
       "lavo"
+    ],
+    "roads": [
+      {
+        "id": "lavo-park-highway",
+        "nameZh": "拉森公园公路（89 号公路）",
+        "nameEn": "Lassen National Park Highway (SR 89)"
+      }
     ]
   },
   {
@@ -290,6 +320,23 @@
       "火山口湖",
       "Crater Lake",
       "crla"
+    ],
+    "roads": [
+      {
+        "id": "crla-west-rim-drive",
+        "nameZh": "西环湖路（West Rim Drive）",
+        "nameEn": "West Rim Drive"
+      },
+      {
+        "id": "crla-east-rim-drive",
+        "nameZh": "东环湖路（East Rim Drive）",
+        "nameEn": "East Rim Drive"
+      },
+      {
+        "id": "crla-north-entrance-road",
+        "nameZh": "北入口路（138 号公路进园段）",
+        "nameEn": "North Entrance Road"
+      }
     ]
   },
   {
@@ -321,6 +368,28 @@
       "雷尼爾山",
       "Mount Rainier",
       "mora"
+    ],
+    "roads": [
+      {
+        "id": "mora-chinook-pass",
+        "nameZh": "410 号公路 Chinook 山口段",
+        "nameEn": "Chinook Pass (SR 410)"
+      },
+      {
+        "id": "mora-cayuse-pass",
+        "nameZh": "123 号公路 Cayuse 山口段",
+        "nameEn": "Cayuse Pass (SR 123)"
+      },
+      {
+        "id": "mora-sunrise-road",
+        "nameZh": "Sunrise Road（日出路）",
+        "nameEn": "Sunrise Road"
+      },
+      {
+        "id": "mora-stevens-canyon-road",
+        "nameZh": "Stevens Canyon Road（史蒂文斯峡谷路）",
+        "nameEn": "Stevens Canyon Road"
+      }
     ]
   },
   {
@@ -354,7 +423,8 @@
       "奧林匹克",
       "Olympic",
       "olym"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "noca",
@@ -384,6 +454,13 @@
       "北瀑布",
       "North Cascades",
       "noca"
+    ],
+    "roads": [
+      {
+        "id": "noca-north-cascades-highway",
+        "nameZh": "20 号公路（North Cascades Highway）山口段",
+        "nameEn": "North Cascades Highway (SR 20), Diablo–Mazama"
+      }
     ]
   },
   {
@@ -425,7 +502,8 @@
       "黃石",
       "Yellowstone",
       "yell"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "grte",
@@ -458,7 +536,8 @@
       "大提頓",
       "Grand Teton",
       "grte"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "glac",
@@ -495,6 +574,13 @@
       "冰川",
       "Glacier",
       "glac"
+    ],
+    "roads": [
+      {
+        "id": "glac-logan-pass",
+        "nameZh": "向阳大道高山段（洛根山口）",
+        "nameEn": "Going-to-the-Sun Road over Logan Pass"
+      }
     ]
   },
   {
@@ -527,6 +613,18 @@
       "落基山",
       "Rocky Mountain",
       "romo"
+    ],
+    "roads": [
+      {
+        "id": "romo-trail-ridge-road",
+        "nameZh": "Trail Ridge Road（34 号公路）高山段",
+        "nameEn": "Trail Ridge Road (US 34)"
+      },
+      {
+        "id": "romo-old-fall-river-road",
+        "nameZh": "Old Fall River Road（旧瀑布河公路）",
+        "nameEn": "Old Fall River Road"
+      }
     ]
   },
   {
@@ -580,7 +678,8 @@
       "梅薩維德",
       "Mesa Verde",
       "meve"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "grsa",
@@ -621,7 +720,8 @@
       "大沙丘",
       "Great Sand Dunes",
       "grsa"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "blca",
@@ -668,7 +768,8 @@
       "甘尼森黑峽谷",
       "Black Canyon of the Gunnison",
       "blca"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "deva",
@@ -704,7 +805,8 @@
       "死亡谷",
       "Death Valley",
       "deva"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "zion",
@@ -753,7 +855,8 @@
       "錫安",
       "Zion",
       "zion"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "brca",
@@ -801,7 +904,8 @@
       "布萊斯峽谷",
       "Bryce Canyon",
       "brca"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "grca",
@@ -848,7 +952,8 @@
       "大峽谷",
       "Grand Canyon",
       "grca"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "grba",
@@ -890,7 +995,8 @@
       "大盆地",
       "Great Basin",
       "grba"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "ante",
@@ -944,7 +1050,8 @@
       "羚羊峽谷",
       "Antelope Canyon",
       "ante"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "hsbd",
@@ -998,7 +1105,8 @@
       "馬蹄灣",
       "Horseshoe Bend",
       "hsbd"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "mova",
@@ -1050,7 +1158,8 @@
       "紀念碑谷",
       "Monument Valley",
       "mova"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "wave",
@@ -1102,7 +1211,8 @@
       "波浪谷",
       "The Wave",
       "wave"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "arch",
@@ -1155,7 +1265,8 @@
       "拱門",
       "Arches",
       "arch"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "cany",
@@ -1206,7 +1317,8 @@
       "峽谷地",
       "Canyonlands",
       "cany"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "care",
@@ -1253,7 +1365,8 @@
       "圓頂礁",
       "Capitol Reef",
       "care"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "whsa",
@@ -1285,7 +1398,8 @@
       "白沙",
       "White Sands",
       "whsa"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "cave",
@@ -1318,7 +1432,8 @@
       "卡爾斯巴德洞窟",
       "Carlsbad Caverns",
       "cave"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "pefo",
@@ -1368,7 +1483,8 @@
       "石化林",
       "Petrified Forest",
       "pefo"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "sagu",
@@ -1402,7 +1518,8 @@
       "巨人柱",
       "Saguaro",
       "sagu"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "chir",
@@ -1435,7 +1552,8 @@
       "奇里卡瓦",
       "Chiricahua",
       "chir"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "gumo",
@@ -1470,7 +1588,8 @@
       "瓜達盧佩山",
       "Guadalupe Mountains",
       "gumo"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "bibe",
@@ -1505,7 +1624,8 @@
       "大彎",
       "Big Bend",
       "bibe"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "badl",
@@ -1536,7 +1656,8 @@
       "惡地",
       "Badlands",
       "badl"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "wica",
@@ -1568,7 +1689,8 @@
       "風洞",
       "Wind Cave",
       "wica"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "thro",
@@ -1603,7 +1725,8 @@
       "西奧多·羅斯福",
       "Theodore Roosevelt",
       "thro"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "cuva",
@@ -1632,7 +1755,8 @@
       "凱霍加谷",
       "Cuyahoga Valley",
       "cuva"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "indu",
@@ -1661,7 +1785,8 @@
       "印第安納沙丘",
       "Indiana Dunes",
       "indu"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "jeff",
@@ -1687,7 +1812,8 @@
       "聖路易斯拱門",
       "Gateway Arch",
       "jeff"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "isro",
@@ -1718,7 +1844,8 @@
       "皇家島",
       "Isle Royale",
       "isro"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "voya",
@@ -1748,7 +1875,8 @@
       "航海家",
       "Voyageurs",
       "voya"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "grsm",
@@ -1785,7 +1913,8 @@
       "大煙山",
       "Great Smoky Mountains",
       "grsm"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "shen",
@@ -1820,7 +1949,8 @@
       "仙納度",
       "Shenandoah",
       "shen"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "neri",
@@ -1858,7 +1988,8 @@
       "新河峽谷",
       "New River Gorge",
       "neri"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "maca",
@@ -1889,7 +2020,8 @@
       "猛獁洞",
       "Mammoth Cave",
       "maca"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "cong",
@@ -1919,7 +2051,8 @@
       "康加里",
       "Congaree",
       "cong"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "hosp",
@@ -1946,7 +2079,8 @@
       "溫泉",
       "Hot Springs",
       "hosp"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "acad",
@@ -1975,7 +2109,8 @@
       "阿卡迪亞",
       "Acadia",
       "acad"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "ever",
@@ -2008,7 +2143,8 @@
       "大沼澤地",
       "Everglades",
       "ever"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "bisc",
@@ -2038,7 +2174,8 @@
       "比斯坎",
       "Biscayne",
       "bisc"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "drto",
@@ -2071,7 +2208,8 @@
       "幹龜",
       "Dry Tortugas",
       "drto"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "viis",
@@ -2094,7 +2232,8 @@
       "維京群島",
       "Virgin Islands",
       "viis"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "dena",
@@ -2129,7 +2268,8 @@
       "德納里",
       "Denali",
       "dena"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "kefj",
@@ -2162,7 +2302,8 @@
       "基奈峽灣",
       "Kenai Fjords",
       "kefj"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "wrst",
@@ -2195,7 +2336,8 @@
       "蘭格爾–聖伊萊亞斯",
       "Wrangell–St. Elias",
       "wrst"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "glba",
@@ -2218,7 +2360,8 @@
       "冰川灣",
       "Glacier Bay",
       "glba"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "gaar",
@@ -2245,7 +2388,8 @@
       "北極之門",
       "Gates of the Arctic",
       "gaar"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "kova",
@@ -2267,7 +2411,8 @@
       "科伯克谷",
       "Kobuk Valley",
       "kova"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "katm",
@@ -2299,7 +2444,8 @@
       "卡特邁",
       "Katmai",
       "katm"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "lacl",
@@ -2332,7 +2478,8 @@
       "克拉克湖",
       "Lake Clark",
       "lacl"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "havo",
@@ -2356,7 +2503,8 @@
       "夏威夷火山",
       "Hawaiʻi Volcanoes",
       "havo"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "hale",
@@ -2379,7 +2527,8 @@
       "哈萊阿卡拉",
       "Haleakalā",
       "hale"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "npsa",
@@ -2402,7 +2551,8 @@
       "美屬薩摩亞",
       "National Park of American Samoa",
       "npsa"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "banf",
@@ -2436,7 +2586,8 @@
       "班夫",
       "Banff",
       "banf"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "jasp",
@@ -2469,7 +2620,8 @@
       "賈斯珀",
       "Jasper",
       "jasp"
-    ]
+    ],
+    "roads": []
   },
   {
     "code": "yoho",
@@ -2503,6 +2655,7 @@
       "幽鶴",
       "Yoho",
       "yoho"
-    ]
+    ],
+    "roads": []
   }
 ]

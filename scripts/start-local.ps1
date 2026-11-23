@@ -1,7 +1,7 @@
 ﻿# 本机一键启动：Copilot 服务 + 网站，开好以后打开浏览器的行程页。
 # 用法（在仓库根目录双击 start.cmd，或者在 PowerShell 里）：
 #   powershell -ExecutionPolicy Bypass -File scripts/start-local.ps1            # 平常用：免费的云端模型优先，本机模型兜底
-#   powershell -ExecutionPolicy Bypass -File scripts/start-local.ps1 -LocalModel # 只用本机 Qwen3.5 4B（不调任何云端 API）
+#   powershell -ExecutionPolicy Bypass -File scripts/start-local.ps1 -LocalModel # 只用本机模型（Qwen3.5 35B-A3B，没下就用 4B；不调任何云端 API）
 #   powershell -ExecutionPolicy Bypass -File scripts/start-local.ps1 -Stop       # 关掉这个脚本开的东西（双击 stop.cmd 也行）
 # 网站和 Copilot 各开一个窗口，日志都在窗口里；关掉窗口就停了。
 param(
@@ -22,6 +22,10 @@ function Listening($port) {
 }
 function Fetch($url) {
   try { return Invoke-RestMethod -Uri $url -TimeoutSec 3 } catch { return $null }
+}
+function HasModel($url, $name) {
+  $tags = Fetch "$url/api/tags"
+  return [bool]($tags -and ($tags.models | Where-Object { $_.name -eq $name }))
 }
 
 # ---------- 关掉 ----------
@@ -75,8 +79,16 @@ $started = @()
 
 # ---------- 本机模型（Ollama） ----------
 # 平常是云端模型都出错时的最后一个；-LocalModel 时只用它
+# 本机模型 11-22 起是 Qwen3.5 35B-A3B（约 22 GB）；这台电脑的 Ollama 里没有就退回 4B
+$model = 'qwen3.5:35b-a3b-q4_K_M'
+$smallModel = 'qwen3.5:4b-q4_K_M'
 $ollamaUrl = $null
-if (Listening 11435) { $ollamaUrl = 'http://127.0.0.1:11435' }
+# 两个端口都开着时，用下好了 35B-A3B 的那个
+foreach ($port in 11435, 11434) {
+  if (-not $ollamaUrl -and (Listening $port) -and (HasModel "http://127.0.0.1:$port" $model)) { $ollamaUrl = "http://127.0.0.1:$port" }
+}
+if ($ollamaUrl) { }
+elseif (Listening 11435) { $ollamaUrl = 'http://127.0.0.1:11435' }
 elseif (Listening 11434) { $ollamaUrl = 'http://127.0.0.1:11434' }
 else {
   # 仓库主人电脑上的便携版；在 git worktree 里跑时它在主仓库
@@ -92,7 +104,13 @@ else {
     }
   }
 }
-if ($ollamaUrl) { Say "本机模型：$ollamaUrl" }
+if ($ollamaUrl -and -not (HasModel $ollamaUrl $model)) {
+  if (HasModel $ollamaUrl $smallModel) {
+    Say "这台电脑的 Ollama 里没有 $model（约 22 GB，要 32 GB 内存；想换就运行 ollama pull $model），先用 $smallModel。"
+    $model = $smallModel
+  } else { Say "这台电脑的 Ollama 里没有 $model，先运行 ollama pull $model（约 22 GB），或者 ollama pull $smallModel（约 3.4 GB）。" }
+}
+if ($ollamaUrl) { Say "本机模型：$model（$ollamaUrl）" }
 elseif ($LocalModel) { throw '-LocalModel 要本机开着 Ollama（11434 或 11435 端口），没找到。' }
 else { Say '本机模型：没开（只用云端模型，云端都出错时这一句会失败）' }
 
@@ -108,7 +126,7 @@ $copilotUrl = "http://127.0.0.1:$copilotPort"
 
 if (-not (Fetch "$copilotUrl/health")) {
   $envs = "`$env:PYTHONIOENCODING='utf-8';"
-  if ($ollamaUrl) { $envs += " `$env:OLLAMA_HOST_URL='$ollamaUrl';" }
+  if ($ollamaUrl) { $envs += " `$env:OLLAMA_HOST_URL='$ollamaUrl'; `$env:COPILOT_MODEL='$model';" }
   if ($LocalModel) { $envs += " `$env:COPILOT_PROVIDER='ollama';" }
   # 计费总账每小时发到 GitHub 一次，线上的后台（Vercel）也看得到
   $envs += " `$env:COPILOT_PUBLISH_USAGE='1';"

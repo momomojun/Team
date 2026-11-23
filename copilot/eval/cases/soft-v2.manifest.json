@@ -1,0 +1,20 @@
+{
+ "frozen_at": "2026-11-23T05:54:12+00:00",
+ "commit": "75381a24bea01baa20ca87926f654b9b2d86408d",
+ "data_version": {
+  "id": "8ac91e184c62",
+  "parts": {
+   "site": "b62dc71a917d",
+   "contracts": "76c9207798ca",
+   "names": "6e34ca79a311"
+  }
+ },
+ "note": "软要求评测题 v2（11-22 仓库主人：考题本身有漏洞，30 题每题都有软要求，没有“什么要求都没有”的对照题；要一半中文一半英文）：20 道对照题，10 道中文、10 道英文、各有 1 道两轮。每题都是完整的普通请求，里面故意放了像软要求、其实不是的话（“节奏适中”“一家四口”“我想住民宿”“第一次去”“自己开车”“听说……好看”“带爸妈”“休假”），期望是排出行程、代码核对完不留下任何一条软要求（no_wishes）。在跑任何模型之前写好、提交后冻结；commit 是写题时的 HEAD，engine 和 team.py 的改动（S07、S13）当时还没提交，sha256 记的是写题时的文件。和 soft-v1 的 30 题一起报。",
+ "sha256": {
+  "eval/cases/soft-v2.jsonl": "f02cb2185a5736ed7dd8569b70d5585905f725d4fb9109cae41380786866213e",
+  "eval/soft.py": "dadc1dab1e921915e08029339df97a79fb942227888a78ecc8953c2dbc2c2aa1",
+  "nps_copilot/team.py": "eec487ce15c2bb9e07a09157cec5fe9ff9579db9b00666527c9acbd729e344e8",
+  "nps_copilot/pipeline.py": "9c1b4bbbdce8765c339468e1d2f636afef54477f0450f5cc54612e6b368a1e8d",
+  "nps_copilot/prompts/team_plan_v1.txt": "f4cb859dcc1cd3eb32661067958567128e93b6f047bf5a59905ccc4e78d109d6"
+ }
+}

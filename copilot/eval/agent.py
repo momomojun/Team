@@ -43,7 +43,7 @@ from nps_copilot import data_version  # noqa: E402
 from nps_copilot import agent, monitor  # noqa: E402
 from nps_copilot.ledger import estimate_tokens  # noqa: E402
 from nps_copilot.pipeline import Session, prompt_hashes  # noqa: E402
-from nps_copilot.providers import GeminiProvider, ProviderError, RecordingProvider, ReplayProvider  # noqa: E402
+from nps_copilot.providers import GeminiProvider, OllamaProvider, ProviderError, RecordingProvider, ReplayProvider  # noqa: E402
 from nps_copilot.text import normalize  # noqa: E402
 from guard import StopEarly, safe_name  # noqa: E402
 import tracking  # noqa: E402
@@ -206,7 +206,8 @@ def summarize(rows: list[dict], price: tuple[float, float]) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--cases", type=Path, default=CASES)
-    parser.add_argument("--model", default="gemini-3.5-flash-lite", help="--record 用哪个 Gemini 模型")
+    parser.add_argument("--model", default="gemini-3.5-flash-lite",
+                        help="--record 用哪个模型：gemini、gemma 开头的走 Gemini API，别的当本机 Ollama 的模型名（11-22 加，本机模型对照用）")
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--record", action="store_true")
     mode.add_argument("--replay", type=Path)
@@ -223,14 +224,19 @@ def main() -> int:
     configs = [config.strip() for config in args.configs.split(",") if config.strip()]
     if not configs or any(config not in CONFIGS for config in configs):
         sys.exit(f"--configs 只能是 {','.join(CONFIGS)} 里的，收到 {args.configs!r}")
+    def model():
+        if args.model.startswith(("gemini", "gemma")):
+            return GeminiProvider(model=args.model)
+        return OllamaProvider(model=args.model)
+
     if args.record:
         recording = RECORDINGS / f"{args.cases.stem}-{safe_name(args.model)}.jsonl"
         if not args.only:
             recording.write_text("", encoding="utf-8")
-        provider = Counting(RecordingProvider(StopEarly(GeminiProvider(model=args.model)), recording))
+        provider = Counting(RecordingProvider(StopEarly(model()), recording))
         label = f"record:{recording.stem}"
     else:
-        fill = RecordingProvider(StopEarly(GeminiProvider(model=args.model)), args.replay) if args.fill else None
+        fill = RecordingProvider(StopEarly(model()), args.replay) if args.fill else None
         provider = Counting(ReplayProvider(args.replay, fallback=fill))
         label = f"replay:{args.replay.stem}" + ("+fill" if args.fill else "")
     rows: dict[str, list[dict]] = {config: [] for config in configs}

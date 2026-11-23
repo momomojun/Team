@@ -1,9 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { buttonPrimary, buttonSecondary } from "@/components/ui";
 import { type AdminLang } from "./architecture-diagram";
 import { SystemDiagrams } from "./system-diagrams";
+import { TechStack } from "./tech-stack";
 
 /**
  * 后台页面：读 /api/copilot/admin（Copilot 服务的 /health、/stats 和 GitHub 上每晚读公告的结果），标签页看得见时每 30 秒刷新一次。
@@ -213,7 +215,11 @@ const TEXT = {
     costUnpriced: (n: number) => `${n} 次调用的模型估不了价`,
     costFree: "付费的按实际，免费档按付费档的价，本机按电费",
     archTitle: "架构图",
-    archNote: "整个网站怎么搭的、一句话经过哪几步、search agent 怎么一步步查、代码怎么上线；模型顺序是服务现在报的",
+    archNote: "整个网站怎么搭的、一句话经过哪几步、多 agent 怎么排行程、search agent 怎么一步步查、代码怎么上线；模型顺序是服务现在报的",
+    stackTitle: "技术栈",
+    stackNote: "每一层用了什么",
+    evalsLink: "测试和评测 →",
+    evalsHint: "每一轮测试的成绩和对比：模型、多 agent 对照调度员、门禁",
     daily: "每天",
     noLogs: "这段时间没有日志。",
     chartLabel: "每天的对话轮数和花费",
@@ -340,7 +346,11 @@ const TEXT = {
     costUnpriced: (n: number) => `${n} calls used a model we can't price`,
     costFree: "paid models at actual price, free tiers at their paid-tier price, the local model at its electricity cost",
     archTitle: "Architecture",
-    archNote: "How the whole site is built, the steps one message takes, how the search agent looks things up, and how code reaches production; the model order comes from the running service",
+    archNote: "How the whole site is built, the steps one message takes, how the agents plan a trip, how the search agent looks things up, and how code reaches production; the model order comes from the running service",
+    stackTitle: "Tech stack",
+    stackNote: "What each layer uses",
+    evalsLink: "Tests and evals →",
+    evalsHint: "Every round of results and comparisons: models, multi-agent vs dispatcher, gates",
     daily: "By day",
     noLogs: "No logs in this period.",
     chartLabel: "Turns and cost per day",
@@ -633,7 +643,7 @@ function BillingSection({ local, nightly, machines, days, t }: { local?: Billing
   );
 }
 
-export function AdminDashboard({ lang = "zh" }: { lang?: AdminLang }) {
+export function AdminDashboard({ lang = "zh", locale = "zh-Hans" }: { lang?: AdminLang; locale?: string }) {
   const t = TEXT[lang];
   const { ms, money, clock } = makeFormat(t);
   const [days, setDays] = useState(7);
@@ -734,6 +744,12 @@ export function AdminDashboard({ lang = "zh" }: { lang?: AdminLang }) {
           {loadedAt && <span className="text-[11px] text-mute">{t.updated(loadedAt)}</span>}
         </div>
       </div>
+      <p className="mt-6 text-sm">
+        <Link href={`/${locale}/admin/evals`} className="border-b border-clay-600 pb-0.5 text-clay-700 hover:text-ink">
+          {t.evalsLink}
+        </Link>
+        <span className="ml-3 text-[12px] text-mute">{t.evalsHint}</span>
+      </p>
 
       {/* 服务状态 */}
       <div className="mt-10 border-y border-line py-4 text-sm">
@@ -794,6 +810,10 @@ export function AdminDashboard({ lang = "zh" }: { lang?: AdminLang }) {
           </div>
         )}
       </div>
+
+      <Section title={t.stackTitle} note={t.stackNote}>
+        <TechStack lang={lang} />
+      </Section>
 
       <Section title={t.archTitle} note={t.archNote}>
         <SystemDiagrams lang={lang} chain={data?.available && !health?.error ? health?.chain : null} />

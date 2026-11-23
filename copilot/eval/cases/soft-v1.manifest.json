@@ -1,0 +1,14 @@
+{
+ "frozen_at": "2026-11-22T05:36:24+00:00",
+ "commit": "d8c3027c7c8f29c9cec7353e4d954a7d7f4441c3",
+ "data_version": "8bdd3533ce90",
+ "note": "多 agent 协作的评测题 v1（11-21 仓库主人：做真正的多 agent 协作）：30 题“软要求”（中间留一天休息、每天开车上限、只住一家、几点前回、指定哪几天去哪座公园……），10 道英文、2 道多轮，其中 S03、S12、S22、S24、S29 是冲突或陷阱题。期望在写规划 agent、审查 agent 的代码和跑任何模型之前写好、仓库主人看过后冻结；检查按排出来的行程用代码判（checks），说法按回答里有没有这些字（must_say_any）。第一次的分数按这一版报告；看过失败再改代码，之后的分数要另外标明，这一批就不再算没见过的。",
+ "sha256": {
+  "eval/cases/soft-v1.jsonl": "060063a3c926a0632025e4c9921b400a4399ac9f077e10a0081c4d24b34d7c1e",
+  "nps_copilot/pipeline.py": "c6f8f21c786ad478f08de2c8f5941bdd48ca1fa1ba0cce58253a900d30b10199",
+  "nps_copilot/dispatcher.py": "2d9070eb09de958f9e89032183ec1abd3c5591880066d1d8beb75df418474d21",
+  "nps_copilot/critic.py": "1558f33e53fac797275134e40562d6ba3d772f56a5b0807c7f13ad025bed4612",
+  "src/lib/generate-trip.ts": "25cea282c135630791989bd66bf62ea76c6f6714244044f1f69304433f7a826e",
+  "src/lib/copilot/plan-tool.ts": "2e603753bb8a97c32e1a0ffc460aee7d5b17f8f03c4a6c8f4c1a793ab85fc2bf"
+ }
+}

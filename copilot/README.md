@@ -1,6 +1,6 @@
 # NPS Guide Copilot
 
-LLMOps 课程项目的 AI 部分：用户用自然语言说旅行需求，本机模型（Qwen3.5 4B，Ollama）摘出条件，代码检查、追问，交给网站的确定性行程引擎（`plan_trip`）排行程，再检查、写成说明。
+LLMOps 课程项目的 AI 部分：用户用自然语言说旅行需求，本机模型（Qwen3.5 35B-A3B，11-22 以前是 4B；Ollama）摘出条件，代码检查、追问，交给网站的确定性行程引擎（`plan_trip`）排行程，再检查、写成说明。
 
 The AI layer of the course project: a local model extracts trip conditions from free-form requests; code validates them and asks follow-ups; the website's deterministic engine plans the trip; code checks the result and writes the explanation.
 

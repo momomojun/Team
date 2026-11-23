@@ -47,7 +47,45 @@ export interface TripRequest {
   exclude?: string[];
   /** 用户指定的某几晚住处：第 night 晚（第 night 天晚上）住推荐住宿里的哪一家 */
   lodging?: { night: number; id: string }[];
+  /** 用户的软要求（11-21 加，规划 agent 从原话里翻译出来；见 TripPrefs） */
+  prefs?: TripPrefs;
   provenance?: Partial<Record<RequestField, FieldSource>>;
+}
+
+/**
+ * 软要求：用户说了、表单上没有的（“中间留一天休息”“每天开车别超过 3 小时”“9 点以后再出门”）。
+ * 时间写 "HH:MM"；行程引擎尽量照做，做不到的（比如两座公园离得远、又要求每天开车很少）由审查 agent 发现、讲清楚取舍
+ */
+export interface TripPrefs {
+  /** 第几天什么都不排、住在前一晚的住处（1 开始；第一天、最后一天不算） */
+  restDays?: number[];
+  maxStopsPerDay?: number;
+  maxHikeMin?: number;
+  maxStopMin?: number;
+  avoidHazards?: string[];
+  /** "公园代码/片区"，比如 "seki/cedar-grove" */
+  excludeAreas?: string[];
+  departNotBefore?: string;
+  returnBy?: string;
+  maxDrivePerDay?: number;
+  /** 某一天最多几站（day 1 开始，按整趟的天数算） */
+  dayMaxStops?: { day: number; count: number }[];
+  /** 最后一天几点前到回程地（赶飞机） */
+  lastDayBy?: string;
+  /** 至少几次日出、日落、看星空 */
+  minSlots?: { sunrise?: number; sunset?: number; night?: number };
+  /** 至少几条徒步 */
+  minHikes?: number;
+  /** 一定要走的季节性山路（roads.ts 的 id，比如 "glac-logan-pass"） */
+  roads?: string[];
+  /** 不坐园区班车 */
+  avoidShuttle?: boolean;
+  /** 一天最多去几个片区 */
+  maxAreasPerDay?: number;
+  /** 某一天只待在一个片区（day 1 开始；area 是 "公园代码/片区"） */
+  dayAreas?: { day: number; area: string }[];
+  /** 哪几天去哪座公园（day 1 开始） */
+  parkDays?: { park: string; days: number[] }[];
 }
 
 export const REQUEST_FIELDS = [
@@ -63,6 +101,7 @@ export const REQUEST_FIELDS = [
   "include",
   "exclude",
   "lodging",
+  "prefs",
 ] as const;
 export type RequestField = (typeof REQUEST_FIELDS)[number];
 
@@ -89,10 +128,11 @@ export const STOP_WARNINGS = [
   "maybeClosed",
   "familySerious",
   "alertMaybeClosed",
+  "lottery",
 ] as const;
 
 /** 没排进去的原因（generate-trip.ts 的 GuideSkipped） */
-export const SKIP_REASONS = ["permit", "closed", "tooHard", "noTime", "tooFar", "across", "unsuitable"] as const;
+export const SKIP_REASONS = ["permit", "closed", "tooHard", "noTime", "tooFar", "across", "unsuitable", "prefs"] as const;
 
 const DATE_PATTERN = "^\\d{4}-\\d{2}-\\d{2}$";
 /** NPS 公告（Copilot 提取的关闭清单里的一条）：标题、链接、公告写的重开日期 */
@@ -146,6 +186,72 @@ export const tripRequestSchema = {
         properties: {
           night: { type: "integer", minimum: 1, maximum: MAX_TRIP_DAYS - 1 },
           id: { type: "string", pattern: "^[a-z]{4}-stay-[a-z0-9-]+$" },
+        },
+      },
+    },
+    prefs: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        restDays: { type: "array", maxItems: MAX_TRIP_DAYS - 2, uniqueItems: true, items: { type: "integer", minimum: 2, maximum: MAX_TRIP_DAYS - 1 } },
+        maxStopsPerDay: { type: "integer", minimum: 1, maximum: 12 },
+        maxHikeMin: { type: "integer", minimum: 15, maximum: 900 },
+        maxStopMin: { type: "integer", minimum: 15, maximum: 900 },
+        avoidHazards: {
+          type: "array",
+          uniqueItems: true,
+          items: { enum: ["dropoff", "scramble", "thermal", "flashFlood", "water", "heat", "altitude", "wildlife", "remote", "motion"] },
+        },
+        excludeAreas: { type: "array", maxItems: 20, uniqueItems: true, items: { type: "string", pattern: "^[a-z]{4}/[a-z0-9-]+$" } },
+        departNotBefore: { type: "string", pattern: "^([01][0-9]|2[0-3]):[0-5][0-9]$" },
+        returnBy: { type: "string", pattern: "^([01][0-9]|2[0-3]):[0-5][0-9]$" },
+        maxDrivePerDay: { type: "integer", minimum: 30, maximum: 720 },
+        dayMaxStops: {
+          type: "array",
+          maxItems: MAX_TRIP_DAYS,
+          items: {
+            type: "object",
+            additionalProperties: false,
+            required: ["day", "count"],
+            properties: { day: { type: "integer", minimum: 1, maximum: MAX_TRIP_DAYS }, count: { type: "integer", minimum: 0, maximum: 12 } },
+          },
+        },
+        lastDayBy: { type: "string", pattern: "^([01][0-9]|2[0-3]):[0-5][0-9]$" },
+        minSlots: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            sunrise: { type: "integer", minimum: 0, maximum: MAX_TRIP_DAYS },
+            sunset: { type: "integer", minimum: 0, maximum: MAX_TRIP_DAYS },
+            night: { type: "integer", minimum: 0, maximum: MAX_TRIP_DAYS },
+          },
+        },
+        minHikes: { type: "integer", minimum: 0, maximum: 3 * MAX_TRIP_DAYS },
+        roads: { type: "array", maxItems: 5, uniqueItems: true, items: { type: "string", pattern: "^[a-z]{4}-[a-z0-9-]+$" } },
+        avoidShuttle: { type: "boolean" },
+        maxAreasPerDay: { type: "integer", minimum: 1, maximum: 6 },
+        dayAreas: {
+          type: "array",
+          maxItems: MAX_TRIP_DAYS,
+          items: {
+            type: "object",
+            additionalProperties: false,
+            required: ["day", "area"],
+            properties: { day: { type: "integer", minimum: 1, maximum: MAX_TRIP_DAYS }, area: { type: "string", pattern: "^[a-z]{4}/[a-z0-9-]+$" } },
+          },
+        },
+        parkDays: {
+          type: "array",
+          maxItems: 6,
+          items: {
+            type: "object",
+            additionalProperties: false,
+            required: ["park", "days"],
+            properties: {
+              park: { enum: parkCodes },
+              days: { type: "array", minItems: 1, uniqueItems: true, items: { type: "integer", minimum: 1, maximum: MAX_TRIP_DAYS } },
+            },
+          },
         },
       },
     },
@@ -226,6 +332,16 @@ export const tripResultSchema = {
           driveMin: { type: "integer", minimum: 0 },
           activeMin: { type: "integer", minimum: 0 },
           warnings: { type: "array", items: { enum: ["overloaded", "lateReturn"] } },
+          /** 这天要走的季节性山路，往年这一天通车的把握（0–1；当年已经知道的是 0 或 1；记录太少是 null） */
+          roads: {
+            type: "array",
+            items: {
+              type: "object",
+              additionalProperties: false,
+              required: ["id", "nameZh", "nameEn", "chance"],
+              properties: { id: { type: "string" }, nameZh: { type: "string" }, nameEn: { type: "string" }, chance: { type: ["number", "null"], minimum: 0, maximum: 1 } },
+            },
+          },
           lodging: {
             oneOf: [
               { type: "null" },

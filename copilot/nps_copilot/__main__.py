@@ -78,7 +78,7 @@ def main() -> None:
     if args.command == "version":
         print(json.dumps({"version": __version__, "build": os.environ.get("COPILOT_BUILD_SHA"), "prompts": prompts.current(),
                           "data": data_version.current(),
-                          "provider": os.environ.get("COPILOT_PROVIDER", "ollama"), "model": os.environ.get("COPILOT_MODEL", "qwen3.5:4b-q4_K_M")},
+                          "provider": os.environ.get("COPILOT_PROVIDER", "ollama"), "model": os.environ.get("COPILOT_MODEL", "qwen3.5:35b-a3b-q4_K_M")},
                          ensure_ascii=False, indent=1))
         return
     if args.command == "alerts":

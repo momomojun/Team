@@ -50,9 +50,16 @@ def request_key(task: str, system: str, user: str, schema: dict) -> str:
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:24]
 
 
+def _think(model: str) -> bool | str:
+    """关思考。gpt-oss 关不掉（think=False 照样按默认的 medium 想），想的内容占掉 num_predict，JSON 写到一半被截断；
+    它只认 low / medium / high，给 low（11-22 本机对照时查出来的）"""
+    return "low" if model.startswith("gpt-oss") else False
+
+
 @dataclass
 class OllamaProvider:
-    model: str = os.environ.get("COPILOT_MODEL", "qwen3.5:4b-q4_K_M")
+    # 本机兜底 11-22 起换成 Qwen3.5 35B-A3B（MoE，每次只用 3B；本机对照理解、推理更好，慢 2–3 倍，见 RESULTS.md）
+    model: str = os.environ.get("COPILOT_MODEL", "qwen3.5:35b-a3b-q4_K_M")
     host: str = os.environ.get("OLLAMA_HOST_URL", "http://127.0.0.1:11435")
     timeout: float = 120.0
     name: str = "ollama"
@@ -66,7 +73,7 @@ class OllamaProvider:
         # 写说明比摘片段长得多：7 天的行程 512 个 token 不够，JSON 会被截断
         options = {**self.options, "num_predict": 1536} if task == "writer" else self.options
         body = json.dumps({
-            "model": self.model, "stream": False, "think": False, "format": schema, "options": options,
+            "model": self.model, "stream": False, "think": _think(self.model), "format": schema, "options": options,
             "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
         }).encode("utf-8")
         request = urllib.request.Request(f"{self.host}/api/chat", data=body, headers={"Content-Type": "application/json"})
@@ -78,6 +85,9 @@ class OllamaProvider:
             raise ProviderError(f"连不上本机 Ollama（{self.host}）：{error}") from error
         latency = round((time.perf_counter() - start) * 1000)
         content = reply.get("message", {}).get("content", "")
+        if not content and reply.get("message", {}).get("tool_calls"):
+            # gpt-oss 看到提示词里讲“工具”，不按 format 写 JSON，改用它自己的工具调用格式（11-22 本机对照时查出来的）
+            raise ProviderError("模型没有返回 JSON：用了自己的工具调用格式（tool_calls），没按要求的格式写")
         try:
             data = json.loads(content)
         except json.JSONDecodeError as error:

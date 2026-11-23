@@ -328,3 +328,12 @@ def test_pace_the_model_put_into_party_still_counts(make_intake):
     turn = intake.step("Rocky Mountain, June 3-7 2027, Denver in and out, packed")
     assert turn.status == "ready" and turn.request["pace"] == "packed" and turn.request["days"] == 5
     assert "party" not in turn.request
+
+
+def test_places_inside_a_known_park_are_not_other_parks():
+    """模型把园里的地方放进了公园（11-22 Gemini：the coast、the rainforest、Hurricane Ridge）：公园认出来了就跳过，不反问“是不是石化林”"""
+    from nps_copilot.intake import place_in_parks
+    assert place_in_parks("the coast", ["olym"]) and place_in_parks("the rainforest", ["olym"])
+    assert place_in_parks("Hurricane Ridge", ["olym"]) and place_in_parks("飓风岭", ["olym"])
+    assert not place_in_parks("Petrified Forest", ["olym"]) and not place_in_parks("Zion", ["olym"])
+    assert not place_in_parks("Hurricane Ridge", ["yose"])
