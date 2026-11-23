@@ -55,7 +55,7 @@ export const GATES = [
 
 /**
  * 软要求题（copilot/eval/soft.py）。v1：team 是 11-22（三）修了“无中生有”以后的回放，teamFixed 是修了 S07、S13、S20（代码按原话认天数、
- * 一天一个片区先挑片区再整片分天、园里的地方不当成公园）以后的回放。v2：20 道对照题第一次跑（本机模型，录了音）
+ * 一天一个片区先挑片区再整片分天、园里的地方不当成公园）以后的回放。v2：20 道对照题第一次跑（本机三个模型和 Gemini，录了音）
  */
 export const SOFT = {
   v1Total: 30,
@@ -64,12 +64,13 @@ export const SOFT = {
     { model: "Qwen3.5 4B", dispatcher: 7, team: 25, teamFixed: 27 },
     { model: "Qwen3.5 35B-A3B", dispatcher: 7, team: 27, teamFixed: 29 },
     { model: "gpt-oss 20B", dispatcher: 7, team: 27, teamFixed: 27 },
-    { model: "Gemini 3.5 Flash Lite", dispatcher: 7, team: 26, teamFixed: 27 },
+    { model: "Gemini 3.5 Flash Lite", dispatcher: 7, team: 26, teamFixed: 28 },
   ],
   v2: [
     { model: "Qwen3.5 4B", dispatcher: 20, team: 20, invented: 0, caught: 20 },
     { model: "Qwen3.5 35B-A3B", dispatcher: 20, team: 20, invented: 0, caught: 3 },
     { model: "gpt-oss 20B", dispatcher: 20, team: 20, invented: 0, caught: 0 },
+    { model: "Gemini 3.5 Flash Lite", dispatcher: 20, team: 20, invented: 0, caught: 0 },
   ] as { model: string; dispatcher: number; team: number; invented: number; caught: number }[],
 };
 
@@ -225,12 +226,12 @@ export const MODEL_MATRIX = {
     {
       "suiteZh": "软要求 · 多 agent（修了 S07、S13、S20 以后）",
       "suiteEn": "Soft wishes · multi-agent (after the S07, S13, S20 fixes)",
-      "values": ["27/30", "29/30", "27/30", "27/30"]
+      "values": ["27/30", "29/30", "27/30", "28/30"]
     },
     {
       "suiteZh": "对照题 · 不能无中生有（soft-v2）",
       "suiteEn": "Control cases · nothing invented (soft-v2)",
-      "values": ["20/20", "20/20", "20/20", "—"]
+      "values": ["20/20", "20/20", "20/20", "20/20"]
     }
   ],
   "speedZh": "每题耗时中位数（同一台电脑、同一天）——软要求 · 调度员：4B 1.1 s，35B-A3B 7.3 s，gpt-oss 20B 11.3 s；软要求 · 多 agent：3.7 s，11.8 s，18.5 s；回答问题 · search agent：3.7 s，7.6 s，4.4 s（多半退回了）；单句理解（每次调用）：4B —，35B-A3B 约 3.4 s，gpt-oss 20B 约 4.8 s。（4B 单句理解、多轮对话的录音是 10 月在仓库主人另一台电脑上录的，耗时不能和这里比，不列。） gpt-oss 的 search agent 44 题里 37 题第一步就出错、退回找一次就答。Gemini 那一列只有软要求，别的成绩是在旧代码上测的，不能比。",
@@ -1591,28 +1592,28 @@ export const EVAL_ROUNDS: EvalRound[] = [
     "titleZh": "补对照题、修 S07 和 S13",
     "titleEn": "Control cases, S07 and S13 fixed",
     "kind": "soft",
-    "summaryZh": "补了 20 道没有软要求的对照题（一半英文），三个本机模型都 20/20、没有无中生有（4B 编了 20 条、35B 编了 3 条，都被代码核对拦下）。修了天数按原话认、一天一个片区先挑片区再整片分天、园里的地方不当成公园以后，soft-v1 多 agent 4B 27、35B 29、gpt-oss 27、Gemini 27。",
-    "summaryEn": "Added 20 control cases with no soft wishes (half English): all three local models scored 20/20 with nothing invented (4B made up 20 wishes and 35B 3, all caught by the code check). After reading day numbers from the user's words, choosing areas first for one-area-a-day, and not treating places inside a park as parks, soft-v1 multi-agent reached 4B 27, 35B 29, gpt-oss 27, Gemini 27.",
+    "summaryZh": "补了 20 道没有软要求的对照题（一半英文），三个本机模型和 Gemini 都 20/20、没有无中生有（4B 编了 20 条、35B 编了 3 条，都被代码核对拦下）。修了天数按原话认、一天一个片区先挑片区再整片分天、园里的地方不当成公园以后，soft-v1 多 agent 4B 27、35B 29、gpt-oss 27、Gemini 28。",
+    "summaryEn": "Added 20 control cases with no soft wishes (half English): all three local models and Gemini scored 20/20 with nothing invented (4B made up 20 wishes and 35B 3, all caught by the code check). After reading day numbers from the user's words, choosing areas first for one-area-a-day, and not treating places inside a park as parks, soft-v1 multi-agent reached 4B 27, 35B 29, gpt-oss 27, Gemini 28.",
     "results": [
       {
         "suite": "soft-v2 对照题",
-        "model": "4B / 35B-A3B / gpt-oss · 调度员",
-        "score": "20/20 · 20/20 · 20/20"
+        "model": "4B / 35B-A3B / gpt-oss / Gemini · 调度员",
+        "score": "20/20 · 20/20 · 20/20 · 20/20"
       },
       {
         "suite": "soft-v2 对照题",
-        "model": "4B / 35B-A3B / gpt-oss · 多 agent",
-        "score": "20/20 · 20/20 · 20/20"
+        "model": "4B / 35B-A3B / gpt-oss / Gemini · 多 agent",
+        "score": "20/20 · 20/20 · 20/20 · 20/20"
       },
       {
         "suite": "soft-v2 模型编的、代码拦下",
-        "model": "4B / 35B-A3B / gpt-oss",
-        "score": "20 · 3 · 0"
+        "model": "4B / 35B-A3B / gpt-oss / Gemini",
+        "score": "20 · 3 · 0 · 0"
       },
       {
         "suite": "soft-v1 多 agent（修了以后，回放）",
         "model": "4B / 35B-A3B / gpt-oss / Gemini",
-        "score": "27 · 29 · 27 · 27"
+        "score": "27 · 29 · 27 · 28"
       },
       {
         "suite": "soft-v1 调度员",

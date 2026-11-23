@@ -50,9 +50,9 @@
   - 天数按原话认（`team.days_said`、`said_last`）：“前两天大提顿、后四天黄石”模型只给公园不给天数，3 天的行程把最后一天写成第 5 天，代码从原话算。
   - 一天只去一个片区：引擎先挑片区、再整片分到各天（`generate-trip.ts`）；规划 agent 没写个数按 1。
   - Intake：公园认出来以后，园里的景点、片区和泛指的地形（海边、雨林、山脊）不当成另一座公园（`intake.place_in_parks`，Gemini 把 the rainforest 当成石化林反问）。
-  - soft-v1 多 agent：4B 25 → 27、35B 27 → 29、gpt-oss 27、Gemini 26 → 27。
-- 对照题 `soft-v2`：20 道（10 中 10 英），先提交再跑；本机三个模型调度员、多 agent 都 20/20，4B 编的 20 条、35B 编的 3 条全被代码核对拦下。`soft.py` 加了 `no_wishes` 判分和“编了几条、拦下几条”。
+  - soft-v1 多 agent：4B 25 → 27、35B 27 → 29、gpt-oss 27、Gemini 26 → 28（S13 的那次调用 11-23 补录）。
+- 对照题 `soft-v2`：20 道（10 中 10 英），先提交再跑；本机三个模型和 Gemini 调度员、多 agent 都 20/20，4B 编的 20 条、35B 编的 3 条全被代码核对拦下。`soft.py` 加了 `no_wishes` 判分和“编了几条、拦下几条”。
 - 后台：加“技术栈”一节（每一层用了什么）；架构图加“多 agent 排行程”一张，整体架构里写上多 agent 和本机 35B-A3B；顶上加“测试和评测 →”，点进去是 `/admin/evals`：测试分几层、多 agent 对照调度员（横条，v1 修前修后、v2 对照题）、本机模型对照表（每行最好的加粗）、十组门禁和基线、历次评测（RESULTS.md 的 34 轮，新的在上）。数据在 `src/data/eval-history.ts`（助手按 RESULTS.md 抄的数字，抽查过）。
 - 发版：版本号改成 0.7.0，`docs/releases/copilot-v0.7.0.md`。合并以后打 `copilot-v0.7.0` tag，正式环境的 Copilot 才默认打开多 agent。
 - 验证：网站 236 个测试、Copilot 535 个测试、十组回放门禁、ruff、tsc、eslint 都过；浏览器里看过后台和测试页（中文电脑宽度，英文、手机宽度见 PR）。
-- 没做：Gemini 的 S13 要补录 1–3 次调用、soft-v2 的 Gemini 一套约 200 次调用，都要先问仓库主人。
+- 11-23 仓库主人同意用 Gemini 补跑：S13 补录 1 次、soft-v2 一套 117 次（免费额度）。
