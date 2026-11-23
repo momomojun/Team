@@ -10,11 +10,11 @@
 import { useState } from "react";
 import { ArchitectureDiagram, Arrow, Box, CLAY, INK, Markers, MUTE, PINE, type AdminLang } from "./architecture-diagram";
 
-type Tab = "overview" | "turn" | "agent" | "delivery";
+type Tab = "overview" | "turn" | "team" | "agent" | "delivery";
 
 const TABS: Record<AdminLang, Record<Tab, string>> = {
-  zh: { overview: "整体架构", turn: "一句话怎么走", agent: "search agent 的一圈", delivery: "开发到上线" },
-  en: { overview: "System overview", turn: "One message, step by step", agent: "Search agent loop", delivery: "From PR to production" },
+  zh: { overview: "整体架构", turn: "一句话怎么走", team: "多 agent 排行程", agent: "search agent 的一圈", delivery: "开发到上线" },
+  en: { overview: "System overview", turn: "One message, step by step", team: "Multi-agent planning", agent: "Search agent loop", delivery: "From PR to production" },
 };
 
 const TEXT = {
@@ -28,8 +28,8 @@ const TEXT = {
       relay: ["Copilot 中转 · 后台", "/api/copilot/chat · plan · admin · tts"],
       guard: "访问密码（proxy）· 账号 /api/auth、/api/me",
       modal: "Modal · Copilot（staging 和正式两个环境）",
-      service: ["Copilot 服务", "Python · FastAPI · LangGraph · 口令 + 限流"],
-      models: ["模型", "Gemini 先，出错依次换"],
+      service: ["Copilot 服务", "Python · FastAPI · LangGraph · 多 agent · 口令 + 限流"],
+      models: ["模型", "Gemini 先，出错依次换", "本机 Qwen3.5 35B-A3B"],
       tsEngine: ["同一份引擎", "node：plan_trip、8 种查询"],
       volume: ["Volume（Modal 的存储）", "对话存档 · 计费总账 · 运行日志"],
       staging: "staging：合进 main 自动部署，配 Vercel Preview",
@@ -39,6 +39,23 @@ const TEXT = {
       live: ["实时外部接口", "NPS 公告和门票 · Open-Meteo · NWS", "AAA 油价 · Google Flights · DeepL"],
       actions: ["GitHub Actions 定时", "每晚读公告 → data/alerts-live", "每周营地对照 · 每月数据保质期"],
       foot: "没有自己的服务器：网站是 Vercel 上的 Next.js，Copilot 是 Modal 上按秒计费的一台小机器，数据大多是脚本从开放数据预先生成、提交进仓库的。",
+    },
+    team: {
+      said: ["用户说过的话", "这一趟的每一句"],
+      planner: ["规划 agent", "摘出软要求（中间休息一天、", "每天开车上限、哪天去哪……）"],
+      check: ["代码核对", "原话真在用户的话里", "原话里有说到这件事的词 · 参数合法"],
+      knobs: ["翻成引擎的旋钮（18 种）", "休息日 · 开车上限 · 哪天去哪座公园", "一天几个片区 · 几点前回 · 只住一家……"],
+      engine: ["排行程引擎", "按旋钮排，不用模型"],
+      grade: ["逐条判分", "scripts/soft-check-lib.mjs", "和评测用的是同一个脚本"],
+      review: ["审查 agent", "换轻松节奏 · 加减景点", "合并住处 · 放弃这条"],
+      writer: ["取舍说明（代码写）", "做到了哪些 · 哪条没做到、为什么", "少去了哪些"],
+      reply: ["回复", "行程 + 取舍说明"],
+      allOk: "都做到了",
+      notOk: "有没做到的",
+      again: "再排一次（最多 3 轮）",
+      none: "没摘出软要求：直接排",
+      foot1: "默认打开（COPILOT_TEAM=0 关掉）。核对那一步是 11-22 打开以后门禁查出来加的：模型把“节奏适中”读成中间休息一天、“一家四口”读成只住一家，原话里没有说到这件事的词就丢掉。",
+      foot2: "软要求 30 题（soft-v1）：调度员 7/30，多 agent 25–27/30；对照题 20 题（soft-v2，一半英文）查它会不会无中生有。成绩见“测试和评测”页。",
     },
     agent: {
       question: ["问题和上下文", "原话 + 调度员补全的问法", "今天的日期 · 已经排好的行程"],
@@ -85,8 +102,8 @@ const TEXT = {
       relay: ["Copilot relay · dashboard", "/api/copilot/chat · plan · admin · tts"],
       guard: "Site password (proxy) · accounts at /api/auth, /api/me",
       modal: "Modal · Copilot (staging and production)",
-      service: ["Copilot service", "Python · FastAPI · LangGraph · token + rate limits"],
-      models: ["Models", "Gemini first, then fallbacks"],
+      service: ["Copilot service", "Python · FastAPI · LangGraph · multi-agent · token + limits"],
+      models: ["Models", "Gemini first, then fallbacks", "Local Qwen3.5 35B-A3B"],
       tsEngine: ["Same engine", "node: plan_trip, 8 lookups"],
       volume: ["Volume (Modal storage)", "Chat checkpoints · billing ledger · run logs"],
       staging: "staging: deployed on every merge to main, used by Vercel Preview",
@@ -96,6 +113,23 @@ const TEXT = {
       live: ["Live external APIs", "NPS alerts and fees · Open-Meteo · NWS", "AAA gas · Google Flights · DeepL"],
       actions: ["Scheduled GitHub Actions", "Nightly alerts → data/alerts-live", "Weekly campgrounds · monthly freshness"],
       foot: "No servers of our own: the site is Next.js on Vercel, the Copilot is one small per-second-billed machine on Modal, and most data is generated from open data by scripts and committed to the repo.",
+    },
+    team: {
+      said: ["What the user said", "Every message of this trip"],
+      planner: ["Planning agent", "Pulls out soft wishes (a rest day,", "a daily drive cap, which park when…)"],
+      check: ["Code checks", "The quote really is in the user's words", "It talks about that wish · valid params"],
+      knobs: ["Engine knobs (18 kinds)", "Rest days · drive cap · park by day", "Areas per day · back by · one hotel…"],
+      engine: ["Trip planner", "Plans with the knobs, no model"],
+      grade: ["Per-wish grading", "scripts/soft-check-lib.mjs", "Same script as the eval"],
+      review: ["Review agent", "Easier pace · add or drop stops", "Merge hotels · give up a wish"],
+      writer: ["Trade-off note (code)", "What was met · what wasn't and why", "What was left out"],
+      reply: ["Reply", "Trip + trade-off note"],
+      allOk: "all met",
+      notOk: "something missed",
+      again: "re-plan (up to 3 rounds)",
+      none: "No soft wishes: plan directly",
+      foot1: "On by default (COPILOT_TEAM=0 turns it off). The cue-word check was added on 11-22 after the gates caught the model reading “balanced pace” as a rest day and “family of four” as one hotel.",
+      foot2: "Soft-wish eval (soft-v1, 30 cases): dispatcher 7/30, multi-agent 25–27/30; 20 control cases (soft-v2, half English) check it invents nothing. See the tests page.",
     },
     agent: {
       question: ["Question and context", "User's words + dispatcher's rewrite", "Today's date · the planned trip"],
@@ -205,14 +239,14 @@ function Overview({ lang }: { lang: AdminLang }) {
 
         <Frame x={720} y={20} w={460} h={400} label={t.modal} />
         <Box x={740} y={56} w={420} lines={t.service} kind="code" />
-        <Box x={740} y={150} w={205} lines={t.models} kind="llm" tag={llm} />
-        <Box x={955} y={150} w={205} lines={t.tsEngine} kind="engine" />
-        <Box x={740} y={236} w={420} lines={t.volume} kind="code" />
+        <Box x={740} y={150} w={205} h={82} lines={t.models} kind="llm" tag={llm} />
+        <Box x={955} y={150} w={205} h={82} lines={t.tsEngine} kind="engine" />
+        <Box x={740} y={246} w={420} lines={t.volume} kind="code" />
         <Note x={740} y={336}>{t.staging}</Note>
         <Note x={740} y={356}>{t.prod}</Note>
         <Arrow d="M842 120 V146" color={CLAY} />
         <Arrow d="M1057 120 V146" color={PINE} />
-        <Arrow d="M1160 100 H1172 V268 H1164" dashed />
+        <Arrow d="M1160 100 H1172 V278 H1164" dashed />
         {/* 网站的中转连到 Copilot */}
         <Arrow d="M672 328 C704 328 704 88 736 88" />
 
@@ -231,6 +265,50 @@ function Overview({ lang }: { lang: AdminLang }) {
         <Arrow d="M1100 460 V424" dashed color={PINE} />
 
         <Note x={20} y={590}>{t.foot}</Note>
+      </Canvas>
+      <Legend lang={lang} />
+    </figure>
+  );
+}
+
+function TeamLoop({ lang }: { lang: AdminLang }) {
+  const t = TEXT[lang].team;
+  const llm = lang === "zh" ? "模型" : "LLM";
+  return (
+    <figure className="mt-6">
+      <Canvas height={560} label={TABS[lang].team}>
+        <Box x={20} y={40} w={190} lines={t.said} kind="plain" />
+        <Box x={250} y={40} w={240} h={82} lines={t.planner} kind="llm" tag={llm} />
+        <Box x={530} y={40} w={270} h={82} lines={t.check} kind="code" />
+        <Box x={840} y={40} w={340} h={82} lines={t.knobs} kind="code" />
+        <Arrow d="M210 72 H246" />
+        <Arrow d="M490 81 H526" />
+        <Arrow d="M800 81 H836" />
+
+        <Box x={840} y={200} w={340} lines={t.engine} kind="engine" />
+        <Arrow d="M1010 122 V196" />
+        <Box x={530} y={200} w={270} h={82} lines={t.grade} kind="code" />
+        <Arrow d="M840 232 H804" />
+
+        <Box x={250} y={200} w={220} h={82} lines={t.writer} kind="code" />
+        <Arrow d="M530 232 H474" />
+        <Note x={476} y={224}>{t.allOk}</Note>
+        <Box x={20} y={200} w={190} lines={t.reply} kind="plain" />
+        <Arrow d="M250 232 H214" />
+
+        <Box x={530} y={360} w={270} h={82} lines={t.review} kind="llm" tag={llm} />
+        <Arrow d="M665 282 V356" color={CLAY} />
+        <Note x={673} y={326} color={CLAY}>{t.notOk}</Note>
+        <Arrow d="M800 401 H1010 V268" color={CLAY} />
+        <Note x={830} y={392} color={CLAY}>{t.again}</Note>
+        <Arrow d="M530 420 H360 V286" dashed />
+
+        {/* 没摘出软要求：直接排 */}
+        <Arrow d="M370 122 V160 H1100 V196" dashed />
+        <Note x={420} y={152}>{t.none}</Note>
+
+        <Note x={20} y={500}>{t.foot1}</Note>
+        <Note x={20} y={520}>{t.foot2}</Note>
       </Canvas>
       <Legend lang={lang} />
     </figure>
@@ -336,6 +414,7 @@ export function SystemDiagrams({ lang, chain }: { lang: AdminLang; chain?: strin
       </div>
       {tab === "overview" && <Overview lang={lang} />}
       {tab === "turn" && <ArchitectureDiagram lang={lang} chain={chain} />}
+      {tab === "team" && <TeamLoop lang={lang} />}
       {tab === "agent" && <AgentLoop lang={lang} />}
       {tab === "delivery" && <Delivery lang={lang} />}
     </div>

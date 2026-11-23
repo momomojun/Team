@@ -239,6 +239,54 @@ def _clean(item: dict) -> dict:
     return out
 
 
+_NUM = r"\d+|[一两二三四五六七八九十]+"
+_CN = {"一": 1, "两": 2, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6, "七": 7, "八": 8, "九": 9}
+_EN_NUM = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10}
+
+
+def _number(text: str) -> int:
+    if text.isdigit():
+        return int(text)
+    if text in _EN_NUM:
+        return _EN_NUM[text]
+    if "十" in text:  # 十、十二、二十
+        head, _, tail = text.partition("十")
+        return (_CN.get(head, 1) if head else 1) * 10 + (_CN.get(tail, 0) if tail else 0)
+    return _CN.get(text, 0)
+
+
+def days_said(evidence: str, park: str, total: int) -> list[int]:
+    """park_days 的天数按原话算：模型常常只给公园、不给 days（11-22 四个模型全都漏了“前两天大提顿、后四天黄石”的 days）。
+    原话按逗号、分号、and/then 切成几段，找写着这座公园的那一段，认“前 N 天 / 后 N 天 / 第 N 天 / 第 N 到 M 天 / 最后一天”
+    和 first/last N days、day N、days N-M；认不出来就是空的（照旧丢掉这条）"""
+    info = catalog.parks().get(park)
+    if not info or total < 1:
+        return []
+    names = [n for n in (info.name_zh, info.name_en, *info.aliases) if n]
+    names = sorted({normalize(n).lower() for n in names} | {normalize(info.name_en).lower().replace(" national park", "")}, key=len, reverse=True)
+    clauses = re.split(r"[，,；;。.、]|\band\b|\bthen\b|然后|再", normalize(evidence).lower())
+    clause = next((c for c in clauses if any(n and n in c for n in names)), "")
+    if not clause:
+        return []
+    num = _NUM + r"|one|two|three|four|five|six|seven|eight|nine|ten"
+    span = re.search(rf"第\s*({_NUM})\s*(?:到|至|-|–|~)\s*第?\s*({_NUM})\s*[天日]|days?\s*(\d+)\s*(?:-|–|to|through|and)\s*(\d+)", clause)
+    if span:
+        a, b = (_number(x) for x in (span.group(1) or span.group(3), span.group(2) or span.group(4)))
+        days = list(range(a, b + 1))
+    elif m := re.search(rf"(?:前|头)\s*({_NUM})\s*[天日]|first\s+({num})\s+days?", clause):
+        days = list(range(1, _number(m.group(1) or m.group(2)) + 1))
+    elif m := re.search(rf"(?:后|最后)\s*({_NUM})\s*[天日]|last\s+({num})\s+days?", clause):
+        n = _number(m.group(1) or m.group(2))
+        days = list(range(total - n + 1, total + 1))
+    elif re.search(r"最后\s*[一1]?\s*[天日]|last day", clause):
+        days = [total]
+    elif m := re.search(rf"第\s*({_NUM})\s*[天日]|day\s*(\d+)", clause):
+        days = [_number(m.group(1) or m.group(2))]
+    else:
+        return []
+    return [d for d in days if 1 <= d <= total]
+
+
 def compile_wishes(raw: list, messages: list[str], request: dict) -> Plan:
     """核对每条 wish（原话片段真在用户说过的话里、参数合法），翻成引擎的旋钮和检查"""
     said = "\n".join(messages)
@@ -303,13 +351,15 @@ def compile_wishes(raw: list, messages: list[str], request: dict) -> Plan:
         elif kind == "no_consecutive_early":
             params = {"before": item["time"] if time_ok else "07:00"}  # 引擎没有旋钮：审查 agent 去掉一个早起的景点
         elif kind == "day_return_by":
-            if not time_ok or not (item.get("last") or item.get("day") == days):
+            # “最后一天”按原话认：模型常把天数写错（11-22 gpt-oss 给 3 天的行程写 day 5），原话说的是最后一天就是最后一天
+            said_last = re.search(r"最后\s*[一1]?\s*[天日]|走的那天|回去那天|离开那天|last day|final day|day we (fly|leave)|fly(ing)? (home|out)", normalize(evidence).lower())
+            if not time_ok or not (item.get("last") or item.get("day") == days or said_last):
                 drop(item, "only_last_day")
                 continue
             params = {"day": "last", "time": item["time"]}
             prefs["lastDayBy"] = item["time"]
         elif kind == "park_days":
-            chosen = [d for d in item.get("days") or [] if day_ok(d)]
+            chosen = [d for d in item.get("days") or [] if day_ok(d)] or days_said(evidence, item.get("park") or "", days)
             if item.get("park") not in parks or not chosen or len(parks) < 2:
                 drop(item, "bad_park_days")
                 continue
@@ -356,11 +406,13 @@ def compile_wishes(raw: list, messages: list[str], request: dict) -> Plan:
             params = {"area": item["area"]}
             prefs.setdefault("excludeAreas", []).append(item["area"])
         elif kind == "max_areas_per_day":
-            if not item.get("count") or item["count"] > 6:
+            # 模型常把个数写进 min（11-22 4B）或者干脆不写：这条要求几乎都是“一天一个片区”，没写就按 1
+            count = item.get("count") or item.get("min") or 1
+            if count > 6:
                 drop(item, "no_count")
                 continue
-            params = {"count": item["count"]}
-            prefs["maxAreasPerDay"] = item["count"]
+            params = {"count": count}
+            prefs["maxAreasPerDay"] = count
         elif kind == "day_single_area":
             if not day_ok(item.get("day")) or item.get("area") not in area_ids:
                 drop(item, "bad_area")

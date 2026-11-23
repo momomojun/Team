@@ -16,5 +16,5 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/admin">)
 export default async function AdminPage({ params }: PageProps<"/[locale]/admin">) {
   const { locale } = await params;
   if (!hasLocale(locale)) notFound();
-  return <AdminDashboard lang={locale === "en" ? "en" : "zh"} />;
+  return <AdminDashboard lang={locale === "en" ? "en" : "zh"} locale={locale} />;
 }

@@ -75,6 +75,17 @@ test("按天的要求：哪几天去哪座公园、某天只待一个片区、�
   assert.deepEqual(ok(flight, [{ kind: "day_return_by", day: "last", time: "12:00" }]), [true]);
 });
 
+test("一天只去一个片区：片区比天数多时先挑片区，再整片分到各天（奥林匹克 4 天，必去的分在 5 个片区）", () => {
+  const request = { parks: ["olym"], startDate: "2027-08-12", days: 4, origin: { airport: "SEA" } };
+  const checks = [{ kind: "max_areas_per_day", count: 1 }];
+  assert.deepEqual(ok(plan(request), checks), [false]);
+  const result = plan({ ...request, prefs: { maxAreasPerDay: 1 } });
+  assert.deepEqual(ok(result, checks), [true]);
+  assert.ok(result.days.every((day) => day.stops.length > 0));
+  // 没挑上的片区里的必去写进“按你说的要求没排”
+  assert.ok(result.skipped.some((item) => item.reason === "prefs"));
+});
+
 test("至少一次日出、看星空，一定要走的山路，不坐班车，点名要去的抽签项目照排并提醒", () => {
   const sunrise = plan({ parks: ["yose"], startDate: "2027-05-12", days: 4, origin: { airport: "FAT" }, prefs: { minSlots: { sunrise: 1 } } });
   assert.deepEqual(ok(sunrise, [{ kind: "has_slot", slot: "sunrise", min: 1 }]), [true]);

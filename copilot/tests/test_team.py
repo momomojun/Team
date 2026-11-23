@@ -182,3 +182,21 @@ def test_wish_needs_words_about_that_wish():
     assert [w.kind for w in plan.wishes] == ["max_drive_per_day", "rest_day_on"]
     assert [d["reason"] for d in plan.trace["dropped"]] == ["evidence_not_about_kind"] * 4
     assert team._says("exclude", "老忠实泉不用去了") and not team._says("exclude", "算了，还是去马里波萨巨杉林吧")
+
+
+def test_park_days_and_last_day_read_from_the_quote():
+    """模型只给公园、不给 days（11-22 四个模型都漏了），或者把最后一天写成第 5 天（gpt-oss，3 天的行程）：代码按原话算"""
+    assert team.days_said("前两天大提顿，后四天黄石", "grte", 6) == [1, 2]
+    assert team.days_said("前两天大提顿，后四天黄石", "yell", 6) == [3, 4, 5, 6]
+    assert team.days_said("first two days in Grand Teton, then the last 4 days in Yellowstone", "yell", 6) == [3, 4, 5, 6]
+    assert team.days_said("第3到5天黄石", "yell", 6) == [3, 4, 5]
+    assert team.days_said("最后一天去大提顿", "grte", 6) == [6]
+    assert team.days_said("大提顿和黄石都去", "grte", 6) == []  # 没说哪几天：照旧丢掉
+    split = {"parks": ["grte", "yell"], "startDate": "2027-07-10", "days": 6}
+    said = ["2027年7月10日从杰克逊进出，6天，前两天大提顿，后四天黄石"]
+    raw = [{"kind": "park_days", "evidence": "前两天大提顿，后四天黄石", "park": "grte"},
+           {"kind": "park_days", "evidence": "前两天大提顿，后四天黄石", "park": "yell", "days": [3, 4, 5, 6]}]
+    assert team.compile_wishes(raw, said, split).prefs == {"parkDays": [{"park": "grte", "days": [1, 2]}, {"park": "yell", "days": [3, 4, 5, 6]}]}
+    flight = ["2027年7月22日从西雅图去雷尼尔山玩3天，最后一天中午12点前要到西雅图机场"]
+    raw = [{"kind": "day_return_by", "evidence": "最后一天中午12点前要到西雅图机场", "day": 5, "time": "12:00"}]
+    assert team.compile_wishes(raw, flight, {"parks": ["mora"], "startDate": "2027-07-22", "days": 3}).prefs == {"lastDayBy": "12:00"}

@@ -415,7 +415,24 @@ export function generateTrip(input: GenerateInput, original: GenerateContext): {
     context.stops = context.stops.map((stop) => (wanted.has(stop.id) ? { ...stop, mustSee: true } : stop));
     scores = new Map(available.map((stop) => [stop.id, score(stop, input.month, parkSize.get(stop.park) ?? 1, trails.get(stop.id))]));
   }
-  const ranked = [...available].sort((a, b) => scores.get(b.id)! - scores.get(a.id)!);
+  let ranked = [...available].sort((a, b) => scores.get(b.id)! - scores.get(a.id)!);
+
+  // 一天最多去几个片区：整趟最多去“天数 × 几个”个片区。片区比这多时先挑片区（片区里最好的三个景点分数加起来，
+  // 有用户点名的景点的片区一定留），别的片区整个不排、说明里写“按你说的要求没排”。不先挑的话，景点按分数挑完再分天，
+  // 后面只能一个一个挪、去掉，挪不开就一天去好几个片区（11-22：奥林匹克 4 天，必去的分在 5 个片区，第 3 天去了 3 个片区）
+  if (prefs.maxAreasPerDay !== undefined) {
+    const areaOf = (stop: GuideStop) => `${stop.park}/${stop.area ?? stop.id}`;
+    const groups = new Map<string, GuideStop[]>();
+    for (const stop of ranked) groups.set(areaOf(stop), [...(groups.get(areaOf(stop)) ?? []), stop]);
+    const cap = input.days * prefs.maxAreasPerDay;
+    if (groups.size > cap) {
+      const value = (stops: GuideStop[]) =>
+        (stops.some((stop) => include.has(stop.id)) ? 1e6 : 0) + stops.reduce((sum, stop) => sum + scores.get(stop.id)!, 0);
+      const keep = new Set([...groups.entries()].sort((a, b) => value(b[1]) - value(a[1])).slice(0, cap).map(([area]) => area));
+      for (const stop of ranked) if (!keep.has(areaOf(stop)) && (stop.mustSee || (popularRank(stop) ?? 99) <= 5)) skipped.prefs.push(stop.id);
+      ranked = ranked.filter((stop) => keep.has(areaOf(stop)));
+    }
+  }
 
   // 时间预算：扣掉从出发地开到公园、从公园开到回程地的时间（按最近的景点算）
   const reach = (point: LodgingPoint) =>
@@ -1097,6 +1114,39 @@ export function generateTrip(input: GenerateInput, original: GenerateContext): {
 
   // 按天的软要求（哪几天去哪座公园、一天只去一个片区、某天只待一处）：放错了的景点挪到能放的那天，
   // 整趟更不满才挪；挪不开的去掉（点名要去的不动），攻略说明里写“按你说的要求没排”
+  // 一天只去一个片区：先整片挪。按路线顺序把景点按片区归拢，片区不比天数多时每个片区一天、多出来的天分给景点最多的片区
+  //（一个一个挪的话，同一片区分在两天、中间隔着别的片区时挪不动）
+  const placeAreas = (current: Trip) =>
+    current.days.reduce(
+      (sum, day, d) => sum + misplacedOn(day.map((item) => stopById.get(item.id)).filter((stop): stop is PlanStop => stop !== undefined), d).length,
+      0,
+    );
+  if (prefs.maxAreasPerDay === 1 && !prefs.parkDays && !prefs.dayAreas && placeAreas(trip) > 0) {
+    const runs = new Map<string, Trip["days"][number]>();
+    for (const day of trip.days)
+      for (const item of day) {
+        const stop = stopById.get(item.id);
+        const key = stop ? placeArea(stop) : item.id;
+        runs.set(key, [...(runs.get(key) ?? []), item]);
+      }
+    if (runs.size <= trip.days.length) {
+      const minutesOf = (items: Trip["days"][number]) => items.reduce((sum, item) => sum + (stopById.get(item.id)?.durationMin ?? 0), 0);
+      const share = [...runs.values()].map((items) => ({ items, days: 1 }));
+      for (let extra = trip.days.length - share.length; extra > 0; extra--) {
+        const most = share.filter((s) => s.items.length > s.days).sort((a, b) => minutesOf(b.items) / b.days - minutesOf(a.items) / a.days)[0];
+        if (!most) break;
+        most.days++;
+      }
+      const days: Trip["days"] = share.flatMap(({ items, days: count }) =>
+        Array.from({ length: count }, (_, k) => items.slice(Math.round((k * items.length) / count), Math.round(((k + 1) * items.length) / count))),
+      );
+      while (days.length < trip.days.length) days.push([]);
+      const trial = arrangeAll(chooseLodging(arrangeAll({ ...trip, days })));
+      // 用户说的要求优先：整片挪完每天只剩一个片区就换；因此太满的天，后面“最后再查一遍太满的天”会去掉分数最低的景点
+      if (placeAreas(trial) === 0 || excess(trial) < excess(trip)) trip = trial;
+    }
+  }
+
   if (prefs.parkDays || prefs.dayAreas || prefs.maxAreasPerDay !== undefined) {
     const tried = new Set<string>();
     for (let round = 0; round < 12; round++) {

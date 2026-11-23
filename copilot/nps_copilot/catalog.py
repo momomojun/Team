@@ -108,6 +108,12 @@ def parks() -> dict[str, Park]:
 
 
 @lru_cache(maxsize=1)
+def attractions() -> list[dict]:
+    """景点目录（id、公园、中英文名、片区），网站的 attractions.json"""
+    return json.loads((CONTRACTS / "attractions.json").read_text(encoding="utf-8"))
+
+
+@lru_cache(maxsize=1)
 def max_trip_parks() -> int:
     """一趟最多几座公园：按契约的 parks.maxItems（网站的 MAX_TRIP_PARKS）"""
     schema = json.loads((CONTRACTS / "trip-request.v1.schema.json").read_text(encoding="utf-8"))

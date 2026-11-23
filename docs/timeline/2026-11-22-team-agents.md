@@ -42,3 +42,17 @@
 - 35B 把“我想住airbnb”当成一家住处：代码改成按住宿偏好处理（`dispatcher.LODGING_KIND`），35B 的 conversation-v1 19 → 20 组。
 - 4B、35B 的多轮对话录音补录了规划 agent 的调用（本机，不花钱），CI 门禁现在真的走多 agent。单元测试默认关多 agent（`tests/conftest.py`），`test_team.py` 自己打开。
 - 线上（Modal）的 Copilot 下次发版以后才会打开多 agent，每次排行程多一次云端模型调用。
+
+## 11-22 晚（四）：修 S07、S13、S20，补对照题，后台加“测试和评测”页，准备发 copilot-v0.7.0
+
+- 为什么做：仓库主人要线上发版；修 30 题里没做到的几题；补“什么要求都没有”的对照题（一半中文一半英文）；后台的技术栈和内容更新、把测试写进后台，单独一页看几轮测试的结果和对比。
+- 修了什么（成绩和细节见 RESULTS.md 2026-11-22（四））：
+  - 天数按原话认（`team.days_said`、`said_last`）：“前两天大提顿、后四天黄石”模型只给公园不给天数，3 天的行程把最后一天写成第 5 天，代码从原话算。
+  - 一天只去一个片区：引擎先挑片区、再整片分到各天（`generate-trip.ts`）；规划 agent 没写个数按 1。
+  - Intake：公园认出来以后，园里的景点、片区和泛指的地形（海边、雨林、山脊）不当成另一座公园（`intake.place_in_parks`，Gemini 把 the rainforest 当成石化林反问）。
+  - soft-v1 多 agent：4B 25 → 27、35B 27 → 29、gpt-oss 27、Gemini 26 → 27。
+- 对照题 `soft-v2`：20 道（10 中 10 英），先提交再跑；本机三个模型调度员、多 agent 都 20/20，4B 编的 20 条、35B 编的 3 条全被代码核对拦下。`soft.py` 加了 `no_wishes` 判分和“编了几条、拦下几条”。
+- 后台：加“技术栈”一节（每一层用了什么）；架构图加“多 agent 排行程”一张，整体架构里写上多 agent 和本机 35B-A3B；顶上加“测试和评测 →”，点进去是 `/admin/evals`：测试分几层、多 agent 对照调度员（横条，v1 修前修后、v2 对照题）、本机模型对照表（每行最好的加粗）、十组门禁和基线、历次评测（RESULTS.md 的 34 轮，新的在上）。数据在 `src/data/eval-history.ts`（助手按 RESULTS.md 抄的数字，抽查过）。
+- 发版：版本号改成 0.7.0，`docs/releases/copilot-v0.7.0.md`。合并以后打 `copilot-v0.7.0` tag，正式环境的 Copilot 才默认打开多 agent。
+- 验证：网站 236 个测试、Copilot 535 个测试、十组回放门禁、ruff、tsc、eslint 都过；浏览器里看过后台和测试页（中文电脑宽度，英文、手机宽度见 PR）。
+- 没做：Gemini 的 S13 要补录 1–3 次调用、soft-v2 的 Gemini 一套约 200 次调用，都要先问仓库主人。

@@ -1,5 +1,6 @@
 """软要求评测（多 agent 协作，11-21）：同一批题（cases/soft-v1.jsonl，30 题，10 道英文、2 道多轮）用两种方式跑完整的 Copilot，
-比一比做到了多少：
+比一比做到了多少。
+cases/soft-v2.jsonl（11-22）是 20 道对照题（10 道中文、10 道英文）：用户什么软要求都没提，多 agent 不能无中生有（expect.no_wishes）。
 
 - dispatcher：现在的样子（调度员 + Intake + 引擎 + Critic + Writer），COPILOT_TEAM=0；
 - team：多加规划 agent 和审查 agent（team.py），COPILOT_TEAM=1。
@@ -97,7 +98,8 @@ def run_case(case: dict, provider) -> dict:
     return {
         "id": case["id"], "status": reply.status, "text": reply.text, "result": reply.result or session.last_result,
         "calls": calls, "answers": answers, "latency_ms": round((time.perf_counter() - start) * 1000),
-        "team_plan": (trace.get("team_plan") or {}).get("wishes"), "team": {k: v for k, v in (trace.get("team") or {}).items() if k != "rounds"},
+        "team_plan": (trace.get("team_plan") or {}).get("wishes"),
+        "raw_wishes": len(((trace.get("team_plan") or {}).get("output") or {}).get("wishes") or []), "team": {k: v for k, v in (trace.get("team") or {}).items() if k != "rounds"},
         "rounds": len([r for r in (trace.get("team") or {}).get("rounds", []) if "review" in r]),
         "prefs": (reply.request or {}).get("prefs"),
     }
@@ -109,8 +111,10 @@ def score(case: dict, run: dict, checks: list[dict]) -> dict:
     say = expect.get("must_say_any") or []
     say_ok = not say or any(phrase in run["text"] for phrase in say)
     checks_ok = all(item["ok"] for item in checks)
-    return {**run, "checks": checks, "status_ok": status_ok, "say_ok": say_ok, "checks_ok": checks_ok,
-            "ok": status_ok and say_ok and checks_ok}
+    # 对照题（soft-v2）：用户没提软要求，代码核对完不能留下任何一条（模型编了、被代码拦下的另外记在 raw_wishes）
+    quiet_ok = not expect.get("no_wishes") or not run.get("team_plan")
+    return {**run, "checks": checks, "status_ok": status_ok, "say_ok": say_ok, "checks_ok": checks_ok, "quiet_ok": quiet_ok,
+            "ok": status_ok and say_ok and checks_ok and quiet_ok}
 
 
 def main() -> int:
@@ -149,11 +153,13 @@ def main() -> int:
             "checks": sum(item["ok"] for item in checks), "total_checks": len(checks),
             "status": sum(row["status_ok"] for row in scored), "say": sum(row["say_ok"] for row in scored),
             "calls": sum(len(row["calls"]) for row in scored),
+            "invented": sum(1 for row in scored if not row["quiet_ok"]),
+            "caught": sum(row.get("raw_wishes", 0) for case, row in zip(cases, scored) if case["expect"].get("no_wishes")),
             "median_ms": statistics.median([row["latency_ms"] for row in scored]) if scored else 0,
         }
         report["modes"][mode] = {"summary": summary, "rows": [{k: v for k, v in row.items() if k != "result"} for row in scored]}
         print(f"{mode:<10} {summary['cases']}/{summary['total']} 题全对；检查 {summary['checks']}/{summary['total_checks']}；"
-              f"状态 {summary['status']}；该说的 {summary['say']}；模型调用 {summary['calls']} 次；每题中位 {summary['median_ms']} ms")
+              f"状态 {summary['status']}；该说的 {summary['say']}；无中生有 {summary['invented']} 题（代码拦下 {summary['caught']} 条）；模型调用 {summary['calls']} 次；每题中位 {summary['median_ms']} ms")
         for row in scored:
             if not row["ok"]:
                 why = [f"[{item['kind']}] {item['detail']}" for item in row["checks"] if not item["ok"]]
@@ -161,6 +167,8 @@ def main() -> int:
                     why.append(f"status={row['status']}")
                 if not row["say_ok"]:
                     why.append("没说到要讲的取舍")
+                if not row["quiet_ok"]:
+                    why.append("无中生有：" + "、".join(w.get("kind", "?") for w in row["team_plan"]))
                 print(f"  ✗ {row['id']}：{'；'.join(why)}")
         tracking.log("软要求（soft）", f"{args.cases.stem} · {mode} · {label}",
                      {"cases_file": args.cases.name, "mode": mode, "model": label, **tracking.prompt_params(prompt_hashes())},

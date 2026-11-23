@@ -118,6 +118,31 @@ def pick_option(text: str, options: list[dict]) -> dict | None:
     return None
 
 
+# 公园里常说的地形（海边、雨林、山脊……）：公园已经认出来时，这些是园里的地方，不是另一座公园
+LANDFORM = re.compile(
+    r"^(the )?(coast(line)?|beach(es)?|rain ?forests?|forests?|lakes?|rivers?|canyons?|valleys?|ridges?|falls|waterfalls?|mountains?|peaks?|"
+    r"hot springs?|geysers?|glaciers?|dunes?|caves?|trails?|海边|海岸|海滩|雨林|森林|湖|河|峡谷|山谷|山脊|瀑布|山|雪山|温泉|间歇泉|冰川|沙丘|洞穴|步道)$"
+)
+
+
+def place_in_parks(span: str, codes: list[str]) -> bool:
+    """这个叫法是不是已经认出的公园里的地方：景点、片区的名字，或者泛指的地形"""
+    text = normalize(span).lower().strip(" .,，。")
+    if not text:
+        return False
+    if LANDFORM.match(text):
+        return True
+    bare = re.sub(r"^the ", "", text)
+    for row in catalog.attractions():
+        if row["park"] not in codes:
+            continue
+        names = [row.get("nameEn"), row.get("nameZh"), (row.get("area") or "").replace("-", " ")]
+        names += [part.strip() for part in (row.get("areaZh") or "").split("/")]
+        if any(name and normalize(name).lower() == bare for name in names):
+            return True
+    return False
+
+
 @dataclass
 class Field:
     value: Any = None
@@ -474,6 +499,10 @@ class Intake:
             if catalog.leftover(span, table) and not found and not catalog.find_all(span, table):
                 unknown.append(span)
         for span in unknown:
+            if codes and place_in_parks(span, codes):
+                # 模型把公园里的地方当成了公园（11-22 Gemini：“Keep the coast, the rainforest and Hurricane Ridge on separate days”
+                # 把 the coast、the rainforest、Hurricane Ridge 放进了公园，再把 the rainforest 当成石化林反问）：公园已经认出来了，悄悄跳过
+                continue
             if catalog.find_all(span, catalog.airports()):
                 # 模型把城市放进了公园（“2027年4月10日纳什维尔进出，猛犸洞2天”）：是机场城市，出发地还没有就当出发地
                 if self.origin.value is None:
