@@ -83,10 +83,11 @@ jobs:
         env:
           URL: ${{ steps.deploy.outputs.url }}
         run: |
-          # 第一次要冷启动（拉镜像、起 Node 和 Python），最多等 3 分钟
+          # 第一次要冷启动（拉镜像、起 Node 和 Python），最多等 3 分钟；旧版本的机器可能还开着、先回答，版本对上之前每 10 秒再查
           for i in $(seq 1 18); do
-            curl -fsS --max-time 60 "$URL/health" -o health.json && break
-            rm -f health.json
+            if curl -fsS --max-time 60 "$URL/health" -o health.json && python3 deploy/modal/check_health.py health.json "main-${GITHUB_SHA::7}" > /dev/null 2>&1; then
+              break
+            fi
             sleep 10
           done
           test -s health.json || { echo "::error::staging 的 /health 3 分钟都没响应"; exit 1; }

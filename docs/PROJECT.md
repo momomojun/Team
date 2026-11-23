@@ -2,42 +2,38 @@
 
 做到哪了、下一步做什么、有哪些事等仓库主人决定、做过哪些决定和为什么，以及按时间的完整记录。**怎么做事**见 [GUIDE.md](GUIDE.md)。
 
-**English summary.** This repository (`momomojun/Team`) is the CSYE 7374 (LLMOps, Fall 2026) team project of Jun Zhai, Tianyue Chen and Huiling Fu. It builds on **NPS Guide**, a Chinese-language U.S. national park trip planner that Jun Zhai built before the course (copied from `momomojun/NPS-guide` at commit `4590c45`, without history). The course work adds **NPS Guide Copilot**, an LLM layer that understands trip requests, answers questions from the site's own data and explains plans while the deterministic engine does the planning, plus the LLMOps pipeline around it. As of 2026-10-18: contracts and the `plan_trip` tool; the Python Copilot on a local Qwen3.5 4B with three replay eval gates in CI (dev 25/25, regression 37/40, regional wording 17/17); multi-turn conversation fixes and grounded Q&A (retrieval over 1,687 knowledge entries); Docker images, a tag-driven release workflow to GHCR (`copilot-v0.2.0`, `copilot-v0.2.1`), versioned prompts, rollback demos and run-log monitoring. Every requirement and promise, with what's still open, is tracked in [GOALS.md](GOALS.md). Next: let the model orchestrate tools, multi-turn evals, live NPS alerts, and a chat panel on the website.
+**English summary.** This repository (`momomojun/Team`) is the CSYE 7374 (LLMOps, Fall 2026) team project of Jun Zhai, Tianyue Chen and Huiling Fu. It builds on **NPS Guide**, a Chinese-language U.S. national park trip planner that Jun Zhai built before the course (copied from `momomojun/NPS-guide` at commit `4590c45`, without history). The course work adds **NPS Guide Copilot**, an LLM layer that understands trip requests, answers questions from the site's own data and explains plans while the deterministic engine does the planning, plus the LLMOps pipeline around it. As of 2026-11-23: the site covers all 64 U.S. national parks (987 sights) and is live on Vercel; the Copilot runs on Modal (staging and production) behind the trip page's chat box, with a dispatcher, a search agent for questions, and a planning agent plus review agent that negotiate soft wishes with the engine (on by default; soft-wish eval: dispatcher 7/30, multi-agent 27–29/30; 20 control cases with nothing invented); free cloud models first with fallbacks, local Qwen3.5 35B-A3B as the last resort; ten replay eval gates on every PR; data, prompt and code versions on every answer; tag-driven releases up to `copilot-v0.7.0`. Every requirement and promise, with what's still open, is tracked in [GOALS.md](GOALS.md). Next: the Dec 10 demo, the final report and weekly scrums.
 
-## 现状（2026-10-19）
+## 现状（2026-11-23）
 
 | 部分 | 状态 |
 |---|---|
-| 网站 NPS Guide | 能用：52 座美国国家公园、加拿大 3 座、4 处园外名胜，871 个景点；英文版、同行适合度、时区、住处营业季节，59 座全部按官方资料核对过。部署在 Vercel（https://team-peach-five.vercel.app ，不设访问密码） |
-| 阶段 1：契约和工具 | 完成（PR #4）：`TripRequest` / `TripResult` v1、`plan_trip` 工具、59 座公园和 86 个机场的目录。单独的查询工具（某天开没开、车程、搜景点）10-21 补上了，回答问题时调用（[COPILOT.md](COPILOT.md#原则和流程)） |
-| 阶段 2：Python Copilot | 完成（PR #5）：Intake → plan_trip → Critic → Writer，Provider 可换，JSONL 日志；默认本机 Qwen3.5 4B。10-18 两次试用后修了多轮对话（PR #12、#14）：相对日期、改了什么、不重印行程、排好以后和排出以前都能提问（在网站资料里查了再答，RAG）。10-18 加了**调度员**：模型看最近的对话、条件和行程，决定这句话要改条件、提问、加减景点、指定某晚住处还是重新开始（可以几件一起），代码去做、去核对；多轮对话评测 20/20，没见过的第一次 14/15（关掉调度员是 6/15）。Writer 还没有逐句附来源 |
-| 阶段 3：CI/CD | 完成（PR #6）：5 项 PR 检查（3 项必需）、Docker 镜像、`release.yml` 发版流程、提示词版本和回滚、监控（命令行统计，没接 MLflow）、Ollama 一键启动。10-18 发了 [`copilot-v0.2.0`](https://github.com/momomojun/Team/releases/tag/copilot-v0.2.0) 和 [`copilot-v0.2.1`](https://github.com/momomojun/Team/releases/tag/copilot-v0.2.1)，10-21 发了 [`copilot-v0.3.0`](https://github.com/momomojun/Team/releases/tag/copilot-v0.3.0)，10-29 发了 [`copilot-v0.4.0`](https://github.com/momomojun/Team/releases/tag/copilot-v0.4.0)，镜像在 GHCR 公开可拉；提示词回滚、换镜像回滚都演示过 |
-| 阶段 4：评测和对照实验 | 进行中：单句 25、复杂情况 40、各地写法 17 组，多轮对话 20 组和 15 组，五组都当回归门禁（25/25、37/40、17/17、20/20、15/15）；做了第一个对照（调度员开 / 关）；还缺更多没见过的样例（目标约 150 条）、其他对照实验 |
-| 读 NPS 实时公告 | 进行中（PR #21 和这次）：模型读公告提取关闭（类型 76%、日期 16/24，规则是 58%、0），Copilot 排两周内出发的行程时不排公告说关了的景点；GitHub 每晚抓公告、新的关闭开 issue。模型提取还要在本机跑，网站行程页还是关键词规则 |
-| 阶段 5：接进网站 | 进行中：行程页的对话框做了（10-19，本机开着 Copilot 服务时出现，排出的行程直接放进行程页，可以接着改）；路线动画、Copilot 的线上部署没做 |
-| 仓库 | `main` 受保护（必须走 PR、3 项检查通过）；合并后自动删除分支；协作者 JadenChen10（Tianyue Chen）、huilingfu95-source（Huiling Fu） |
+| 网站 NPS Guide | 能用：美国 64 座国家公园（63 页）、加拿大 3 座、4 处园外名胜，987 个景点、364 条徒步路线；英文版、同行适合度、时区、营业季节、季节性山路、NPS 道路事件、安全页、活动页。11-20 到 11-22 照着 Wabunka 整站改版。部署在 Vercel（https://team-peach-five.vercel.app ），登录以后行程和对话存进 Neon |
+| Copilot | 调度员（模型决定改条件、提问、加减景点、换住处）→ Intake（模型摘片段、代码算）→ `plan_trip`（确定的行程引擎）→ Critic → Writer；回答问题有 search agent（模型自己选 9 种查询工具，评测 39/44，找一次就答 19/44）和按意思找资料（Gemini 嵌入 + Neon pgvector）；**多 agent 排行程**（规划 agent 摘软要求、代码核对、翻成引擎的 18 种旋钮，审查 agent 最多 3 轮商量，11-22 起默认打开）。模型：Gemini 3.5 Flash Lite → Nemotron 3.5 Super → Qwen3.8 27B → DeepSeek Flash（付费备用）→ 本机 Qwen3.5 35B-A3B |
+| 线上部署 | Modal 上两个环境：staging（合进 main 自动部署，配 Vercel Preview）、正式（发版才部署，配 Vercel Production）；口令 + 限流；正式环境 https://momomojun--nps-copilot-web.us-east.modal.run |
+| CI/CD | PR 上 3 项必需检查（网站、Copilot 测试 + 十组回放门禁、镜像冒烟），成绩表贴到 PR；`copilot-v*` tag 发版到 GHCR、建 Release、部署 Modal 正式环境。已发到 [`copilot-v0.7.0`](https://github.com/momomojun/Team/releases/tag/copilot-v0.7.0)（11-23）；提示词回滚、换镜像回滚都演示过 |
+| 版本和追溯 | 每个回答记下代码版本、提示词版本（hash）、数据版本（网站数据、资料、各地叫法的 sha256）和提交号；镜像 tag 带这三样 |
+| 评测 | 十组回放门禁（单句 25/25、held-out v1 37/40、held-out v2 70/70、各地叫法 17/17、多轮对话 20/20 · 15/15 · 1/2、读公告、找资料、search agent）；软要求 soft-v1 30 题、对照题 soft-v2 20 题；行程引擎对照 73 条真实行程、110 条按论文方法打分；回归注入、漂移、故障、混沌测试、LLM 打分；四个模型的全套对照。网站 236 个测试、Copilot 535 个测试。成绩在 [RESULTS.md](../copilot/eval/RESULTS.md)，后台的“测试和评测”页（`/zh-Hans/admin/evals`）画成对比 |
+| 实时数据 | 每晚读 NPS 公告（模型提取关闭）、NPS 道路事件，发到 `data/alerts-live`；两周内出发的行程网站和 Copilot 都不排关了的景点；新的关闭由模型提议、人来批 |
+| 监控 | 后台 `/zh-Hans/admin`（英文 `/en/admin`）：技术栈、五张架构图、对话和排行程比例、每个模型的调用和花费、计费总账、每晚读公告、最近几轮 |
+| 仓库 | `main` 受保护（必须走 PR、3 项检查通过）；协作者 JadenChen10（Tianyue Chen）、huilingfu95-source（Huiling Fu） |
 | 目标清单 | 所有要求和承诺做到哪、还差什么：[GOALS.md](GOALS.md) |
 
 ## 等仓库主人决定的事
 
-- **每天核对封路的定时任务改查这个仓库**：现在还在查旧目录 `D:\WebWorkplace\NPS-guide` 的旧数据；改的是本机的定时任务设置，要仓库主人同意。
-- **旧仓库 `momomojun/NPS-guide` 和 nps-guide.vercel.app**：停在 10-16，下线、改成跳转到新网址，还是保留。
-- **组员分工**：Tianyue Chen、Huiling Fu 各负责什么（比如评测样例和对照实验、网站对话框、部署）。
-- 演示时 Copilot 放在哪（见下一步第 3 条）。
+- **计划书交了没有**（A6）：大纲写 10 月 29 日那周交。
+- **组员分工**（A9）：Huiling 做了账号和云端保存（#88）；Tianyue 提了“危险”模块的想法，还没有提交。期末报告要写谁做了什么。
+- **软要求剩下的几题要不要再修**：S21“两晚都看日落”本来做不到；S22“南北缘都要去”4B 和 Gemini 没说北缘没收录；S03“只住一家”4B 没做到。修了也不算新成绩。
 
 ## 下一步
 
-所有要求和承诺的完成情况、还没完成的完整清单见 [GOALS.md](GOALS.md)；这里只写接下来按什么顺序做。
+所有要求和承诺的完成情况、还没完成的完整清单见 [GOALS.md](GOALS.md)；这里只写接下来按什么顺序做（课程时间：11 月 5 日起每周 scrum，12 月 10 日项目演示）。
 
-按 10-18 商量的顺序（课程时间：10 月 29 日那周交 proposal，11 月 5 日起每周 scrum，12 月 10 日项目演示）。仓库主人 10-18 试用后，先把对话修好，再做别的：
-
-1. **把对话修好**（第一、二批和调度员改造都做完了，见时间线）：第一批（相对日期、出发和回程说清楚、改了什么、季节性关闭的说法）、第二批（**能回答问题**：排好以后的提问从网站自己的资料里查了再答，查不到说不知道，对应课上的 RAG）已经做完，两次试用发现的问题也修了；还没做好的：一句话里既改条件又提问时只答查得到的部分、“紧凑的话要几天”资料里没有（见 [RESULTS.md](../copilot/eval/RESULTS.md)）。第三批把真实的多轮对话写成评测（先写期望再跑），每个 PR 都过。
-2. **读 NPS 实时公告、自动提取关闭信息**（10-19 提取、评测、接进 Copilot 排行程、每晚抓公告都做了；还差：攒几天新公告当没见过的数据、标答案、改 `alerts_v2`，模型提取每晚自动跑，网站行程页也用上）：每天抓 NPS 公告，本机模型判断哪个景点关了、从哪天到哪天，排行程时用上，取代手动维护的 `closures.ts`；已经人工核对过的 `closures.ts` 当标准答案算准确率。对应计划书标题里的 fast-changing data 和监控、漂移。
-3. **网站行程页加对话面板**（10-19 对话框做了，演示先按“笔记本上同时开网站和 Copilot”做，没开 Copilot 时不显示；路线动画还没做）：用户用自然语言说需求 → Copilot 追问、确认 → 生成行程（就是现在“自动生成攻略”的结果）→ 用户可以继续说“第二天轻松一点”“换成住 Jackson”；没有 Copilot 时页面照旧能用。要先定 Copilot 放在哪：演示时在笔记本上同时开网站和 Copilot（不花钱），还是租带显卡的服务器。
-   - **路线动画**（10-19 做了第一版：自动播、只播变了的天、暂停跳过、减少动画不自动播；导出短视频以后再说）：**第一次排出行程、改了行程的时候**自动播一段，之后看行程还是文字、卡片和静态地图（仓库主人 10-18 说的：动画是帮人第一眼看懂，不是拿来研究行程的）。第一次：镜头沿真实开车路线一天天走，每站亮起来标几点到、停多久，路上标开多久，日落那站天色变暗，晚上落在住处；全程十几二十秒。改了以后：只播变了的部分（换了的住处、加的减的挪了的景点、新的路线），几秒。播完停在静态地图上，可以重播、暂停、拖到某一站；系统设了“减少动画”的不自动播。用网站现有的 MapLibre 地图、每天的真实路线和行程的时间，不用新数据。导出成短视频分享以后再说。
-4. **评测和对照实验**（11 月底到 12 月初，期末报告要用）：另写一批没看过的样例（holdout-v2），**先提交期望再跑**，逐步扩到约 150 条（中英文和混合；日期冲突；多公园；带小孩、老人、轮椅；改口、否定、错别字；提示注入；要求去关闭、要抽签的景点）；单个模型直接回答 vs 流水线、有 Critic vs 没有、Qwen3.5 4B vs 9B；准备演示脚本和报告。
-5. ~~**营地开放季节（交给 Huiling）**~~：10-27 已写入 `lodging-seasons.ts`（季节性营地 + 测试）；问题说明仍在 [archive/agent-briefs/10-campground-seasons.md](archive/agent-briefs/10-campground-seasons.md)。预约页条目少时的排版（brief 里另一件）还没做。
-6. 网站这边的待办：[archive/audit/2026-10-16/_followups.md](archive/audit/2026-10-16/_followups.md)（北瀑布、奥林匹克、黄石、加州各园的施工延误和次要关闭；大峡谷南缘住宿暂停、红杉营地季节；锡安 2026 年 6 月起取消隧道通行证）；按日期的设施开放、充电桩打卡（[DEVELOPMENT.md](DEVELOPMENT.md#路线图)）。
+1. **确认 copilot-v0.7.0 上线、打开 search agent**（11-23）：在正式环境发一句带软要求的话，确认多 agent 生效；Modal 正式环境的 Secret `nps-copilot` 加 `COPILOT_QA_AGENT=1`。
+2. **演示和期末报告**（A8，12-10）：演示脚本（一句话排行程 → 软要求和取舍说明 → 提问 → 后台和测试页 → 发版和回滚）、期末报告和展示。材料：RESULTS.md 的成绩、GOALS 里“定了不做”的理由、后台的架构图和测试页。
+3. **每周 scrum**（A7）：`npm run scrum` 生成草稿，下周计划、卡住的自己填。
+4. **可选**：路线动画导出成短视频（O53，演示可以用）；Docker 一键启动换成 35B 以后找一台装了 Docker 的电脑试一次。
+5. 网站这边的待办：[archive/audit/2026-10-16/_followups.md](archive/audit/2026-10-16/_followups.md)；机票按灵活日期找最便宜、租车平台对比、手机信号覆盖、日文韩文版（GOALS 的 W1、W2、W8、W10）。
 
 ## 课程和团队
 
@@ -60,7 +56,7 @@
 - Intake 里模型只逐字摘片段，日期计算、缺失检查、追问、对话状态都交给代码；规则补的条件和模型的成绩分开算。
 - Critic 只用代码检查，不改用户自己说的条件，最多改一次；Writer 默认用模板，模型改写要过忠实度检查。
 - 契约只在 TypeScript 写一处，生成给 Python；改字段升版本号；工具不联网、固定 `referenceDate` 才能复现；和行程页不同的地方写进结果的 `assumptions`。
-- 全部本地运行，不自动退到云端。
+- 10-17 起本来是全部本地运行；10-20 仓库主人定改成免费的云端模型优先、本机模型兜底（谁稳谁准用谁），每次调用记进计费总账。
 
 ### 模型
 
@@ -69,7 +65,7 @@
 - 依据（同一版代码、同一套样例，详见 [RESULTS.md](../copilot/eval/RESULTS.md)）：Qwen3.5 4B 开发集 25/25、没有编造、每次约 2.4 秒；9B 也是 25/25，但更常漏公园名（4 组靠规则补）、Writer 慢将近一倍（15.4 s 对 8.7 s）；Qwen3 4B 20/25、编造 6 个片段。
 - 早期实验里 Qwen3 4B 和 Qwen3.5 4B 互有胜负（V2 28/32 对 27/32，V3 17/18 对 18/18），当时的结论是“先把系统搭起来，用新的评测集再定”，后来的评测选了 Qwen3.5 4B。
 - 等评测集扩到约 150 条（含工具调用和 Writer 忠实度）再比较更多模型（Qwen3 8B、Gemma 4 E2B），可以分角色选；不做微调，除非某类错误换模型、改提示词都解决不了，而且有足够的标注数据。
-- 本机：RTX 2070 Max-Q 8 GB、内存约 16 GB，D 盘空间时常不够，下载新模型前先看空间。模型和 Ollama 便携包在 `experiments/local-model-validation/`（`.gitignore` 排除），便携 Ollama 用 11435 端口。
+- 本机：早期在 RTX 2070 Max-Q 8 GB、内存约 16 GB 的电脑上（D 盘空间时常不够）；11-22 的模型对照在 RTX 4070 Laptop 8 GB、内存 32 GB 的电脑上（Ollama 在 11434 端口）。下载新模型前先看空间。模型和 Ollama 便携包在 `experiments/local-model-validation/`（`.gitignore` 排除），便携 Ollama 用 11435 端口。
 
 ### 评测
 
