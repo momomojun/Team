@@ -60,9 +60,11 @@ jobs:
         env:
           URL: ${{ steps.deploy.outputs.url }}
         run: |
+          # 刚部署完，旧版本的机器可能还开着、先回答（11-23 发 v0.7.0 时第一次查到的是 0.6.0）：版本对上之前每 10 秒再查，最多 3 分钟
           for i in $(seq 1 18); do
-            curl -fsS --max-time 60 "$URL/health" -o health.json && break
-            rm -f health.json
+            if curl -fsS --max-time 60 "$URL/health" -o health.json && python3 deploy/modal/check_health.py health.json "$TAG" > /dev/null 2>&1; then
+              break
+            fi
             sleep 10
           done
           test -s health.json || { echo "::error::$ENVIRONMENT 的 /health 3 分钟都没响应"; exit 1; }
