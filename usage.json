@@ -419,6 +419,51 @@
    "unpriced": 0,
    "list_cost": 0.0018514999999999998,
    "unlisted": 0
+  },
+  {
+   "day": "2026-11-23",
+   "source": "alerts",
+   "model": "gemini-3.5-flash-lite",
+   "provider": "gemini",
+   "calls": 6,
+   "prompt_tokens": 5002,
+   "output_tokens": 371,
+   "thinking_tokens": 0,
+   "estimated": 0,
+   "cost": 0.0,
+   "unpriced": 0,
+   "list_cost": 0.0024281,
+   "unlisted": 0
+  },
+  {
+   "day": "2026-11-23",
+   "source": "alerts",
+   "model": "nvidia/nemotron-3.5-super-vl:free",
+   "provider": "openrouter",
+   "calls": 1,
+   "prompt_tokens": 834,
+   "output_tokens": 788,
+   "thinking_tokens": 740,
+   "estimated": 0,
+   "cost": 0.0,
+   "unpriced": 0,
+   "list_cost": 0.0005191,
+   "unlisted": 0
+  },
+  {
+   "day": "2026-11-23",
+   "source": "eval",
+   "model": "gemini-3.5-flash-lite",
+   "provider": "gemini",
+   "calls": 26,
+   "prompt_tokens": 21800,
+   "output_tokens": 1147,
+   "thinking_tokens": 0,
+   "estimated": 0,
+   "cost": 0.0,
+   "unpriced": 0,
+   "list_cost": 0.009407500000000001,
+   "unlisted": 0
   }
  ],
  "limits": [
