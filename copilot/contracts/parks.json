@@ -82,7 +82,13 @@
       "Sequoia & Kings Canyon",
       "seki"
     ],
-    "roads": []
+    "roads": [
+      {
+        "id": "seki-kings-canyon-highway",
+        "nameZh": "180 号公路（Hume Lake 路口到 Cedar Grove）",
+        "nameEn": "Kings Canyon Scenic Byway (SR 180) to Cedar Grove"
+      }
+    ]
   },
   {
     "code": "pinn",
