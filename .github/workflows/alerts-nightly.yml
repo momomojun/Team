@@ -80,6 +80,13 @@ jobs:
         env:
           DATA_GOV_API_KEY: ${{ secrets.DATA_GOV_API_KEY }}
         run: npm run alerts:fetch
+      # NPS 道路事件（WZDx）：哪条路从哪天起封，转成和公告关闭清单一样的格式（scripts/road-events-lib.mjs），下面一起发布。
+      # 抓不到不影响读公告
+      - name: Fetch NPS road events
+        continue-on-error: true
+        env:
+          DATA_GOV_API_KEY: ${{ secrets.DATA_GOV_API_KEY }}
+        run: npm run roads:events
       # 读过的公告（按 id + 更新时间 + 提示词版本）：每晚接着上一晚的用，只把新的、改过的交给模型
       - uses: actions/cache@v4
         with:
@@ -205,9 +212,11 @@ jobs:
             gh issue comment "$rolling" --body-file report.md
           fi
       - name: Publish tonight's closures for the website
-        if: hashFiles('copilot/data/alerts/closures-latest.json') != ''
+        if: hashFiles('copilot/data/alerts/closures-latest.json') != '' || hashFiles('copilot/data/alerts/road-events-latest.json') != ''
         run: |
-          cp copilot/data/alerts/closures-latest.json "$RUNNER_TEMP/closures-latest.json"
+          for file in closures-latest.json road-events-latest.json; do
+            if [ -f "copilot/data/alerts/$file" ]; then cp "copilot/data/alerts/$file" "$RUNNER_TEMP/$file"; fi
+          done
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           if git fetch --depth 1 origin data/alerts-live:refs/remotes/origin/data/alerts-live 2>/dev/null; then
@@ -218,9 +227,14 @@ jobs:
             cd "$RUNNER_TEMP/live"
             git checkout --orphan data-live
             git rm -rf -q .
-            echo "每晚模型读 NPS 公告提取的关闭清单（.github/workflows/alerts-nightly.yml 写的，不要手改）。网站行程页按它排两周内出发的行程；usage.json 是每晚调用模型的计费总账，后台看。" > README.md
+            echo "每晚模型读 NPS 公告提取的关闭清单（.github/workflows/alerts-nightly.yml 写的，不要手改）。网站行程页按它排两周内出发的行程；road-events-latest.json 是 NPS 道路事件、road-history.json 是每条季节性山路每季哪天封、哪天通；usage.json 是每晚调用模型的计费总账，后台看。" > README.md
           fi
-          cp "$RUNNER_TEMP/closures-latest.json" closures-latest.json
+          if [ -f "$RUNNER_TEMP/closures-latest.json" ]; then cp "$RUNNER_TEMP/closures-latest.json" closures-latest.json; fi
+          if [ -f "$RUNNER_TEMP/road-events-latest.json" ]; then
+            cp "$RUNNER_TEMP/road-events-latest.json" road-events-latest.json
+            # 每条季节性山路这一季哪天开始封、哪天发现又通了（npm run roads:sync 拿去补往年日期）
+            (cd "$GITHUB_WORKSPACE" && node --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tests/register.mjs               scripts/road-events.mjs history "$RUNNER_TEMP/live/road-events-latest.json" "$RUNNER_TEMP/live/road-history.json")
+          fi
           # 这个分支只放数据，不让 Vercel 拿它构建预览版（Vercel 读的是这个分支自己的 vercel.json；bot/closures-* 的在 main 的 vercel.json 里）
           echo '{"git":{"deploymentEnabled":false}}' > vercel.json
           # 计费总账：今晚这台机器调用模型的次数、token 和花费并进 usage.json（后台看免费档用了多少）

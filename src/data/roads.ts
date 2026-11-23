@@ -284,6 +284,17 @@ const roads: Omit<SeasonalRoad, "years" | "checked">[] = [
       "从 Endovalley 野餐区开到高山游客中心的单向（只能上山）砂石路，约 15 公里。Trail Ridge Road 通车后才开始清理，目标是 7 月 4 日前后通车（雪大的年份到 7 月中下旬）；2016 年起固定在 10 月第一个周一或周二对车辆关闭，之后到 11 月底还能步行、骑车。2026 年 NPS 公布 10 月 6 日关闭。",
     source: "https://www.nps.gov/romo/learn/photosmultimedia/opening_closing_trr_ofr.htm",
   },
+  {
+    id: "seki-kings-canyon-highway",
+    park: "seki",
+    nameZh: "180 号公路（Hume Lake 路口到 Cedar Grove）",
+    nameEn: "Kings Canyon Scenic Byway (SR 180) to Cedar Grove",
+    attractions: ["seki-kings-canyon", "seki-zumwalt-meadow", "seki-roaring-river-falls", "seki-mist-falls"],
+    noteZh:
+      "从 Grant Grove 外的 Hume Lake 路口一路下到国王峡谷谷底的 Cedar Grove 和 Roads End，归加州交通部 Caltrans 管。冬天不扫雪，一般 4 月第四个周五中午开、11 月中旬中午关；暴风雪、塌方、山火会推迟开通或提前关（2022 年塌方晚开到 5 月 9 日、暴风雪 11 月 6 日提前关，2015 年 Rough Fire 从 8 月起封到季末）。2023 年初风暴冲毁公路全年没开，2024 年修复到 6 月 10 日才开，2018 年 Caltrans 加固路基 10 月 22 日提前关，这三年不算进统计。官方没有历年表，日期按 NPS 路况页的历次存档、NPS 和 Caltrans 的新闻稿整理（2026-11-21）；NPS 道路事件里也有这一段，每晚自动记下当年哪天封、哪天通。",
+    source: "https://www.nps.gov/seki/planyourvisit/conditions.htm",
+    statusPage: true,
+  },
 ];
 
 export const seasonalRoads: SeasonalRoad[] = roads.map((road) => ({

@@ -121,3 +121,13 @@ test("冰川 6 月上旬向阳大道没通：西边的雪崩湖去东边的 Risi
   assert.equal(aroundMinutes("glac-goat-lick", "glac-stay-rising-sun", "2027-06-05"), null);
   assert.equal(aroundMinutes("glac-stay-west-glacier", "glac-goat-lick", "2027-06-05"), null);
 });
+
+test("180 号公路（Cedar Grove）：春天按开通日、秋天按关闭日估；只记了关闭日的年份秋天也算", () => {
+  const road = roadFor("seki-zumwalt-meadow")!;
+  assert.equal(road.id, "seki-kings-canyon-highway");
+  assert.equal(openChance(roadStatus(road, "2027-04-15")!), 0);
+  assert.ok(openChance(roadStatus(road, "2027-05-10")!) === 1);
+  const fall = roadStatus(road, "2027-11-14")!;
+  assert.equal(fall.kind, "odds");
+  assert.ok(fall.kind === "odds" && fall.known >= 8 && fall.open < fall.known);
+});

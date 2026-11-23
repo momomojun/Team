@@ -4,8 +4,10 @@
 //       REFERENCE_DATE=2026-10-16 npm run copilot:plan -- request.json
 //       LIVE_CLOSURES=copilot/data/alerts/closures-latest.json npm run copilot:plan -- request.json
 //         （python -m nps_copilot alerts 提取的 NPS 公告关闭清单；近期出发、清单是新的才用，见 src/lib/copilot/live.ts）
+//       LIVE_ROAD_EVENTS=copilot/data/alerts/road-events-latest.json …（NPS 道路事件，npm run roads:events 写的；和公告的清单合在一起用）
 // 请求不合格时退出码是 2，标准输出是 {"error": "invalid_request", "issues": [...]}
 import { readFileSync } from "node:fs";
+import { mergeExtracted } from "../src/lib/copilot/live.ts";
 import { planTrip, TripRequestError } from "../src/lib/copilot/plan-tool.ts";
 
 const file = process.argv[2];
@@ -15,7 +17,9 @@ if (!file) {
 }
 const request = JSON.parse(readFileSync(file === "-" ? 0 : file, "utf8"));
 const referenceDate = process.env.REFERENCE_DATE ?? new Date().toISOString().slice(0, 10);
-const closures = process.env.LIVE_CLOSURES ? JSON.parse(readFileSync(process.env.LIVE_CLOSURES, "utf8")) : undefined;
+// 公告的关闭清单和 NPS 道路事件（LIVE_ROAD_EVENTS，scripts/road-events.mjs 写的同样格式）合在一起
+const read = (path) => (path ? JSON.parse(readFileSync(path, "utf8")) : undefined);
+const closures = mergeExtracted(read(process.env.LIVE_CLOSURES), read(process.env.LIVE_ROAD_EVENTS));
 try {
   process.stdout.write(`${JSON.stringify(planTrip(request, { referenceDate, closures }), null, 2)}\n`);
 } catch (error) {

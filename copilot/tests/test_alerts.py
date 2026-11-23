@@ -137,3 +137,29 @@ def test_nightly_report_shows_what_the_model_found():
     cache = {module._cache_key(ALERT): {"model": "minimax/minimax-m3.1-flash:free"}}
     _, text = module.report({"fetched": "2026-10-20", "alerts": [ALERT]}, set(), closures, cache)
     assert "模型（minimax/minimax-m3.1-flash:free）读了全文" in text and "Gemini" not in text
+
+
+def test_road_events_close_stops_for_near_trips(tmp_path, monkeypatch):
+    """NPS 道路事件（scripts/road-events-lib.mjs 转成和公告清单同样的格式）：两周内出发的行程不排封着的路上的景点，日志记下用的哪一份。
+    要装 Node 24"""
+    import json
+
+    from nps_copilot.plan_client import plan_trip
+
+    roads = {"fetched": "2026-10-16", "parks": {"yose": "2026-10-16"}, "closures": [{
+        "alert": "road:yose#Tioga Road", "park": "yose", "attractions": ["yose-tuolumne-meadows", "yose-tenaya-lake", "yose-olmsted-point"],
+        "strict": ["yose-tuolumne-meadows", "yose-tenaya-lake", "yose-olmsted-point"], "from": "2026-10-15", "reopen": None,
+        "title": "Tioga Road: closed (NPS road events)", "url": "https://www.nps.gov/yose/planyourvisit/conditions.htm", "found_by": ["road-events"]}]}
+    path = tmp_path / "road-events-latest.json"
+    path.write_text(json.dumps(roads), encoding="utf-8")
+    request = {"contract": "trip-request/v1", "parks": ["yose"], "startDate": "2026-10-20", "days": 4, "origin": {"airport": "FAT"},
+               "include": ["yose-tenaya-lake"]}
+    planned = lambda result: {stop["id"] for day in result["days"] for stop in day["stops"]}  # noqa: E731
+    monkeypatch.delenv("COPILOT_LIVE", raising=False)
+    monkeypatch.setenv("COPILOT_LIVE_CLOSURES", str(tmp_path / "none.json"))  # 不现读公告
+    monkeypatch.setenv("COPILOT_ROAD_EVENTS", str(path))
+    call = plan_trip(request, "2026-10-16")
+    assert not planned(call.result) & {"yose-tuolumne-meadows", "yose-tenaya-lake", "yose-olmsted-point"}
+    assert call.roads_data["fetched"] == "2026-10-16" and call.roads_data["closures"] == 1
+    skipped = next(item for item in call.result["skipped"] if item["id"] == "yose-tenaya-lake")
+    assert "Tioga Road" in skipped["alert"]["title"]
