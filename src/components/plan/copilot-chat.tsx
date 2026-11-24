@@ -22,10 +22,19 @@ interface Question {
   options?: { zh?: string; en?: string; label?: string; note?: string }[];
 }
 
+/** 这一轮谁做了什么（Copilot 的 steps，11-23）：调度员、search agent、规划 agent、行程引擎、审查 agent…… */
+interface AgentStep {
+  who: string;
+  text: string;
+  /** 这一步调了模型（不然是确定的代码） */
+  model: boolean;
+}
+
 interface Message {
   role: "user" | "copilot";
   text: string;
   question?: Question | null;
+  steps?: AgentStep[];
   /** 这一句排出了新的行程，已经放进行程页 */
   applied?: boolean;
 }
@@ -66,6 +75,7 @@ interface ChatReply {
   status: "needs_input" | "planned" | "error";
   text: string;
   question: Question | null;
+  steps?: AgentStep[];
   trip: Trip | null;
 }
 
@@ -220,7 +230,7 @@ export function CopilotChat({
       const saved = reply;
       // 存进 Neon 在下面的 effect 里做：setState 的更新函数要保持“纯”，React 可能跑两遍
       saveAfterRender.current = true;
-      setMessages((current) => [...current, { role: "copilot" as const, text: saved.text, question: saved.question, applied }]);
+      setMessages((current) => [...current, { role: "copilot" as const, text: saved.text, question: saved.question, steps: saved.steps, applied }]);
     } catch {
       setError(t.offline);
     } finally {
@@ -275,6 +285,7 @@ export function CopilotChat({
                   <div className="max-w-[92%]">
                     <p className="eyebrow text-clay-600">{t.name}</p>
                     <p className="mt-1.5 whitespace-pre-line text-sm leading-7 text-white/90">{message.text}</p>
+                    {message.steps && message.steps.length > 0 && <AgentSteps steps={message.steps} label={t.steps} />}
                     {message.applied && (
                       <a href="#plan-overview" className="link-line mt-2 inline-block text-xs tracking-[0.1em] text-clay-600">
                         {t.applied}
@@ -431,6 +442,23 @@ const POSTS = [0.25, 0.5, 0.75];
  * 等回复时的过渡：一张国家公园公路旅行的小画，进度条就是那条路。进度按 Copilot 真实做到的步骤推（边做边报），
  * 但不把步骤念出来，下面一句话跟着进度换；认出了公园、日期、天数先写出来
  */
+/** 回复下面一行小字：这一轮哪几个角色做了什么。模型做的点是金色，确定的代码是白色（11-23 仓库主人：看不出 search agent 和多 agent 在哪里） */
+function AgentSteps({ steps, label }: { steps: AgentStep[]; label: string }) {
+  return (
+    <details className="mt-3 border-l border-white/20 pl-3 text-[12px] leading-6 text-white/60" open>
+      <summary className="cursor-pointer list-none text-[11px] tracking-[0.12em] text-white/50 uppercase marker:hidden">{label}</summary>
+      <ol className="mt-1 space-y-0.5">
+        {steps.map((step, index) => (
+          <li key={index} className="flex gap-2">
+            <i aria-hidden className={`mt-[9px] inline-block size-1.5 shrink-0 rounded-full ${step.model ? "bg-clay-600" : "bg-white/50"}`} />
+            <span>{step.text}</span>
+          </li>
+        ))}
+      </ol>
+    </details>
+  );
+}
+
 function ChatProgress({ progress, english, text }: { progress: Progress; english: boolean; text: PlannerText["plan"]["copilot"] }) {
   const t = text.progress;
   const answering = progress.steps.includes("answer") && !progress.steps.includes("plan");

@@ -174,7 +174,8 @@ WEEKDAY_EN.update({name.lower(): i for i, name in enumerate(calendar.day_abbr)})
 _EN_DAYS = "|".join(sorted(WEEKDAY_EN, key=len, reverse=True))
 RELATIVE_DAY = [  # 先长后短：“大后天”在“后天”前面
     (re.compile(r"大后天"), 3), (re.compile(r"后天|day after tomorrow", re.I), 2),
-    (re.compile(r"明天|明日|tomorrow", re.I), 1), (re.compile(r"今天|今日|today", re.I), 0),
+    # tomorrow 常打错（11-23 仓库主人打成 tomoroow，又问了一遍日期）：tomorow、tommorow、tomoroow、tmr、tmrw 都认
+    (re.compile(r"明天|明日|\bt[o0]?m{1,2}[o0]?r{1,2}[o0]{1,2}w\b|\btmrw?\b", re.I), 1), (re.compile(r"今天|今日|today", re.I), 0),
 ]
 WEEK_ZH = re.compile(r"(下下|下个?|这个?|本)?\s*(?:周|星期|礼拜)\s*([一二三四五六日天末])|(下下|下个?|这个?|本)?\s*(周末)")
 WEEK_EN = re.compile(r"\b(next|this|on)?\s*(" + _EN_DAYS + r"|weekend)\b", re.I)

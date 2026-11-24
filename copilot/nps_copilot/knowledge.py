@@ -12,6 +12,7 @@ import json
 import math
 import re
 from collections import Counter
+from difflib import SequenceMatcher
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
@@ -154,12 +155,32 @@ def inside_place_name(alias: str, code: str, message: str) -> str | None:
     return None
 
 
+# 州、片区的英文叫法和别的中文叫法（资料里只有中文名）：11-23 仓库主人用英文说“I want to go to the Califonia's NP”没认出来
+GROUP_ALIASES = {
+    "加州": ["california", "calif"], "华盛顿州": ["washington state"], "犹他州": ["utah"], "亚利桑那州": ["arizona"],
+    "科罗拉多州": ["colorado"], "阿拉斯加州": ["alaska"], "夏威夷州": ["hawaii", "hawai'i"], "怀俄明州": ["wyoming"],
+    "蒙大拿州": ["montana"], "爱达荷州": ["idaho"], "俄勒冈州": ["oregon"], "南达科他州": ["south dakota"],
+    "北达科他州": ["north dakota"], "缅因州": ["maine"], "阿肯色州": ["arkansas"], "新墨西哥州": ["new mexico"],
+    "佛罗里达州": ["florida"], "北卡罗来纳州": ["north carolina"], "南卡罗来纳州": ["south carolina"], "田纳西州": ["tennessee"],
+    "弗吉尼亚州": ["virginia"], "西弗吉尼亚州": ["west virginia"], "密歇根州": ["michigan"], "肯塔基州": ["kentucky"],
+    "得克萨斯州": ["texas", "德州", "得州"], "明尼苏达州": ["minnesota"], "内华达州": ["nevada"], "俄亥俄州": ["ohio"],
+    "密苏里州": ["missouri"], "印第安纳州": ["indiana"],
+    "西雅图周边": ["seattle area", "near seattle", "around seattle"], "拉斯维加斯周边": ["las vegas area", "near las vegas", "around las vegas"],
+    "南加州": ["southern california", "socal"], "加拿大落基山": ["canadian rockies"],
+}
+
+
 @lru_cache(maxsize=1)
 def groups() -> tuple[tuple[tuple[str, ...], tuple[str, ...]], ...]:
     """片区和州：(叫法, 网站上的公园代码)。“西雅图附近的三个国家公园都去”用"""
     rows = [json.loads(line) for line in PATH.read_text(encoding="utf-8").splitlines() if line.strip()]
-    return tuple((tuple(normalize(name).lower() for name in row["names"]), tuple(row["members"]))
-                 for row in rows if row.get("members"))
+    out = []
+    for row in rows:
+        if not row.get("members"):
+            continue
+        names = [*row["names"], *(alias for name in row["names"] for alias in GROUP_ALIASES.get(name, []))]
+        out.append((tuple(dict.fromkeys(normalize(name).lower() for name in names)), tuple(row["members"])))
+    return tuple(out)
 
 
 GROUP_GO = re.compile(r"都(去|玩|逛|走|要|想)|全(部|都)(去|玩)?|一起(去|玩)|安排|规划|排一|\ball (of them|three|four)\b", re.I)
@@ -172,15 +193,51 @@ def group_parks(message: str) -> tuple[str, list[str]] | None:
     return group_mention(message)
 
 
-def group_mention(message: str) -> tuple[str, list[str]] | None:
-    """说到了某个片区、州的国家公园（“西雅图附近的国家公园”）：(说法, 公园代码)；不管是不是都要去"""
-    text = normalize(message).lower()
-    for names, members in groups():
-        for name in sorted(names, key=len, reverse=True):
-            at = text.find(name)
-            if at >= 0 and re.match(r".{0,8}?(国家公园|national parks)", text[at + len(name):]) and 1 <= len(members) <= 4:
-                return name, list(members)
+# 说到片区、州以后跟着“国家公园”，或者前面是“去、玩”（“我想去加州的”“go to California”）；“从加州出发”不算
+_PARK_WORD = re.compile(r".{0,8}?(国家公园|公园|national parks?|\bnps?\b|\bparks?\b)")
+_GO_BEFORE = re.compile(r"(去|到|玩|逛|游|看看|想去)\s*$|\b(to|visit|visiting|see|explore|in)\s+(the\s+)?$")
+_FROM_BEFORE = re.compile(r"(从|由)\s*$|\bfrom\s+(the\s+)?$")
+
+
+def _find_name(text: str, name: str) -> tuple[int, int] | None:
+    """叫法在话里的位置。英文按整个词认，长一点的英文叫法允许打错一两个字母（califonia → california）"""
+    if not name.isascii():
+        at = text.find(name)
+        return (at, at + len(name)) if at >= 0 else None
+    exact = re.search(rf"\b{re.escape(name)}\b", text)
+    if exact:
+        return exact.span()
+    if len(name) >= 6 and " " not in name:
+        for word in re.finditer(r"[a-z']+", text):
+            token = word.group().removesuffix("'s")
+            if abs(len(token) - len(name)) <= 2 and SequenceMatcher(None, token, name).ratio() >= 0.85:
+                return word.start(), word.start() + len(token)
     return None
+
+
+def group_mention(message: str, limit: int = 4) -> tuple[str, list[str]] | None:
+    """说到了某个片区、州的国家公园（“西雅图附近的国家公园”“我想去加州的”）：(说法, 公园代码)；不管是不是都要去。
+    limit：最多几座（“都去”只认 4 座以内的；列出来让用户挑的可以多到 9 座）"""
+    text = normalize(message).lower()
+    found = []
+    for names, members in groups():
+        if not 1 <= len(members) <= limit:
+            continue
+        for name in sorted(names, key=len, reverse=True):
+            span = _find_name(text, name)
+            if not span:
+                continue
+            at, end = span
+            before = text[max(0, at - 10):at]
+            if _FROM_BEFORE.search(before):
+                continue
+            if _PARK_WORD.match(text[end:]) or _GO_BEFORE.search(before):
+                found.append((end - at, name, list(members)))
+                break
+    if not found:
+        return None
+    _, name, members = max(found, key=lambda item: item[0])  # “西弗吉尼亚”比“弗吉尼亚”长
+    return name, members
 
 
 def resolve(place: str, parks: list[str], kind: str) -> Doc | None:

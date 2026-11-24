@@ -21,6 +21,8 @@ interface CopilotReply {
   text: string;
   question: { kind: string; text: string; options?: unknown[] } | null;
   result: { trip?: unknown } | null;
+  /** 这一轮谁做了什么（调度员、search agent、规划 agent、行程引擎、审查 agent……；0.7.1 起才有） */
+  steps?: { who: string; text: string; model: boolean }[];
 }
 
 async function call(path: string, body?: unknown, timeout = TIMEOUT_MS, request?: Request): Promise<Response> {
@@ -52,6 +54,7 @@ const shape = (session: string, reply: CopilotReply) => ({
   status: reply.status,
   text: reply.text,
   question: reply.question,
+  steps: reply.steps ?? [],
   trip: reply.status === "planned" ? (reply.result?.trip ?? null) : null,
 });
 

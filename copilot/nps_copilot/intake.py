@@ -381,17 +381,23 @@ class Intake:
                 self.notes.append(f"Going by the site's regions, that's {', '.join(table[code].name_en for code in self.parks.value)}.")
             else:
                 self.notes.append(f"“{group[0]}”按网站的片区算是{'、'.join(table[code].name_zh for code in self.parks.value)}这 {len(self.parks.value)} 座。")
-        elif (mention := group_mention(message)) and not self.parks.value and not catalog.find_all(message, catalog.parks()):
-            # “我想去西雅图附近的国家公园玩”：按网站的片区列出来，问去哪几座（以前当成“没收录”）
+        elif (mention := group_mention(message, limit=9)) and not self.parks.value and not catalog.find_all(message, catalog.parks()):
+            # “我想去西雅图附近的国家公园玩”“我想去加州的”“go to California”：按网站的片区、州列出来，问去哪几座（以前当成“没收录”；
+            # 11-23 以前只认 4 座以内的片区，加州 8 座认不出来，只会再问一遍“想去哪座国家公园”）
             name, members = mention
             table = catalog.parks()
             zh = self.language != "en"
             names = [table[code].name_zh if zh else table[code].name_en for code in members]
-            self.pending = {"kind": "choose", "target": "parks",
-                            "text": (f"“{name}”按网站的片区有{'、'.join(names)}这 {len(members)} 座，想去哪几座？都去也可以。" if zh else
-                                     f"Around there the site covers {', '.join(names)}. Which would you like? All of them is fine too."),
-                            "options": [{"value": [code], "zh": table[code].name_zh, "en": table[code].name_en} for code in members]
-                                       + [{"value": list(members), "zh": "都去", "en": "All of them"}]}
+            if len(members) == 1:
+                self.parks = Field(list(members), "user", name)
+                self.notes.append(f"“{name}”的国家公园是{names[0]}。" if zh else f"That's {names[0]}.")
+            else:
+                together = len(members) <= catalog.max_trip_parks() and catalog.one_trip(list(members))
+                self.pending = {"kind": "choose", "target": "parks",
+                                "text": (f"“{name}”有{'、'.join(names)}这 {len(members)} 座，想去哪几座？" + ("都去也可以。" if together else "可以选一座，或者说几座顺路的。") if zh else
+                                         f"Around there the site covers {', '.join(names)}. Which would you like?" + (" All of them is fine too." if together else " Pick one, or name a few close together.")),
+                                "options": [{"value": [code], "zh": table[code].name_zh, "en": table[code].name_en} for code in members]
+                                           + ([{"value": list(members), "zh": "都去", "en": "All of them"}] if together else [])}
         elif kept["parks"]:
             self._read_parks(kept["parks"], message)
         range_days = self._read_dates(kept["dates"], message) if kept["dates"] else None
@@ -709,8 +715,9 @@ class Intake:
         question = self._special_pending(zh)
         if question is None and self.unsupported and not self.parks.value:
             names = "、".join(self.unsupported) if zh else ", ".join(self.unsupported)
-            text = (f"我这里还没有收录“{names}”。目前支持的是美国 52 座国家公园、加拿大落基山 3 座和羚羊峡谷、马蹄湾、纪念碑谷、波浪谷，想去其中哪里？"
-                    if zh else f"I don't cover “{names}” yet. I can plan 52 U.S. national parks, three in the Canadian Rockies, plus Antelope Canyon, Horseshoe Bend, Monument Valley, and The Wave. Which would you like?")
+            # 不写死座数（原来写着 52 座，网站 10-21 起已经是美国全部 64 座）
+            text = (f"我这里还没有收录“{names}”。目前支持美国全部国家公园、加拿大落基山 3 座和羚羊峡谷、马蹄湾、纪念碑谷、波浪谷，想去其中哪里？也可以说州，比如“加州的国家公园”。"
+                    if zh else f"I don't cover “{names}” yet. I can plan every U.S. national park, three in the Canadian Rockies, plus Antelope Canyon, Horseshoe Bend, Monument Valley, and The Wave. Which would you like? A state works too, like “parks in California”.")
             question = {"kind": "parks", "text": text}
         if question is None and not self.parks.value:
             question = {"kind": "parks", "text": "想去哪座国家公园？可以说几座顺路的。" if zh else "Which national park would you like to visit? A few nearby ones together is fine."}

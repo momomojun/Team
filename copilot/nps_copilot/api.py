@@ -18,13 +18,14 @@ import shutil
 
 import json
 import queue
+import re
 import threading
 
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel
 
-from . import __version__, alerts_live, data_version, embeddings, guard, ledger, monitor, publish, snapshot, tts, vectors
+from . import __version__, alerts_live, data_version, embeddings, guard, ledger, monitor, publish, snapshot, steps, tts, vectors
 from . import graph as graph_module
 from .pipeline import VERSION, Session, prompt_hashes
 from .plan_client import live_closures
@@ -164,7 +165,10 @@ def create(body: NewSession) -> dict:
 
 
 def reply_body(reply) -> dict:
-    return {"status": reply.status, "text": reply.text, "question": reply.question, "request": reply.request, "result": reply.result}
+    # steps：这一轮谁做了什么（调度员、search agent、规划 agent、行程引擎、审查 agent……），网站在回复下面列出来（11-23）
+    zh = bool(re.search(r"[一-鿿]", reply.text or ""))
+    return {"status": reply.status, "text": reply.text, "question": reply.question, "request": reply.request, "result": reply.result,
+            "steps": steps.steps(reply.trace or {}, zh)}
 
 
 @app.post("/sessions/{session_id}/messages")
