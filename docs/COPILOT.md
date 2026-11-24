@@ -39,6 +39,7 @@ flowchart LR
 - **Writer**：默认按模板写（只用结果里的事实）：每天几点从哪出发、开多久，晚上住哪，最后一天开回机场要多久、几点到；第一站超过 4 小时的提醒、列出近一些的常用机场；住民宿附 Airbnb 链接；没排进去的写清楚原因（季节性的写一年里什么时候才有）。打开模型改写时，再检查说明里的时间、数字都在结果里，对不上就退回模板。
 - **多轮**：排出行程以后再说话，条件或改动变了先说改了什么（“好，改了：不去马里波萨巨杉林、第 1 晚住 El Portal。”）、哪几晚换了住处，再给新行程；点名要去、但这几天去不了的说清楚为什么没排；条件没变的不重印行程：“好的、谢谢”简短回一句，提问交给 QA。一句话里几件事的（改天数又问问题、去掉一个换成另一个），按顺序都做。还没排出行程时的提问先回答再接着追问。刚问了“玩几天”“孩子几岁”，只回一个数（“5”）也算。（调度员关掉时，原来的规则是：Intake 摘不出新条件、行程没变才算提问；“新的行程”“start over”这类说法按正则认。）
 - **按片区、州说的一组公园**：“西雅图附近的三个国家公园都玩”“华盛顿州的国家公园都去”按网站的片区和州换成具体的公园（不超过 4 座），回复里说一句是哪几座；只是问“是哪三个”的不换，交给 QA。
+- **这一步做了什么**（11-23，`steps.py`）：每条回复带 `steps`（`[{who, text, model}]`），把这一轮的 trace 翻成给用户看的几步：调度员判断要干什么、search agent 查了哪些（几步）或者找一次就答、规划 agent 摘出了哪几条要求（没有就写按常规排）、行程引擎排了几天、审查 agent 商量了几轮做到几条、Critic 改没改、Writer 用没用模型。不调模型。网站对话框在回复下面列出来，调了模型的金色点、确定的代码白色点（仓库主人线上试了以后说看不出 search agent 和多 agent 在哪里）。
 - **边做边报**（10-22，GOALS O65）：`POST /sessions/{id}/messages?stream=1` 一行一个 JSON：做到哪一步报一次 `{"type": "progress", "step": ...}`——`understand`（调度员）、`read`（Intake 读条件）、`alerts`（真要现读 NPS 公告时才有，带公园）、`plan`（带认出的条件：公园、日期或月份、天数、出发地）、`write`（带景点数）、`answer`（回答问题），最后一行 `{"type": "reply", ...}`。网站的中转（`/api/copilot/chat`，`stream: true`）原样转给浏览器。对话框里是一张国家公园公路旅行的小画：远山、松树，一条公路就是进度条，车往右开，开过的路变成砂岩红，太阳跟着升起来，开到头帐篷亮起来（回复到了）。进度按这些真实的步骤推、两步之间慢慢往前挪（不会停住，也不会超过下一步），但不把步骤念出来，下面一句话跟着进度换（“摊开地图，圈出要去的地方”“问问护林员，哪段山路开着”……）；认出条件后写出“优胜美地 · 11 月 5 日起 · 3 天 · 从 FAT 出发”。
 - **QA（回答问题，RAG）**：`knowledge.search` 在 `knowledge.jsonl`（网站数据整理成的 1687 条短文：景点、住处、公园、片区、州、特别活动、临时关闭）里找 4 条，只在这次行程的公园里找（问题里点名了别的公园就加上那座；片区、州的资料不分公园，问题里说了它的名字才用）。问的是行程里的景点整体（“这些景点好看吗”）时，另外把每一站的一句介绍给模型。问题里直接出现了某条的名字（“El Portal”）的排最前面，“雾径 · 弗纳尔瀑布”只说“雾径”也算；其余按 BM25（中文按相邻两个字切，英文按单词）。模型只看“行程 + 这 4 条”回答，输出 `{found, answer, sources}`；代码检查回答里的时间、数字都在行程或资料里出现过（按整个数比）、引用的编号是给过的，对不上就不用模型写的、改成摘资料原文（问题里点了名的那条），资料里没有就说不知道。回答后面注明用了哪几条资料。不用向量检索、不另外下载模型；以后可以换成嵌入模型做对照实验，接口不变。
 - **查询工具**（`tools.py` → `scripts/lookup.mjs` → `src/lib/copilot/lookup-tool.ts`，10-21，计划书的 is_open、drive_time、search_attractions）：资料里没有现成一句话、要算的问题，QA 先调网站的查询工具，结果和资料一起给模型（“[0] 查询结果”，模型照这个回答；模型出错或数字对不上时直接把查询结果给用户）。和 plan_trip 一样是 Node 命令行、不联网、同样的输入结果一样。三种：
@@ -137,7 +138,7 @@ flowchart LR
 | `copilot/nps_copilot/data_version.py` | 数据版本：网站数据、给 Copilot 的资料、各地叫法按内容算的 hash，公告关闭清单的快照，镜像的第二个标签（见“版本”一节） |
 | `copilot/nps_copilot/monitor.py` | `python -m nps_copilot stats`、`GET /stats`：按版本统计运行日志，按模型算调用、token 和花费（价格表 `PRICES`） |
 | `src/components/plan/copilot-chat.tsx`、`src/app/api/copilot/chat/route.ts` | 网站行程页的对话框和中转接口 |
-| `copilot/nps_copilot/api.py`、`__main__.py` | HTTP 服务（FastAPI：`GET /health`、`POST /sessions`、`POST /sessions/{id}/messages`）和命令行（`chat`、`serve`、`stats`、`version`） |
+| `copilot/nps_copilot/api.py`、`__main__.py`、`steps.py` | HTTP 服务（FastAPI：`GET /health`、`POST /sessions`、`POST /sessions/{id}/messages`，回复带 `steps`）和命令行（`chat`、`serve`、`stats`、`version`）；`steps.py` 把 trace 翻成“这一步做了什么” |
 | `copilot/nps_copilot/data/regional_names.json` | 各地中文叫法（三藩市、卡加利、愛民頓、洛磯山、班芙、宰恩、傑克森……），`copilot/scripts/regional_names.py` 从维基数据和中文维基各地区的标题、重定向生成；人工补的（`MANUAL`）和排除的（`EXCLUDE`：太泛的巨杉、冰河，和网站用词冲突的红杉）写在脚本里，附原因。只用来认名字，回答用户时用网站自己的中文名 |
 | `copilot/tests/` | pytest：Intake 每个修好的问题各有测试、各地写法、Critic、Writer 的忠实度检查、提示词切换、监控统计、接真行程引擎的端到端 |
 | `copilot/eval/` | 评测，见下面“评测” |

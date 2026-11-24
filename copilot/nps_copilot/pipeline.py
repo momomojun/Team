@@ -34,7 +34,7 @@ from .intake import Field, Intake
 from .knowledge import inside_place_name
 from .plan_client import PlanError, plan_trip
 from .providers import Metered, Provider
-from .text import contains
+from .text import contains, normalize
 
 VERSION = f"copilot/{__version__}"
 RUNS = Path(os.environ.get("COPILOT_RUNS", Path(__file__).resolve().parents[1] / "runs"))
@@ -237,6 +237,8 @@ class Session:
             head.extend(turn.notices)
             if turn.status != "ready":
                 answers = self._answers(asks, None, zh, trace, message)
+                if answers:
+                    turn.question = self._offer_parks("\n".join(answers), turn.question, zh)
                 text = "\n".join([*head, *answers, turn.question["text"]] if turn.question else [*head, *answers])
                 return Reply("needs_input", text, turn.question, None, None, trace)
             request = turn.request
@@ -505,6 +507,7 @@ class Session:
                 said, trace["qa"] = self._ask(message, self.intake.parks.value or [], None, None, zh)
                 if trace["qa"].get("answer") == "model" or not turn.trace.get("absorbed"):
                     head.append(said)
+                    turn.question = self._offer_parks(said, turn.question, zh)
             text = "\n".join([*head, turn.question["text"]]) if turn.question else "\n".join(head)
             return Reply("needs_input", text, turn.question, None, None, trace)
         request = self._team(self._with_edits(turn.request), message, trace)
@@ -525,6 +528,27 @@ class Session:
             if trace["qa"].get("answer") == "model":
                 reply.text += "\n" + said
         return reply
+
+    def _offer_parks(self, said: str, question: dict | None, zh: bool) -> dict | None:
+        """刚回答里推荐了几座公园、接着要问“想去哪座”：把推荐的列成选项，点一下就行（11-23 仓库主人：推荐完了还要自己再打一遍名字）"""
+        if not question or question.get("kind") != "parks" or question.get("options") or self.intake.parks.value:
+            return question
+        text = normalize(said).lower()
+        table = catalog.parks()
+        found: dict[str, int] = {}
+        for code, alias in catalog.find_all(said, table):
+            at = text.find(normalize(alias).lower())
+            at = at if at >= 0 else len(text)
+            if code not in found or at < found[code]:
+                found[code] = at
+        codes = [code for code, _ in sorted(found.items(), key=lambda item: item[1])][:6]
+        if len(codes) < 2:
+            return question
+        pending = {"kind": "choose", "target": "parks",
+                   "text": "想去哪座？上面推荐的可以直接点，也可以说别的公园。" if zh else "Which one? Tap one of the parks above, or name another.",
+                   "options": [{"value": [code], "zh": table[code].name_zh, "en": table[code].name_en} for code in codes]}
+        self.intake.pending = pending
+        return pending
 
     def _done(self, reply: Reply, start: float) -> Reply:
         reply.trace["status"] = reply.status
