@@ -12,6 +12,9 @@
 - request：当前条件（TripRequest 的子集）；parks_set：公园（不管顺序）
 - plan_has / plan_lacks：行程里有 / 没有的景点 id；night：{"1": 住处 id}
 - fresh：前面的条件和行程都清掉了（“帮我安排一个新的行程”）
+- options_include：追问的选项里要有这些（按中文名或英文名认，“优胜美地”“Yosemite”）；options_min：选项至少几个
+- has_parks：这一轮之后已经定了公园（不管是哪座，模型推荐的公园每次可能不一样）
+- steps_has：回复下面“这一步做了什么”里要有这些角色（dispatcher、search_agent、planner、engine、reviewer……，11-23 加的 steps.py）
 """
 from __future__ import annotations
 
@@ -32,6 +35,7 @@ os.environ.setdefault("COPILOT_SOURCE", "eval")
 os.environ.setdefault("COPILOT_LIVE", "0")
 
 from nps_copilot import data_version  # noqa: E402
+from nps_copilot import steps as steps_module  # noqa: E402
 from nps_copilot.pipeline import Session, prompt_hashes  # noqa: E402
 from guard import StopEarly, safe_name  # noqa: E402
 import tracking  # noqa: E402
@@ -79,6 +83,16 @@ def check(expect: dict, session: Session, reply) -> list[str]:
             problems.append(f"第 {night} 晚住 {actual}")
     if expect.get("fresh") and (session.last_result is not None or session.intake.parks.value):
         problems.append("没有清掉前面的条件")
+    options = (reply.question or {}).get("options") or []
+    labels = {str(value) for option in options for value in (option.get("zh"), option.get("en"), option.get("label")) if value}
+    problems += [f"选项里没有“{name}”" for name in expect.get("options_include", []) if name not in labels]
+    if "options_min" in expect and len(options) < expect["options_min"]:
+        problems.append(f"选项只有 {len(options)} 个")
+    if expect.get("has_parks") and not request.get("parks"):
+        problems.append("还没定公园")
+    if expect.get("steps_has"):
+        who = {step["who"] for step in steps_module.steps(reply.trace or {}, session.zh)}
+        problems += [f"“这一步做了什么”里没有 {name}" for name in expect["steps_has"] if name not in who]
     return problems
 
 

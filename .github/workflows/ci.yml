@@ -87,6 +87,11 @@ jobs:
         name: Replay eval gate (search agent vs retrieve-once Q&A, answers recorded with Gemini 3.5 Flash Lite)
         run: python copilot/eval/agent.py --replay copilot/eval/recordings/agent-v1-gemini-3.5-flash-lite.jsonl --gate copilot/eval/baseline-agent.json
       - if: ${{ !cancelled() }}
+        name: Replay eval gate (real user phrasing, multi-turn, answers recorded with Gemini 3.5 Flash Lite - the production model)
+        env:
+          COPILOT_QA_AGENT: "1"
+        run: python copilot/eval/conversation.py --cases copilot/eval/cases/live-v1.jsonl --replay copilot/eval/recordings/gemini-3.5-flash-lite-live-v1.jsonl --gate copilot/eval/baseline-live.json
+      - if: ${{ !cancelled() }}
         name: Regression injection (the gates must block a worse prompt, weaker models and bad data)
         run: python copilot/eval/injection.py
       - uses: actions/upload-artifact@v4

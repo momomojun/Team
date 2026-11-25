@@ -10,6 +10,8 @@
 - **“没收录”那句写死了 52 座**：网站 10-21 起已经是美国全部 64 座，改成不写座数，并提示可以按州说。
 - **每条回复下面写“这一步 Copilot 做了什么”**：调度员判断这句话要干什么、search agent 自己查了哪些（几步）、规划 agent 从话里摘出了哪几条要求（没有就写“没有特别的要求，按常规排”）、行程引擎排了几天（不用模型）、审查 agent 商量了几轮、做到几条。调了模型的步骤是金色的点，确定的代码是白色的点。Copilot 的回复多了 `steps` 字段，网站对话框显示出来。
 - 行程页底下的小字把本机模型改成 Qwen3.5 35B-A3B。
+- **换公园不再清掉条件**：排好以后说“换成布莱斯吧”“let's do Bryce Canyon instead”，原来会被当成重新开始，日期、天数、出发地、节奏全清掉；现在只换公园。
+- **第 11 道门槛：真实说法的多轮对话**（`live-v1`，20 段、中英各半，含 11-23 线上试的两段原话），回放的是 Gemini（线上模型）录的回答，不是本机 4B 的。Gemini 第一次 19/20，修了上一条以后 20/20。
 
 ## 怎么试
 
@@ -37,6 +39,8 @@ A bug-fix release. After v0.7.0 went live the same day, the owner tried a few me
 - **"Not covered" said 52 parks**: the site has had all 64 U.S. national parks since Oct 21; the message no longer states a count and suggests naming a state.
 - **"What the Copilot did" under every reply**: what the dispatcher decided the message was, what the search agent looked up (and in how many steps), which wishes the planning agent found (or "no special wishes, planning as usual"), how many days the trip planner planned (no model), and how many rounds the review agent negotiated and how many wishes were met. Steps that called a model have a gold dot, deterministic code a white one. Copilot replies gain a `steps` field, which the site's chat box shows.
 - The small print under the trip page's chat now names the local model as Qwen3.5 35B-A3B.
+- **Swapping parks keeps the other details**: "换成布莱斯吧" or "let's do Bryce Canyon instead" after a plan used to be treated as a restart that wiped the date, days, origin and pace; now only the park changes.
+- **An 11th gate for real user phrasing** (`live-v1`, 20 conversations, half Chinese and half English, including the two tried in production on Nov 23), replaying answers recorded with Gemini (the production model) rather than local 4B. Gemini scored 19/20 on the first run and 20/20 after the fix above.
 
 ## How to try it
 

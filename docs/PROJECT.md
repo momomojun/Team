@@ -11,9 +11,9 @@
 | 网站 NPS Guide | 能用：美国 64 座国家公园（63 页）、加拿大 3 座、4 处园外名胜，987 个景点、364 条徒步路线；英文版、同行适合度、时区、营业季节、季节性山路、NPS 道路事件、安全页、活动页。11-20 到 11-22 照着 Wabunka 整站改版。部署在 Vercel（https://team-peach-five.vercel.app ），登录以后行程和对话存进 Neon |
 | Copilot | 调度员（模型决定改条件、提问、加减景点、换住处）→ Intake（模型摘片段、代码算）→ `plan_trip`（确定的行程引擎）→ Critic → Writer；回答问题有 search agent（模型自己选 9 种查询工具，评测 39/44，找一次就答 19/44；11-23 线上打开）和按意思找资料（Gemini 嵌入 + Neon pgvector）；**多 agent 排行程**（规划 agent 摘软要求、代码核对、翻成引擎的 18 种旋钮，审查 agent 最多 3 轮商量，11-22 起默认打开）。模型：Gemini 3.5 Flash Lite → Nemotron 3.5 Super → Qwen3.8 27B → DeepSeek Flash（付费备用）→ 本机 Qwen3.5 35B-A3B |
 | 线上部署 | Modal 上两个环境：staging（合进 main 自动部署，配 Vercel Preview）、正式（发版才部署，配 Vercel Production）；口令 + 限流；正式环境 https://momomojun--nps-copilot-web.us-east.modal.run |
-| CI/CD | PR 上 3 项必需检查（网站、Copilot 测试 + 十组回放门禁、镜像冒烟），成绩表贴到 PR；`copilot-v*` tag 发版到 GHCR、建 Release、部署 Modal 正式环境。已发到 [`copilot-v0.7.0`](https://github.com/momomojun/Team/releases/tag/copilot-v0.7.0)（11-23）；提示词回滚、换镜像回滚都演示过 |
+| CI/CD | PR 上 3 项必需检查（网站、Copilot 测试 + 十一组回放门禁、镜像冒烟），成绩表贴到 PR；`copilot-v*` tag 发版到 GHCR、建 Release、部署 Modal 正式环境。已发到 [`copilot-v0.7.0`](https://github.com/momomojun/Team/releases/tag/copilot-v0.7.0)（11-23）；提示词回滚、换镜像回滚都演示过 |
 | 版本和追溯 | 每个回答记下代码版本、提示词版本（hash）、数据版本（网站数据、资料、各地叫法的 sha256）和提交号；镜像 tag 带这三样 |
-| 评测 | 十组回放门禁（单句 25/25、held-out v1 37/40、held-out v2 70/70、各地叫法 17/17、多轮对话 20/20 · 15/15 · 1/2、读公告、找资料、search agent）；软要求 soft-v1 30 题、对照题 soft-v2 20 题；行程引擎对照 73 条真实行程、110 条按论文方法打分；回归注入、漂移、故障、混沌测试、LLM 打分；四个模型的全套对照。网站 236 个测试、Copilot 535 个测试。成绩在 [RESULTS.md](../copilot/eval/RESULTS.md)，后台的“测试和评测”页（`/zh-Hans/admin/evals`）画成对比 |
+| 评测 | 十一组回放门禁（单句 25/25、held-out v1 37/40、held-out v2 70/70、各地叫法 17/17、多轮对话 20/20 · 15/15 · 1/2、读公告、找资料、search agent、真实说法 20/20（回放 Gemini 录的回答））；软要求 soft-v1 30 题、对照题 soft-v2 20 题；行程引擎对照 73 条真实行程、110 条按论文方法打分；回归注入、漂移、故障、混沌测试、LLM 打分；四个模型的全套对照。网站 236 个测试、Copilot 535 个测试。成绩在 [RESULTS.md](../copilot/eval/RESULTS.md)，后台的“测试和评测”页（`/zh-Hans/admin/evals`）画成对比 |
 | 实时数据 | 每晚读 NPS 公告（模型提取关闭）、NPS 道路事件，发到 `data/alerts-live`；两周内出发的行程网站和 Copilot 都不排关了的景点；新的关闭由模型提议、人来批 |
 | 监控 | 后台 `/zh-Hans/admin`（英文 `/en/admin`）：技术栈、五张架构图、对话和排行程比例、每个模型的调用和花费、计费总账、每晚读公告、最近几轮 |
 | 仓库 | `main` 受保护（必须走 PR、3 项检查通过）；协作者 JadenChen10（Tianyue Chen）、huilingfu95-source（Huiling Fu） |
