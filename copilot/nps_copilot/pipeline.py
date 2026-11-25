@@ -201,6 +201,13 @@ class Session:
     def _run(self, plan: dispatcher_module.Dispatch, message: str, trace: dict) -> Reply:
         zh = self.zh
         head: list[str] = []
+        if (plan.has("new_trip") and not RESTART.search(message) and SWAP.search(message)
+                and (self.last_request is not None or self.intake.parks.value) and catalog.find_all(message, catalog.parks())):
+            # 说的是换公园，不是重新开始：去掉 new_trip，按改条件读（原来的日期、天数、出发地、节奏都留着）
+            plan.actions = [action for action in plan.actions if action.type != "new_trip"]
+            if not plan.has("conditions"):
+                plan.actions.append(dispatcher_module.Action("conditions", ""))
+            trace["swap_not_restart"] = True
         if plan.has("new_trip"):
             history, language = self.history, self.intake.language
             self._reset()
@@ -564,6 +571,9 @@ class Session:
         return reply
 
 
+# “换成布莱斯吧”“actually let's do Bryce Canyon instead”：换公园，别的条件（日期、天数、出发地、节奏）照旧。
+# 11-24 live-v1 的 L20：Gemini 的调度员把它当成重新开始（new_trip），条件全清掉、又问了一遍日期
+SWAP = re.compile(r"换成|改成|改去|换去|换到|还是去|instead|rather|switch (it )?to|swap (it )?(for|to)|change (it )?to|let'?s do", re.I)
 RESTART = re.compile(r"新的?(行程|旅行|计划|攻略)|另(一|外一?)个(行程|旅行|计划|攻略)|重新开始|从头(开始|来)|换个(行程|旅行|计划)|"
                      r"start over|from scratch|new (trip|plan|itinerary)|another trip", re.I)
 

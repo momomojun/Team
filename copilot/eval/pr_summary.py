@@ -1,4 +1,4 @@
-"""CI 跑完十组回放门禁以后，把成绩整理成一张 Markdown 表：贴到 PR 评论和这次 CI 的摘要页。
+"""CI 跑完十一组回放门禁以后，把成绩整理成一张 Markdown 表：贴到 PR 评论和这次 CI 的摘要页。
 
   python copilot/eval/pr_summary.py copilot/eval/reports > summary.md
 
@@ -27,6 +27,8 @@ SUITES = [
     ("retrieval-gemini-embedding-2", "baseline-retrieval.json", "找资料（按意思 · 关键词）", "Retrieval (semantic · keyword)"),
     # search agent（11-14）：Gemini 3.5 Flash Lite 录好的回答，自己查 vs 找一次就答
     ("agent-v1-gemini-3.5-flash-lite", "baseline-agent.json", "回答问题：自己查 · 找一次就答", "Q&A: search agent · retrieve-once"),
+    # 真实说法的多轮对话（11-24）：回放 Gemini 3.5 Flash Lite（线上第一个用的模型）录好的回答，不是本机 4B
+    ("gemini-3.5-flash-lite-live-v1", "baseline-live.json", "真实说法（Gemini 录的，线上模型）", "Real phrasing (recorded with Gemini, the production model)"),
 ]
 
 

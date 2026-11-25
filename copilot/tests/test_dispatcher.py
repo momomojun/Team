@@ -195,3 +195,15 @@ def test_lodging_kind_is_a_preference_not_a_lodge():
     reply = session.send("我想住airbnb")
     assert reply.status == "planned" and reply.request["lodgingPref"] == "rental"
     assert "没找到" not in reply.text
+
+
+def test_swapping_parks_keeps_the_other_conditions():
+    """“换成红杉吧”：调度员说重新开始（11-24 live-v1 的 L20，Gemini），其实只是换公园，日期、天数、出发地、节奏照旧"""
+    session, _ = planned_session(
+        act({"type": "new_trip"}, {"type": "conditions", "place": "红杉与国王峡谷"}),
+        extraction(parks=["红杉"]),
+    )
+    swapped = session.send("还是换成红杉吧")
+    assert swapped.status == "planned" and swapped.request["parks"] == ["seki"]
+    assert swapped.request["startDate"] == "2027-06-01" and swapped.request["days"] == 4
+    assert swapped.trace.get("swap_not_restart") and not swapped.text.startswith("好，重新排一个新的行程")

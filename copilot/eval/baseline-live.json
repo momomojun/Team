@@ -1,0 +1,5 @@
+{
+  "cases": 20,
+  "turns": 37,
+  "note": "live-v1（真实说法的多轮对话，11-24）：回放 Gemini 3.5 Flash Lite 录的回答（线上第一个用的模型，不是本机 4B）。第一次跑 19/20、36/37（L20“actually let's do Bryce Canyon instead”被调度员当成重新开始，条件全清掉）；修了换公园不清条件以后 20/20、37/37（补录 2 次调用），这一批不再算没见过的。要开 COPILOT_QA_AGENT=1 回放（线上开着 search agent）"
+}

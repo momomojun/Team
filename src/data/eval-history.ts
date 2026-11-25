@@ -33,7 +33,7 @@ export interface EvalRound {
 export const TEST_LAYERS = [
   { nameZh: "网站测试", nameEn: "Website tests", count: "235", whatZh: "排行程、时间线、预算、数据完整、英文版不漏字；不联网，几秒", whatEn: "Planning, timelines, budget, data integrity, nothing missing in English; offline, seconds", command: "npm test" },
   { nameZh: "Copilot 测试", nameEn: "Copilot tests", count: "533", whatZh: "规则逐条、调度员、多 agent 核对、故障注入；不要模型", whatEn: "Rule by rule, dispatcher, multi-agent checks, fault injection; no model", command: "pytest copilot/tests" },
-  { nameZh: "回放门禁", nameEn: "Replay gates", count: "10 组", countEn: "10 suites", whatZh: "回放录好的模型回答跑完整的 Copilot，低于基线不能合并", whatEn: "Replays recorded model answers through the whole Copilot; below baseline blocks the merge", command: "ci.yml" },
+  { nameZh: "回放门禁", nameEn: "Replay gates", count: "11 组", countEn: "11 suites", whatZh: "回放录好的模型回答跑完整的 Copilot，低于基线不能合并；有三组回放的是 Gemini（线上模型）录的", whatEn: "Replays recorded model answers through the whole Copilot; below baseline blocks the merge; three suites replay Gemini (the production model)", command: "ci.yml" },
   { nameZh: "引擎对照真实行程", nameEn: "Engine vs real trips", count: "73 + 110", whatZh: "73 条博主和 NPS 的真实行程、110 条按论文方法打分的请求，都是门禁", whatEn: "73 creator and NPS itineraries and 110 paper-style scored requests, both gated", command: "npm run eval:routes · eval:quality" },
   { nameZh: "软要求题", nameEn: "Soft-wish cases", count: "30 + 20", whatZh: "多 agent 对照调度员：30 道有软要求、20 道对照题（一半英文）", whatEn: "Multi-agent vs dispatcher: 30 with soft wishes, 20 controls (half English)", command: "python eval/soft.py" },
   { nameZh: "换模型对照", nameEn: "Model comparisons", count: "4 个", countEn: "4 models", whatZh: "同一套题换本机、云端模型跑，用真模型、不回放", whatEn: "The same suites on local and cloud models, live, not replayed", command: "--record" },
@@ -51,6 +51,7 @@ export const GATES = [
   { suiteZh: "NPS 公告提取", suiteEn: "NPS alert extraction", score: "类型 0.755 · F1 0.333", scoreEn: "type 0.755 · F1 0.333", baseline: "≥ 0.755 · 0.333" },
   { suiteZh: "找资料（按意思 · 关键词）", suiteEn: "Retrieval (semantic · keyword)", score: "召回@5 1.0 · 0.812", scoreEn: "recall@5 1.0 · 0.812", baseline: "≥ 1.0 · 0.812" },
   { suiteZh: "回答问题（search agent · 找一次就答）", suiteEn: "Q&A (search agent · retrieve once)", score: "39/44 · 19/44", baseline: "≥ 39 · 19" },
+  { suiteZh: "真实说法的多轮对话（Gemini 录的，线上模型）", suiteEn: "Real phrasing, multi-turn (recorded with Gemini, the production model)", score: "20/20 组 · 37/37 轮", scoreEn: "20/20 · 37/37 turns", baseline: "≥ 20 · 37" },
 ] as const;
 
 /**
@@ -1621,5 +1622,30 @@ export const EVAL_ROUNDS: EvalRound[] = [
         "score": "7/30"
       }
     ]
-  }
+  },
+{
+  "date": "2026-11-24",
+  "titleZh": "真实说法，用线上模型考",
+  "titleEn": "Real phrasing, on the production model",
+  "kind": "conversation",
+  "summaryZh": "CI 门禁原来回放本机 4B 的录音，线上跑的是 Gemini。按真实用户的说法写了 20 段对话（中英各半，含仓库主人 11-23 线上试的两段原话），先提交再用 Gemini 跑：第一次 19/20，没过的是“换成布莱斯 instead”被当成重新开始、条件全清掉；修了以后 20/20，录音加成第 11 道门槛。",
+  "summaryEn": "The CI gates replayed local 4B recordings while production runs Gemini. 20 conversations in real user phrasing (half Chinese, half English, including the two the owner tried in production on Nov 23) were committed and then run on Gemini: 19/20 on the first try, the miss being \"let's do Bryce instead\" treated as a restart that wiped every detail; 20/20 after the fix, and the recording became the 11th gate.",
+  "results": [
+    {
+      "suite": "live-v1 第一次",
+      "model": "Gemini 3.5 Flash Lite",
+      "score": "19/20 · 36/37 轮"
+    },
+    {
+      "suite": "live-v1 修了以后（回放）",
+      "model": "Gemini 3.5 Flash Lite",
+      "score": "20/20 · 37/37 轮"
+    },
+    {
+      "suite": "调用次数",
+      "model": "第一次 + 补录",
+      "score": "83 + 2"
+    }
+  ]
+}
 ];

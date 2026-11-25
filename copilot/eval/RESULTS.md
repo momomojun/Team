@@ -950,3 +950,17 @@ soft-v1 回放（不调模型）：
 | **多 agent，修了以后** | **27/30** | **29/30** | **27/30** | **28/30** |
 
 （gpt-oss：这次改动之前回放 S20 就不过（把改动 stash 掉回放确认过），修了以后过了；S07、S13 是它自己没摘出来，所以总数还是 27。）十组回放门禁、网站 236 个测试（含引擎对照真实行程和行程质量两组门禁）、Copilot 535 个测试本机都过。
+
+## 2026-11-24：真实说法的多轮对话（live-v1），用线上模型 Gemini 考
+
+仓库主人问“CI 门禁测的是本机 4B 的录音，线上跑的却是 Gemini”是什么意思，定了“不用每周跑，一次性补上、演示前再跑一次”。
+
+- **题**（`cases/live-v1.jsonl`，20 段对话、37 轮，10 段中文开头（含 1 段繁体）、10 段英文）：按真实用户的说法写，包括 11-23 仓库主人线上试的两段原话（L01、L11，含打错的 Califonia、tomoroow）、按州和片区说公园（加州、犹他、缅因、Southern California）、打错字、推荐完接着点、带软要求（多 agent 要出场）、先提问、排好以后换公园。参考日期都是 2026-11-23。`conversation.py` 加了四种期望：`options_include`（追问的选项里要有哪些）、`options_min`、`has_parks`、`steps_has`（回复下面“这一步做了什么”里要有哪些角色）。**先提交（d5ce642）再第一次跑**。
+- **第一次**：Gemini 3.5 Flash Lite（线上第一个用的模型），打开 search agent 和多 agent，和线上一样：**19/20 组、36/37 轮**，83 次调用，每轮中位 8.7 秒。没过的是 L20：排好锡安以后说“actually let's do Bryce Canyon instead”，调度员给了“重新开始 + 改条件”，日期、天数、出发地、节奏全清掉、又问了一遍日期。
+- **修**：已经有行程（或者已经定了公园）、这句话说的是“换成 / 改成 / instead / let's do”加一座公园、又没说“重新开始、新的行程”时，代码去掉“重新开始”，按改条件读（`pipeline.SWAP`，trace 记 `swap_not_restart`）。修了以后回放补录 2 次调用：**20/20、37/37**。看过失败再修的，这一批不再算没见过的。
+- **第 11 道门槛**：`baseline-live.json`（20 组、37 轮），CI 和发版都回放 `recordings/gemini-3.5-flash-lite-live-v1.jsonl`（要 `COPILOT_QA_AGENT=1`，线上开着 search agent），PR 评论的成绩表多一行。这一组回放的是线上模型的回答，不是本机 4B 的。
+- 演示前（12 月 8 日前后）用同一个命令再真跑一次（约 85 次 Gemini 调用），看这两周 Gemini 有没有变：
+
+```bash
+cd copilot && COPILOT_PROVIDER=gemini COPILOT_QA_AGENT=1 python eval/conversation.py --cases eval/cases/live-v1.jsonl
+```
