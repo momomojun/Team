@@ -1,0 +1,22 @@
+{
+ "frozen_at": "2026-11-25T06:54:55+00:00",
+ "commit": "dcfd89cd10dedd650a17e10abe46680550bbc7e1",
+ "data_version": {
+  "id": "e07dac762255",
+  "parts": {
+   "site": "5d7688935247",
+   "contracts": "76c9207798ca",
+   "names": "6e34ca79a311"
+  }
+ },
+ "note": "真实说法的多轮对话评测题 v1（11-24 仓库主人：CI 门禁回放的是本机 4B 的录音，线上跑的是 Gemini；不用每周跑，一次性补上、演示前再跑一次）：20 段对话，10 段中文开头（含 1 段繁体）、10 段英文。来源是真实用户的说法：11-23 仓库主人线上试的两段原话（L01、L11，含打错的 Califonia、tomoroow）、按州和片区说公园、打错字、推荐完接着点、带软要求（多 agent 要出场）、先提问、排好以后换公园。参考日期都是 2026-11-23（明天 = 11-24）。conversation.py 加了 options_include、options_min、has_parks、steps_has 四种期望。在跑任何模型之前写好、提交后冻结；第一次的成绩用 Gemini 3.5 Flash Lite（线上第一个用的模型）跑，录下来当回放门禁。",
+ "sha256": {
+  "eval/cases/live-v1.jsonl": "c2f318339d55edb6b6a03308dfa4d983b5b4f0105898e82877e240a668fec3d9",
+  "eval/conversation.py": "b6a0e766ce0bafceb73660bb2a99d1252620e26df8141284b7fb9a2e7bd9f9ff",
+  "nps_copilot/pipeline.py": "da7bc3235bd7464d6dcb17083db1e0999d5c874220220d7f1eb488c0750638d5",
+  "nps_copilot/intake.py": "a25521958270e825042108b41a7065b841335b73eb75bd097e49aad84f4a531b",
+  "nps_copilot/knowledge.py": "1765e0aa5483df3d87865b225624ad3244e76fd6448eac116a78cf7e000ab663",
+  "nps_copilot/steps.py": "1a0054ddefdbdd69b53ff1339e92f5f2af8b3c8c49b144e830f64e86f4889509",
+  "nps_copilot/team.py": "16ae7eea825a4637150ea215cee0974accaae93df86ea57adbff8b386cca6aec"
+ }
+}
