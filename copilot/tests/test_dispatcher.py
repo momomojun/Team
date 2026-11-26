@@ -207,3 +207,16 @@ def test_swapping_parks_keeps_the_other_conditions():
     assert swapped.status == "planned" and swapped.request["parks"] == ["seki"]
     assert swapped.request["startDate"] == "2027-06-01" and swapped.request["days"] == 4
     assert swapped.trace.get("swap_not_restart") and not swapped.text.startswith("好，重新排一个新的行程")
+
+
+def test_a_kind_of_park_is_a_request_for_recommendations():
+    """“那我要去带沙漠的国家公园”：调度员当成给条件（11-25 线上，Gemini），其实是要推荐一类公园，去查着回答"""
+    provider = ScriptedProvider([
+        act({"type": "conditions"}),
+        extraction(),
+        {"found": True, "answer": "冬天去死亡谷、约书亚树都不错，沙丘和沙漠都有。", "sources": [1]},
+    ])
+    session = Session(provider, "2026-11-25", log=False)
+    reply = session.send("那我要去带沙漠的国家公园")
+    assert reply.status == "needs_input" and reply.trace.get("park_kind_ask")
+    assert "qa" in [task for task, _ in provider.calls]

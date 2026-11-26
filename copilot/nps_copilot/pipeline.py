@@ -229,6 +229,11 @@ class Session:
             # 调度员漏了提问（“附近有什么国家公园”被只当成给条件）：问号、“什么”这类一看就是在问的，也去查着回答
             asks.append(dispatcher_module.Action("ask", message))
             trace["added_ask"] = True
+        if (not asks and PARK_KIND.search(normalize(message)) and not catalog.find_all(message, catalog.parks())
+                and not knowledge.group_mention(message, limit=9)):
+            # “那我要去带沙漠的国家公园”：要的是一类公园、没点名，去查着推荐（推荐完的几座列成按钮）
+            asks.append(dispatcher_module.Action("ask", message))
+            trace["park_kind_ask"] = True
         if plan.has("conditions") or plan.has("new_trip") or self.last_request is None:
             # “那就 7 月 10 日出发”：这句没写公园、指的是前面说过的那座（调度员给的名字要是对话里出现过的）
             said = next((action.place for action in plan.actions if action.type == "conditions" and action.place), "")
@@ -571,6 +576,13 @@ class Session:
         return reply
 
 
+# 说的是一类公园、没点名哪座（“那我要去带沙漠的国家公园”“有雪山的公园”“parks with beaches”）：这是要推荐，不是给条件。
+# 11-25 仓库主人线上试：调度员当成 conditions，只会再问一遍“想去哪座”，连说三次才推荐
+PARK_KIND = re.compile(
+    r"(带|有|能看到?|看得到|可以看|适合)[^，。,.?？!！]{1,10}的(国家)?公园|"
+    r"(沙漠|海边|海滩|海岸|雪山|冰川|火山|峡谷|森林|瀑布|温泉|洞穴|沙丘|星空|红叶|极光|湖)[^，。,.?？!！]{0,4}的(国家)?公园|"
+    r"\bparks? (with|that have|where|for)\b|"
+    r"\b(desert|beach|coastal|snowy|mountain|canyon|glacier|volcan\w*|forest|cave|dune|warm|sunny)s? (national )?parks?\b", re.I)
 # “换成布莱斯吧”“actually let's do Bryce Canyon instead”：换公园，别的条件（日期、天数、出发地、节奏）照旧。
 # 11-24 live-v1 的 L20：Gemini 的调度员把它当成重新开始（new_trip），条件全清掉、又问了一遍日期
 SWAP = re.compile(r"换成|改成|改去|换去|换到|还是去|instead|rather|switch (it )?to|swap (it )?(for|to)|change (it )?to|let'?s do", re.I)
