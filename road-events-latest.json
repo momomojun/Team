@@ -1,12 +1,12 @@
 {
- "fetched": "2026-11-25",
+ "fetched": "2026-11-26",
  "parks": {
-  "yose": "2026-11-25",
-  "seki": "2026-11-25",
-  "crla": "2026-11-25",
-  "lavo": "2026-11-25",
-  "mora": "2026-11-25",
-  "grsm": "2026-11-25"
+  "yose": "2026-11-26",
+  "seki": "2026-11-26",
+  "crla": "2026-11-26",
+  "lavo": "2026-11-26",
+  "mora": "2026-11-26",
+  "grsm": "2026-11-26"
  },
  "closures": [
   {
@@ -302,6 +302,25 @@
    "segments": 6
   },
   {
+   "key": "grsm#Newfound Gap Road#2026-11-26#2026-11-26",
+   "park": "grsm",
+   "roadNames": [
+    "Newfound Gap Road"
+   ],
+   "from": "2026-11-26",
+   "until": "2026-11-26",
+   "untilVerified": false,
+   "impact": "all-lanes-closed",
+   "type": "incident",
+   "description": "US-Highway 441/Newfound Gap Road from Gatlinburg, TN to Cherokee, NC will close today at 8 p.m. due to hazardous weather conditions.",
+   "roads": [],
+   "attractions": [],
+   "unmapped": [
+    "Newfound Gap Road"
+   ],
+   "segments": 2
+  },
+  {
    "key": "lavo#Lassen National Park Highway#2026-10-30#2027-06-25",
    "park": "lavo",
    "roadNames": [
@@ -533,6 +552,14 @@
    ],
    "from": "2026-10-31",
    "description": "Heintooga Ridge Road, Parson Branch Road, and Rich Mountain Road are closed for the season."
+  },
+  {
+   "park": "grsm",
+   "roads": [
+    "Newfound Gap Road"
+   ],
+   "from": "2026-11-26",
+   "description": "US-Highway 441/Newfound Gap Road from Gatlinburg, TN to Cherokee, NC will close today at 8 p.m. due to hazardous weather conditions."
   },
   {
    "park": "mora",
