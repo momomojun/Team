@@ -959,7 +959,7 @@ soft-v1 回放（不调模型）：
 - **第一次**：Gemini 3.5 Flash Lite（线上第一个用的模型），打开 search agent 和多 agent，和线上一样：**19/20 组、36/37 轮**，83 次调用，每轮中位 8.7 秒。没过的是 L20：排好锡安以后说“actually let's do Bryce Canyon instead”，调度员给了“重新开始 + 改条件”，日期、天数、出发地、节奏全清掉、又问了一遍日期。
 - **修**：已经有行程（或者已经定了公园）、这句话说的是“换成 / 改成 / instead / let's do”加一座公园、又没说“重新开始、新的行程”时，代码去掉“重新开始”，按改条件读（`pipeline.SWAP`，trace 记 `swap_not_restart`）。修了以后回放补录 2 次调用：**20/20、37/37**。看过失败再修的，这一批不再算没见过的。
 - **第 11 道门槛**：`baseline-live.json`（20 组、37 轮），CI 和发版都回放 `recordings/gemini-3.5-flash-lite-live-v1.jsonl`（要 `COPILOT_QA_AGENT=1`，线上开着 search agent），PR 评论的成绩表多一行。这一组回放的是线上模型的回答，不是本机 4B 的。
-- 演示前（12 月 8 日前后）用同一个命令再真跑一次（约 85 次 Gemini 调用），看这两周 Gemini 有没有变：
+- 演示前（12 月 3 日前后，11-25 仓库主人改的；到时候先问仓库主人）用同一个命令再真跑一次（约 85 次 Gemini 调用），看这两周 Gemini 有没有变：
 
 ```bash
 cd copilot && COPILOT_PROVIDER=gemini COPILOT_QA_AGENT=1 python eval/conversation.py --cases eval/cases/live-v1.jsonl
