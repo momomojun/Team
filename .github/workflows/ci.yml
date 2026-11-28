@@ -135,5 +135,8 @@ jobs:
       # 网站的查询工具在镜像里也要跑得起来（11-20：引到了镜像里没有的 npm 包，所有查询都报错，上面那条只排行程、没拦住）
       - name: Smoke test the lookup tools inside the image
         run: docker exec copilot python copilot/scripts/smoke_lookup.py
+      # 审查 agent 用的软要求判分脚本在镜像里也要跑得起来（11-27：Dockerfile 没拷 soft-check.mjs，线上审查 agent 一直没跑过）
+      - name: Smoke test the soft-wish checks inside the image
+        run: docker exec copilot python copilot/scripts/smoke_team.py
       - if: failure()
         run: docker logs copilot
