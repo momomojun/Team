@@ -5,6 +5,8 @@
 !tests/resolve.mjs
 !scripts/plan-trip.mjs
 !scripts/lookup.mjs
+!scripts/soft-check.mjs
+!scripts/soft-check-lib.mjs
 !src/
 !copilot/
 copilot/runs/

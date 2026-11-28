@@ -32,7 +32,14 @@ def needed_scripts() -> set[str]:
     return found
 
 
+def allowed_scripts() -> set[str]:
+    # .dockerignore 是白名单（先排除所有，再一个个放行）：没放行的，Dockerfile 里 COPY 了也找不到（11-27 CI 第一次就是这样报的）
+    lines = (ROOT / ".dockerignore").read_text(encoding="utf-8").splitlines()
+    return {line[1:] for line in lines if line.startswith("!scripts/")}
+
+
 def test_scripts_the_copilot_runs_are_in_the_image():
     needed = needed_scripts()
     assert {"scripts/plan-trip.mjs", "scripts/soft-check.mjs", "scripts/soft-check-lib.mjs"} <= needed
     assert needed <= copied_scripts(), f"Dockerfile 没拷：{sorted(needed - copied_scripts())}"
+    assert needed <= allowed_scripts(), f".dockerignore 没放行：{sorted(needed - allowed_scripts())}"
