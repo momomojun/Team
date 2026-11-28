@@ -1,12 +1,12 @@
 {
- "fetched": "2026-11-27",
+ "fetched": "2026-11-28",
  "parks": {
-  "yose": "2026-11-27",
-  "seki": "2026-11-27",
-  "crla": "2026-11-27",
-  "lavo": "2026-11-27",
-  "mora": "2026-11-27",
-  "grsm": "2026-11-27"
+  "yose": "2026-11-28",
+  "seki": "2026-11-28",
+  "crla": "2026-11-28",
+  "lavo": "2026-11-28",
+  "mora": "2026-11-28",
+  "grsm": "2026-11-28"
  },
  "closures": [
   {
@@ -407,6 +407,25 @@
    "segments": 58
   },
   {
+   "key": "mora#Paradise Road#2026-11-28#2026-11-30",
+   "park": "mora",
+   "roadNames": [
+    "Paradise Road"
+   ],
+   "from": "2026-11-28",
+   "until": "2026-11-30",
+   "untilVerified": false,
+   "impact": "all-lanes-closed",
+   "type": "incident",
+   "description": "The gate at Longmire to Paradise is closed for the night to support public safety.",
+   "roads": [],
+   "attractions": [],
+   "unmapped": [
+    "Paradise Road"
+   ],
+   "segments": 4
+  },
+  {
    "key": "seki#Mineral King Rd#2026-10-28#2027-05-26",
    "park": "seki",
    "roadNames": [
@@ -552,6 +571,14 @@
    ],
    "from": "2026-11-18",
    "description": "The following regular winter season road closures are in place: SR410, SR123, Westside, Paradise Valley, Ricksecker Point, Stevens Canyon, White River, & Sunrise Roads."
+  },
+  {
+   "park": "mora",
+   "roads": [
+    "Paradise Road"
+   ],
+   "from": "2026-11-28",
+   "description": "The gate at Longmire to Paradise is closed for the night to support public safety."
   },
   {
    "park": "seki",
