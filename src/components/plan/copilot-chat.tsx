@@ -743,7 +743,8 @@ function DayRoute({ day, t }: { day: DayBlock; t: ChatText }) {
         {(day.stay || day.end) && (
           <li className={`${row} text-[13px] text-white/65`}>
             <span className="text-clay-600">{day.stay ? t.stay : ""}</span>
-            <span>{day.stay ?? day.end}</span>
+            {/* 英文模板写的是“drive back to …”，一行开头要大写 */}
+            <span>{day.stay ?? (day.end ? day.end[0].toUpperCase() + day.end.slice(1) : "")}</span>
           </li>
         )}
       </ol>
