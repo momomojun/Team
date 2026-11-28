@@ -51,6 +51,7 @@ jobs:
             "$IMAGE:main-${GITHUB_SHA::7}"
           python3 copilot/scripts/smoke.py http://127.0.0.1:8765 --expect-version repo
           docker exec copilot python copilot/scripts/smoke_lookup.py
+          docker exec copilot python copilot/scripts/smoke_team.py
       - if: failure()
         run: docker logs copilot
       - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
